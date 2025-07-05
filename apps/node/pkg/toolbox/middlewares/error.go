@@ -1,0 +1,32 @@
+package middlewares
+
+import (
+	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/snapflow/node/pkg/common"
+)
+
+func ErrorMiddleware() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ctx.Next()
+
+		if len(ctx.Errors) > 0 {
+			err := ctx.Errors.Last()
+			statusCode := ctx.Writer.Status()
+
+			errorResponse := common.ErrorResponse{
+				StatusCode: statusCode,
+				Message:    err.Error(),
+				Code:       http.StatusText(statusCode),
+				Timestamp:  time.Now(),
+				Path:       ctx.Request.URL.Path,
+				Method:     ctx.Request.Method,
+			}
+
+			ctx.Header("Content-Type", "application/json")
+			ctx.AbortWithStatusJSON(statusCode, errorResponse)
+		}
+	}
+}

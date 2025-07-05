@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/styles/global.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "ui": "@snapflow/ui/components/ui",
+    "components": "@snapflow/ui/components",
+    "utils": "@snapflow/ui/lib/utils",
+    "lib": "@snapflow/ui/lib",
+    "hooks": "@snapflow/ui/hooks"
+  },
+  "iconLibrary": "lucide"
+}
