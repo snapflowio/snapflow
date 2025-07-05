@@ -19,7 +19,7 @@ func (d *DockerClient) getVolumesMountPathBinds(ctx context.Context, volumes []d
 	volumeMountPathBinds := make([]string, 0)
 
 	for _, vol := range volumes {
-		volumeIdPrefixed := fmt.Sprintf("daytona-volume-%s", vol.VolumeId)
+		volumeIdPrefixed := fmt.Sprintf("snapflow-volume-%s", vol.VolumeId)
 		runnerVolumeMountPath := d.getRunnerVolumeMountPath(volumeIdPrefixed)
 
 		// Get or create mutex for this volume

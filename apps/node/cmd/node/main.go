@@ -22,7 +22,7 @@ func main() {
 
 	c.ProjectDir = filepath.Join(os.Getenv("HOME"))
 
-	if projectDir := os.Getenv("DAYTONA_PROJECT_DIR"); projectDir != "" {
+	if projectDir := os.Getenv("SNAPFLOW_PROJECT_DIR"); projectDir != "" {
 		c.ProjectDir = projectDir
 	}
 

@@ -26,9 +26,9 @@ func (d *DockerClient) getContainerConfigs(ctx context.Context, sandboxDto dto.C
 
 func (d *DockerClient) getContainerCreateConfig(sandboxDto dto.CreateSandboxDTO) *container.Config {
 	envVars := []string{
-		"DAYTONA_SANDBOX_ID=" + sandboxDto.Id,
-		"DAYTONA_SANDBOX_SNAPSHOT=" + sandboxDto.Snapshot,
-		"DAYTONA_SANDBOX_USER=" + sandboxDto.OsUser,
+		"SNAPFLOW_SANDBOX_ID=" + sandboxDto.Id,
+		"SNAPFLOW_SANDBOX_SNAPSHOT=" + sandboxDto.Snapshot,
+		"SNAPFLOW_SANDBOX_USER=" + sandboxDto.OsUser,
 	}
 
 	for key, value := range sandboxDto.Env {
@@ -49,7 +49,7 @@ func (d *DockerClient) getContainerCreateConfig(sandboxDto dto.CreateSandboxDTO)
 func (d *DockerClient) getContainerHostConfig(ctx context.Context, sandboxDto dto.CreateSandboxDTO, volumeMountPathBinds []string) (*container.HostConfig, error) {
 	var binds []string
 
-	binds = append(binds, fmt.Sprintf("%s:/usr/local/bin/daytona:ro", d.daemonPath))
+	binds = append(binds, fmt.Sprintf("%s:/usr/local/bin/snapflow:ro", d.daemonPath))
 
 	if len(volumeMountPathBinds) > 0 {
 		binds = append(binds, volumeMountPathBinds...)

@@ -67,7 +67,7 @@ func (s *Server) Start() error {
 		log.Fatal(err)
 	}
 
-	configDir := path.Join(dirname, ".daytona")
+	configDir := path.Join(dirname, ".snapflow")
 	err = os.MkdirAll(configDir, 0755)
 	if err != nil {
 		log.Fatal(err)

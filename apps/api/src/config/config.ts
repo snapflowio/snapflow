@@ -26,7 +26,7 @@ export const config = {
     user: process.env.SMTP_USER,
     password: process.env.SMTP_PASSWORD,
     secure: process.env.SMTP_SECURE === "true",
-    from: process.env.SMTP_EMAIL_FROM || "noreply@mail.daytona.io",
+    from: process.env.SMTP_EMAIL_FROM || "noreply@mail.snapflow.io",
   },
   defaultSnapshot: process.env.DEFAULT_SNAPSHOT,
   dashboardUrl: process.env.DASHBOARD_URL,
@@ -53,10 +53,7 @@ export const config = {
     roleName: process.env.S3_ROLE_NAME,
   },
   skipConnections: process.env.SKIP_CONNECTIONS === "true",
-  maxAutoArchiveInterval: Number.parseInt(
-    process.env.MAX_AUTO_ARCHIVE_INTERVAL || "43200",
-    10,
-  ),
+  maxAutoArchiveInterval: Number.parseInt(process.env.MAX_AUTO_ARCHIVE_INTERVAL || "43200", 10),
   maintananceMode: process.env.MAINTENANCE_MODE === "true",
   proxy: {
     domain: process.env.PROXY_DOMAIN,

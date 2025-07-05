@@ -12,10 +12,10 @@ import (
 
 type Config struct {
 	ProjectDir  string
-	LogFilePath *string `envconfig:"DAYTONA_DAEMON_LOG_FILE_PATH"`
+	LogFilePath *string `envconfig:"SNAPFLOW_DAEMON_LOG_FILE_PATH"`
 }
 
-var DEFAULT_LOG_FILE_PATH = "/tmp/daytona-daemon.log"
+var DEFAULT_LOG_FILE_PATH = "/tmp/snapflow-daemon.log"
 
 var config *Config
 
@@ -44,7 +44,7 @@ func GetConfig() (*Config, error) {
 }
 
 func GetLogFilePath() *string {
-	logFilePath, ok := os.LookupEnv("DAYTONA_DAEMON_LOG_FILE_PATH")
+	logFilePath, ok := os.LookupEnv("SNAPFLOW_DAEMON_LOG_FILE_PATH")
 	if !ok {
 		return &DEFAULT_LOG_FILE_PATH
 	}
