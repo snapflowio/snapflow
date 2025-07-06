@@ -1,10 +1,5 @@
 import { join } from "path";
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from "@nestjs/common";
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
 import { EventEmitterModule } from "@nestjs/event-emitter";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ServeStaticModule } from "@nestjs/serve-static";
@@ -19,6 +14,10 @@ import { VersionHeaderMiddleware } from "./common/middleware/version-header.midd
 import { CustomNamingStrategy } from "./common/utils/naming-strategy.util";
 import { TypedConfigModule } from "./config/typed-config.module";
 import { TypedConfigService } from "./config/typed-config.service";
+import { DockerRegistryModule } from "./docker-registry/docker-registry.module";
+import { SandboxModule } from "./sandbox/sandbox.module";
+import { TeamModule } from "./team/team.module";
+import { UsageModule } from "./usage/usage.module";
 import { UserModule } from "./user/user.module";
 
 @Module({
@@ -75,6 +74,10 @@ import { UserModule } from "./user/user.module";
     EventEmitterModule.forRoot(),
     AuthModule,
     ApiKeyModule,
+    DockerRegistryModule,
+    SandboxModule,
+    TeamModule,
+    UsageModule,
     UserModule,
     ScheduleModule.forRoot(),
   ],
@@ -83,11 +86,7 @@ import { UserModule } from "./user/user.module";
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(VersionHeaderMiddleware)
-      .forRoutes({ path: "*", method: RequestMethod.ALL });
-    consumer
-      .apply(MaintenanceMiddleware)
-      .forRoutes({ path: "*", method: RequestMethod.ALL });
+    consumer.apply(VersionHeaderMiddleware).forRoutes({ path: "*", method: RequestMethod.ALL });
+    consumer.apply(MaintenanceMiddleware).forRoutes({ path: "*", method: RequestMethod.ALL });
   }
 }

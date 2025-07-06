@@ -44,13 +44,10 @@ export const config = {
   },
   s3: {
     endpoint: process.env.S3_ENDPOINT,
-    stsEndpoint: process.env.S3_STS_ENDPOINT,
     region: process.env.S3_REGION,
     accessKey: process.env.S3_ACCESS_KEY,
     secretKey: process.env.S3_SECRET_KEY,
     defaultBucket: process.env.S3_DEFAULT_BUCKET,
-    accountId: process.env.S3_ACCOUNT_ID,
-    roleName: process.env.S3_ROLE_NAME,
   },
   skipConnections: process.env.SKIP_CONNECTIONS === "true",
   maxAutoArchiveInterval: Number.parseInt(process.env.MAX_AUTO_ARCHIVE_INTERVAL || "43200", 10),
