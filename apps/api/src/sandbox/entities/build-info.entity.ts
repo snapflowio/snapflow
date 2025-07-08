@@ -13,7 +13,7 @@ import { Snapshot } from "./snapshot.entity";
 
 export function generateBuildInfoHash(
   dockerfileContent: string,
-  contextHashes: string[] = []
+  contextHashes: string[] = [],
 ): string {
   const sortedContextHashes = [...contextHashes].sort() || [];
   const combined = dockerfileContent + sortedContextHashes.join("");
@@ -32,16 +32,10 @@ export class BuildInfo {
   @Column("simple-array", { nullable: true })
   contextHashes?: string[];
 
-  @OneToMany(
-    () => Snapshot,
-    (snapshot) => snapshot.buildInfo
-  )
+  @OneToMany(() => Snapshot, (snapshot) => snapshot.buildInfo)
   snapshots: Snapshot[];
 
-  @OneToMany(
-    () => Sandbox,
-    (sandbox) => sandbox.buildInfo
-  )
+  @OneToMany(() => Sandbox, (sandbox) => sandbox.buildInfo)
   sandboxes: Sandbox[];
 
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
@@ -55,6 +49,9 @@ export class BuildInfo {
 
   @BeforeInsert()
   generateHash() {
-    this.snapshotRef = generateBuildInfoHash(this.dockerfileContent, this.contextHashes);
+    this.snapshotRef = generateBuildInfoHash(
+      this.dockerfileContent,
+      this.contextHashes,
+    );
   }
 }

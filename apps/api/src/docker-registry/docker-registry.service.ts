@@ -1,4 +1,9 @@
-import { ForbiddenException, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { In, IsNull, Repository } from "typeorm";
 import { RegistryType } from "../docker-registry/enums/registry-type.enum";
@@ -17,12 +22,12 @@ export class DockerRegistryService {
     @InjectRepository(DockerRegistry)
     private readonly dockerRegistryRepository: Repository<DockerRegistry>,
     @Inject(DOCKER_REGISTRY_PROVIDER)
-    private readonly dockerRegistryProvider: IDockerRegistryProvider
+    private readonly dockerRegistryProvider: IDockerRegistryProvider,
   ) {}
 
   async create(
     createDto: CreateDockerRegistryDto,
-    organizationId?: string
+    organizationId?: string,
   ): Promise<DockerRegistry> {
     if (organizationId) {
       const registries = await this.dockerRegistryRepository.find({
@@ -30,7 +35,9 @@ export class DockerRegistryService {
       });
 
       if (registries.length >= 100)
-        throw new ForbiddenException("You have reached the maximum number of registries");
+        throw new ForbiddenException(
+          "You have reached the maximum number of registries",
+        );
     }
 
     const registry = this.dockerRegistryRepository.create({
@@ -62,12 +69,18 @@ export class DockerRegistryService {
     });
   }
 
-  async update(registryId: string, updateDto: UpdateDockerRegistryDto): Promise<DockerRegistry> {
+  async update(
+    registryId: string,
+    updateDto: UpdateDockerRegistryDto,
+  ): Promise<DockerRegistry> {
     const registry = await this.dockerRegistryRepository.findOne({
       where: { id: registryId },
     });
 
-    if (!registry) throw new NotFoundException(`Docker registry with ID ${registryId} not found`);
+    if (!registry)
+      throw new NotFoundException(
+        `Docker registry with ID ${registryId} not found`,
+      );
 
     registry.name = updateDto.name;
     registry.username = updateDto.username;
@@ -81,7 +94,10 @@ export class DockerRegistryService {
       where: { id: registryId },
     });
 
-    if (!registry) throw new NotFoundException(`Docker registry with ID ${registryId} not found`);
+    if (!registry)
+      throw new NotFoundException(
+        `Docker registry with ID ${registryId} not found`,
+      );
 
     await this.dockerRegistryRepository.remove(registry);
   }
@@ -91,7 +107,10 @@ export class DockerRegistryService {
       where: { id: registryId },
     });
 
-    if (!registry) throw new NotFoundException(`Docker registry with ID ${registryId} not found`);
+    if (!registry)
+      throw new NotFoundException(
+        `Docker registry with ID ${registryId} not found`,
+      );
 
     await this.unsetDefaultRegistry();
 
@@ -100,7 +119,10 @@ export class DockerRegistryService {
   }
 
   private async unsetDefaultRegistry(): Promise<void> {
-    await this.dockerRegistryRepository.update({ isDefault: true }, { isDefault: false });
+    await this.dockerRegistryRepository.update(
+      { isDefault: true },
+      { isDefault: false },
+    );
   }
 
   async getDefaultInternalRegistry(): Promise<DockerRegistry | null> {
@@ -117,20 +139,32 @@ export class DockerRegistryService {
 
   async findOneBySnapshotImageName(
     imageName: string,
-    organizationId?: string
+    organizationId?: string,
   ): Promise<DockerRegistry | null> {
     const whereCondition = organizationId
       ? [
-          { organizationId, registryType: In([RegistryType.INTERNAL, RegistryType.ORGANIZATION]) },
+          {
+            organizationId,
+            registryType: In([
+              RegistryType.INTERNAL,
+              RegistryType.ORGANIZATION,
+            ]),
+          },
           {
             organizationId: IsNull(),
-            registryType: In([RegistryType.INTERNAL, RegistryType.ORGANIZATION]),
+            registryType: In([
+              RegistryType.INTERNAL,
+              RegistryType.ORGANIZATION,
+            ]),
           },
         ]
       : [
           {
             organizationId: IsNull(),
-            registryType: In([RegistryType.INTERNAL, RegistryType.ORGANIZATION]),
+            registryType: In([
+              RegistryType.INTERNAL,
+              RegistryType.ORGANIZATION,
+            ]),
           },
         ];
 
@@ -150,7 +184,7 @@ export class DockerRegistryService {
 
   async getRegistryPushAccess(
     organizationId: string,
-    userId: string
+    userId: string,
   ): Promise<RegistryPushAccessDto> {
     const transientRegistry = await this.getDefaultTransientRegistry();
     if (!transientRegistry) {
@@ -183,7 +217,7 @@ export class DockerRegistryService {
               access: [{ resource: "repository", action: "push" }],
             },
           ],
-        }
+        },
       );
 
       return {
@@ -224,7 +258,9 @@ export class DockerRegistryService {
       // Format: project/repository
       [project, repository] = parts;
     } else {
-      throw new Error("Invalid image name format. Expected: [registry]/project/repository[:tag]");
+      throw new Error(
+        "Invalid image name format. Expected: [registry]/project/repository[:tag]",
+      );
     }
 
     try {
@@ -234,7 +270,7 @@ export class DockerRegistryService {
           username: registry.username,
           password: registry.password,
         },
-        { project, repository, tag }
+        { project, repository, tag },
       );
     } catch (error) {
       const message = error.response?.data?.message || error.message;
@@ -245,6 +281,8 @@ export class DockerRegistryService {
   getRegistryUrl(registry: DockerRegistry): string {
     if (registry.url === "registry:5000") return "http://registry:5000";
 
-    return registry.url.startsWith("http") ? registry.url : `https://${registry.url}`;
+    return registry.url.startsWith("http")
+      ? registry.url
+      : `https://${registry.url}`;
   }
 }

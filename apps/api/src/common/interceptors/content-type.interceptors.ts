@@ -1,11 +1,20 @@
-import { CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor } from "@nestjs/common";
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  Logger,
+  NestInterceptor,
+} from "@nestjs/common";
 import { Observable } from "rxjs";
 
 @Injectable()
 export class ContentTypeInterceptor implements NestInterceptor {
   private readonly logger = new Logger(ContentTypeInterceptor.name);
 
-  async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
+  async intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Promise<Observable<any>> {
     const request = context.switchToHttp().getRequest();
 
     if (request.readable) {
@@ -36,7 +45,11 @@ export class ContentTypeInterceptor implements NestInterceptor {
       });
     }
 
-    if (request.body && Object.keys(request.body).length > 0 && !request.get("content-type"))
+    if (
+      request.body &&
+      Object.keys(request.body).length > 0 &&
+      !request.get("content-type")
+    )
       request.headers["content-type"] = "application/json";
 
     return next.handle();

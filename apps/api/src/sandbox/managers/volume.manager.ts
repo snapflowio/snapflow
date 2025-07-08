@@ -30,7 +30,7 @@ export class VolumeManager implements OnModuleInit {
     private readonly volumeRepository: Repository<Volume>,
     private readonly configService: TypedConfigService,
     @InjectRedis() private readonly redis: Redis,
-    private readonly redisLockProvider: RedisLockProvider
+    private readonly redisLockProvider: RedisLockProvider,
   ) {
     const endpoint = this.configService.getOrThrow("s3.endpoint");
     const region = this.configService.getOrThrow("s3.region");
@@ -102,7 +102,7 @@ export class VolumeManager implements OnModuleInit {
             this.processingVolumes.delete(volume.id);
             await this.redisLockProvider.unlock(volumeLockKey);
           }
-        })
+        }),
       );
 
       await this.redisLockProvider.unlock(lockKey);
@@ -132,7 +132,10 @@ export class VolumeManager implements OnModuleInit {
     }
   }
 
-  private async handlePendingCreate(volume: Volume, lockKey: string): Promise<void> {
+  private async handlePendingCreate(
+    volume: Volume,
+    lockKey: string,
+  ): Promise<void> {
     try {
       // Refresh lock before state change
       await this.redis.setex(lockKey, 30, "1");
@@ -172,7 +175,7 @@ export class VolumeManager implements OnModuleInit {
               },
             ],
           },
-        })
+        }),
       );
 
       // Refresh lock before final state update
@@ -194,7 +197,10 @@ export class VolumeManager implements OnModuleInit {
     }
   }
 
-  private async handlePendingDelete(volume: Volume, lockKey: string): Promise<void> {
+  private async handlePendingDelete(
+    volume: Volume,
+    lockKey: string,
+  ): Promise<void> {
     try {
       // Refresh lock before state change
       await this.redis.setex(lockKey, 30, "1");

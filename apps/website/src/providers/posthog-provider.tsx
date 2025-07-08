@@ -1,4 +1,4 @@
-import { FC, ReactNode } from "react";
+import { ReactNode } from "react";
 import { PostHogProvider } from "posthog-js/react";
 
 const posthogKey = import.meta.env.VITE_POSTHOG_KEY;
@@ -8,7 +8,7 @@ interface PostHogProviderProps {
   children: ReactNode;
 }
 
-export const PosthogProvider: FC<PostHogProviderProps> = ({ children }) => {
+export function PosthogProvider({ children }: PostHogProviderProps) {
   if (!import.meta.env.PROD) return children;
 
   if (!posthogKey || !posthogHost) {
@@ -30,4 +30,4 @@ export const PosthogProvider: FC<PostHogProviderProps> = ({ children }) => {
       {children}
     </PostHogProvider>
   );
-};
+}

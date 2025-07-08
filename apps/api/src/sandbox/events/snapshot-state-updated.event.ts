@@ -5,6 +5,6 @@ export class SnapshotStateUpdatedEvent {
   constructor(
     public readonly snapshot: Snapshot,
     public readonly oldState: SnapshotState,
-    public readonly newState: SnapshotState
+    public readonly newState: SnapshotState,
   ) {}
 }

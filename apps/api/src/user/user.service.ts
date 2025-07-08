@@ -59,7 +59,6 @@ export class UserService {
     let user = new User();
     user.id = createUserDto.id;
     user.name = createUserDto.name;
-    user.password = createUserDto.password;
     user.emailVerified = createUserDto.emailVerified;
 
     if (createUserDto.email) user.email = createUserDto.email;

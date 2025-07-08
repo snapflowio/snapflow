@@ -1,39 +1,50 @@
-import { createSecretKey } from "crypto";
-import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Request } from "express";
-import { JWTPayload, jwtVerify } from "jose";
+import { createRemoteJWKSet, JWTPayload, jwtVerify } from "jose";
+import { passportJwtSecret } from "jwks-rsa";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { CustomHeaders } from "../../common/constants/header.constants";
+import { DEFAULT_ORGANIZATION_QUOTA } from "../../common/constants/quota.constants";
 import { AuthContext } from "../../common/interfaces/auth-context.interface";
 import { UserService } from "../../user/user.service";
 
 interface JwtStrategyConfig {
-  secret: string;
+  jwksUri: string;
+  audience: string;
+  issuer: string;
 }
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   private readonly logger = new Logger(JwtStrategy.name);
+  private JWKS: ReturnType<typeof createRemoteJWKSet>;
 
   constructor(
     private readonly options: JwtStrategyConfig,
     private readonly userService: UserService,
   ) {
     super({
+      secretOrKeyProvider: passportJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: options.jwksUri,
+      }),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: options.secret,
-      issuer: "Snapflow",
-      algorithms: ["HS256"],
+      audience: options.audience,
+      issuer: options.issuer,
+      algorithms: ["RS256"],
       passReqToCallback: true,
     });
 
+    this.JWKS = createRemoteJWKSet(new URL(options.jwksUri));
     this.logger.debug("JwtStrategy initialized");
   }
 
   async validate(request: Request, payload: any): Promise<AuthContext> {
     const userId = payload.sub;
-    const user = await this.userService.findOne(userId);
+    let user = await this.userService.findOne(userId);
 
     if (user && !user.emailVerified && payload.email_verified)
       await this.userService.updateEmailVerified(
@@ -41,9 +52,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         payload.email_verified,
       );
 
-    if (!user) throw new UnauthorizedException("Invalid user");
+    if (!user) {
+      user = await this.userService.create({
+        id: userId,
+        name: payload.name || payload.username || "Unknown",
+        email: payload.email || "",
+        emailVerified: payload.email_verified || false,
+        personalOrganizationQuota: DEFAULT_ORGANIZATION_QUOTA,
+      });
 
-    if (user.name === "Unknown" || !user.email) {
+      this.logger.debug(`Created new user with ID: ${userId}`);
+    } else if (user.name === "Unknown" || !user.email) {
       await this.userService.updateName(
         user.id,
         payload.name || payload.username || "Unknown",
@@ -66,10 +85,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async verifyToken(token: string): Promise<JWTPayload> {
-    const secretKey = createSecretKey(this.options.secret, "utf-8");
-    const { payload } = await jwtVerify(token, secretKey, {
-      issuer: "Snapflow",
-      algorithms: ["HS256"],
+    const { payload } = await jwtVerify(token, this.JWKS, {
+      audience: this.options.audience,
+      issuer: this.options.issuer,
+      algorithms: ["RS256"],
     });
 
     return payload;

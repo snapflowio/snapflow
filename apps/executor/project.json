@@ -1,0 +1,79 @@
+{
+  "name": "executor",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/executor",
+  "tags": [],
+  "targets": {
+    "copy-node-bin": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cp dist/apps/node-amd64 {projectRoot}/pkg/node/static"
+      },
+      "dependsOn": [
+        {
+          "target": "build",
+          "projects": "node"
+        }
+      ]
+    },
+    "build": {
+      "executor": "@nx-go/nx-go:build",
+      "options": {
+        "main": "{projectRoot}/cmd/executor/main.go",
+        "outputPath": "dist/apps/executor"
+      },
+      "configurations": {
+        "production": {}
+      },
+      "dependsOn": [
+        {
+          "target": "build",
+          "projects": "node"
+        },
+        {
+          "target": "build-amd64",
+          "projects": "node"
+        },
+        "copy-node-bin"
+      ]
+    },
+    "serve": {
+      "executor": "@nx-go/nx-go:serve",
+      "options": {
+        "cmd": "gow",
+        "cwd": ".",
+        "main": "{projectRoot}/cmd/executor/main.go"
+      },
+      "configurations": {
+        "production": {}
+      },
+      "dependsOn": [
+        {
+          "target": "build",
+          "projects": "node"
+        },
+        "copy-node-bin"
+      ]
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd {projectRoot} && go fmt ./..."
+      }
+    },
+    "test": {
+      "executor": "@nx-go/nx-go:test"
+    },
+    "lint": {
+      "executor": "@nx-go/nx-go:lint"
+    },
+    "openapi": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}/pkg/api",
+        "command": "swag fmt && swag init --parseDependency --parseInternal --parseDepth 1 -o docs -g server.go"
+      }
+    }
+  }
+}

@@ -3,13 +3,23 @@ export const config = {
   environment: process.env.ENVIRONMENT,
   port: Number.parseInt(process.env.PORT, 10),
   appUrl: process.env.APP_URL,
-  jwtSecretKey: process.env.JWT_SECRET_KEY,
   database: {
     host: process.env.DB_HOST,
     port: Number.parseInt(process.env.DB_PORT || "5432", 10),
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
+  },
+  oidc: {
+    clientId: process.env.OIDC_CLIENT_ID || process.env.OID_CLIENT_ID,
+    issuer: process.env.OIDC_ISSUER_BASE_URL || process.env.OID_ISSUER_BASE_URL,
+    audience: process.env.OIDC_AUDIENCE || process.env.OID_AUDIENCE,
+    managementApi: {
+      enabled: process.env.OIDC_MANAGEMENT_API_ENABLED === "true",
+      clientId: process.env.OIDC_MANAGEMENT_API_CLIENT_ID,
+      clientSecret: process.env.OIDC_MANAGEMENT_API_CLIENT_SECRET,
+      audience: process.env.OIDC_MANAGEMENT_API_AUDIENCE,
+    },
   },
   redis: {
     host: process.env.REDIS_HOST,
@@ -50,7 +60,10 @@ export const config = {
     defaultBucket: process.env.S3_DEFAULT_BUCKET,
   },
   skipConnections: process.env.SKIP_CONNECTIONS === "true",
-  maxAutoArchiveInterval: Number.parseInt(process.env.MAX_AUTO_ARCHIVE_INTERVAL || "43200", 10),
+  maxAutoArchiveInterval: Number.parseInt(
+    process.env.MAX_AUTO_ARCHIVE_INTERVAL || "43200",
+    10,
+  ),
   maintananceMode: process.env.MAINTENANCE_MODE === "true",
   proxy: {
     domain: process.env.PROXY_DOMAIN,

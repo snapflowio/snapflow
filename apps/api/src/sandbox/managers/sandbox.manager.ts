@@ -6,7 +6,7 @@ import { InjectRedis } from "@nestjs-modules/ioredis";
 import {
   CreateSandboxDTO,
   EnumsSandboxState as RunnerSandboxState,
-} from "@snapflow/manager-api-client";
+} from "@snapflow/executor-api-client";
 import { Redis } from "ioredis";
 import { In, Not, Raw, Repository } from "typeorm";
 
@@ -30,7 +30,7 @@ import { SandboxCreatedEvent } from "../events/sandbox-create.event";
 import { SandboxDestroyedEvent } from "../events/sandbox-destroyed.event";
 import { SandboxStartedEvent } from "../events/sandbox-started.event";
 import { SandboxStoppedEvent } from "../events/sandbox-stopped.event";
-import { RunnerApiFactory } from "../manager-api/manager-api";
+import { RunnerApiFactory } from "../executor-api/executor-api";
 import { RunnerService } from "../services/runner.service";
 import { SnapshotService } from "../services/snapshot.service";
 
@@ -211,7 +211,9 @@ export class SandboxManager {
     await this.redisLockProvider.unlock(lockKey);
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS, { name: "sync-archived-desired-states" })
+  @Cron(CronExpression.EVERY_10_SECONDS, {
+    name: "sync-archived-desired-states",
+  })
   async syncArchivedDesiredStates(): Promise<void> {
     const lockKey = "sync-archived-desired-states";
     if (!(await this.redisLockProvider.lock(lockKey, 30))) {

@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiOAuth2,
@@ -53,7 +62,7 @@ export class RunnerController {
   })
   async updateSchedulingStatus(
     @Param("id") id: string,
-    @Body("unschedulable") unschedulable: boolean
+    @Body("unschedulable") unschedulable: boolean,
   ): Promise<Runner> {
     return this.runnerService.updateSchedulingStatus(id, unschedulable);
   }
@@ -68,7 +77,9 @@ export class RunnerController {
     description: "Runner found",
     type: RunnerDto,
   })
-  async getRunnerBySandboxId(@Param("sandboxId") sandboxId: string): Promise<RunnerDto> {
+  async getRunnerBySandboxId(
+    @Param("sandboxId") sandboxId: string,
+  ): Promise<RunnerDto> {
     const runner = await this.runnerService.findBySandboxId(sandboxId);
     return RunnerDto.fromRunner(runner);
   }
@@ -90,7 +101,7 @@ export class RunnerController {
     type: [RunnerSnapshotDto],
   })
   async getRunnersBySnapshotInternalName(
-    @Query("internalName") internalName: string
+    @Query("internalName") internalName: string,
   ): Promise<RunnerSnapshotDto[]> {
     return this.runnerService.getRunnersBySnapshotInternalName(internalName);
   }

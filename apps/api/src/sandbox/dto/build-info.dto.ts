@@ -4,7 +4,8 @@ import { ApiProperty, ApiPropertyOptional, ApiSchema } from "@nestjs/swagger";
 export class BuildInfoDto {
   @ApiPropertyOptional({
     description: "The Dockerfile content used for the build",
-    example: 'FROM node:14\nWORKDIR /app\nCOPY . .\nRUN npm install\nCMD ["npm", "start"]',
+    example:
+      'FROM node:14\nWORKDIR /app\nCOPY . .\nRUN npm install\nCMD ["npm", "start"]',
   })
   dockerfileContent?: string;
 

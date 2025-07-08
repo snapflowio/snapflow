@@ -5,7 +5,6 @@ import {
   Delete,
   Get,
   HttpCode,
-  Logger,
   Next,
   Param,
   Post,
@@ -84,20 +83,25 @@ followRedirects.maxBodyLength = 50 * 1024 * 1024;
 @ApiTags("toolbox")
 @Controller("toolbox")
 @ApiHeader(CustomHeaders.ORGANIZATION_ID)
-@UseGuards(CombinedAuthGuard, OrganizationResourceActionGuard, SandboxAccessGuard)
-@RequiredOrganizationResourcePermissions([OrganizationResourcePermission.WRITE_SANDBOXES])
+@UseGuards(
+  CombinedAuthGuard,
+  OrganizationResourceActionGuard,
+  SandboxAccessGuard,
+)
+@RequiredOrganizationResourcePermissions([
+  OrganizationResourcePermission.WRITE_SANDBOXES,
+])
 @ApiOAuth2(["openid", "profile", "email"])
 @ApiBearerAuth()
 export class ToolboxController {
-  private readonly logger = new Logger(ToolboxController.name);
   private readonly toolboxProxy: RequestHandler<
     RawBodyRequest<IncomingMessage>,
-    ServerResponse<IncomingMessage>,
+    ServerResponse,
     NextFunction
   >;
   private readonly toolboxStreamProxy: RequestHandler<
     RawBodyRequest<IncomingMessage>,
-    ServerResponse<IncomingMessage>,
+    ServerResponse,
     NextFunction
   >;
 
@@ -105,7 +109,9 @@ export class ToolboxController {
     const commonProxyOptions: Options = {
       router: async (req: RawBodyRequest<IncomingMessage>) => {
         // biome-ignore lint/complexity/noUselessEscapeInRegex: need escape
-        const sandboxId = req.url.match(/^\/api\/toolbox\/([^\/]+)\/toolbox/)?.[1];
+        const sandboxId = req.url.match(
+          /^\/api\/toolbox\/([^\/]+)\/toolbox/,
+        )?.[1];
         try {
           const runner = await this.toolboxService.getRunner(sandboxId);
           // @ts-expect-error - used later to set request headers
@@ -172,8 +178,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async getProjectDir(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return this.toolboxProxy(req, res, next);
   }
@@ -192,8 +198,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async listFiles(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -212,8 +218,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async deleteFile(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -236,8 +242,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async downloadFile(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -258,8 +264,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async findInFiles(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -281,8 +287,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async createFolder(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -302,8 +308,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async getFileInfo(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -325,8 +331,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async moveFile(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -350,8 +356,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async setFilePermissions(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -375,8 +381,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async replaceInFiles(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -397,8 +403,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async searchFiles(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -419,8 +425,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async uploadFiles(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return this.toolboxStreamProxy(req, res, next);
   }
@@ -444,8 +450,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async gitAddFiles(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -465,8 +471,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async gitBranchList(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -489,8 +495,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async gitCreateBranch(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -513,8 +519,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async gitDeleteBranch(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -537,8 +543,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async gitCloneRepository(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -562,8 +568,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async gitCommitChanges(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -583,8 +589,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async gitCommitHistory(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -607,8 +613,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async gitPullChanges(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -631,8 +637,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async gitPushChanges(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -655,8 +661,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async gitCheckoutBranch(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -676,8 +682,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async gitStatus(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -697,13 +703,13 @@ export class ToolboxController {
   })
   async executeCommand(
     @Param("sandboxId") sandboxId: string,
-    @Body() executeRequest: ExecuteRequestDto
+    @Body() executeRequest: ExecuteRequestDto,
   ): Promise<ExecuteResponseDto> {
     const response = await this.toolboxService.forwardRequestToRunner(
       sandboxId,
       "POST",
       "/toolbox/process/execute",
-      executeRequest
+      executeRequest,
     );
 
     // TODO: use new proxy - can't use it now because of this
@@ -728,8 +734,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async listSessions(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -749,8 +755,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async getSession(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -772,8 +778,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async createSession(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -803,8 +809,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async executeSessionCommand(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -823,8 +829,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async deleteSession(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -845,8 +851,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async getSessionCommand(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -875,8 +881,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async getSessionCommandLogs(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return this.toolboxProxy(req, res, next);
   }
@@ -901,8 +907,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async getLspCompletions(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -926,8 +932,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async lspDidClose(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -951,8 +957,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async lspDidOpen(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -960,7 +966,8 @@ export class ToolboxController {
   @Get(":sandboxId/toolbox/lsp/document-symbols")
   @ApiOperation({
     summary: "Call Lsp DocumentSymbols",
-    description: "The document symbol request is sent from the client to the server.",
+    description:
+      "The document symbol request is sent from the client to the server.",
     operationId: "LspDocumentSymbols",
   })
   @ApiResponse({
@@ -974,8 +981,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async getLspDocumentSymbols(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -998,8 +1005,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async startLspServer(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -1022,8 +1029,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async stopLspServer(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }
@@ -1046,8 +1053,8 @@ export class ToolboxController {
   @ApiParam({ name: "sandboxId", type: String, required: true })
   async getLspWorkspaceSymbols(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
-    @Next() next: NextFunction
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction,
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
   }

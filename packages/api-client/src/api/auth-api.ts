@@ -12,34 +12,34 @@
  * Do not edit the class manually.
  */
 
-import type {
-	AxiosInstance,
-	AxiosPromise,
-	RawAxiosRequestConfig,
-} from 'axios';
-import globalAxios from 'axios';
-
-// @ts-ignore
-import {
-	BASE_PATH,
-	BaseAPI,
-	operationServerMap,
-	type RequestArgs,
-} from '../base';
+import type { Configuration } from "../configuration";
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from "axios";
+import globalAxios from "axios";
 // Some imports not used depending on template conditions
 // @ts-ignore
 import {
-	assertParamExists,
-	createRequestFunction,
-	DUMMY_BASE_URL,
-	serializeDataIfNeeded,
-	setSearchParams,
-	toPathString,
-} from '../common';
-import type { Configuration } from '../configuration';
+  DUMMY_BASE_URL,
+  assertParamExists,
+  setApiKeyToObject,
+  setBasicAuthToObject,
+  setBearerAuthToObject,
+  setOAuthToObject,
+  setSearchParams,
+  serializeDataIfNeeded,
+  toPathString,
+  createRequestFunction,
+} from "../common";
 // @ts-ignore
-import type { User } from '../models';
-
+import {
+  BASE_PATH,
+  COLLECTION_FORMATS,
+  type RequestArgs,
+  BaseAPI,
+  RequiredError,
+  operationServerMap,
+} from "../base";
+// @ts-ignore
+import type { User } from "../models";
 /**
  * AuthApi - axios parameter creator
  * @export

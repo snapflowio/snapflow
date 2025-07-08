@@ -12,28 +12,31 @@
  * Do not edit the class manually.
  */
 
+
+
 /**
- *
+ * 
  * @export
  * @interface User
  */
 export interface User {
-  /**
-   * User ID
-   * @type {string}
-   * @memberof User
-   */
-  id: string;
-  /**
-   * User name
-   * @type {string}
-   * @memberof User
-   */
-  name: string;
-  /**
-   * User email
-   * @type {string}
-   * @memberof User
-   */
-  email: string;
+    /**
+     * User ID
+     * @type {string}
+     * @memberof User
+     */
+    'id': string;
+    /**
+     * User name
+     * @type {string}
+     * @memberof User
+     */
+    'name': string;
+    /**
+     * User email
+     * @type {string}
+     * @memberof User
+     */
+    'email': string;
 }
+

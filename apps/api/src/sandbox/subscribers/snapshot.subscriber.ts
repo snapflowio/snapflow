@@ -31,7 +31,7 @@ export class SnapshotSubscriber implements EntitySubscriberInterface<Snapshot> {
   afterInsert(event: InsertEvent<Snapshot>) {
     this.eventEmitter.emit(
       SnapshotEvents.CREATED,
-      new SnapshotCreatedEvent(event.entity as Snapshot)
+      new SnapshotCreatedEvent(event.entity as Snapshot),
     );
   }
 
@@ -43,7 +43,7 @@ export class SnapshotSubscriber implements EntitySubscriberInterface<Snapshot> {
         case "enabled":
           this.eventEmitter.emit(
             SnapshotEvents.ENABLED_TOGGLED,
-            new SnapshotEnabledToggledEvent(event.entity as Snapshot)
+            new SnapshotEnabledToggledEvent(event.entity as Snapshot),
           );
           break;
         case "state":
@@ -52,8 +52,8 @@ export class SnapshotSubscriber implements EntitySubscriberInterface<Snapshot> {
             new SnapshotStateUpdatedEvent(
               event.entity as Snapshot,
               event.databaseEntity[column],
-              event.entity[column]
-            )
+              event.entity[column],
+            ),
           );
           break;
         default:
@@ -65,7 +65,7 @@ export class SnapshotSubscriber implements EntitySubscriberInterface<Snapshot> {
   beforeRemove(event: RemoveEvent<Snapshot>) {
     this.eventEmitter.emit(
       SnapshotEvents.REMOVED,
-      new SnapshotRemovedEvent(event.databaseEntity as Snapshot)
+      new SnapshotRemovedEvent(event.databaseEntity as Snapshot),
     );
   }
 }

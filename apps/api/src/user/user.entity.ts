@@ -20,11 +20,6 @@ export class User {
   email: string;
 
   @Column({
-    default: "",
-  })
-  password: string;
-
-  @Column({
     default: false,
   })
   emailVerified: boolean;

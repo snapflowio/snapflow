@@ -14,12 +14,12 @@ export interface IDockerRegistryProvider {
         namespace: string;
         access: Array<{ resource: string; action: string }>;
       }>;
-    }
+    },
   ): Promise<{ name: string; secret: string }>;
 
   deleteArtifact(
     baseUrl: string,
     auth: { username: string; password: string },
-    params: { project: string; repository: string; tag: string }
+    params: { project: string; repository: string; tag: string },
   ): Promise<void>;
 }

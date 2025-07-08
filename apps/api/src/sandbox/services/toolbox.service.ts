@@ -20,14 +20,14 @@ export class ToolboxService {
     @InjectRepository(Sandbox)
     private readonly sandboxRepository: Repository<Sandbox>,
     @InjectRepository(Runner)
-    private readonly runnerRepository: Repository<Runner>
+    private readonly runnerRepository: Repository<Runner>,
   ) {}
 
   async forwardRequestToRunner(
     sandboxId: string,
     method: string,
     path: string,
-    data?: any
+    data?: any,
   ): Promise<any> {
     const runner = await this.getRunner(sandboxId);
 
@@ -59,7 +59,10 @@ export class ToolboxService {
       } catch (error) {
         if (error.message.includes("ECONNREFUSED")) {
           if (attempt === maxRetries) {
-            throw new HttpException("Failed to connect to runner after multiple attempts", 500);
+            throw new HttpException(
+              "Failed to connect to runner after multiple attempts",
+              500,
+            );
           }
           // Wait for attempt * 1000ms (1s, 2s, 3s)
           await new Promise((resolve) => setTimeout(resolve, attempt * 1000));
@@ -67,9 +70,13 @@ export class ToolboxService {
           continue;
         }
 
-        if (error.response) throw new HttpException(error.response.data, error.response.status);
+        if (error.response)
+          throw new HttpException(error.response.data, error.response.status);
 
-        throw new HttpException(`Error forwarding request to runner: ${error.message}`, 500);
+        throw new HttpException(
+          `Error forwarding request to runner: ${error.message}`,
+          500,
+        );
       }
     }
   }
@@ -86,7 +93,8 @@ export class ToolboxService {
         where: { id: sandbox.runnerId },
       });
 
-      if (!runner) throw new NotFoundException("Runner not found for the sandbox");
+      if (!runner)
+        throw new NotFoundException("Runner not found for the sandbox");
 
       if (sandbox.state !== SandboxState.STARTED)
         throw new BadRequestException("Sandbox is not running");

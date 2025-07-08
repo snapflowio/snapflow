@@ -18,7 +18,7 @@ export class UsageService {
   constructor(
     @InjectRepository(SandboxUsagePeriod)
     private sandboxUsagePeriodRepository: Repository<SandboxUsagePeriod>,
-    private readonly redisLockProvider: RedisLockProvider
+    private readonly redisLockProvider: RedisLockProvider,
   ) {}
 
   @OnEvent(SandboxEvents.STATE_UPDATED)
@@ -46,12 +46,18 @@ export class UsageService {
       }
     } finally {
       this.releaseLock(event.sandbox.id).catch((error) => {
-        this.logger.error(`Error releasing lock for sandbox ${event.sandbox.id}`, error);
+        this.logger.error(
+          `Error releasing lock for sandbox ${event.sandbox.id}`,
+          error,
+        );
       });
     }
   }
 
-  private async createUsagePeriod(event: SandboxStateUpdatedEvent, diskOnly = false) {
+  private async createUsagePeriod(
+    event: SandboxStateUpdatedEvent,
+    diskOnly = false,
+  ) {
     const usagePeriod = new SandboxUsagePeriod();
     usagePeriod.sandboxId = event.sandbox.id;
     usagePeriod.startAt = new Date();
@@ -93,7 +99,9 @@ export class UsageService {
 
   @Cron(CronExpression.EVERY_MINUTE, { name: "close-and-reopen-usage-periods" })
   async closeAndReopenUsagePeriods() {
-    if (!(await this.redisLockProvider.lock("close-and-reopen-usage-periods", 60))) {
+    if (
+      !(await this.redisLockProvider.lock("close-and-reopen-usage-periods", 60))
+    ) {
       return;
     }
 
@@ -121,16 +129,17 @@ export class UsageService {
             await transactionalEntityManager.save(usagePeriod);
 
             // Create new usage period
-            const newUsagePeriod = SandboxUsagePeriod.fromUsagePeriod(usagePeriod);
+            const newUsagePeriod =
+              SandboxUsagePeriod.fromUsagePeriod(usagePeriod);
             newUsagePeriod.startAt = closeTime;
             newUsagePeriod.endAt = null;
             await transactionalEntityManager.save(newUsagePeriod);
-          }
+          },
         );
       } catch (error) {
         this.logger.error(
           `Error closing and reopening usage period ${usagePeriod.sandboxId}`,
-          error
+          error,
         );
       } finally {
         await this.releaseLock(usagePeriod.sandboxId);

@@ -5,6 +5,6 @@ export class VolumeStateUpdatedEvent {
   constructor(
     public readonly volume: Volume,
     public readonly oldState: VolumeState,
-    public readonly newState: VolumeState
+    public readonly newState: VolumeState,
   ) {}
 }

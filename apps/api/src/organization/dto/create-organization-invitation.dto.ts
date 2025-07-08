@@ -25,7 +25,7 @@ export class CreateOrganizationInvitationDto {
   @ApiProperty({
     description: "Organization role of the inviting user",
     enum: OrganizationMemberRole,
-    default: OrganizationMemberRole.MEMBER,
+    default: OrganizationMemberRole.MEMBER as string,
   })
   @IsEnum(OrganizationMemberRole)
   role: OrganizationMemberRole;
@@ -33,7 +33,7 @@ export class CreateOrganizationInvitationDto {
   @ApiProperty({
     description: "Role IDs of the inviting user",
     type: String,
-    default: [GlobalOrganizationRolesIds.DEVELOPER],
+    default: [GlobalOrganizationRolesIds.DEVELOPER as string],
   })
   @IsArray()
   @IsString({ each: true })

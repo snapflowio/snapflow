@@ -19,7 +19,11 @@ export class RunnerSnapshotDto {
   })
   runnerDomain: string;
 
-  constructor(runnerSnapshotId: string, runnerId: string, runnerDomain: string) {
+  constructor(
+    runnerSnapshotId: string,
+    runnerId: string,
+    runnerDomain: string,
+  ) {
     this.runnerSnapshotId = runnerSnapshotId;
     this.runnerId = runnerId;
     this.runnerDomain = runnerDomain;

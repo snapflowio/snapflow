@@ -154,14 +154,10 @@ export class Sandbox {
   @Column({ default: () => "MD5(random()::text)" })
   authToken: string;
 
-  @ManyToOne(
-    () => BuildInfo,
-    (buildInfo) => buildInfo.sandboxes,
-    {
-      nullable: true,
-      eager: true,
-    }
-  )
+  @ManyToOne(() => BuildInfo, (buildInfo) => buildInfo.sandboxes, {
+    nullable: true,
+    eager: true,
+  })
   @JoinColumn()
   buildInfo?: BuildInfo;
 
@@ -203,7 +199,7 @@ export class Sandbox {
           break;
         }
         throw new Error(
-          `Sandbox ${this.id} is not in a valid state to be started. State: ${this.state}`
+          `Sandbox ${this.id} is not in a valid state to be started. State: ${this.state}`,
         );
       case SandboxDesiredState.STOPPED:
         if (
@@ -218,7 +214,7 @@ export class Sandbox {
           break;
         }
         throw new Error(
-          `Sandbox ${this.id} is not in a valid state to be stopped. State: ${this.state}`
+          `Sandbox ${this.id} is not in a valid state to be stopped. State: ${this.state}`,
         );
       case SandboxDesiredState.ARCHIVED:
         if (
@@ -233,7 +229,7 @@ export class Sandbox {
           break;
         }
         throw new Error(
-          `Sandbox ${this.id} is not in a valid state to be archived. State: ${this.state}`
+          `Sandbox ${this.id} is not in a valid state to be archived. State: ${this.state}`,
         );
       case SandboxDesiredState.DESTROYED:
         if (
@@ -250,7 +246,7 @@ export class Sandbox {
           break;
         }
         throw new Error(
-          `Sandbox ${this.id} is not in a valid state to be destroyed. State: ${this.state}`
+          `Sandbox ${this.id} is not in a valid state to be destroyed. State: ${this.state}`,
         );
     }
   }
@@ -258,7 +254,10 @@ export class Sandbox {
   @BeforeUpdate()
   updatePendingFlag() {
     if (String(this.state) === String(this.desiredState)) this.pending = false;
-    if (this.state === SandboxState.ERROR || this.state === SandboxState.BUILD_FAILED)
+    if (
+      this.state === SandboxState.ERROR ||
+      this.state === SandboxState.BUILD_FAILED
+    )
       this.pending = false;
   }
 }

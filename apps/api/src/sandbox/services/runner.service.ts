@@ -18,7 +18,7 @@ import { SandboxClass } from "../enums/sandbox-class.enum";
 import { SandboxState } from "../enums/sandbox-state.enum";
 import { SnapshotRunnerState } from "../enums/snapshot-runner-state.enum";
 import { SandboxStateUpdatedEvent } from "../events/sandbox-state-updated.event";
-import { RunnerApiFactory } from "../manager-api/manager-api";
+import { RunnerApiFactory } from "../executor-api/executor-api";
 
 @Injectable()
 export class RunnerService {
@@ -149,7 +149,9 @@ export class RunnerService {
   }
 
   private async updateRunnerState(runnerId: string, newState: RunnerState): Promise<void> {
-    const runner = await this.runnerRepository.findOne({ where: { id: runnerId } });
+    const runner = await this.runnerRepository.findOne({
+      where: { id: runnerId },
+    });
     if (!runner) {
       this.logger.error(`Runner ${runnerId} not found when trying to update state`);
       return;
@@ -181,7 +183,6 @@ export class RunnerService {
     for (const runner of runners) {
       this.logger.debug(`Checking runner ${runner.id}`);
       try {
-        // Do something with the runner
         const runnerApi = this.runnerApiFactory.createRunnerApi(runner);
         await runnerApi.healthCheck();
         await this.updateRunnerState(runner.id, RunnerState.READY);
@@ -202,7 +203,9 @@ export class RunnerService {
   }
 
   async recalculateRunnerUsage(runnerId: string) {
-    const runner = await this.runnerRepository.findOne({ where: { id: runnerId } });
+    const runner = await this.runnerRepository.findOne({
+      where: { id: runnerId },
+    });
     if (!runner) {
       throw new Error("Runner not found");
     }
@@ -289,7 +292,9 @@ export class RunnerService {
     const runners = await this.sandboxRepository
       .createQueryBuilder("sandbox")
       .select("sandbox.runnerId")
-      .where("sandbox.state = :state", { state: SandboxState.BUILDING_SNAPSHOT })
+      .where("sandbox.state = :state", {
+        state: SandboxState.BUILDING_SNAPSHOT,
+      })
       .andWhere("sandbox.buildInfoSnapshotRef IS NOT NULL")
       .groupBy("sandbox.runnerId")
       .having("COUNT(DISTINCT sandbox.buildInfoSnapshotRef) > :maxSnapshotCount", {

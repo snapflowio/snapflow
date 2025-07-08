@@ -55,7 +55,11 @@ import { SnapshotService } from "../services/snapshot.service";
 @ApiTags("snapshots")
 @Controller("snapshots")
 @ApiHeader(CustomHeaders.ORGANIZATION_ID)
-@UseGuards(CombinedAuthGuard, SystemActionGuard, OrganizationResourceActionGuard)
+@UseGuards(
+  CombinedAuthGuard,
+  SystemActionGuard,
+  OrganizationResourceActionGuard,
+)
 @ApiOAuth2(["openid", "profile", "email"])
 @ApiBearerAuth()
 export class SnapshotController {
@@ -63,7 +67,7 @@ export class SnapshotController {
 
   constructor(
     private readonly snapshotService: SnapshotService,
-    private readonly runnerService: RunnerService
+    private readonly runnerService: RunnerService,
   ) {}
 
   @Post()
@@ -81,32 +85,42 @@ export class SnapshotController {
     status: 400,
     description: 'Bad request - Snapshots with tag ":latest" are not allowed',
   })
-  @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.WRITE_SNAPSHOTS])
+  @RequiredOrganizationResourcePermissions([
+    OrganizationResourcePermission.WRITE_SNAPSHOTS,
+  ])
   async createSnapshot(
     @AuthContext() authContext: OrganizationAuthContext,
-    @Body() createSnapshotDto: CreateSnapshotDto
+    @Body() createSnapshotDto: CreateSnapshotDto,
   ): Promise<SnapshotDto> {
     if (createSnapshotDto.general && authContext.role !== SystemRole.ADMIN) {
-      throw new ForbiddenException("Insufficient permissions for creating general snapshots");
+      throw new ForbiddenException(
+        "Insufficient permissions for creating general snapshots",
+      );
     }
 
     if (createSnapshotDto.buildInfo) {
       if (createSnapshotDto.imageName) {
-        throw new BadRequestError("Cannot specify an image name when using a build info entry");
+        throw new BadRequestError(
+          "Cannot specify an image name when using a build info entry",
+        );
       }
       if (createSnapshotDto.entrypoint) {
-        throw new BadRequestError("Cannot specify an entrypoint when using a build info entry");
+        throw new BadRequestError(
+          "Cannot specify an entrypoint when using a build info entry",
+        );
       }
     } else {
       if (!createSnapshotDto.imageName) {
-        throw new BadRequestError("Must specify an image name when not using a build info entry");
+        throw new BadRequestError(
+          "Must specify an image name when not using a build info entry",
+        );
       }
     }
 
     // TODO: consider - if using transient registry, prepend the snapshot name with the username
     const snapshot = await this.snapshotService.createSnapshot(
       authContext.organization,
-      createSnapshotDto
+      createSnapshotDto,
     );
     return SnapshotDto.fromSnapshot(snapshot);
   }
@@ -132,7 +146,7 @@ export class SnapshotController {
   @UseGuards(SnapshotAccessGuard)
   async getSnapshot(
     @Param("id") snapshotIdOrName: string,
-    @AuthContext() authContext: OrganizationAuthContext
+    @AuthContext() authContext: OrganizationAuthContext,
   ): Promise<SnapshotDto> {
     let snapshot: Snapshot;
     try {
@@ -142,7 +156,7 @@ export class SnapshotController {
       // If not found by ID, try by name
       snapshot = await this.snapshotService.getSnapshotByName(
         snapshotIdOrName,
-        authContext.organizationId
+        authContext.organizationId,
       );
     }
     return SnapshotDto.fromSnapshot(snapshot);
@@ -162,13 +176,18 @@ export class SnapshotController {
     description: "Snapshot state has been toggled",
     type: SnapshotDto,
   })
-  @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.WRITE_SNAPSHOTS])
+  @RequiredOrganizationResourcePermissions([
+    OrganizationResourcePermission.WRITE_SNAPSHOTS,
+  ])
   @UseGuards(SnapshotAccessGuard)
   async toggleSnapshotState(
     @Param("id") snapshotId: string,
-    @Body() toggleDto: ToggleStateDto
+    @Body() toggleDto: ToggleStateDto,
   ): Promise<SnapshotDto> {
-    const snapshot = await this.snapshotService.toggleSnapshotState(snapshotId, toggleDto.enabled);
+    const snapshot = await this.snapshotService.toggleSnapshotState(
+      snapshotId,
+      toggleDto.enabled,
+    );
     return SnapshotDto.fromSnapshot(snapshot);
   }
 
@@ -185,7 +204,9 @@ export class SnapshotController {
     status: 200,
     description: "Snapshot has been deleted",
   })
-  @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.DELETE_SNAPSHOTS])
+  @RequiredOrganizationResourcePermissions([
+    OrganizationResourcePermission.DELETE_SNAPSHOTS,
+  ])
   @UseGuards(SnapshotAccessGuard)
   async removeSnapshot(@Param("id") snapshotId: string): Promise<void> {
     await this.snapshotService.removeSnapshot(snapshotId);
@@ -216,12 +237,12 @@ export class SnapshotController {
   async getAllSnapshots(
     @AuthContext() authContext: OrganizationAuthContext,
     @Query("page") page = 1,
-    @Query("limit") limit = 10
+    @Query("limit") limit = 10,
   ): Promise<PaginatedSnapshotsDto> {
     const result = await this.snapshotService.getAllSnapshots(
       authContext.organizationId,
       page,
-      limit
+      limit,
     );
     return {
       items: result.items.map(SnapshotDto.fromSnapshot),
@@ -248,9 +269,12 @@ export class SnapshotController {
   @RequiredSystemRole(SystemRole.ADMIN)
   async setSnapshotGeneralStatus(
     @Param("id") snapshotId: string,
-    @Body() dto: SetSnapshotGeneralStatusDto
+    @Body() dto: SetSnapshotGeneralStatusDto,
   ): Promise<SnapshotDto> {
-    const snapshot = await this.snapshotService.setSnapshotGeneralStatus(snapshotId, dto.general);
+    const snapshot = await this.snapshotService.setSnapshotGeneralStatus(
+      snapshotId,
+      dto.general,
+    );
     return SnapshotDto.fromSnapshot(snapshot);
   }
 
@@ -272,10 +296,10 @@ export class SnapshotController {
   @UseGuards(SnapshotAccessGuard)
   async getSnapshotBuildLogs(
     @Request() req: RawBodyRequest<IncomingMessage>,
-    @Res() res: ServerResponse<IncomingMessage>,
+    @Res() res: ServerResponse,
     @Next() next: NextFunction,
     @Param("id") snapshotId: string,
-    @Query("follow", new ParseBoolPipe({ optional: true })) follow?: boolean
+    @Query("follow", new ParseBoolPipe({ optional: true })) follow?: boolean,
   ): Promise<void> {
     let snapshot = await this.snapshotService.getSnapshot(snapshotId);
 
@@ -291,7 +315,7 @@ export class SnapshotController {
     while (!snapshot.buildRunnerId) {
       if (Date.now() - startTime > timeoutMs) {
         throw new NotFoundException(
-          `Timeout waiting for build runner assignment for snapshot ${snapshotId}`
+          `Timeout waiting for build runner assignment for snapshot ${snapshotId}`,
         );
       }
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -300,7 +324,9 @@ export class SnapshotController {
 
     const runner = await this.runnerService.findOne(snapshot.buildRunnerId);
     if (!runner) {
-      throw new NotFoundException(`Build runner for snapshot ${snapshotId} not found`);
+      throw new NotFoundException(
+        `Build runner for snapshot ${snapshotId} not found`,
+      );
     }
 
     const logProxy = new LogProxy(
@@ -310,7 +336,7 @@ export class SnapshotController {
       follow === true,
       req,
       res,
-      next
+      next,
     );
     return logProxy.create();
   }
@@ -339,9 +365,13 @@ export class SnapshotController {
     status: 404,
     description: "Snapshot not found",
   })
-  @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.WRITE_SNAPSHOTS])
+  @RequiredOrganizationResourcePermissions([
+    OrganizationResourcePermission.WRITE_SNAPSHOTS,
+  ])
   @UseGuards(SnapshotAccessGuard)
-  async activateSnapshot(@Param("id") snapshotId: string): Promise<SnapshotDto> {
+  async activateSnapshot(
+    @Param("id") snapshotId: string,
+  ): Promise<SnapshotDto> {
     const snapshot = await this.snapshotService.activateSnapshot(snapshotId);
     return SnapshotDto.fromSnapshot(snapshot);
   }

@@ -10,6 +10,7 @@ import {
 } from "@nestjs/common";
 import {
   ApiBearerAuth,
+  ApiOAuth2,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -28,6 +29,7 @@ import { UserService } from "./user.service";
 @ApiTags("users")
 @Controller("users")
 @UseGuards(CombinedAuthGuard, SystemActionGuard)
+@ApiOAuth2(["openid", "profile", "email"])
 @ApiBearerAuth()
 export class UserController {
   private readonly logger = new Logger(UserController.name);

@@ -21,7 +21,7 @@ import { SandboxState } from "../enums/sandbox-state.enum";
 import { SandboxArchivedEvent } from "../events/sandbox-archived.event";
 import { SandboxBackupCreatedEvent } from "../events/sandbox-backup-created.event";
 import { SandboxDestroyedEvent } from "../events/sandbox-destroyed.event";
-import { RunnerApiFactory } from "../manager-api/manager-api";
+import { RunnerApiFactory } from "../executor-api/executor-api";
 import { RunnerService } from "../services/runner.service";
 
 @Injectable()
@@ -333,7 +333,9 @@ export class BackupManager {
     }
   }
 
-  @Cron(CronExpression.EVERY_30_SECONDS, { name: "sync-stop-state-create-backups" }) // Run every 30 seconds
+  @Cron(CronExpression.EVERY_30_SECONDS, {
+    name: "sync-stop-state-create-backups",
+  }) // Run every 30 seconds
   async syncStopStateCreateBackups(): Promise<void> {
     const lockKey = "sync-stop-state-create-backups";
     const hasLock = await this.redisLockProvider.lock(lockKey, 30);

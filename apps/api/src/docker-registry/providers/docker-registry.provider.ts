@@ -20,9 +20,11 @@ export class DockerRegistryProvider implements IDockerRegistryProvider {
         namespace: string;
         access: Array<{ resource: string; action: string }>;
       }>;
-    }
+    },
   ): Promise<{ name: string; secret: string }> {
-    const response = await firstValueFrom(this.httpService.post(url, robotConfig, { auth }));
+    const response = await firstValueFrom(
+      this.httpService.post(url, robotConfig, { auth }),
+    );
     return {
       name: response.data.name,
       secret: response.data.secret,
@@ -32,7 +34,7 @@ export class DockerRegistryProvider implements IDockerRegistryProvider {
   async deleteArtifact(
     baseUrl: string,
     auth: { username: string; password: string },
-    params: { project: string; repository: string; tag: string }
+    params: { project: string; repository: string; tag: string },
   ): Promise<void> {
     const url = `${baseUrl}/api/v2.0/projects/${params.project}/repositories/${params.repository}/artifacts/${params.tag}`;
 

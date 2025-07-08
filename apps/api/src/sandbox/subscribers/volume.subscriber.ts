@@ -27,7 +27,10 @@ export class VolumeSubscriber implements EntitySubscriberInterface<Volume> {
   }
 
   afterInsert(event: InsertEvent<Volume>) {
-    this.eventEmitter.emit(VolumeEvents.CREATED, new VolumeCreatedEvent(event.entity as Volume));
+    this.eventEmitter.emit(
+      VolumeEvents.CREATED,
+      new VolumeCreatedEvent(event.entity as Volume),
+    );
   }
 
   afterUpdate(event: UpdateEvent<Volume>) {
@@ -41,14 +44,14 @@ export class VolumeSubscriber implements EntitySubscriberInterface<Volume> {
             new VolumeStateUpdatedEvent(
               event.entity as Volume,
               event.databaseEntity[column],
-              event.entity[column]
-            )
+              event.entity[column],
+            ),
           );
           break;
         case "lastUsedAt":
           this.eventEmitter.emit(
             VolumeEvents.LAST_USED_AT_UPDATED,
-            new VolumeLastUsedAtUpdatedEvent(event.entity as Volume)
+            new VolumeLastUsedAtUpdatedEvent(event.entity as Volume),
           );
           break;
         default:

@@ -25,11 +25,10 @@ export class SandboxAccessGuard implements CanActivate {
       if (
         authContext.role !== SystemRole.ADMIN &&
         sandbox.organizationId !== authContext.organizationId
-      ) {
+      )
         throw new ForbiddenException(
           "Request organization ID does not match resource organization ID"
         );
-      }
 
       request.sandbox = sandbox;
       return true;

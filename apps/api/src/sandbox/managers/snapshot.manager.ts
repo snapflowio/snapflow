@@ -22,7 +22,7 @@ import { RunnerState } from "../enums/runner-state.enum";
 import { SnapshotRunnerState } from "../enums/snapshot-runner-state.enum";
 import { SnapshotState } from "../enums/snapshot-state.enum";
 import { RunnerNotReadyError } from "../errors/runner-not-ready.error";
-import { RunnerApiFactory } from "../manager-api/manager-api";
+import { RunnerApiFactory } from "../executor-api/executor-api";
 import { RunnerService } from "../services/runner.service";
 
 @Injectable()
@@ -69,7 +69,9 @@ export class SnapshotManager {
     const snapshots = await this.snapshotRepository
       .createQueryBuilder("snapshot")
       .innerJoin("organization", "org", "org.id = snapshot.organizationId")
-      .where("snapshot.state = :snapshotState", { snapshotState: SnapshotState.ACTIVE })
+      .where("snapshot.state = :snapshotState", {
+        snapshotState: SnapshotState.ACTIVE,
+      })
       .andWhere("org.suspended = false")
       .orderBy("snapshot.createdAt", "ASC")
       .take(100)

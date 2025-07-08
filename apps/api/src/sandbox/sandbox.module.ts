@@ -21,7 +21,7 @@ import { Snapshot } from "./entities/snapshot.entity";
 import { SnapshotRunner } from "./entities/snapshot-runner.entity";
 import { Volume } from "./entities/volume.entity";
 import { WarmPool } from "./entities/warm-pool.entity";
-import { RunnerApiFactory } from "./manager-api/manager-api";
+import { RunnerApiFactory } from "./executor-api/executor-api";
 import { BackupManager } from "./managers/backup.manager";
 import { SandboxManager } from "./managers/sandbox.manager";
 import { SnapshotManager } from "./managers/snapshot.manager";

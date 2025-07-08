@@ -12,55 +12,58 @@
  * Do not edit the class manually.
  */
 
+
+
 /**
- *
+ * 
  * @export
  * @interface ApiKeyResponse
  */
 export interface ApiKeyResponse {
-  /**
-   * The name of the API key
-   * @type {string}
-   * @memberof ApiKeyResponse
-   */
-  name: string;
-  /**
-   * The value of the API key
-   * @type {string}
-   * @memberof ApiKeyResponse
-   */
-  value: string;
-  /**
-   * List of permissions given to the API key
-   * @type {Array<string>}
-   * @memberof ApiKeyResponse
-   */
-  permissions: Array<ApiKeyResponsePermissionsEnum>;
-  /**
-   * When the API key was made
-   * @type {Date}
-   * @memberof ApiKeyResponse
-   */
-  createdAt: Date;
-  /**
-   * When the API key is set to expire
-   * @type {Date}
-   * @memberof ApiKeyResponse
-   */
-  expiresAt: Date | null;
+    /**
+     * The name of the API key
+     * @type {string}
+     * @memberof ApiKeyResponse
+     */
+    'name': string;
+    /**
+     * The value of the API key
+     * @type {string}
+     * @memberof ApiKeyResponse
+     */
+    'value': string;
+    /**
+     * List of permissions given to the API key
+     * @type {Array<string>}
+     * @memberof ApiKeyResponse
+     */
+    'permissions': Array<ApiKeyResponsePermissionsEnum>;
+    /**
+     * When the API key was made
+     * @type {Date}
+     * @memberof ApiKeyResponse
+     */
+    'createdAt': Date;
+    /**
+     * When the API key is set to expire
+     * @type {Date}
+     * @memberof ApiKeyResponse
+     */
+    'expiresAt': Date | null;
 }
 
 export const ApiKeyResponsePermissionsEnum = {
-  WRITE_REGISTRIES: "write:registries",
-  DELETE_REGISTRIES: "delete:registries",
-  WRITE_SNAPSHOTS: "write:snapshots",
-  DELETE_SNAPSHOTS: "delete:snapshots",
-  WRITE_SANDBOXES: "write:sandboxes",
-  DELETE_SANDBOXES: "delete:sandboxes",
-  READ_VOLUMES: "read:volumes",
-  WRITE_VOLUMES: "write:volumes",
-  DELETE_VOLUMES: "delete:volumes",
+    WRITE_REGISTRIES: 'write:registries',
+    DELETE_REGISTRIES: 'delete:registries',
+    WRITE_SNAPSHOTS: 'write:snapshots',
+    DELETE_SNAPSHOTS: 'delete:snapshots',
+    WRITE_SANDBOXES: 'write:sandboxes',
+    DELETE_SANDBOXES: 'delete:sandboxes',
+    READ_VOLUMES: 'read:volumes',
+    WRITE_VOLUMES: 'write:volumes',
+    DELETE_VOLUMES: 'delete:volumes'
 } as const;
 
-export type ApiKeyResponsePermissionsEnum =
-  (typeof ApiKeyResponsePermissionsEnum)[keyof typeof ApiKeyResponsePermissionsEnum];
+export type ApiKeyResponsePermissionsEnum = typeof ApiKeyResponsePermissionsEnum[keyof typeof ApiKeyResponsePermissionsEnum];
+
+

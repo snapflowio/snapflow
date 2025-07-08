@@ -1,5 +1,12 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from "@nestjs/swagger";
-import { IsArray, IsBoolean, IsNumber, IsObject, IsOptional, IsString } from "class-validator";
+import {
+  IsArray,
+  IsBoolean,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+} from "class-validator";
 import { CreateBuildInfoDto } from "./create-build-info.dto";
 
 @ApiSchema({ name: "CreateSnapshot" })

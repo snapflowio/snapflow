@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable, Logger, NotFoundException } from "@nestjs/common";
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
 import { OnEvent } from "@nestjs/event-emitter";
 import { InjectRepository } from "@nestjs/typeorm";
 import { In, Not, Repository } from "typeorm";
@@ -17,15 +22,20 @@ export class VolumeService {
 
   constructor(
     @InjectRepository(Volume)
-    private readonly volumeRepository: Repository<Volume>
+    private readonly volumeRepository: Repository<Volume>,
   ) {}
 
-  async create(organization: Organization, createVolumeDto: CreateVolumeDto): Promise<Volume> {
+  async create(
+    organization: Organization,
+    createVolumeDto: CreateVolumeDto,
+  ): Promise<Volume> {
     // Validate quota
     const activeVolumeCount = await this.countActive(organization.id);
 
     if (activeVolumeCount >= organization.volumeQuota) {
-      throw new ForbiddenException(`Volume quota limit (${organization.volumeQuota}) reached`);
+      throw new ForbiddenException(
+        `Volume quota limit (${organization.volumeQuota}) reached`,
+      );
     }
 
     const volume = new Volume();
@@ -46,14 +56,18 @@ export class VolumeService {
     });
 
     if (existingVolume) {
-      throw new BadRequestError(`Volume with name ${volume.name} already exists`);
+      throw new BadRequestError(
+        `Volume with name ${volume.name} already exists`,
+      );
     }
 
     volume.organizationId = organization.id;
     volume.state = VolumeState.PENDING_CREATE;
 
     const savedVolume = await this.volumeRepository.save(volume);
-    this.logger.debug(`Created volume ${savedVolume.id} for organization ${organization.id}`);
+    this.logger.debug(
+      `Created volume ${savedVolume.id} for organization ${organization.id}`,
+    );
     return savedVolume;
   }
 
@@ -70,7 +84,7 @@ export class VolumeService {
 
     if (volume.state !== VolumeState.READY) {
       throw new BadRequestError(
-        `Volume must be in '${VolumeState.READY}' state in order to be deleted`
+        `Volume must be in '${VolumeState.READY}' state in order to be deleted`,
       );
     }
 
@@ -92,7 +106,10 @@ export class VolumeService {
     return volume;
   }
 
-  async findAll(organizationId: string, includeDeleted = false): Promise<Volume[]> {
+  async findAll(
+    organizationId: string,
+    includeDeleted = false,
+  ): Promise<Volume[]> {
     return this.volumeRepository.find({
       where: {
         organizationId,
@@ -141,19 +158,21 @@ export class VolumeService {
 
     try {
       const volumeIds = event.sandbox.volumes.map((vol) => vol.volumeId);
-      const volumes = await this.volumeRepository.find({ where: { id: In(volumeIds) } });
+      const volumes = await this.volumeRepository.find({
+        where: { id: In(volumeIds) },
+      });
 
       const results = await Promise.allSettled(
         volumes.map((volume) => {
           volume.lastUsedAt = event.sandbox.createdAt;
           return this.volumeRepository.save(volume);
-        })
+        }),
       );
 
       results.forEach((result) => {
         if (result.status === "rejected") {
           this.logger.error(
-            `Failed to update volume lastUsedAt timestamp for sandbox ${event.sandbox.id}: ${result.reason}`
+            `Failed to update volume lastUsedAt timestamp for sandbox ${event.sandbox.id}: ${result.reason}`,
           );
         }
       });

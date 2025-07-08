@@ -21,9 +21,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "yarn run openapi-generator-cli generate --git-repo-id=snapflow --git-user-id=snapflowio -i dist/apps/api/openapi.json -g typescript-axios --additional-properties=supportsES6=true,typescriptThreePlus=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=models,useTags=true,enumPropertyNaming=UPPERCASE --type-mappings=DateTime=Date -o packages/api-client/src",
-          "yarn nx format api-client"
-        ],
+          "bun run openapi-generator-cli generate -i dist/apps/api/openapi.json -g typescript-axios --additional-properties=supportsES6=true,typescriptThreePlus=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=models,useTags=true,enumPropertyNaming=UPPERCASE --type-mappings=DateTime=Date --skip-validate-spec -o packages/api-client/src"        ],
         "parallel": false
       },
       "dependsOn": [

@@ -18,10 +18,6 @@ export class CreateUserDto {
   @IsOptional()
   email?: string;
 
-  @ApiProperty()
-  @IsString()
-  password: string;
-
   @ApiPropertyOptional()
   @IsBoolean()
   @IsOptional()

@@ -12,7 +12,7 @@ export default defineConfig((mode) => ({
   cacheDir: "../../node_modules/.vite/apps/dashboard",
   server: {
     port: 3000,
-    host: "0.0.0.0",
+    host: "localhost",
     proxy: {
       "/api": {
         target: "http://localhost:8081",

@@ -10,8 +10,6 @@ interface ImportMetaEnv {
   readonly VITE_BILLING_API_URL: string | undefined;
   readonly VITE_POSTHOG_KEY: string | undefined;
   readonly VITE_POSTHOG_HOST: string | undefined;
-  readonly VITE_ANNOUNCEMENT_BANNER_TEXT: string | undefined;
-  readonly VITE_ANNOUNCEMENT_BANNER_LEARN_MORE_URL: string | undefined;
   readonly VITE_PROXY_TEMPLATE_URL: string | undefined;
 }
 

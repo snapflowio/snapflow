@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
+import {
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+} from "@nestjs/common";
 import { OrganizationAuthContext } from "../../common/interfaces/auth-context.interface";
 import { SystemRole } from "../../user/enums/system-role.enum";
 import { Snapshot } from "../entities/snapshot.entity";
@@ -20,7 +25,7 @@ export class SnapshotAccessGuard implements CanActivate {
     } catch (error) {
       snapshot = await this.snapshotService.getSnapshotByName(
         snapshotId,
-        authContext.organizationId
+        authContext.organizationId,
       );
     }
 
@@ -29,7 +34,7 @@ export class SnapshotAccessGuard implements CanActivate {
       snapshot.organizationId !== authContext.organizationId
     ) {
       throw new ForbiddenException(
-        "Request organization ID does not match resource organization ID"
+        "Request organization ID does not match resource organization ID",
       );
     }
 

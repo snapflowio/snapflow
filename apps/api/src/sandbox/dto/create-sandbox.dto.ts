@@ -1,5 +1,12 @@
 import { ApiPropertyOptional, ApiSchema } from "@nestjs/swagger";
-import { IsBoolean, IsEnum, IsNumber, IsObject, IsOptional, IsString } from "class-validator";
+import {
+  IsBoolean,
+  IsEnum,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+} from "class-validator";
 import { RunnerRegion } from "../enums/runner-region.enum";
 import { SandboxClass } from "../enums/sandbox-class.enum";
 import { CreateBuildInfoDto } from "./create-build-info.dto";
@@ -115,7 +122,8 @@ export class CreateSandboxDto {
   autoStopInterval?: number;
 
   @ApiPropertyOptional({
-    description: "Auto-archive interval in minutes (0 means the maximum interval will be used)",
+    description:
+      "Auto-archive interval in minutes (0 means the maximum interval will be used)",
     example: 7 * 24 * 60,
     type: "integer",
   })

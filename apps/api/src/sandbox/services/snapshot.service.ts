@@ -32,7 +32,7 @@ export class SnapshotService {
     private readonly buildInfoRepository: Repository<BuildInfo>,
     @InjectRepository(SnapshotRunner)
     private readonly snapshotRunnerRepository: Repository<SnapshotRunner>,
-    private readonly organizationService: OrganizationService
+    private readonly organizationService: OrganizationService,
   ) {}
 
   private validateImageName(name: string): string | null {
@@ -62,15 +62,19 @@ export class SnapshotService {
   async createSnapshot(
     organization: Organization,
     createSnapshotDto: CreateSnapshotDto,
-    general = false
+    general = false,
   ) {
-    const nameValidationError = this.validateSnapshotName(createSnapshotDto.name);
+    const nameValidationError = this.validateSnapshotName(
+      createSnapshotDto.name,
+    );
     if (nameValidationError) {
       throw new BadRequestException(nameValidationError);
     }
 
     if (createSnapshotDto.imageName) {
-      const imageValidationError = this.validateImageName(createSnapshotDto.imageName);
+      const imageValidationError = this.validateImageName(
+        createSnapshotDto.imageName,
+      );
       if (imageValidationError) {
         throw new BadRequestException(imageValidationError);
       }
@@ -84,14 +88,16 @@ export class SnapshotService {
     });
 
     if (snapshots.length >= organization.snapshotQuota) {
-      throw new ForbiddenException("Reached the maximum number of snapshots in the organization");
+      throw new ForbiddenException(
+        "Reached the maximum number of snapshots in the organization",
+      );
     }
 
     await this.validateOrganizationMaxQuotas(
       organization,
       createSnapshotDto.cpu,
       createSnapshotDto.memory,
-      createSnapshotDto.disk
+      createSnapshotDto.disk,
     );
 
     try {
@@ -99,14 +105,16 @@ export class SnapshotService {
         organizationId: organization.id,
         ...createSnapshotDto,
         mem: createSnapshotDto.memory, // Map memory to mem
-        state: createSnapshotDto.buildInfo ? SnapshotState.BUILD_PENDING : SnapshotState.PENDING,
+        state: createSnapshotDto.buildInfo
+          ? SnapshotState.BUILD_PENDING
+          : SnapshotState.PENDING,
         general,
       });
 
       if (createSnapshotDto.buildInfo) {
         const buildSnapshotRef = generateBuildSnapshotRef(
           createSnapshotDto.buildInfo.dockerfileContent,
-          createSnapshotDto.buildInfo.contextHashes
+          createSnapshotDto.buildInfo.contextHashes,
         );
 
         // Check if buildInfo with the same snapshotRef already exists
@@ -130,7 +138,7 @@ export class SnapshotService {
       if (error.code === "23505") {
         // PostgreSQL unique violation error code
         throw new ConflictException(
-          `Snapshot with name "${createSnapshotDto.name}" already exists for this organization`
+          `Snapshot with name "${createSnapshotDto.name}" already exists for this organization`,
         );
       }
       throw error;
@@ -204,7 +212,10 @@ export class SnapshotService {
     return snapshot;
   }
 
-  async getSnapshotByName(snapshotName: string, organizationId: string): Promise<Snapshot> {
+  async getSnapshotByName(
+    snapshotName: string,
+    organizationId: string,
+  ): Promise<Snapshot> {
     const snapshot = await this.snapshotRepository.findOne({
       where: { name: snapshotName, organizationId },
     });
@@ -218,7 +229,9 @@ export class SnapshotService {
         return generalSnapshot;
       }
 
-      throw new NotFoundException(`Snapshot with name ${snapshotName} not found`);
+      throw new NotFoundException(
+        `Snapshot with name ${snapshotName} not found`,
+      );
     }
 
     return snapshot;
@@ -241,21 +254,21 @@ export class SnapshotService {
     organization: Organization,
     cpu?: number,
     memory?: number,
-    disk?: number
+    disk?: number,
   ): Promise<void> {
     if (cpu && cpu > organization.maxCpuPerSandbox) {
       throw new ForbiddenException(
-        `CPU request ${cpu} exceeds maximum allowed per sandbox (${organization.maxCpuPerSandbox})`
+        `CPU request ${cpu} exceeds maximum allowed per sandbox (${organization.maxCpuPerSandbox})`,
       );
     }
     if (memory && memory > organization.maxMemoryPerSandbox) {
       throw new ForbiddenException(
-        `Memory request ${memory}GB exceeds maximum allowed per sandbox (${organization.maxMemoryPerSandbox}GB)`
+        `Memory request ${memory}GB exceeds maximum allowed per sandbox (${organization.maxMemoryPerSandbox}GB)`,
       );
     }
     if (disk && disk > organization.maxDiskPerSandbox) {
       throw new ForbiddenException(
-        `Disk request ${disk}GB exceeds maximum allowed per sandbox (${organization.maxDiskPerSandbox}GB)`
+        `Disk request ${disk}GB exceeds maximum allowed per sandbox (${organization.maxDiskPerSandbox}GB)`,
       );
     }
   }
@@ -268,7 +281,7 @@ export class SnapshotService {
 
     const snapshot = await this.getSnapshotByName(
       event.sandbox.snapshot,
-      event.sandbox.organizationId
+      event.sandbox.organizationId,
     );
     snapshot.lastUsedAt = event.sandbox.createdAt;
     await this.snapshotRepository.save(snapshot);
@@ -289,7 +302,7 @@ export class SnapshotService {
 
     if (snapshot.state !== SnapshotState.INACTIVE) {
       throw new BadRequestException(
-        `Snapshot ${snapshotId} cannot be activated - it is in ${snapshot.state} state`
+        `Snapshot ${snapshotId} cannot be activated - it is in ${snapshot.state} state`,
       );
     }
 

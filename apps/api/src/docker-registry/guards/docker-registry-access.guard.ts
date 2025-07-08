@@ -16,24 +16,29 @@ export class DockerRegistryAccessGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const dockerRegistryId: string =
-      request.params.dockerRegistryId || request.params.registryId || request.params.id;
+      request.params.dockerRegistryId ||
+      request.params.registryId ||
+      request.params.id;
 
     const authContext: OrganizationAuthContext = request.user;
 
     try {
-      const dockerRegistry = await this.dockerRegistryService.findOneOrFail(dockerRegistryId);
+      const dockerRegistry =
+        await this.dockerRegistryService.findOneOrFail(dockerRegistryId);
       if (
         authContext.role !== SystemRole.ADMIN &&
         dockerRegistry.organizationId !== authContext.organizationId
       )
         throw new ForbiddenException(
-          "Request organization ID does not match resource organization ID"
+          "Request organization ID does not match resource organization ID",
         );
 
       request.dockerRegistry = dockerRegistry;
       return true;
     } catch (error) {
-      throw new NotFoundException(`Docker registry with ID ${dockerRegistryId} not found`);
+      throw new NotFoundException(
+        `Docker registry with ID ${dockerRegistryId} not found`,
+      );
     }
   }
 }

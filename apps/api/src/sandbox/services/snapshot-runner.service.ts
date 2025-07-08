@@ -13,7 +13,7 @@ export class SnapshotRunnerService {
 
   constructor(
     @InjectRepository(SnapshotRunner)
-    private readonly snapshotRunnerRepository: Repository<SnapshotRunner>
+    private readonly snapshotRunnerRepository: Repository<SnapshotRunner>,
   ) {}
 
   async remove(snapshotRunnerId: string): Promise<void> {
@@ -33,12 +33,12 @@ export class SnapshotRunnerService {
 
   @OnEvent(OrganizationEvents.SUSPENDED_SNAPSHOT_RUNNER_REMOVED)
   async handleSuspendedSnapshotRunnerRemoved(
-    event: OrganizationSuspendedSnapshotRunnerRemoveEvent
+    event: OrganizationSuspendedSnapshotRunnerRemoveEvent,
   ) {
     await this.remove(event.snapshotRunnerId).catch((error) => {
       this.logger.error(
         `Error removing snapshot runner from suspended organization. SnapshotRunnerId: ${event.snapshotRunnerId}: `,
-        error
+        error,
       );
     });
   }

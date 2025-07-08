@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync } from "fs";
 import {
   ConsoleLogger,
   Logger,
@@ -9,11 +9,13 @@ import type { HttpsOptions } from "@nestjs/common/interfaces/external/https-opti
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import type { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import * as packageJson from "../../../package.json";
 import { AppModule } from "./app.module";
 import { NotFoundExceptionFilter } from "./common/middleware/frontend.middleware";
 import { TypedConfigService } from "./config/typed-config.service";
 import { AllExceptionsFilter } from "./filters/all-exceptions.filter";
+import { RunnerRegion } from "./sandbox/enums/runner-region.enum";
+import { SandboxClass } from "./sandbox/enums/sandbox-class.enum";
+import { RunnerService } from "./sandbox/services/runner.service";
 
 const httpsEnabled = process.env.CERT_PATH && process.env.CERT_KEY_PATH;
 const httpsOptions: HttpsOptions = {
@@ -57,14 +59,59 @@ async function bootstrap() {
   const globalPrefix = "api";
   app.setGlobalPrefix(globalPrefix);
 
-  const config = new DocumentBuilder()
-    .setTitle("Snapflow API")
-    .setDescription("The official Snapflow backend API")
-    .setVersion(packageJson.version)
-    .build();
+  const documentFactory = () =>
+    SwaggerModule.createDocument(
+      app,
+      new DocumentBuilder()
+        .setTitle("Snapflow")
+        .addServer("http://localhost:3000")
+        .setDescription("API Docs for Snapflow")
+        .setVersion("0.1")
+        .addBearerAuth({
+          type: "http",
+          scheme: "bearer",
+          description: "API Key access",
+        })
+        .addOAuth2({
+          type: "openIdConnect",
+          flows: undefined,
+          openIdConnectUrl: `${configService.get("oidc.issuer")}/.well-known/openid-configuration`,
+        })
+        .build(),
+    );
 
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup("api", app, documentFactory);
+  SwaggerModule.setup("api", app, documentFactory, {
+    swaggerOptions: {
+      initOAuth: {
+        clientId: configService.get("oidc.clientId"),
+        appName: "Snapflow",
+        scopes: ["openid", "profile", "email"],
+        additionalQueryStringParams: {
+          audience: configService.get("oidc.audience"),
+        },
+      },
+    },
+  });
+
+  if (!configService.get("production")) {
+    const runnerService = app.get(RunnerService);
+    const runners = await runnerService.findAll();
+    if (!runners.find((runner) => runner.domain === "localhost:8083")) {
+      await runnerService.create({
+        apiUrl: "http://localhost:8083",
+        apiKey: "secret_api_token",
+        cpu: 4,
+        memory: 8192,
+        disk: 50,
+        gpu: 0,
+        gpuType: "none",
+        capacity: 100,
+        region: RunnerRegion.US,
+        class: SandboxClass.SMALL,
+        domain: "localhost:8083",
+      });
+    }
+  }
 
   const host = "0.0.0.0";
   const port = configService.get("port");

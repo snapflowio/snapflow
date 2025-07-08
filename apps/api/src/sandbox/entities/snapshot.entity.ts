@@ -68,10 +68,7 @@ export class Snapshot {
   @Column({ default: false })
   hideFromUsers: boolean;
 
-  @OneToMany(
-    () => SnapshotRunner,
-    (runner) => runner.snapshotRef
-  )
+  @OneToMany(() => SnapshotRunner, (runner) => runner.snapshotRef)
   runners: SnapshotRunner[];
 
   @Column({ array: true, type: "text", nullable: true })
@@ -86,14 +83,10 @@ export class Snapshot {
   @Column({ nullable: true })
   lastUsedAt?: Date;
 
-  @ManyToOne(
-    () => BuildInfo,
-    (buildInfo) => buildInfo.snapshots,
-    {
-      nullable: true,
-      eager: true,
-    }
-  )
+  @ManyToOne(() => BuildInfo, (buildInfo) => buildInfo.snapshots, {
+    nullable: true,
+    eager: true,
+  })
   @JoinColumn()
   buildInfo?: BuildInfo;
 

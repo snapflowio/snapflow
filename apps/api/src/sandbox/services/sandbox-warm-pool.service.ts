@@ -55,7 +55,7 @@ export class SandboxWarmPoolService {
     private readonly configService: ConfigService,
     @Inject(EventEmitter2)
     private eventEmitter: EventEmitter2,
-    @InjectRedis() private readonly redis: Redis
+    @InjectRedis() private readonly redis: Redis,
   ) {}
 
   //  on init
@@ -63,19 +63,30 @@ export class SandboxWarmPoolService {
     //  await this.adHocBackupCheck()
   }
 
-  async fetchWarmPoolSandbox(params: FetchWarmPoolSandboxParams): Promise<Sandbox | null> {
+  async fetchWarmPoolSandbox(
+    params: FetchWarmPoolSandboxParams,
+  ): Promise<Sandbox | null> {
     //  validate snapshot
-    const sandboxSnapshot = params.snapshot || this.configService.get<string>("DEFAULT_SNAPSHOT");
+    const sandboxSnapshot =
+      params.snapshot || this.configService.get<string>("DEFAULT_SNAPSHOT");
 
     const snapshotFilter: FindOptionsWhere<Snapshot>[] = [
-      { organizationId: params.organizationId, name: sandboxSnapshot, state: SnapshotState.ACTIVE },
+      {
+        organizationId: params.organizationId,
+        name: sandboxSnapshot,
+        state: SnapshotState.ACTIVE,
+      },
       { general: true, name: sandboxSnapshot, state: SnapshotState.ACTIVE },
     ];
 
     if (uuidValidate(sandboxSnapshot)) {
       snapshotFilter.push(
-        { organizationId: params.organizationId, id: sandboxSnapshot, state: SnapshotState.ACTIVE },
-        { general: true, id: sandboxSnapshot, state: SnapshotState.ACTIVE }
+        {
+          organizationId: params.organizationId,
+          id: sandboxSnapshot,
+          state: SnapshotState.ACTIVE,
+        },
+        { general: true, id: sandboxSnapshot, state: SnapshotState.ACTIVE },
       );
     }
 
@@ -84,7 +95,7 @@ export class SandboxWarmPoolService {
     });
     if (!snapshot) {
       throw new BadRequestError(
-        `Snapshot ${sandboxSnapshot} not found. Did you add it through the Daytona Dashboard?`
+        `Snapshot ${sandboxSnapshot} not found. Did you add it through the Daytona Dashboard?`,
       );
     }
 
@@ -178,15 +189,15 @@ export class SandboxWarmPoolService {
         if (missingCount > 0) {
           const promises = [];
           this.logger.debug(
-            `Creating ${missingCount} sandboxes for warm pool id ${warmPoolItem.id}`
+            `Creating ${missingCount} sandboxes for warm pool id ${warmPoolItem.id}`,
           );
 
           for (let i = 0; i < missingCount; i++) {
             promises.push(
               this.eventEmitter.emitAsync(
                 WarmPoolEvents.TOPUP_REQUESTED,
-                new WarmPoolTopUpRequested(warmPoolItem)
-              )
+                new WarmPoolTopUpRequested(warmPoolItem),
+              ),
             );
           }
 
@@ -195,12 +206,14 @@ export class SandboxWarmPoolService {
         }
 
         await this.redisLockProvider.unlock(lockKey);
-      })
+      }),
     );
   }
 
   @OnEvent(SandboxEvents.ORGANIZATION_UPDATED)
-  async handleSandboxOrganizationUpdated(event: SandboxOrganizationUpdatedEvent) {
+  async handleSandboxOrganizationUpdated(
+    event: SandboxOrganizationUpdatedEvent,
+  ) {
     if (event.newOrganizationId === SANDBOX_WARM_POOL_UNASSIGNED_ORGANIZATION) {
       return;
     }
@@ -244,7 +257,7 @@ export class SandboxWarmPoolService {
     if (warmPoolItem)
       this.eventEmitter.emit(
         WarmPoolEvents.TOPUP_REQUESTED,
-        new WarmPoolTopUpRequested(warmPoolItem)
+        new WarmPoolTopUpRequested(warmPoolItem),
       );
   }
 }

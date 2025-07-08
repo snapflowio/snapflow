@@ -9,7 +9,11 @@ import { DockerRegistryProvider } from "./providers/docker-registry.provider";
 import { DOCKER_REGISTRY_PROVIDER } from "./providers/docker-registry.provider.interface";
 
 @Module({
-  imports: [OrganizationModule, TypeOrmModule.forFeature([DockerRegistry]), HttpModule],
+  imports: [
+    OrganizationModule,
+    TypeOrmModule.forFeature([DockerRegistry]),
+    HttpModule,
+  ],
   controllers: [DockerRegistryController],
   providers: [
     {

@@ -12,6 +12,7 @@ import {
 import {
   ApiBearerAuth,
   ApiHeader,
+  ApiOAuth2,
   ApiOperation,
   ApiParam,
   ApiResponse,
@@ -37,6 +38,7 @@ import { DockerRegistryAccessGuard } from "./guards/docker-registry-access.guard
 @Controller("docker-registry")
 @ApiHeader(CustomHeaders.ORGANIZATION_ID)
 @UseGuards(CombinedAuthGuard, OrganizationResourceActionGuard)
+@ApiOAuth2(["openid", "profile", "email"])
 @ApiBearerAuth()
 export class DockerRegistryController {
   constructor(private readonly dockerRegistryService: DockerRegistryService) {}
@@ -51,12 +53,17 @@ export class DockerRegistryController {
     description: "The docker registry has been successfully created.",
     type: DockerRegistryDto,
   })
-  @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.WRITE_REGISTRIES])
+  @RequiredOrganizationResourcePermissions([
+    OrganizationResourcePermission.WRITE_REGISTRIES,
+  ])
   create(
     @AuthContext() authContext: OrganizationAuthContext,
-    @Body() createDockerRegistryDto: CreateDockerRegistryDto
+    @Body() createDockerRegistryDto: CreateDockerRegistryDto,
   ): Promise<DockerRegistryDto> {
-    return this.dockerRegistryService.create(createDockerRegistryDto, authContext.organizationId);
+    return this.dockerRegistryService.create(
+      createDockerRegistryDto,
+      authContext.organizationId,
+    );
   }
 
   @Get()
@@ -69,7 +76,9 @@ export class DockerRegistryController {
     description: "List of all docker registries",
     type: [DockerRegistryDto],
   })
-  findAll(@AuthContext() authContext: OrganizationAuthContext): Promise<DockerRegistryDto[]> {
+  findAll(
+    @AuthContext() authContext: OrganizationAuthContext,
+  ): Promise<DockerRegistryDto[]> {
     return this.dockerRegistryService.findAll(authContext.organizationId);
   }
 
@@ -84,13 +93,15 @@ export class DockerRegistryController {
     description: "Temporary registry access has been generated",
     type: RegistryPushAccessDto,
   })
-  @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.WRITE_REGISTRIES])
+  @RequiredOrganizationResourcePermissions([
+    OrganizationResourcePermission.WRITE_REGISTRIES,
+  ])
   async getTransientPushAccess(
-    @AuthContext() authContext: OrganizationAuthContext
+    @AuthContext() authContext: OrganizationAuthContext,
   ): Promise<RegistryPushAccessDto> {
     return this.dockerRegistryService.getRegistryPushAccess(
       authContext.organizationId,
-      authContext.userId
+      authContext.userId,
     );
   }
 
@@ -110,7 +121,9 @@ export class DockerRegistryController {
     type: DockerRegistryDto,
   })
   @UseGuards(DockerRegistryAccessGuard)
-  async findOne(@DockerRegistry() registry: DockerRegistryEntity): Promise<DockerRegistryDto> {
+  async findOne(
+    @DockerRegistry() registry: DockerRegistryEntity,
+  ): Promise<DockerRegistryDto> {
     return registry;
   }
 
@@ -129,13 +142,18 @@ export class DockerRegistryController {
     description: "The docker registry has been successfully updated.",
     type: DockerRegistryDto,
   })
-  @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.WRITE_REGISTRIES])
+  @RequiredOrganizationResourcePermissions([
+    OrganizationResourcePermission.WRITE_REGISTRIES,
+  ])
   @UseGuards(DockerRegistryAccessGuard)
   async update(
     @Param("id") registryId: string,
-    @Body() updateDockerRegistryDto: UpdateDockerRegistryDto
+    @Body() updateDockerRegistryDto: UpdateDockerRegistryDto,
   ): Promise<DockerRegistryDto> {
-    return this.dockerRegistryService.update(registryId, updateDockerRegistryDto);
+    return this.dockerRegistryService.update(
+      registryId,
+      updateDockerRegistryDto,
+    );
   }
 
   @Delete(":id")
@@ -153,7 +171,9 @@ export class DockerRegistryController {
     description: "The docker registry has been successfully deleted.",
   })
   @HttpCode(204)
-  @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.DELETE_REGISTRIES])
+  @RequiredOrganizationResourcePermissions([
+    OrganizationResourcePermission.DELETE_REGISTRIES,
+  ])
   @UseGuards(DockerRegistryAccessGuard)
   async remove(@Param("id") registryId: string): Promise<void> {
     return this.dockerRegistryService.remove(registryId);
@@ -174,9 +194,13 @@ export class DockerRegistryController {
     description: "The docker registry has been set as default.",
     type: DockerRegistryDto,
   })
-  @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.WRITE_REGISTRIES])
+  @RequiredOrganizationResourcePermissions([
+    OrganizationResourcePermission.WRITE_REGISTRIES,
+  ])
   @UseGuards(DockerRegistryAccessGuard)
-  async setDefault(@Param("id") registryId: string): Promise<DockerRegistryDto> {
+  async setDefault(
+    @Param("id") registryId: string,
+  ): Promise<DockerRegistryDto> {
     return this.dockerRegistryService.setDefault(registryId);
   }
 }
