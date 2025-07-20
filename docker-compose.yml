@@ -9,13 +9,6 @@ services:
       - redis
     ports:
       - "8081:8081"
-    command: >
-      sh -c "
-        echo 'Running database migrations...' &&
-        node node_modules/typeorm/cli.js migration:run -d dist/apps/api/src/data-source.js &&
-        echo 'Migrations complete, starting application...' &&
-        node dist/apps/api/main.js
-      "
     environment:
       - NODE_ENV=production
       - PORT=${PORT}

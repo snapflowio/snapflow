@@ -55,10 +55,13 @@ RUN chmod +x ./dist/apps/executor
 RUN chmod +x ./dist/apps/node
 RUN chmod +x ./dist/apps/node-amd64
 
-# Expose the port your API server listens on. The default for NestJS is 3000.
-# Change this if your application uses a different port.
+# Copy the entrypoint script into the image.
+COPY entrypoint.sh /usr/local/bin/
+# Make the entrypoint script executable.
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 EXPOSE 8081
 
 # Define the command to start the application.
 # This runs the main entry point of your NestJS API using the Node.js runtime.
-CMD ["node", "dist/apps/api/main.js"]
+CMD ["entrypoint.sh"]

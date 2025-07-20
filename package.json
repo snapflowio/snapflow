@@ -12,8 +12,8 @@
     "preview": "nx run-many --target=serve --all --exclude=node --configuration=development",
     "build:development": "nx run-many --target=build --all --configuration=development",
     "build:production": "nx run-many --target=build --all --configuration=production",
-    "db:generate": "cd apps/api && bunx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:generate -d ./src/data-source.ts ./src/migrations/migration",
-    "db:push": "cd apps/api && bunx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:run -d ./src/data-source.ts",
+    "db:generate": "cd apps/api && npx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:generate -d ./src/data-source.ts ./src/migrations/migration",
+    "db:push": "cd apps/api && npx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:run -d ./src/data-source.ts",
     "openapi:generate": "nx run-many --target=openapi --all",
     "generate:api-client": "node run openapi:generate && nx run-many --target=generate:api-client --all"
   },
