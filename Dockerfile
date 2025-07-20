@@ -55,11 +55,9 @@ RUN chmod +x ./dist/apps/executor
 RUN chmod +x ./dist/apps/node
 RUN chmod +x ./dist/apps/node-amd64
 
-# Copy the entrypoint script into the image.
-COPY entrypoint.sh /usr/local/bin/
-# Make the entrypoint script executable.
-RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY ./entrypoint.sh /
+RUN chmod +x /entrypoint.sh
 
 EXPOSE 8081
 
-CMD ["entrypoint.sh"]
+CMD ["/entrypoint.sh"]
