@@ -62,6 +62,4 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 8081
 
-# Define the command to start the application.
-# This runs the main entry point of your NestJS API using the Node.js runtime.
 CMD ["entrypoint.sh"]
