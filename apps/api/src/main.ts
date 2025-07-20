@@ -1,11 +1,4 @@
-import { readFileSync } from "fs";
-import {
-  ConsoleLogger,
-  Logger,
-  type LogLevel,
-  ValidationPipe,
-} from "@nestjs/common";
-import type { HttpsOptions } from "@nestjs/common/interfaces/external/https-options.interface";
+import { ConsoleLogger, Logger, type LogLevel, ValidationPipe } from "@nestjs/common";
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import type { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
@@ -13,26 +6,11 @@ import { AppModule } from "./app.module";
 import { NotFoundExceptionFilter } from "./common/middleware/frontend.middleware";
 import { TypedConfigService } from "./config/typed-config.service";
 import { AllExceptionsFilter } from "./filters/all-exceptions.filter";
-import { RunnerRegion } from "./sandbox/enums/runner-region.enum";
+import { ExecutorRegion } from "./sandbox/enums/executor-region.enum";
 import { SandboxClass } from "./sandbox/enums/sandbox-class.enum";
-import { RunnerService } from "./sandbox/services/runner.service";
+import { ExecutorService } from "./sandbox/services/executor.service";
 
-const httpsEnabled = process.env.CERT_PATH && process.env.CERT_KEY_PATH;
-const httpsOptions: HttpsOptions = {
-  cert: process.env.CERT_PATH ? readFileSync(process.env.CERT_PATH) : undefined,
-  key: process.env.CERT_KEY_PATH
-    ? readFileSync(process.env.CERT_KEY_PATH)
-    : undefined,
-};
-
-const logLevels: LogLevel[] = [
-  "error",
-  "warn",
-  "log",
-  "debug",
-  "verbose",
-  "fatal",
-];
+const logLevels: LogLevel[] = ["error", "warn", "log", "debug", "verbose", "fatal"];
 if (process.env.LOG_LEVEL) logLevels.push(process.env.LOG_LEVEL as LogLevel);
 
 async function bootstrap() {
@@ -41,7 +19,6 @@ async function bootstrap() {
       prefix: "API",
       logLevels,
     }),
-    httpsOptions: httpsEnabled ? httpsOptions : undefined,
   });
 
   app.enableCors({
@@ -57,7 +34,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   const globalPrefix = "api";
-  app.setGlobalPrefix(globalPrefix);
+  app.setGlobalPrefix(globalPrefix, { exclude: ["sse", "messages", "mcp"] });
 
   const documentFactory = () =>
     SwaggerModule.createDocument(
@@ -77,7 +54,7 @@ async function bootstrap() {
           flows: undefined,
           openIdConnectUrl: `${configService.get("oidc.issuer")}/.well-known/openid-configuration`,
         })
-        .build(),
+        .build()
     );
 
   SwaggerModule.setup("api", app, documentFactory, {
@@ -94,10 +71,10 @@ async function bootstrap() {
   });
 
   if (!configService.get("production")) {
-    const runnerService = app.get(RunnerService);
-    const runners = await runnerService.findAll();
-    if (!runners.find((runner) => runner.domain === "localhost:8083")) {
-      await runnerService.create({
+    const executorService = app.get(ExecutorService);
+    const executors = await executorService.findAll();
+    if (!executors.find((executor) => executor.domain === "localhost:8083")) {
+      await executorService.create({
         apiUrl: "http://localhost:8083",
         apiKey: "secret_api_token",
         cpu: 4,
@@ -106,7 +83,7 @@ async function bootstrap() {
         gpu: 0,
         gpuType: "none",
         capacity: 100,
-        region: RunnerRegion.US,
+        region: ExecutorRegion.US,
         class: SandboxClass.SMALL,
         domain: "localhost:8083",
       });
@@ -117,9 +94,7 @@ async function bootstrap() {
   const port = configService.get("port");
   await app.listen(port, host);
 
-  Logger.log(
-    `🚀 Snapflow API is running on: http://${host}:${port}/${globalPrefix}`,
-  );
+  Logger.log(`🚀 Snapflow API is running on: http://${host}:${port}/${globalPrefix}`);
 }
 
 bootstrap();

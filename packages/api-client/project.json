@@ -21,7 +21,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bun run openapi-generator-cli generate -i dist/apps/api/openapi.json -g typescript-axios --additional-properties=supportsES6=true,typescriptThreePlus=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=models,useTags=true,enumPropertyNaming=UPPERCASE --type-mappings=DateTime=Date --skip-validate-spec -o packages/api-client/src"        ],
+          "pnpm run openapi-generator-cli generate -i dist/apps/api/openapi.json -g typescript-axios --additional-properties=supportsES6=true,typescriptThreePlus=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=models,useTags=true,enumPropertyNaming=UPPERCASE --type-mappings=DateTime=Date --skip-validate-spec -o packages/api-client/src"        ],
         "parallel": false
       },
       "dependsOn": [
@@ -34,7 +34,7 @@
     "format": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "cd {projectRoot} && bun run format"
+        "command": "cd {projectRoot} && pnpm run format"
       }
     }
   },

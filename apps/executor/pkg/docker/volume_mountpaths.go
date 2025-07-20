@@ -10,65 +10,65 @@ import (
 	"sync"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/snapflow/manager/cmd/manager/config"
-	"github.com/snapflow/manager/internal/util"
-	"github.com/snapflow/manager/pkg/api/dto"
+	"github.com/snapflow/executor/cmd/executor/config"
+	"github.com/snapflow/executor/internal/util"
+	"github.com/snapflow/executor/pkg/api/dto"
 )
 
-func (d *DockerClient) getVolumesMountPathBinds(ctx context.Context, volumes []dto.VolumeDTO) ([]string, error) {
-	volumeMountPathBinds := make([]string, 0)
+func (d *DockerClient) getBucketsMountPathBinds(ctx context.Context, buckets []dto.BucketDTO) ([]string, error) {
+	bucketMountPathBinds := make([]string, 0)
 
-	for _, vol := range volumes {
-		volumeIdPrefixed := fmt.Sprintf("snapflow-volume-%s", vol.VolumeId)
-		runnerVolumeMountPath := d.getRunnerVolumeMountPath(volumeIdPrefixed)
+	for _, vol := range buckets {
+		bucketIdPrefixed := fmt.Sprintf("snapflow-bucket-%s", vol.BucketId)
+		runnerBucketMountPath := d.getExecutorBucketMountPath(bucketIdPrefixed)
 
-		// Get or create mutex for this volume
-		d.volumeMutexesMutex.Lock()
-		volumeMutex, exists := d.volumeMutexes[volumeIdPrefixed]
+		// Get or create mutex for this bucket
+		d.bucketMutexesMutex.Lock()
+		bucketMutex, exists := d.bucketMutexes[bucketIdPrefixed]
 		if !exists {
-			volumeMutex = &sync.Mutex{}
-			d.volumeMutexes[volumeIdPrefixed] = volumeMutex
+			bucketMutex = &sync.Mutex{}
+			d.bucketMutexes[bucketIdPrefixed] = bucketMutex
 		}
-		d.volumeMutexesMutex.Unlock()
+		d.bucketMutexesMutex.Unlock()
 
-		// Lock this specific volume's mutex
-		volumeMutex.Lock()
-		defer volumeMutex.Unlock()
+		// Lock this specific bucket's mutex
+		bucketMutex.Lock()
+		defer bucketMutex.Unlock()
 
-		if d.isDirectoryMounted(runnerVolumeMountPath) {
-			log.Infof("volume %s is already mounted to %s", volumeIdPrefixed, runnerVolumeMountPath)
-			volumeMountPathBinds = append(volumeMountPathBinds, fmt.Sprintf("%s/:%s/", runnerVolumeMountPath, vol.MountPath))
+		if d.isDirectoryMounted(runnerBucketMountPath) {
+			log.Infof("bucket %s is already mounted to %s", bucketIdPrefixed, runnerBucketMountPath)
+			bucketMountPathBinds = append(bucketMountPathBinds, fmt.Sprintf("%s/:%s/", runnerBucketMountPath, vol.MountPath))
 			continue
 		}
 
-		err := os.MkdirAll(runnerVolumeMountPath, 0755)
+		err := os.MkdirAll(runnerBucketMountPath, 0755)
 		if err != nil {
-			return nil, fmt.Errorf("failed to create mount directory %s: %s", runnerVolumeMountPath, err)
+			return nil, fmt.Errorf("failed to create mount directory %s: %s", runnerBucketMountPath, err)
 		}
 
-		log.Infof("mounting S3 volume %s to %s", volumeIdPrefixed, runnerVolumeMountPath)
+		log.Infof("mounting S3 bucket %s to %s", bucketIdPrefixed, runnerBucketMountPath)
 
-		cmd := d.getMountCmd(ctx, volumeIdPrefixed, runnerVolumeMountPath)
+		cmd := d.getMountCmd(ctx, bucketIdPrefixed, runnerBucketMountPath)
 		err = cmd.Run()
 		if err != nil {
-			return nil, fmt.Errorf("failed to mount S3 volume %s to %s: %s", volumeIdPrefixed, runnerVolumeMountPath, err)
+			return nil, fmt.Errorf("failed to mount S3 bucket %s to %s: %s", bucketIdPrefixed, runnerBucketMountPath, err)
 		}
 
-		log.Infof("mounted S3 volume %s to %s", volumeIdPrefixed, runnerVolumeMountPath)
+		log.Infof("mounted S3 bucket %s to %s", bucketIdPrefixed, runnerBucketMountPath)
 
-		volumeMountPathBinds = append(volumeMountPathBinds, fmt.Sprintf("%s/:%s/", runnerVolumeMountPath, vol.MountPath))
+		bucketMountPathBinds = append(bucketMountPathBinds, fmt.Sprintf("%s/:%s/", runnerBucketMountPath, vol.MountPath))
 	}
 
-	return volumeMountPathBinds, nil
+	return bucketMountPathBinds, nil
 }
 
-func (d *DockerClient) getRunnerVolumeMountPath(volumeId string) string {
-	volumePath := filepath.Join("/mnt", volumeId)
+func (d *DockerClient) getExecutorBucketMountPath(bucketId string) string {
+	bucketPath := filepath.Join("/mnt", bucketId)
 	if config.GetEnvironment() == "development" {
-		volumePath = filepath.Join("/tmp", volumeId)
+		bucketPath = filepath.Join("/tmp", bucketId)
 	}
 
-	return volumePath
+	return bucketPath
 }
 
 func (d *DockerClient) isDirectoryMounted(path string) bool {
@@ -78,8 +78,8 @@ func (d *DockerClient) isDirectoryMounted(path string) bool {
 	return err == nil
 }
 
-func (d *DockerClient) getMountCmd(ctx context.Context, volume, path string) *exec.Cmd {
-	cmd := exec.CommandContext(ctx, "mount-s3", "--allow-other", "--allow-delete", "--allow-overwrite", "--file-mode", "0666", "--dir-mode", "0777", volume, path)
+func (d *DockerClient) getMountCmd(ctx context.Context, bucket, path string) *exec.Cmd {
+	cmd := exec.CommandContext(ctx, "mount-s3", "--allow-other", "--allow-delete", "--allow-overwrite", "--file-mode", "0666", "--dir-mode", "0777", bucket, path)
 
 	if d.awsEndpointUrl != "" {
 		cmd.Env = append(cmd.Env, "AWS_ENDPOINT_URL="+d.awsEndpointUrl)

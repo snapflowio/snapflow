@@ -85,7 +85,7 @@ export function ApiKeys() {
 
   return (
     <div className="px-2">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between">
         <h1 className="font-bold text-2xl">API Keys</h1>
         <CreateApiKeyDialog
           availablePermissions={availablePermissions}

@@ -14,9 +14,10 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest();
 
-    if (!request.path.startsWith("/api/")) {
+    const prefixes = ["/api/", "/mcp", "/sse", "/messages"];
+    if (!prefixes.some((prefix) => request.path.startsWith(prefix))) {
       const response = ctx.getResponse();
-      response.sendFile(join(__dirname, "..", "dashboard", "index.html"));
+      response.sendFile(join(__dirname, "..", "website", "index.html"));
       return;
     }
 

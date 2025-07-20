@@ -61,18 +61,18 @@ export interface UpdateOrganizationQuota {
      * @type {number}
      * @memberof UpdateOrganizationQuota
      */
-    'snapshotQuota': number | null;
+    'imageQuota': number | null;
     /**
      * 
      * @type {number}
      * @memberof UpdateOrganizationQuota
      */
-    'maxSnapshotSize': number | null;
+    'maxImageSize': number | null;
     /**
      * 
      * @type {number}
      * @memberof UpdateOrganizationQuota
      */
-    'volumeQuota': number | null;
+    'bucketQuota': number | null;
 }
 

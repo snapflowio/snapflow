@@ -12,14 +12,13 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { InjectRedis } from "@nestjs-modules/ioredis";
 import { Redis } from "ioredis";
 import { EntityManager, In, IsNull, LessThan, MoreThan, Not, Or, Repository } from "typeorm";
-
 import { DEFAULT_ORGANIZATION_QUOTA } from "../../common/constants/quota.constants";
 import { OnAsyncEvent } from "../../common/decorators/on-async-event.decorator";
 import { RedisLockProvider } from "../../sandbox/common/redis-lock.provider";
+import { Bucket } from "../../sandbox/entities/bucket.entity";
+import { Image } from "../../sandbox/entities/image.entity";
+import { ImageExecutor } from "../../sandbox/entities/image-executor.entity";
 import { Sandbox } from "../../sandbox/entities/sandbox.entity";
-import { Snapshot } from "../../sandbox/entities/snapshot.entity";
-import { SnapshotRunner } from "../../sandbox/entities/snapshot-runner.entity";
-import { Volume } from "../../sandbox/entities/volume.entity";
 import { SandboxDesiredState } from "../../sandbox/enums/sandbox-desired-state.enum";
 import { SandboxState } from "../../sandbox/enums/sandbox-state.enum";
 import { UserEvents } from "../../user/constants/user-events.constant";
@@ -34,8 +33,8 @@ import { UpdateOrganizationQuotaDto } from "../dto/update-organization-quota.dto
 import { Organization } from "../entities/organization.entity";
 import { OrganizationUser } from "../entities/organization-user.entity";
 import { OrganizationMemberRole } from "../enums/organization-member-role.enum";
+import { OrganizationSuspendedImageExecutorRemoveEvent } from "../events/organization-suspended-image-executor-removed";
 import { OrganizationSuspendedSandboxStoppedEvent } from "../events/organization-suspended-sandbox-stopped.event";
-import { OrganizationSuspendedSnapshotRunnerRemoveEvent } from "../events/organization-suspended-snapshot-runner-removed";
 
 @Injectable()
 export class OrganizationService implements OnModuleInit {
@@ -47,12 +46,12 @@ export class OrganizationService implements OnModuleInit {
     private readonly organizationRepository: Repository<Organization>,
     @InjectRepository(Sandbox)
     private readonly sandboxRepository: Repository<Sandbox>,
-    @InjectRepository(Snapshot)
-    private readonly snapshotRepository: Repository<Snapshot>,
-    @InjectRepository(SnapshotRunner)
-    private readonly snapshotRunnerRepository: Repository<SnapshotRunner>,
-    @InjectRepository(Volume)
-    private readonly volumeRepository: Repository<Volume>,
+    @InjectRepository(Image)
+    private readonly imageRepository: Repository<Image>,
+    @InjectRepository(ImageExecutor)
+    private readonly imageExecutorRepository: Repository<ImageExecutor>,
+    @InjectRepository(Bucket)
+    private readonly bucketRepository: Repository<Bucket>,
     private readonly eventEmitter: EventEmitter2,
     private readonly configService: ConfigService,
     private readonly redisLockProvider: RedisLockProvider
@@ -191,11 +190,10 @@ export class OrganizationService implements OnModuleInit {
       updateOrganizationQuotaDto.maxMemoryPerSandbox ?? organization.maxMemoryPerSandbox;
     organization.maxDiskPerSandbox =
       updateOrganizationQuotaDto.maxDiskPerSandbox ?? organization.maxDiskPerSandbox;
-    organization.maxSnapshotSize =
-      updateOrganizationQuotaDto.maxSnapshotSize ?? organization.maxSnapshotSize;
-    organization.volumeQuota = updateOrganizationQuotaDto.volumeQuota ?? organization.volumeQuota;
-    organization.snapshotQuota =
-      updateOrganizationQuotaDto.snapshotQuota ?? organization.snapshotQuota;
+    organization.maxImageSize =
+      updateOrganizationQuotaDto.maxImageSize ?? organization.maxImageSize;
+    organization.bucketQuota = updateOrganizationQuotaDto.bucketQuota ?? organization.bucketQuota;
+    organization.imageQuota = updateOrganizationQuotaDto.imageQuota ?? organization.imageQuota;
     return this.organizationRepository.save(organization);
   }
 
@@ -271,9 +269,9 @@ export class OrganizationService implements OnModuleInit {
     organization.maxCpuPerSandbox = quota.maxCpuPerSandbox;
     organization.maxMemoryPerSandbox = quota.maxMemoryPerSandbox;
     organization.maxDiskPerSandbox = quota.maxDiskPerSandbox;
-    organization.snapshotQuota = quota.snapshotQuota;
-    organization.maxSnapshotSize = quota.maxSnapshotSize;
-    organization.volumeQuota = quota.volumeQuota;
+    organization.imageQuota = quota.imageQuota;
+    organization.maxImageSize = quota.maxImageSize;
+    organization.bucketQuota = quota.bucketQuota;
 
     if (!creatorEmailVerified) {
       organization.suspended = true;
@@ -381,10 +379,10 @@ export class OrganizationService implements OnModuleInit {
     await this.redis.del(lockKey);
   }
 
-  @Cron(CronExpression.EVERY_10_MINUTES, { name: "remove-suspended-organization-snapshot-runners" })
-  async removeSuspendedOrganizationSnapshotRunners(): Promise<void> {
+  @Cron(CronExpression.EVERY_10_MINUTES, { name: "remove-suspended-organization-image-executors" })
+  async removeSuspendedOrganizationImageExecutors(): Promise<void> {
     //  lock the sync to only run one instance at a time
-    const lockKey = "remove-suspended-organization-snapshot-runners";
+    const lockKey = "remove-suspended-organization-image-executors";
     if (!(await this.redisLockProvider.lock(lockKey, 60))) {
       return;
     }
@@ -402,20 +400,20 @@ export class OrganizationService implements OnModuleInit {
       return;
     }
 
-    const snapshotRunners = await this.snapshotRunnerRepository
-      .createQueryBuilder("snapshotRunner")
-      .innerJoin("snapshot", "snapshot", "snapshot.internalName = snapshotRunner.snapshotRef")
-      .where("snapshot.general = false")
-      .andWhere("snapshot.organizationId IN (:...suspendedOrgIds)", {
+    const imageExecutors = await this.imageExecutorRepository
+      .createQueryBuilder("imageExecutor")
+      .innerJoin("image", "image", "image.internalName = imageExecutor.imageRef")
+      .where("image.general = false")
+      .andWhere("image.organizationId IN (:...suspendedOrgIds)", {
         suspendedOrgIds: suspendedOrganizationIds,
       })
-      .orderBy("snapshotRunner.createdAt", "ASC")
+      .orderBy("imageExecutor.createdAt", "ASC")
       .getMany();
 
-    snapshotRunners.map((snapshotRunner) =>
+    imageExecutors.map((imageExecutor) =>
       this.eventEmitter.emitAsync(
-        OrganizationEvents.SUSPENDED_SNAPSHOT_RUNNER_REMOVED,
-        new OrganizationSuspendedSnapshotRunnerRemoveEvent(snapshotRunner.id)
+        OrganizationEvents.SUSPENDED_IMAGE_RUNNER_REMOVED,
+        new OrganizationSuspendedImageExecutorRemoveEvent(imageExecutor.id)
       )
     );
 
@@ -458,9 +456,7 @@ export class OrganizationService implements OnModuleInit {
   }
 
   assertOrganizationIsNotSuspended(organization: Organization): void {
-    if (!organization.suspended) {
-      return;
-    }
+    if (!organization.suspended) return;
 
     if (organization.suspendedUntil ? organization.suspendedUntil > new Date() : true) {
       if (organization.suspensionReason)

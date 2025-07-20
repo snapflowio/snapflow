@@ -21,9 +21,11 @@ interface CreateOrganizationDialogProps {
   onCreateOrganization: (name: string) => Promise<Organization | null>;
 }
 
-export const CreateOrganizationDialog: React.FC<
-  CreateOrganizationDialogProps
-> = ({ open, onOpenChange, onCreateOrganization }) => {
+export function CreateOrganizationDialog({
+  open,
+  onOpenChange,
+  onCreateOrganization,
+}: CreateOrganizationDialogProps) {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [createdOrg, setCreatedOrg] = useState<Organization | null>(null);
@@ -51,9 +53,7 @@ export const CreateOrganizationDialog: React.FC<
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            {createdOrg ? "New Organization" : "Create New Organization"}
-          </DialogTitle>
+          <DialogTitle>{createdOrg ? "New Organization" : "Create New Organization"}</DialogTitle>
           <DialogDescription>
             {createdOrg
               ? "You can switch between organizations in the top left corner of the sidebar."
@@ -130,4 +130,4 @@ export const CreateOrganizationDialog: React.FC<
       </DialogContent>
     </Dialog>
   );
-};
+}

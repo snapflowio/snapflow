@@ -1,10 +1,8 @@
 import { createContext } from "react";
 import { Socket } from "socket.io-client";
 
-export interface INotificationSocketContext {
-  notificationSocket: Socket;
+export interface IrealtimeSocketContext {
+  realtimeSocket: Socket;
 }
 
-export const NotificationSocketContext = createContext<
-  INotificationSocketContext | undefined
->(undefined);
+export const realtimeSocketContext = createContext<IrealtimeSocketContext | undefined>(undefined);

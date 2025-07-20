@@ -6,16 +6,16 @@ import (
 	"fmt"
 
 	"github.com/docker/docker/api/types/network"
-	"github.com/snapflow/manager/cmd/manager/config"
-	"github.com/snapflow/manager/pkg/api/dto"
+	"github.com/snapflow/executor/cmd/executor/config"
+	"github.com/snapflow/executor/pkg/api/dto"
 
 	"github.com/docker/docker/api/types/container"
 )
 
-func (d *DockerClient) getContainerConfigs(ctx context.Context, sandboxDto dto.CreateSandboxDTO, volumeMountPathBinds []string) (*container.Config, *container.HostConfig, *network.NetworkingConfig, error) {
+func (d *DockerClient) getContainerConfigs(ctx context.Context, sandboxDto dto.CreateSandboxDTO, bucketMountPathBinds []string) (*container.Config, *container.HostConfig, *network.NetworkingConfig, error) {
 	containerConfig := d.getContainerCreateConfig(sandboxDto)
 
-	hostConfig, err := d.getContainerHostConfig(ctx, sandboxDto, volumeMountPathBinds)
+	hostConfig, err := d.getContainerHostConfig(ctx, sandboxDto, bucketMountPathBinds)
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -27,7 +27,7 @@ func (d *DockerClient) getContainerConfigs(ctx context.Context, sandboxDto dto.C
 func (d *DockerClient) getContainerCreateConfig(sandboxDto dto.CreateSandboxDTO) *container.Config {
 	envVars := []string{
 		"SNAPFLOW_SANDBOX_ID=" + sandboxDto.Id,
-		"SNAPFLOW_SANDBOX_SNAPSHOT=" + sandboxDto.Snapshot,
+		"SNAPFLOW_SANDBOX_IMAGE=" + sandboxDto.Image,
 		"SNAPFLOW_SANDBOX_USER=" + sandboxDto.OsUser,
 	}
 
@@ -37,7 +37,7 @@ func (d *DockerClient) getContainerCreateConfig(sandboxDto dto.CreateSandboxDTO)
 
 	return &container.Config{
 		Hostname: sandboxDto.Id,
-		Image:    sandboxDto.Snapshot,
+		Image:    sandboxDto.Image,
 		// User:         sandboxDto.OsUser,
 		Env:          envVars,
 		Entrypoint:   sandboxDto.Entrypoint,
@@ -46,13 +46,13 @@ func (d *DockerClient) getContainerCreateConfig(sandboxDto dto.CreateSandboxDTO)
 	}
 }
 
-func (d *DockerClient) getContainerHostConfig(ctx context.Context, sandboxDto dto.CreateSandboxDTO, volumeMountPathBinds []string) (*container.HostConfig, error) {
+func (d *DockerClient) getContainerHostConfig(ctx context.Context, sandboxDto dto.CreateSandboxDTO, bucketMountPathBinds []string) (*container.HostConfig, error) {
 	var binds []string
 
 	binds = append(binds, fmt.Sprintf("%s:/usr/local/bin/snapflow:ro", d.daemonPath))
 
-	if len(volumeMountPathBinds) > 0 {
-		binds = append(binds, volumeMountPathBinds...)
+	if len(bucketMountPathBinds) > 0 {
+		binds = append(binds, bucketMountPathBinds...)
 	}
 
 	hostConfig := &container.HostConfig{

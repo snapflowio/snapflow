@@ -1,4 +1,3 @@
-#!/usr/bin/env ts-node
 import * as fs from "fs";
 import { NestFactory } from "@nestjs/core";
 import { SwaggerModule } from "@nestjs/swagger";
@@ -12,10 +11,7 @@ async function generateOpenAPI() {
 
   const config = getOpenApiConfig();
   const document = SwaggerModule.createDocument(app, config);
-  fs.writeFileSync(
-    "./dist/apps/api/openapi.json",
-    JSON.stringify(document, null, 2),
-  );
+  fs.writeFileSync("./dist/apps/api/openapi.json", JSON.stringify(document, null, 2));
 
   await app.close();
   console.log("OpenAPI specification generated successfully!");

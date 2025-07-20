@@ -1,0 +1,48 @@
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
+import { RegistryType } from "../enums/registry-type.enum";
+
+@Entity()
+export class Registry {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
+
+  @Column()
+  name: string;
+
+  @Column()
+  url: string;
+
+  @Column()
+  username: string;
+
+  @Column()
+  password: string;
+
+  @Column({ default: false })
+  isDefault: boolean;
+
+  @Column()
+  project: string;
+
+  @Column({ nullable: true, type: "uuid" })
+  organizationId?: string;
+
+  @Column({
+    type: "enum",
+    enum: RegistryType,
+    default: RegistryType.INTERNAL,
+  })
+  registryType: RegistryType;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}

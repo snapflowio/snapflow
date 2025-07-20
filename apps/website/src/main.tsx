@@ -3,14 +3,12 @@ import { Auth0Provider } from "@auth0/auth0-react";
 import ReactDOM from "react-dom/client";
 import { ErrorBoundary } from "react-error-boundary";
 import { BrowserRouter } from "react-router";
-import App from "./app";
 import { Path } from "./enums/paths";
 import { ErrorBoundaryProvider } from "./providers/error-boundary";
 import { PosthogProvider } from "./providers/posthog-provider";
+import { Routes } from "./routes/routes";
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement,
-);
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 
 root.render(
   <React.StrictMode>
@@ -26,10 +24,10 @@ root.render(
           cacheLocation="memory"
         >
           <BrowserRouter>
-            <App />
+            <Routes />
           </BrowserRouter>
         </Auth0Provider>
       </PosthogProvider>
     </ErrorBoundary>
-  </React.StrictMode>,
+  </React.StrictMode>
 );

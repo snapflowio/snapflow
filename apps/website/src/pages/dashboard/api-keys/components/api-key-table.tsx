@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ApiKeyList } from "@snapflow/api-client";
 import {
   ColumnDef,
@@ -44,7 +44,7 @@ interface DataTableProps {
 
 export function ApiKeyTable({ data, loading, loadingKeys, onRevoke }: DataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const columns = getColumns({ onRevoke, loadingKeys });
+  const columns = useMemo(() => getColumns({ onRevoke, loadingKeys }), [onRevoke, loadingKeys]);
   const table = useReactTable({
     data,
     columns,
@@ -52,32 +52,24 @@ export function ApiKeyTable({ data, loading, loadingKeys, onRevoke }: DataTableP
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    state: {
-      sorting,
-    },
-    initialState: {
-      pagination: {
-        pageSize: DEFAULT_PAGE_SIZE,
-      },
-    },
+    state: { sorting },
+    initialState: { pagination: { pageSize: DEFAULT_PAGE_SIZE } },
   });
 
   return (
-    <div>
+    <div className="space-y-4">
       <div className="rounded-md border">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  );
-                })}
+            {table.getHeaderGroups().map((group) => (
+              <TableRow key={group.id}>
+                {group.headers.map((header) => (
+                  <TableHead key={header.id} className="px-4 py-3">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -85,57 +77,48 @@ export function ApiKeyTable({ data, loading, loadingKeys, onRevoke }: DataTableP
             {loading ? (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  Loading...
+                  Loading API Keys...
                 </TableCell>
               </TableRow>
-            ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className={`${loadingKeys[row.original.name] ? "pointer-events-none opacity-50" : ""}`}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+            ) : table.getRowModel().rows.length ? (
+              table.getRowModel().rows.map((row) => {
+                const isDisabled = loadingKeys[row.original.name];
+                return (
+                  <TableRow
+                    key={row.id}
+                    data-state={isDisabled ? "disabled" : undefined}
+                    className="data-[state=disabled]:pointer-events-none data-[state=disabled]:opacity-50"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className="px-4 py-3">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })
             ) : (
               <TableEmptyState
                 colSpan={columns.length}
+                icon={<KeyRound className="h-8 w-8 text-muted-foreground" />}
                 message="No API Keys"
-                icon={<KeyRound className="h-8 w-8" />}
-                description={
-                  <div className="space-y-2">
-                    <p>Use API keys with our SDK or with external programs.</p>
-                  </div>
-                }
+                description="Use API keys with our SDK or with external programs."
               />
             )}
           </TableBody>
         </Table>
       </div>
-      <Pagination table={table} className="mt-4" entityName="API Keys" />
+      <Pagination table={table} className="mt-2" entityName="API Keys" />
     </div>
   );
 }
 
 const getExpiresAtColor = (expiresAt: Date | null) => {
   if (!expiresAt) return "text-foreground";
-
-  const MILLISECONDS_IN_MINUTE = 1000 * 60;
-  const MINUTES_IN_DAY = 24 * 60;
-
-  const diffInMinutes = Math.floor(
-    (new Date(expiresAt).getTime() - Date.now()) / MILLISECONDS_IN_MINUTE
-  );
-
-  if (diffInMinutes < 0) return "text-red-500";
-
-  if (diffInMinutes < MINUTES_IN_DAY) return "text-yellow-600 dark:text-yellow-400";
-
+  const now = Date.now();
+  const diff = new Date(expiresAt).getTime() - now;
+  if (diff < 0) return "text-red-500";
+  if (diff < 1000 * 60 * 60 * 24) return "text-yellow-600 dark:text-yellow-400";
   return "text-foreground";
 };
 
@@ -145,163 +128,136 @@ const getColumns = ({
 }: {
   onRevoke: (keyName: string) => void;
   loadingKeys: Record<string, boolean>;
-}): ColumnDef<ApiKeyList>[] => {
-  const columns: ColumnDef<ApiKeyList>[] = [
-    {
-      accessorKey: "name",
-      header: "Name",
-    },
-    {
-      accessorKey: "value",
-      header: "Key",
-    },
-    {
-      accessorKey: "permissions",
-      header: () => {
-        return <div className="max-w-md px-3">Permissions</div>;
-      },
-      cell: ({ row }) => {
-        const permissions = row.original.permissions.join(", ");
-        return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <div className="max-w-md cursor-text truncate px-3">{permissions || "-"}</div>
-              </TooltipTrigger>
-              {permissions && (
-                <TooltipContent>
-                  <p className="max-w-[300px]">{permissions}</p>
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </TooltipProvider>
-        );
-      },
-    },
-    {
-      accessorKey: "createdAt",
-      header: "Created",
-      cell: ({ row }) => {
-        const createdAt = row.original.createdAt;
-        const relativeTime = getRelativeTimeString(createdAt).relativeTimeString;
-        const fullDate = new Date(createdAt).toLocaleString();
-
-        return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <span className="cursor-default">{relativeTime}</span>
-              </TooltipTrigger>
+}): ColumnDef<ApiKeyList>[] => [
+  {
+    accessorKey: "name",
+    header: "Name",
+    cell: ({ row }) => <div className="font-medium">{row.original.name}</div>,
+  },
+  {
+    accessorKey: "value",
+    header: "Key",
+  },
+  {
+    accessorKey: "permissions",
+    header: "Permissions",
+    cell: ({ row }) => {
+      const permissions = row.original.permissions.join(", ");
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <div className="max-w-md cursor-text truncate px-1">{permissions || "-"}</div>
+            </TooltipTrigger>
+            {permissions && (
               <TooltipContent>
-                <p>{fullDate}</p>
+                <p className="max-w-[300px]">{permissions}</p>
               </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        );
-      },
+            )}
+          </Tooltip>
+        </TooltipProvider>
+      );
     },
-    {
-      accessorKey: "lastUsedAt",
-      header: "Last Used",
-      cell: ({ row }) => {
-        const lastUsedAt = row.original.lastUsedAt;
-        const relativeTime = getRelativeTimeString(lastUsedAt).relativeTimeString;
-
-        if (!lastUsedAt) {
-          return relativeTime;
-        }
-
-        const fullDate = new Date(lastUsedAt).toLocaleString();
-
-        return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <span className="cursor-default">{relativeTime}</span>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{fullDate}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        );
-      },
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created",
+    cell: ({ row }) => {
+      const created = row.original.createdAt;
+      const relative = getRelativeTimeString(created).relativeTimeString;
+      const full = new Date(created).toLocaleString();
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <span className="cursor-default">{relative}</span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{full}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
     },
-    {
-      accessorKey: "expiresAt",
-      header: "Expires",
-      cell: ({ row }) => {
-        const expiresAt = row.original.expiresAt;
-        const relativeTime = getRelativeTimeString(expiresAt).relativeTimeString;
-
-        if (!expiresAt) {
-          return relativeTime;
-        }
-
-        const fullDate = new Date(expiresAt).toLocaleString();
-        const color = getExpiresAtColor(expiresAt);
-
-        return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <span className={`cursor-default ${color}`}>{relativeTime}</span>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{fullDate}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        );
-      },
+  },
+  {
+    accessorKey: "lastUsedAt",
+    header: "Last Used",
+    cell: ({ row }) => {
+      const used = row.original.lastUsedAt;
+      if (!used) return "Never";
+      const relative = getRelativeTimeString(used).relativeTimeString;
+      const full = new Date(used).toLocaleString();
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <span className="cursor-default">{relative}</span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{full}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
     },
-    {
-      id: "actions",
-      header: () => {
-        return <div className="px-4">Actions</div>;
-      },
-      cell: ({ row }) => {
-        const isLoading = loadingKeys[row.original.name];
-
-        return (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                disabled={isLoading}
-                className="w-20"
-                title="Revoke Key"
-              >
-                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Revoke"}
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Confirm Key Revocation</DialogTitle>
-                <DialogDescription>
-                  Are you absolutely sure? This action cannot be undone. This will permanently
-                  delete this API key.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button type="button" variant="secondary">
-                    Close
-                  </Button>
-                </DialogClose>
-                <DialogClose asChild>
-                  <Button variant="destructive" onClick={() => onRevoke(row.original.name)}>
-                    Revoke
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        );
-      },
+  },
+  {
+    accessorKey: "expiresAt",
+    header: "Expires",
+    cell: ({ row }) => {
+      const expires = row.original.expiresAt;
+      if (!expires) return "Never";
+      const relative = getRelativeTimeString(expires).relativeTimeString;
+      const full = new Date(expires).toLocaleString();
+      const color = getExpiresAtColor(expires);
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <span className={`cursor-default ${color}`}>{relative}</span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{full}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
     },
-  ];
-
-  return columns;
-};
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+      const key = row.original.name;
+      const isLoading = loadingKeys[key];
+      return (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="ghost" size="sm" disabled={isLoading} className="w-20">
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Revoke"}
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirm Key Revocation</DialogTitle>
+              <DialogDescription>
+                This will permanently delete the API key. This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="secondary">Cancel</Button>
+              </DialogClose>
+              <DialogClose asChild>
+                <Button variant="destructive" onClick={() => onRevoke(key)}>
+                  Revoke
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      );
+    },
+  },
+];

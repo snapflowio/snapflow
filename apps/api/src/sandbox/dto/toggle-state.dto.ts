@@ -4,7 +4,7 @@ import { IsBoolean } from "class-validator";
 @ApiSchema({ name: "ToggleState" })
 export class ToggleStateDto {
   @ApiProperty({
-    description: "Enable or disable the snapshot/tag",
+    description: "Enable or disable the image/tag",
     example: true,
   })
   @IsBoolean()

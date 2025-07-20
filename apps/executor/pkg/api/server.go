@@ -1,6 +1,6 @@
-//	@title			Snapflow Runner API
+//	@title			Snapflow Executor API
 //	@version		v0.0.0-dev
-//	@description	Snapflow Runner API
+//	@description	Snapflow Executor API
 
 //	@securityDefinitions.apikey	Bearer
 //	@in							header
@@ -19,10 +19,10 @@ import (
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/snapflow/manager/cmd/manager/config"
-	"github.com/snapflow/manager/pkg/api/controllers"
-	"github.com/snapflow/manager/pkg/api/docs"
-	"github.com/snapflow/manager/pkg/api/middlewares"
+	"github.com/snapflow/executor/cmd/executor/config"
+	"github.com/snapflow/executor/pkg/api/controllers"
+	"github.com/snapflow/executor/pkg/api/docs"
+	"github.com/snapflow/executor/pkg/api/middlewares"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -58,8 +58,8 @@ type ApiServer struct {
 }
 
 func (a *ApiServer) Start() error {
-	docs.SwaggerInfo.Description = "Snapflow Runner API"
-	docs.SwaggerInfo.Title = "Snapflow Runner API"
+	docs.SwaggerInfo.Description = "Snapflow Executor API"
+	docs.SwaggerInfo.Title = "Snapflow Executor API"
 	docs.SwaggerInfo.BasePath = "/"
 
 	_, err := net.Dial("tcp", fmt.Sprintf(":%d", a.apiPort))
@@ -107,13 +107,13 @@ func (a *ApiServer) Start() error {
 		sandboxController.Any("/:sandboxId/toolbox/*path", controllers.ProxyRequest)
 	}
 
-	snapshotController := protected.Group("/snapshots")
+	imageController := protected.Group("/images")
 	{
-		snapshotController.POST("/pull", controllers.PullSnapshot)
-		snapshotController.POST("/build", controllers.BuildSnapshot)
-		snapshotController.GET("/exists", controllers.SnapshotExists)
-		snapshotController.POST("/remove", controllers.RemoveSnapshot)
-		snapshotController.GET("/logs", controllers.GetBuildLogs)
+		imageController.POST("/pull", controllers.PullImage)
+		imageController.POST("/build", controllers.BuildImage)
+		imageController.GET("/exists", controllers.ImageExists)
+		imageController.POST("/remove", controllers.RemoveImage)
+		imageController.GET("/logs", controllers.GetBuildLogs)
 	}
 
 	a.httpServer = &http.Server{

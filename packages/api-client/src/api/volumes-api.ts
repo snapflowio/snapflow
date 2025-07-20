@@ -22,27 +22,27 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
-import type { CreateVolume } from '../models';
+import type { CreateBucket } from '../models';
 // @ts-ignore
-import type { VolumeDto } from '../models';
+import type { BucketDto } from '../models';
 /**
- * VolumesApi - axios parameter creator
+ * BucketsApi - axios parameter creator
  * @export
  */
-export const VolumesApiAxiosParamCreator = function (configuration?: Configuration) {
+export const BucketsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary Create a new volume
-         * @param {CreateVolume} createVolume 
+         * @summary Create a new bucket
+         * @param {CreateBucket} createBucket 
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createVolume: async (createVolume: CreateVolume, xSnapflowOrganizationID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'createVolume' is not null or undefined
-            assertParamExists('createVolume', 'createVolume', createVolume)
-            const localVarPath = `/volumes`;
+        createBucket: async (createBucket: CreateBucket, xSnapflowOrganizationID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createBucket' is not null or undefined
+            assertParamExists('createBucket', 'createBucket', createBucket)
+            const localVarPath = `/buckets`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -68,7 +68,7 @@ export const VolumesApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createVolume, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(createBucket, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -77,17 +77,17 @@ export const VolumesApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Delete volume
-         * @param {string} volumeId ID of the volume
+         * @summary Delete bucket
+         * @param {string} bucketId ID of the bucket
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteVolume: async (volumeId: string, xSnapflowOrganizationID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'volumeId' is not null or undefined
-            assertParamExists('deleteVolume', 'volumeId', volumeId)
-            const localVarPath = `/volumes/{volumeId}`
-                .replace(`{${"volumeId"}}`, encodeURIComponent(String(volumeId)));
+        deleteBucket: async (bucketId: string, xSnapflowOrganizationID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'bucketId' is not null or undefined
+            assertParamExists('deleteBucket', 'bucketId', bucketId)
+            const localVarPath = `/buckets/{bucketId}`
+                .replace(`{${"bucketId"}}`, encodeURIComponent(String(bucketId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -119,17 +119,17 @@ export const VolumesApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Get volume details
-         * @param {string} volumeId ID of the volume
+         * @summary Get bucket details
+         * @param {string} bucketId ID of the bucket
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getVolume: async (volumeId: string, xSnapflowOrganizationID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'volumeId' is not null or undefined
-            assertParamExists('getVolume', 'volumeId', volumeId)
-            const localVarPath = `/volumes/{volumeId}`
-                .replace(`{${"volumeId"}}`, encodeURIComponent(String(volumeId)));
+        getBucket: async (bucketId: string, xSnapflowOrganizationID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'bucketId' is not null or undefined
+            assertParamExists('getBucket', 'bucketId', bucketId)
+            const localVarPath = `/buckets/{bucketId}`
+                .replace(`{${"bucketId"}}`, encodeURIComponent(String(bucketId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -161,16 +161,16 @@ export const VolumesApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Get volume details by name
-         * @param {string} name Name of the volume
+         * @summary Get bucket details by name
+         * @param {string} name Name of the bucket
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getVolumeByName: async (name: string, xSnapflowOrganizationID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getBucketByName: async (name: string, xSnapflowOrganizationID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'name' is not null or undefined
-            assertParamExists('getVolumeByName', 'name', name)
-            const localVarPath = `/volumes/by-name/{name}`
+            assertParamExists('getBucketByName', 'name', name)
+            const localVarPath = `/buckets/by-name/{name}`
                 .replace(`{${"name"}}`, encodeURIComponent(String(name)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -203,14 +203,14 @@ export const VolumesApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary List all volumes
+         * @summary List all buckets
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
-         * @param {boolean} [includeDeleted] Include deleted volumes in the response
+         * @param {boolean} [includeDeleted] Include deleted buckets in the response
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listVolumes: async (xSnapflowOrganizationID?: string, includeDeleted?: boolean, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/volumes`;
+        listBuckets: async (xSnapflowOrganizationID?: string, includeDeleted?: boolean, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/buckets`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -248,220 +248,220 @@ export const VolumesApiAxiosParamCreator = function (configuration?: Configurati
 };
 
 /**
- * VolumesApi - functional programming interface
+ * BucketsApi - functional programming interface
  * @export
  */
-export const VolumesApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = VolumesApiAxiosParamCreator(configuration)
+export const BucketsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = BucketsApiAxiosParamCreator(configuration)
     return {
         /**
          * 
-         * @summary Create a new volume
-         * @param {CreateVolume} createVolume 
+         * @summary Create a new bucket
+         * @param {CreateBucket} createBucket 
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createVolume(createVolume: CreateVolume, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VolumeDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createVolume(createVolume, xSnapflowOrganizationID, options);
+        async createBucket(createBucket: CreateBucket, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BucketDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createBucket(createBucket, xSnapflowOrganizationID, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['VolumesApi.createVolume']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['BucketsApi.createBucket']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @summary Delete volume
-         * @param {string} volumeId ID of the volume
+         * @summary Delete bucket
+         * @param {string} bucketId ID of the bucket
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteVolume(volumeId: string, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteVolume(volumeId, xSnapflowOrganizationID, options);
+        async deleteBucket(bucketId: string, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteBucket(bucketId, xSnapflowOrganizationID, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['VolumesApi.deleteVolume']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['BucketsApi.deleteBucket']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @summary Get volume details
-         * @param {string} volumeId ID of the volume
+         * @summary Get bucket details
+         * @param {string} bucketId ID of the bucket
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getVolume(volumeId: string, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VolumeDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getVolume(volumeId, xSnapflowOrganizationID, options);
+        async getBucket(bucketId: string, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BucketDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getBucket(bucketId, xSnapflowOrganizationID, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['VolumesApi.getVolume']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['BucketsApi.getBucket']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @summary Get volume details by name
-         * @param {string} name Name of the volume
+         * @summary Get bucket details by name
+         * @param {string} name Name of the bucket
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getVolumeByName(name: string, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VolumeDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getVolumeByName(name, xSnapflowOrganizationID, options);
+        async getBucketByName(name: string, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BucketDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getBucketByName(name, xSnapflowOrganizationID, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['VolumesApi.getVolumeByName']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['BucketsApi.getBucketByName']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @summary List all volumes
+         * @summary List all buckets
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
-         * @param {boolean} [includeDeleted] Include deleted volumes in the response
+         * @param {boolean} [includeDeleted] Include deleted buckets in the response
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listVolumes(xSnapflowOrganizationID?: string, includeDeleted?: boolean, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<VolumeDto>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listVolumes(xSnapflowOrganizationID, includeDeleted, options);
+        async listBuckets(xSnapflowOrganizationID?: string, includeDeleted?: boolean, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<BucketDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listBuckets(xSnapflowOrganizationID, includeDeleted, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['VolumesApi.listVolumes']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['BucketsApi.listBuckets']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
 
 /**
- * VolumesApi - factory interface
+ * BucketsApi - factory interface
  * @export
  */
-export const VolumesApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = VolumesApiFp(configuration)
+export const BucketsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = BucketsApiFp(configuration)
     return {
         /**
          * 
-         * @summary Create a new volume
-         * @param {CreateVolume} createVolume 
+         * @summary Create a new bucket
+         * @param {CreateBucket} createBucket 
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createVolume(createVolume: CreateVolume, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig): AxiosPromise<VolumeDto> {
-            return localVarFp.createVolume(createVolume, xSnapflowOrganizationID, options).then((request) => request(axios, basePath));
+        createBucket(createBucket: CreateBucket, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig): AxiosPromise<BucketDto> {
+            return localVarFp.createBucket(createBucket, xSnapflowOrganizationID, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Delete volume
-         * @param {string} volumeId ID of the volume
+         * @summary Delete bucket
+         * @param {string} bucketId ID of the bucket
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteVolume(volumeId: string, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.deleteVolume(volumeId, xSnapflowOrganizationID, options).then((request) => request(axios, basePath));
+        deleteBucket(bucketId: string, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.deleteBucket(bucketId, xSnapflowOrganizationID, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Get volume details
-         * @param {string} volumeId ID of the volume
+         * @summary Get bucket details
+         * @param {string} bucketId ID of the bucket
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getVolume(volumeId: string, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig): AxiosPromise<VolumeDto> {
-            return localVarFp.getVolume(volumeId, xSnapflowOrganizationID, options).then((request) => request(axios, basePath));
+        getBucket(bucketId: string, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig): AxiosPromise<BucketDto> {
+            return localVarFp.getBucket(bucketId, xSnapflowOrganizationID, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Get volume details by name
-         * @param {string} name Name of the volume
+         * @summary Get bucket details by name
+         * @param {string} name Name of the bucket
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getVolumeByName(name: string, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig): AxiosPromise<VolumeDto> {
-            return localVarFp.getVolumeByName(name, xSnapflowOrganizationID, options).then((request) => request(axios, basePath));
+        getBucketByName(name: string, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig): AxiosPromise<BucketDto> {
+            return localVarFp.getBucketByName(name, xSnapflowOrganizationID, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary List all volumes
+         * @summary List all buckets
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
-         * @param {boolean} [includeDeleted] Include deleted volumes in the response
+         * @param {boolean} [includeDeleted] Include deleted buckets in the response
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listVolumes(xSnapflowOrganizationID?: string, includeDeleted?: boolean, options?: RawAxiosRequestConfig): AxiosPromise<Array<VolumeDto>> {
-            return localVarFp.listVolumes(xSnapflowOrganizationID, includeDeleted, options).then((request) => request(axios, basePath));
+        listBuckets(xSnapflowOrganizationID?: string, includeDeleted?: boolean, options?: RawAxiosRequestConfig): AxiosPromise<Array<BucketDto>> {
+            return localVarFp.listBuckets(xSnapflowOrganizationID, includeDeleted, options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * VolumesApi - object-oriented interface
+ * BucketsApi - object-oriented interface
  * @export
- * @class VolumesApi
+ * @class BucketsApi
  * @extends {BaseAPI}
  */
-export class VolumesApi extends BaseAPI {
+export class BucketsApi extends BaseAPI {
     /**
      * 
-     * @summary Create a new volume
-     * @param {CreateVolume} createVolume 
+     * @summary Create a new bucket
+     * @param {CreateBucket} createBucket 
      * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof VolumesApi
+     * @memberof BucketsApi
      */
-    public createVolume(createVolume: CreateVolume, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig) {
-        return VolumesApiFp(this.configuration).createVolume(createVolume, xSnapflowOrganizationID, options).then((request) => request(this.axios, this.basePath));
+    public createBucket(createBucket: CreateBucket, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig) {
+        return BucketsApiFp(this.configuration).createBucket(createBucket, xSnapflowOrganizationID, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @summary Delete volume
-     * @param {string} volumeId ID of the volume
+     * @summary Delete bucket
+     * @param {string} bucketId ID of the bucket
      * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof VolumesApi
+     * @memberof BucketsApi
      */
-    public deleteVolume(volumeId: string, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig) {
-        return VolumesApiFp(this.configuration).deleteVolume(volumeId, xSnapflowOrganizationID, options).then((request) => request(this.axios, this.basePath));
+    public deleteBucket(bucketId: string, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig) {
+        return BucketsApiFp(this.configuration).deleteBucket(bucketId, xSnapflowOrganizationID, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @summary Get volume details
-     * @param {string} volumeId ID of the volume
+     * @summary Get bucket details
+     * @param {string} bucketId ID of the bucket
      * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof VolumesApi
+     * @memberof BucketsApi
      */
-    public getVolume(volumeId: string, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig) {
-        return VolumesApiFp(this.configuration).getVolume(volumeId, xSnapflowOrganizationID, options).then((request) => request(this.axios, this.basePath));
+    public getBucket(bucketId: string, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig) {
+        return BucketsApiFp(this.configuration).getBucket(bucketId, xSnapflowOrganizationID, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @summary Get volume details by name
-     * @param {string} name Name of the volume
+     * @summary Get bucket details by name
+     * @param {string} name Name of the bucket
      * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof VolumesApi
+     * @memberof BucketsApi
      */
-    public getVolumeByName(name: string, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig) {
-        return VolumesApiFp(this.configuration).getVolumeByName(name, xSnapflowOrganizationID, options).then((request) => request(this.axios, this.basePath));
+    public getBucketByName(name: string, xSnapflowOrganizationID?: string, options?: RawAxiosRequestConfig) {
+        return BucketsApiFp(this.configuration).getBucketByName(name, xSnapflowOrganizationID, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @summary List all volumes
+     * @summary List all buckets
      * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
-     * @param {boolean} [includeDeleted] Include deleted volumes in the response
+     * @param {boolean} [includeDeleted] Include deleted buckets in the response
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof VolumesApi
+     * @memberof BucketsApi
      */
-    public listVolumes(xSnapflowOrganizationID?: string, includeDeleted?: boolean, options?: RawAxiosRequestConfig) {
-        return VolumesApiFp(this.configuration).listVolumes(xSnapflowOrganizationID, includeDeleted, options).then((request) => request(this.axios, this.basePath));
+    public listBuckets(xSnapflowOrganizationID?: string, includeDeleted?: boolean, options?: RawAxiosRequestConfig) {
+        return BucketsApiFp(this.configuration).listBuckets(xSnapflowOrganizationID, includeDeleted, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

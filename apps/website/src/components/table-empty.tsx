@@ -26,7 +26,9 @@ export function TableEmptyState({
           )}
           <p className="font-semibold text-lg text-muted-foreground">{message}</p>
           {description && (
-            <div className="max-w-md text-muted-foreground/80 text-sm">{description}</div>
+            <div className="max-w-md whitespace-normal break-words text-center text-muted-foreground/80 text-sm">
+              {description}
+            </div>
           )}
         </div>
       </TableCell>

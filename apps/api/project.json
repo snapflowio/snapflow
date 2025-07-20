@@ -34,7 +34,7 @@
     "openapi": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "yarn ts-node apps/api/src/generate-openapi.ts -o dist/apps/api/openapi.json",
+        "command": "pnpm ts-node apps/api/src/generate-openapi.ts -o dist/apps/api/openapi.json",
         "env": {
           "TS_NODE_PROJECT": "apps/api/tsconfig.app.json",
           "NODE_OPTIONS": "--require tsconfig-paths/register",
@@ -63,17 +63,13 @@
     "format": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "cd {projectRoot} && bun run format"
+        "command": "cd {projectRoot} && node run format"
       }
     },
     "test": {
       "options": {
         "passWithNoTests": true
       }
-    },
-    "docker-build": {
-      "dependsOn": ["build"],
-      "command": "docker build -f apps/api/Dockerfile . -t api"
     },
     "migration:generate": {
       "executor": "nx:run-commands",

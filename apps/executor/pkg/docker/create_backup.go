@@ -3,8 +3,8 @@ package docker
 import (
 	"context"
 
-	"github.com/snapflow/manager/pkg/api/dto"
-	"github.com/snapflow/manager/pkg/models/enums"
+	"github.com/snapflow/executor/pkg/api/dto"
+	"github.com/snapflow/executor/pkg/models/enums"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -16,23 +16,23 @@ func (d *DockerClient) CreateBackup(ctx context.Context, containerId string, bac
 
 	d.cache.SetBackupState(ctx, containerId, enums.BackupStateInProgress)
 
-	err := d.commitContainer(ctx, containerId, backupDto.Snapshot)
+	err := d.commitContainer(ctx, containerId, backupDto.Image)
 	if err != nil {
 		return err
 	}
 
-	err = d.PushImage(ctx, backupDto.Snapshot, &backupDto.Registry)
+	err = d.PushImage(ctx, backupDto.Image, &backupDto.Registry)
 	if err != nil {
 		return err
 	}
 
 	d.cache.SetBackupState(ctx, containerId, enums.BackupStateCompleted)
 
-	log.Infof("Backp (%s) for container %s created successfully", backupDto.Snapshot, containerId)
+	log.Infof("Backp (%s) for container %s created successfully", backupDto.Image, containerId)
 
-	err = d.RemoveImage(ctx, backupDto.Snapshot, true)
+	err = d.RemoveImage(ctx, backupDto.Image, true)
 	if err != nil {
-		log.Errorf("Error removing image %s: %v", backupDto.Snapshot, err)
+		log.Errorf("Error removing image %s: %v", backupDto.Image, err)
 	}
 
 	return nil

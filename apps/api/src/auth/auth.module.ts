@@ -1,7 +1,6 @@
 import { HttpModule, HttpService } from "@nestjs/axios";
 import { Module } from "@nestjs/common";
 import { PassportModule } from "@nestjs/passport";
-import { OidcMetadata } from "oidc-client-ts";
 import { firstValueFrom } from "rxjs";
 import { catchError, map } from "rxjs/operators";
 import { ApiKeyModule } from "../api-key/api-key.module";
@@ -11,6 +10,7 @@ import { UserModule } from "../user/user.module";
 import { UserService } from "../user/user.service";
 import { ApiKeyStrategy } from "./strategies/api-key.strategy";
 import { JwtStrategy } from "./strategies/jwt.strategy";
+import { OidcMetadata } from "./types/odic";
 
 @Module({
   imports: [
@@ -31,18 +31,16 @@ import { JwtStrategy } from "./strategies/jwt.strategy";
       useFactory: async (
         userService: UserService,
         httpService: HttpService,
-        configService: TypedConfigService,
+        configService: TypedConfigService
       ) => {
         const discoveryUrl = `${configService.get("oidc.issuer")}/.well-known/openid-configuration`;
         const metadata = await firstValueFrom(
           httpService.get(discoveryUrl).pipe(
             map((response) => response.data as OidcMetadata),
             catchError((error) => {
-              throw new Error(
-                `Failed to fetch OpenID configuration: ${error.message}`,
-              );
-            }),
-          ),
+              throw new Error(`Failed to fetch OpenID configuration: ${error.message}`);
+            })
+          )
         );
 
         return new JwtStrategy(
@@ -51,7 +49,7 @@ import { JwtStrategy } from "./strategies/jwt.strategy";
             issuer: metadata.issuer,
             jwksUri: metadata.jwks_uri,
           },
-          userService,
+          userService
         );
       },
       inject: [UserService, HttpService, TypedConfigService],

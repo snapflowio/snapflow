@@ -37,10 +37,10 @@ import Redis from "ioredis";
 import { CombinedAuthGuard } from "../../auth/guards/combined-auth.guard";
 import { CustomHeaders } from "../../common/constants/header.constants";
 import { AuthContext } from "../../common/decorators/auth-context.decorator";
+import { BadRequestError } from "../../common/exceptions/bad-request.exception";
 import { ContentTypeInterceptor } from "../../common/interceptors/content-type.interceptors";
 import { OrganizationAuthContext } from "../../common/interfaces/auth-context.interface";
 import { TypedConfigService } from "../../config/typed-config.service";
-import { BadRequestError } from "../../exceptions/bad-request.exception";
 import { RequiredOrganizationResourcePermissions } from "../../organization/decorators/required-organization-resource-permissions.decorator";
 import { OrganizationResourcePermission } from "../../organization/enums/organization-resource-permission.enum";
 import { OrganizationResourceActionGuard } from "../../organization/guards/organization-resource-action.guard";
@@ -49,13 +49,13 @@ import { Sandbox } from "../decorators/sandbox.decorator";
 import { CreateSandboxDto } from "../dto/create-sandbox.dto";
 import { PortPreviewUrlDto } from "../dto/port-preview-url.dto";
 import { SandboxDto, SandboxLabelsDto } from "../dto/sandbox.dto";
-import { Runner } from "../entities/runner.entity";
+import { Executor } from "../entities/executor.entity";
 import { Sandbox as SandboxEntity } from "../entities/sandbox.entity";
 import { SandboxState } from "../enums/sandbox-state.enum";
 import { SandboxStateUpdatedEvent } from "../events/sandbox-state-updated.event";
 import { SandboxAccessGuard } from "../guards/sandbox-access.guard";
 import { LogProxy } from "../proxy/log-proxy";
-import { RunnerService } from "../services/runner.service";
+import { ExecutorService } from "../services/executor.service";
 import { SandboxService } from "../services/sandbox.service";
 
 @ApiTags("sandbox")
@@ -69,10 +69,10 @@ export class SandboxController {
 
   constructor(
     @InjectRedis() private readonly redis: Redis,
-    private readonly runnerService: RunnerService,
+    private readonly executorService: ExecutorService,
     private readonly sandboxService: SandboxService,
     private readonly configService: TypedConfigService,
-    private readonly eventEmitter: EventEmitter2,
+    private readonly eventEmitter: EventEmitter2
   ) {}
 
   @Get()
@@ -108,24 +108,26 @@ export class SandboxController {
     @AuthContext() authContext: OrganizationAuthContext,
     @Query("verbose") verbose?: boolean,
     @Query("labels") labelsQuery?: string,
-    @Query("includeErroredDeleted") includeErroredDeleted?: boolean,
+    @Query("includeErroredDeleted") includeErroredDeleted?: boolean
   ): Promise<SandboxDto[]> {
     const labels = labelsQuery ? JSON.parse(labelsQuery) : {};
     const sandboxes = await this.sandboxService.findAll(
       authContext.organizationId,
       labels,
-      includeErroredDeleted,
+      includeErroredDeleted
     );
+
     const dtos = sandboxes.map(async (sandbox) => {
-      const runner = await this.runnerService.findOne(sandbox.runnerId);
-      const dto = SandboxDto.fromSandbox(sandbox, runner.domain);
+      const executor = await this.executorService.findOne(sandbox.executorId);
+      const dto = SandboxDto.fromSandbox(sandbox, executor.domain);
       return dto;
     });
+
     return await Promise.all(dtos);
   }
 
   @Post()
-  @HttpCode(200) //  for Daytona Api compatibility
+  @HttpCode(200)
   @UseInterceptors(ContentTypeInterceptor)
   @ApiOperation({
     summary: "Create a new sandbox",
@@ -137,26 +139,23 @@ export class SandboxController {
     type: SandboxDto,
   })
   @Throttle({ default: { limit: 100 } })
-  @RequiredOrganizationResourcePermissions([
-    OrganizationResourcePermission.WRITE_SANDBOXES,
-  ])
+  @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.WRITE_SANDBOXES])
   async createSandbox(
     @AuthContext() authContext: OrganizationAuthContext,
-    @Body() createSandboxDto: CreateSandboxDto,
+    @Body() createSandboxDto: CreateSandboxDto
   ): Promise<SandboxDto> {
     const organization = authContext.organization;
     let sandbox: SandboxDto;
 
+    console.log("CREATING SANDBOX", createSandboxDto.buildInfo);
+
     if (createSandboxDto.buildInfo) {
-      if (createSandboxDto.snapshot) {
-        throw new BadRequestError(
-          "Cannot specify a snapshot when using a build info entry",
-        );
+      if (createSandboxDto.image) {
+        throw new BadRequestError("Cannot specify a image when using a build info entry");
       }
-      sandbox = await this.sandboxService.createFromBuildInfo(
-        createSandboxDto,
-        organization,
-      );
+      console.log("CREATING FROM BUILD INFO");
+
+      sandbox = await this.sandboxService.createFromBuildInfo(createSandboxDto, organization);
     } else {
       if (
         createSandboxDto.cpu ||
@@ -164,14 +163,12 @@ export class SandboxController {
         createSandboxDto.memory ||
         createSandboxDto.disk
       ) {
-        throw new BadRequestError(
-          "Cannot specify Sandbox resources when using a snapshot",
-        );
+        throw new BadRequestError("Cannot specify Sandbox resources when using a image");
       }
-      sandbox = await this.sandboxService.createFromSnapshot(
-        createSandboxDto,
-        organization,
-      );
+
+      console.log("SANDBOX SERVIVE");
+      sandbox = await this.sandboxService.createFromImage(createSandboxDto, organization);
+      console.log(createSandboxDto.image);
       if (sandbox.state === SandboxState.STARTED) {
         return sandbox;
       }
@@ -208,14 +205,14 @@ export class SandboxController {
   async getSandbox(
     @Sandbox() sandbox: SandboxEntity,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @Query("verbose") verbose?: boolean,
+    @Query("verbose") verbose?: boolean
   ): Promise<SandboxDto> {
-    let runner: Runner;
-    if (sandbox.runnerId) {
-      runner = await this.runnerService.findOne(sandbox.runnerId);
+    let executor: Executor;
+    if (sandbox.executorId) {
+      executor = await this.executorService.findOne(sandbox.executorId);
     }
 
-    return SandboxDto.fromSandbox(sandbox, runner?.domain);
+    return SandboxDto.fromSandbox(sandbox, executor?.domain);
   }
 
   @Delete(":sandboxId")
@@ -233,14 +230,12 @@ export class SandboxController {
     description: "Sandbox has been deleted",
   })
   @Throttle({ default: { limit: 100 } })
-  @RequiredOrganizationResourcePermissions([
-    OrganizationResourcePermission.DELETE_SANDBOXES,
-  ])
+  @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.DELETE_SANDBOXES])
   @UseGuards(SandboxAccessGuard)
   async removeSandbox(
     @Param("sandboxId") sandboxId: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @Query("force") force?: boolean,
+    @Query("force") force?: boolean
   ): Promise<void> {
     return this.sandboxService.destroy(sandboxId);
   }
@@ -262,33 +257,29 @@ export class SandboxController {
     type: SandboxDto,
   })
   @Throttle({ default: { limit: 100 } })
-  @RequiredOrganizationResourcePermissions([
-    OrganizationResourcePermission.WRITE_SANDBOXES,
-  ])
+  @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.WRITE_SANDBOXES])
   @UseGuards(SandboxAccessGuard)
   async startSandbox(
     @AuthContext() authContext: OrganizationAuthContext,
-    @Param("sandboxId") sandboxId: string,
+    @Param("sandboxId") sandboxId: string
   ): Promise<SandboxDto> {
     await this.sandboxService.start(sandboxId, authContext.organization);
 
     const sandbox = await this.waitForSandboxStarted(sandboxId, 30);
 
-    if (!sandbox.runnerDomain) {
-      const runner = await this.runnerService.findBySandboxId(sandboxId);
-      if (!runner) {
-        throw new NotFoundException(
-          `Runner for sandbox ${sandboxId} not found`,
-        );
+    if (!sandbox.executorDomain) {
+      const executor = await this.executorService.findBySandboxId(sandboxId);
+      if (!executor) {
+        throw new NotFoundException(`Executor for sandbox ${sandboxId} not found`);
       }
-      sandbox.runnerDomain = runner.domain;
+      sandbox.executorDomain = executor.domain;
     }
 
     return sandbox;
   }
 
   @Post(":sandboxId/stop")
-  @HttpCode(200) //  for Daytona Api compatibility
+  @HttpCode(200)
   @ApiOperation({
     summary: "Stop sandbox",
     operationId: "stopSandbox",
@@ -303,9 +294,7 @@ export class SandboxController {
     description: "Sandbox has been stopped",
   })
   @Throttle({ default: { limit: 100 } })
-  @RequiredOrganizationResourcePermissions([
-    OrganizationResourcePermission.WRITE_SANDBOXES,
-  ])
+  @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.WRITE_SANDBOXES])
   @UseGuards(SandboxAccessGuard)
   async stopSandbox(@Param("sandboxId") sandboxId: string): Promise<void> {
     return this.sandboxService.stop(sandboxId);
@@ -327,18 +316,13 @@ export class SandboxController {
     description: "Labels have been successfully replaced",
     type: SandboxLabelsDto,
   })
-  @RequiredOrganizationResourcePermissions([
-    OrganizationResourcePermission.WRITE_SANDBOXES,
-  ])
+  @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.WRITE_SANDBOXES])
   @UseGuards(SandboxAccessGuard)
   async replaceLabels(
     @Param("sandboxId") sandboxId: string,
-    @Body() labelsDto: SandboxLabelsDto,
+    @Body() labelsDto: SandboxLabelsDto
   ): Promise<SandboxLabelsDto> {
-    const labels = await this.sandboxService.replaceLabels(
-      sandboxId,
-      labelsDto.labels,
-    );
+    const labels = await this.sandboxService.replaceLabels(sandboxId, labelsDto.labels);
     return { labels };
   }
 
@@ -357,9 +341,7 @@ export class SandboxController {
     description: "Sandbox backup has been initiated",
     type: SandboxDto,
   })
-  @RequiredOrganizationResourcePermissions([
-    OrganizationResourcePermission.WRITE_SANDBOXES,
-  ])
+  @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.WRITE_SANDBOXES])
   @UseGuards(SandboxAccessGuard)
   async createBackup(@Param("sandboxId") sandboxId: string): Promise<void> {
     await this.sandboxService.createBackup(sandboxId);
@@ -380,13 +362,11 @@ export class SandboxController {
     description: "Public status to set",
     type: "boolean",
   })
-  @RequiredOrganizationResourcePermissions([
-    OrganizationResourcePermission.WRITE_SANDBOXES,
-  ])
+  @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.WRITE_SANDBOXES])
   @UseGuards(SandboxAccessGuard)
   async updatePublicStatus(
     @Param("sandboxId") sandboxId: string,
-    @Param("isPublic") isPublic: boolean,
+    @Param("isPublic") isPublic: boolean
   ): Promise<void> {
     await this.sandboxService.updatePublicStatus(sandboxId, isPublic);
   }
@@ -410,13 +390,11 @@ export class SandboxController {
     status: 200,
     description: "Auto-stop interval has been set",
   })
-  @RequiredOrganizationResourcePermissions([
-    OrganizationResourcePermission.WRITE_SANDBOXES,
-  ])
+  @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.WRITE_SANDBOXES])
   @UseGuards(SandboxAccessGuard)
   async setAutostopInterval(
     @Param("sandboxId") sandboxId: string,
-    @Param("interval") interval: number,
+    @Param("interval") interval: number
   ): Promise<void> {
     await this.sandboxService.setAutostopInterval(sandboxId, interval);
   }
@@ -433,21 +411,18 @@ export class SandboxController {
   })
   @ApiParam({
     name: "interval",
-    description:
-      "Auto-archive interval in minutes (0 means the maximum interval will be used)",
+    description: "Auto-archive interval in minutes (0 means the maximum interval will be used)",
     type: "number",
   })
   @ApiResponse({
     status: 200,
     description: "Auto-archive interval has been set",
   })
-  @RequiredOrganizationResourcePermissions([
-    OrganizationResourcePermission.WRITE_SANDBOXES,
-  ])
+  @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.WRITE_SANDBOXES])
   @UseGuards(SandboxAccessGuard)
   async setAutoArchiveInterval(
     @Param("sandboxId") sandboxId: string,
-    @Param("interval") interval: number,
+    @Param("interval") interval: number
   ): Promise<void> {
     await this.sandboxService.setAutoArchiveInterval(sandboxId, interval);
   }
@@ -463,9 +438,7 @@ export class SandboxController {
     description: "Sandbox has been archived",
   })
   @Throttle({ default: { limit: 100 } })
-  @RequiredOrganizationResourcePermissions([
-    OrganizationResourcePermission.WRITE_SANDBOXES,
-  ])
+  @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.WRITE_SANDBOXES])
   @UseGuards(SandboxAccessGuard)
   async archiveSandbox(@Param("sandboxId") sandboxId: string): Promise<void> {
     return this.sandboxService.archive(sandboxId);
@@ -494,7 +467,7 @@ export class SandboxController {
   @UseGuards(SandboxAccessGuard)
   async getPortPreviewUrl(
     @Param("sandboxId") sandboxId: string,
-    @Param("port") port: number,
+    @Param("port") port: number
   ): Promise<PortPreviewUrlDto> {
     if (port < 1 || port > 65535) {
       throw new BadRequestError("Invalid port");
@@ -508,19 +481,17 @@ export class SandboxController {
         throw new NotFoundException(`Sandbox with ID ${sandboxId} not found`);
       }
 
-      // Get runner info
-      const runner = await this.runnerService.findOne(sandbox.runnerId);
-      if (!runner) {
-        throw new NotFoundException(
-          `Runner not found for sandbox ${sandboxId}`,
-        );
+      // Get executor info
+      const executor = await this.executorService.findOne(sandbox.executorId);
+      if (!executor) {
+        throw new NotFoundException(`Executor not found for sandbox ${sandboxId}`);
       }
 
       // Return new preview url only for updated sandboxes
       if (sandbox.daemonVersion) {
         return {
           url: `${proxyProtocol}://${port}-${sandbox.id}.${proxyDomain}`,
-          legacyProxyUrl: `https://${port}-${sandbox.id}.${runner.domain}`,
+          legacyProxyUrl: `https://${port}-${sandbox.id}.${executor.domain}`,
           token: sandbox.authToken,
         };
       }
@@ -555,40 +526,37 @@ export class SandboxController {
     @Res() res: ServerResponse,
     @Next() next: NextFunction,
     @Param("sandboxId") sandboxId: string,
-    @Query("follow", new ParseBoolPipe({ optional: true })) follow?: boolean,
+    @Query("follow", new ParseBoolPipe({ optional: true })) follow?: boolean
   ): Promise<void> {
     const sandbox = await this.sandboxService.findOne(sandboxId);
-    if (!sandbox || !sandbox.runnerId) {
+    if (!sandbox || !sandbox.executorId) {
       throw new NotFoundException(
-        `Sandbox with ID ${sandboxId} not found or has no runner assigned`,
+        `Sandbox with ID ${sandboxId} not found or has no executor assigned`
       );
     }
 
     if (!sandbox.buildInfo) {
-      throw new NotFoundException(
-        `Sandbox with ID ${sandboxId} has no build info`,
-      );
+      throw new NotFoundException(`Sandbox with ID ${sandboxId} has no build info`);
     }
 
-    const runner = await this.runnerService.findOne(sandbox.runnerId);
-    if (!runner)
-      throw new NotFoundException(`Runner for sandbox ${sandboxId} not found`);
+    const executor = await this.executorService.findOne(sandbox.executorId);
+    if (!executor) throw new NotFoundException(`Executor for sandbox ${sandboxId} not found`);
 
     const logProxy = new LogProxy(
-      runner.apiUrl,
-      sandbox.buildInfo.snapshotRef.split(":")[0],
-      runner.apiKey,
+      executor.apiUrl,
+      sandbox.buildInfo.imageRef.split(":")[0],
+      executor.apiKey,
       follow === true,
       req,
       res,
-      next,
+      next
     );
     return logProxy.create();
   }
 
   private async waitForSandboxStarted(
     sandboxId: string,
-    timeoutSeconds: number,
+    timeoutSeconds: number
   ): Promise<SandboxDto> {
     const waitForStarted = new Promise<SandboxDto>((resolve, reject) => {
       // biome-ignore lint/style/useConst: no value to initialize yet
@@ -597,10 +565,7 @@ export class SandboxController {
         if (event.sandbox.id !== sandboxId) return;
 
         if (event.sandbox.state === SandboxState.STARTED) {
-          this.eventEmitter.off(
-            SandboxEvents.STATE_UPDATED,
-            handleStateUpdated,
-          );
+          this.eventEmitter.off(SandboxEvents.STATE_UPDATED, handleStateUpdated);
           clearTimeout(timeout);
           resolve(SandboxDto.fromSandbox(event.sandbox, ""));
         }
@@ -609,16 +574,9 @@ export class SandboxController {
           event.sandbox.state === SandboxState.ERROR ||
           event.sandbox.state === SandboxState.BUILD_FAILED
         ) {
-          this.eventEmitter.off(
-            SandboxEvents.STATE_UPDATED,
-            handleStateUpdated,
-          );
+          this.eventEmitter.off(SandboxEvents.STATE_UPDATED, handleStateUpdated);
           clearTimeout(timeout);
-          reject(
-            new BadRequestError(
-              `Sandbox failed to start: ${event.sandbox.errorReason}`,
-            ),
-          );
+          reject(new BadRequestError(`Sandbox failed to start: ${event.sandbox.errorReason}`));
         }
       };
 
@@ -626,9 +584,7 @@ export class SandboxController {
       timeout = setTimeout(() => {
         this.eventEmitter.off(SandboxEvents.STATE_UPDATED, handleStateUpdated);
         reject(
-          new BadRequestError(
-            `Sandbox failed to start: Timeout after ${timeoutSeconds} seconds`,
-          ),
+          new BadRequestError(`Sandbox failed to start: Timeout after ${timeoutSeconds} seconds`)
         );
       }, timeoutSeconds * 1000);
     });

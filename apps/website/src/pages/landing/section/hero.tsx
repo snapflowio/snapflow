@@ -1,11 +1,12 @@
 "use client";
-
+import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
+import { Particles } from "@/components/ui/particles";
 import { SITE_CONFIG } from "@/constants/site";
-import CosmicWeb from "../components/cosmic-web";
+import { AnimatedCube } from "../components/animated-cube";
 
-function Content() {
+export function Hero() {
   const textVariants = {
     hidden: {
       opacity: 0,
@@ -18,11 +19,17 @@ function Content() {
   };
 
   return (
-    <div className="z-10 grid min-h-[80vh] w-[90vw] grid-rows-[auto_1fr_auto] gap-4 px-6 sm:mt-[104px] sm:min-h-[85vh] sm:w-[76vw] sm:p-6">
-      <div className="col-span-2" />
-      <div className="col-span-2 flex w-full flex-col-reverse items-center justify-between lg:flex-row lg:items-start">
-        <div className="self-end lg:max-w-[60%]">
-          <div className="text-center text-sm lg:text-left 2xl:text-[1vw] 2xl:leading-[1.5vw]">
+    <section className="relative min-h-screen bg-black px-6 pt-25">
+      <Particles
+        refresh={false}
+        ease={80}
+        color="#d4d4d8"
+        quantity={500}
+        className="pointer-events-none absolute inset-0 size-full opacity-40"
+      />
+      <div className="container relative mx-auto max-w-6xl">
+        <div className="mt-20 grid min-h-[80vh] items-start gap-12 lg:grid-cols-2">
+          <div className="text-left">
             <motion.div
               variants={textVariants}
               initial="hidden"
@@ -32,16 +39,14 @@ function Content() {
                 ease: [0.4, 0, 0.2, 1],
                 delay: 0.4,
               }}
-              className="flex items-center justify-center lg:justify-start"
             >
-              <span className="text-muted-foreground/70 text-sm 2xl:text-[1vw] 2xl:leading-[1vw]">
-                <strong className="mr-4 text-3xl text-white">Snapflow</strong>
-                <span className="text-lg text-muted-foreground/90">
-                  Smart AI Sandboxes
-                </span>
-              </span>
+              <h1 className="mb-8 font-medium text-7xl text-white leading-tight">
+                Powerful and scalable
+                <br />
+                <span className="text-green-400">sandboxes</span>
+              </h1>
             </motion.div>
-            <motion.p
+            <motion.div
               variants={textVariants}
               initial="hidden"
               animate="visible"
@@ -50,27 +55,42 @@ function Content() {
                 ease: [0.4, 0, 0.2, 1],
                 delay: 0.8,
               }}
-              className="mt-4 text-muted-foreground/90 text-sm 2xl:text-[1vw] 2xl:leading-[1.5vw]"
+              className="mb-8 flex flex-wrap gap-4"
+            >
+              <Button size="lg" className="bg-green-400 text-background">
+                Get Started
+              </Button>
+              <Button variant="outline" size="lg">
+                Pricing
+              </Button>
+              <Button variant="ghost" size="lg">
+                Visit our blog
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </motion.div>
+          </div>
+          <div className="text-left lg:text-right">
+            <motion.p
+              variants={textVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{
+                duration: 0.6,
+                ease: [0.4, 0, 0.2, 1],
+                delay: 1.2,
+              }}
+              className="max-w-lg text-gray-300 text-lg leading-relaxed lg:ml-auto"
             >
               {SITE_CONFIG.DESCIPTION}
             </motion.p>
-          </div>
-          <div className="mt-4 flex justify-center space-x-2 lg:justify-start ">
-            <Button size={"lg"}>Get Started</Button>
+            <div className="mt-16 flex justify-center">
+              <div className="lg:translate-x-14">
+                <AnimatedCube />
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-export function Hero() {
-  return (
-    <div className="relative flex h-full min-h-screen flex-col items-center justify-start sm:mt-0">
-      <div className="webgl -top-[26vh] sm:-top-16 h-full w-full">
-        <CosmicWeb />
-      </div>
-      <Content />
-    </div>
+    </section>
   );
 }

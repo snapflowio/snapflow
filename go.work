@@ -2,6 +2,6 @@ go 1.24.4
 
 use (
 	./apps/node
-	./apps/manager
-	./packages/go-common
+	./apps/executor
+	./apps/go-common
 )

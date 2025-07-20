@@ -5,6 +5,5 @@ export const OrganizationEvents = {
   INVITATION_CANCELLED: "invitation.cancelled",
   CREATED: "organization.created",
   SUSPENDED_SANDBOX_STOPPED: "organization.suspended-sandbox-stopped",
-  SUSPENDED_SNAPSHOT_RUNNER_REMOVED:
-    "organization.suspended-snapshot-manager-removed",
+  SUSPENDED_IMAGE_RUNNER_REMOVED: "organization.suspended-image-manager-removed",
 } as const;

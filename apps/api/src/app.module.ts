@@ -1,28 +1,24 @@
 import { join } from "path";
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from "@nestjs/common";
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
 import { EventEmitterModule } from "@nestjs/event-emitter";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { ThrottlerModule } from "@nestjs/throttler";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RedisModule } from "@nestjs-modules/ioredis";
+import { McpModule, McpTransportType } from "@rekog/mcp-nest";
 import { ApiKeyModule } from "./api-key/api-key.module";
-import { AppService } from "./app.service";
+import { AppTool } from "./app.tool";
 import { AuthModule } from "./auth/auth.module";
 import { MaintenanceMiddleware } from "./common/middleware/maintenance.middleware";
 import { VersionHeaderMiddleware } from "./common/middleware/version-header.middleware";
 import { CustomNamingStrategy } from "./common/utils/naming-strategy.util";
 import { TypedConfigModule } from "./config/typed-config.module";
 import { TypedConfigService } from "./config/typed-config.service";
-import { DockerRegistryModule } from "./docker-registry/docker-registry.module";
 import { OrganizationModule } from "./organization/organization.module";
+import { RealtimeModule } from "./realtime/realtime.module";
+import { DockerRegistryModule } from "./registry/registry.module";
 import { SandboxModule } from "./sandbox/sandbox.module";
-import { TeamModule } from "./team/team.module";
 import { UsageModule } from "./usage/usage.module";
 import { UserModule } from "./user/user.module";
 
@@ -50,12 +46,17 @@ import { UserModule } from "./user/user.module";
       },
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, "..", "dashboard"),
+      rootPath: join(__dirname, "..", "website"),
       exclude: ["/api/*"],
       renderPath: "/",
       serveStaticOptions: {
         cacheControl: false,
       },
+    }),
+    McpModule.forRoot({
+      name: "snapflow",
+      version: "0.0.1",
+      transport: McpTransportType.STREAMABLE_HTTP,
     }),
     ThrottlerModule.forRoot([
       {
@@ -77,27 +78,27 @@ import { UserModule } from "./user/user.module";
         };
       },
     }),
+    McpModule.forRoot({
+      name: "snapflow-mcp",
+      version: "0.0.1",
+    }),
     EventEmitterModule.forRoot(),
     AuthModule,
     ApiKeyModule,
     DockerRegistryModule,
     OrganizationModule,
     SandboxModule,
-    TeamModule,
+    RealtimeModule,
     UsageModule,
     UserModule,
     ScheduleModule.forRoot(),
   ],
   controllers: [],
-  providers: [AppService],
+  providers: [AppTool],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(VersionHeaderMiddleware)
-      .forRoutes({ path: "*", method: RequestMethod.ALL });
-    consumer
-      .apply(MaintenanceMiddleware)
-      .forRoutes({ path: "*", method: RequestMethod.ALL });
+    consumer.apply(VersionHeaderMiddleware).forRoutes({ path: "*", method: RequestMethod.ALL });
+    consumer.apply(MaintenanceMiddleware).forRoutes({ path: "*", method: RequestMethod.ALL });
   }
 }

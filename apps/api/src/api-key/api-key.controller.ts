@@ -33,6 +33,10 @@ import { ApiKeyListDto } from "./dto/api-key-list.dto";
 import { ApiKeyResponseDto } from "./dto/api-key-response.dto";
 import { CreateApiKeyDto } from "./dto/create-api-key.dto";
 
+/**
+ * Controller for managing API keys within an organization.
+ * All endpoints require authentication and an organization context.
+ */
 @ApiTags("api-keys")
 @Controller("api-keys")
 @ApiHeader(CustomHeaders.ORGANIZATION_ID)
@@ -42,6 +46,13 @@ import { CreateApiKeyDto } from "./dto/create-api-key.dto";
 export class ApiKeyController {
   constructor(private readonly apiKeyService: ApiKeyService) {}
 
+  /**
+   * Creates a new API key for the authenticated user's organization.
+   * The permissions granted to the key cannot exceed the creator's own permissions.
+   * @param authContext - The authentication context of the requesting user.
+   * @param createApiKeyDto - The data for creating the new API key.
+   * @returns The newly created API key, including the raw key value.
+   */
   @Post()
   @ApiOperation({
     summary: "Create API key",
@@ -69,6 +80,11 @@ export class ApiKeyController {
     return ApiKeyResponseDto.fromApiKey(apiKey, key);
   }
 
+  /**
+   * Lists all API keys for the authenticated user in the current organization.
+   * @param authContext - The authentication context of the requesting user.
+   * @returns An array of API key details, without the raw key values.
+   */
   @Get()
   @ApiOperation({
     summary: "List API keys",
@@ -79,15 +95,21 @@ export class ApiKeyController {
     description: "API keys retrieved successfully.",
     type: [ApiKeyListDto],
   })
-  @ApiResponse({ status: 500, description: "Error fetching API keys." })
   async getApiKeys(@AuthContext() authContext: OrganizationAuthContext): Promise<ApiKeyListDto[]> {
     const apiKeys = await this.apiKeyService.getApiKeys(
       authContext.organizationId,
       authContext.userId
     );
-    return apiKeys.map((apiKey) => ApiKeyListDto.fromApiKey(apiKey));
+    return apiKeys.map(ApiKeyListDto.fromApiKey);
   }
 
+  /**
+   * Gets details for the API key currently being used for authentication.
+   * This endpoint is only usable when authenticating with an API key.
+   * @param authContext - The authentication context, which must include API key details.
+   * @returns The details of the current API key.
+   * @throws {ForbiddenException} If the endpoint is not accessed with an API key.
+   */
   @Get("current")
   @ApiOperation({
     summary: "Get current API key's details",
@@ -100,15 +122,21 @@ export class ApiKeyController {
   })
   async getCurrentApiKey(@AuthContext() authContext: IAuthContext): Promise<ApiKeyListDto> {
     if (!authContext.apiKey) {
-      throw new ForbiddenException("Authenticate with an API key to use this endpoint");
+      throw new ForbiddenException("Authenticate with an API key to use this endpoint.");
     }
 
     return ApiKeyListDto.fromApiKey(authContext.apiKey);
   }
 
+  /**
+   * Retrieves a specific API key by its name.
+   * @param authContext - The authentication context of the requesting user.
+   * @param name - The name of the API key to retrieve.
+   * @returns The details of the specified API key.
+   */
   @Get(":name")
   @ApiOperation({
-    summary: "Get API key",
+    summary: "Get API key by name",
     operationId: "getApiKey",
   })
   @ApiResponse({
@@ -128,9 +156,14 @@ export class ApiKeyController {
     return ApiKeyListDto.fromApiKey(apiKey);
   }
 
+  /**
+   * Deletes a specific API key by its name.
+   * @param authContext - The authentication context of the requesting user.
+   * @param name - The name of the API key to delete.
+   */
   @Delete(":name")
   @ApiOperation({
-    summary: "Delete API key",
+    summary: "Delete API key by name",
     operationId: "deleteApiKey",
   })
   @ApiResponse({ status: 204, description: "API key deleted successfully." })
@@ -138,24 +171,31 @@ export class ApiKeyController {
   async deleteApiKey(
     @AuthContext() authContext: OrganizationAuthContext,
     @Param("name") name: string
-  ) {
+  ): Promise<void> {
     await this.apiKeyService.deleteApiKey(authContext.organizationId, authContext.userId, name);
   }
 
+  /**
+   * Validates if the requesting user has the authority to create an API key
+   * with the specified permissions.
+   * @param authContext - The user's authentication context.
+   * @param requestedPermissions - The list of permissions for the new key.
+   * @throws {ForbiddenException} If the user lacks the necessary permissions to assign.
+   */
   private validateRequestedApiKeyPermissions(
     authContext: OrganizationAuthContext,
     requestedPermissions: OrganizationResourcePermission[]
   ): void {
+    // System admins can grant any permission.
     if (authContext.role === SystemRole.ADMIN) {
       return;
     }
 
     if (!authContext.organizationUser) {
-      throw new ForbiddenException(
-        `Insufficient permissions for assigning: ${requestedPermissions.join(", ")}`
-      );
+      throw new ForbiddenException("User context within organization not found.");
     }
 
+    // Organization owners can grant any permission.
     if (authContext.organizationUser.role === OrganizationMemberRole.OWNER) {
       return;
     }

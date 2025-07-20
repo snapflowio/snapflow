@@ -10,19 +10,16 @@ import {
 
 export function Header() {
   return (
-    <header className="fixed top-0 right-0 left-0 z-[9999] mt-9 flex justify-center">
-      <div className="mx-auto w-full max-w-[980px]">
+    <header className="sticky top-10 right-0 left-0 z-[9999] flex justify-center">
+      <div className="mx-auto w-full max-w-[1048px] rounded-lg border bg-background/30 px-8 backdrop-blur-lg">
         <nav aria-label="Main navigation">
           <div className="flex h-14 items-center justify-between">
             <div className="flex items-center space-x-8">
               <div className="flex items-center space-x-4">
                 <Logo />
-                <span className="font-bold text-2xl">Snapflow</span>
+                <span className="font-bold text-xl">Snapflow</span>
               </div>
-              <NavigationMenu
-                className="hidden items-center md:flex"
-                aria-label="Main menu"
-              >
+              <NavigationMenu className="hidden items-center md:flex" aria-label="Main menu">
                 <NavigationMenuList className="flex items-center space-x-4 text-slate-200">
                   <NavigationMenuLink
                     href="/pricing"
@@ -40,11 +37,7 @@ export function Header() {
               </NavigationMenu>
             </div>
             <div className="flex items-center">
-              <Button
-                className="flex items-center rounded-lg"
-                size="lg"
-                asChild
-              >
+              <Button className="flex items-center rounded-lg" size="lg" asChild>
                 <Link to="/dashboard" className="flex items-center">
                   Open App
                   <ArrowRightIcon />

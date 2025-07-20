@@ -7,7 +7,7 @@ import (
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
-	"github.com/snapflow/manager/pkg/models/enums"
+	"github.com/snapflow/executor/pkg/models/enums"
 )
 
 func (d *DockerClient) DeduceSandboxState(ctx context.Context, sandboxId string) (enums.SandboxState, error) {
@@ -29,7 +29,7 @@ func (d *DockerClient) DeduceSandboxState(ctx context.Context, sandboxId string)
 
 	case "running":
 		if d.isContainerPullingImage(container.ID) {
-			return enums.SandboxStatePullingSnapshot, nil
+			return enums.SandboxStatePullingImage, nil
 		}
 		return enums.SandboxStateStarted, nil
 

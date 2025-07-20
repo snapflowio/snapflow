@@ -33,7 +33,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
     return {
         /**
          * 
-         * @summary Create user
+         * @summary Create a new user
          * @param {CreateUser} createUser 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -107,7 +107,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
-         * @summary Get user by ID
+         * @summary Get a user by ID
          * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -189,12 +189,12 @@ export const UsersApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary Create user
+         * @summary Create a new user
          * @param {CreateUser} createUser 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createUser(createUser: CreateUser, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async createUser(createUser: CreateUser, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createUser(createUser, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UsersApi.createUser']?.[localVarOperationServerIndex]?.url;
@@ -214,7 +214,7 @@ export const UsersApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Get user by ID
+         * @summary Get a user by ID
          * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -231,7 +231,7 @@ export const UsersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async listUsers(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async listUsers(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<User>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.listUsers(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UsersApi.listUsers']?.[localVarOperationServerIndex]?.url;
@@ -249,12 +249,12 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
     return {
         /**
          * 
-         * @summary Create user
+         * @summary Create a new user
          * @param {CreateUser} createUser 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createUser(createUser: CreateUser, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+        createUser(createUser: CreateUser, options?: RawAxiosRequestConfig): AxiosPromise<User> {
             return localVarFp.createUser(createUser, options).then((request) => request(axios, basePath));
         },
         /**
@@ -268,7 +268,7 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
-         * @summary Get user by ID
+         * @summary Get a user by ID
          * @param {string} id 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -282,7 +282,7 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        listUsers(options?: RawAxiosRequestConfig): AxiosPromise<void> {
+        listUsers(options?: RawAxiosRequestConfig): AxiosPromise<Array<User>> {
             return localVarFp.listUsers(options).then((request) => request(axios, basePath));
         },
     };
@@ -297,7 +297,7 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
 export class UsersApi extends BaseAPI {
     /**
      * 
-     * @summary Create user
+     * @summary Create a new user
      * @param {CreateUser} createUser 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -320,7 +320,7 @@ export class UsersApi extends BaseAPI {
 
     /**
      * 
-     * @summary Get user by ID
+     * @summary Get a user by ID
      * @param {string} id 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}

@@ -7,11 +7,11 @@ import (
 	"io"
 	"strings"
 
+	"github.com/snapflow/executor/internal/constants"
+	"github.com/snapflow/executor/internal/util"
+	"github.com/snapflow/executor/pkg/api/dto"
+	"github.com/snapflow/executor/pkg/models/enums"
 	"github.com/snapflow/go-common/pkg/timer"
-	"github.com/snapflow/manager/internal/constants"
-	"github.com/snapflow/manager/internal/util"
-	"github.com/snapflow/manager/pkg/api/dto"
-	"github.com/snapflow/manager/pkg/models/enums"
 
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/registry"
@@ -46,7 +46,7 @@ func (d *DockerClient) PullImage(ctx context.Context, imageName string, reg *dto
 
 	if sandboxIdValue != nil {
 		sandboxId := sandboxIdValue.(string)
-		d.cache.SetSandboxState(ctx, sandboxId, enums.SandboxStatePullingSnapshot)
+		d.cache.SetSandboxState(ctx, sandboxId, enums.SandboxStatePullingImage)
 	}
 
 	responseBody, err := d.apiClient.ImagePull(ctx, imageName, image.PullOptions{

@@ -6,7 +6,16 @@
   "tags": [],
   "targets": {
     "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/website"
+      },
       "configurations": {
+        "development": {
+          "mode": "development"
+        },
         "production": {
           "mode": "production"
         }
@@ -15,7 +24,7 @@
     "format": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "cd {projectRoot} && bun run format"
+        "command": "cd {projectRoot} && npm run format"
       }
     }
   }

@@ -15,13 +15,15 @@
 
 
 export * from './api/api-keys-api';
-export * from './api/docker-registry-api';
+export * from './api/buckets-api';
+export * from './api/executors-api';
+export * from './api/images-api';
 export * from './api/organizations-api';
 export * from './api/preview-api';
-export * from './api/runners-api';
+export * from './api/registry-api';
 export * from './api/sandbox-api';
-export * from './api/snapshots-api';
+export * from './api/sse-api';
+export * from './api/streamable-http-api';
 export * from './api/toolbox-api';
 export * from './api/users-api';
-export * from './api/volumes-api';
 

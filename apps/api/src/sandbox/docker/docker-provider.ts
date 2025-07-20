@@ -3,34 +3,24 @@ import { Inject, Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import axios from "axios";
 import Docker from "dockerode";
-import { DockerRegistryService } from "../../docker-registry/docker-registry.service";
-import { DockerRegistry } from "../../docker-registry/entities/docker-registry.entity";
+import { Registry } from "../../registry/entities/registry.entity";
+import { RegistryService } from "../../registry/registry.service";
 
 @Injectable()
 export class DockerProvider implements OnModuleInit {
   public docker: Docker;
 
   private readonly logger = new Logger(DockerProvider.name);
-  private readonly SNAPFLOW_BINARY_PATH = path.join(
-    process.cwd(),
-    ".tmp",
-    "binaries",
-    "daytona",
-  );
-  private readonly daytonaBinaryUrl: string;
-  private readonly TERMINAL_BINARY_PATH = path.join(
-    process.cwd(),
-    ".tmp",
-    "binaries",
-    "terminal",
-  );
+  private readonly SNAPFLOW_BINARY_PATH = path.join(process.cwd(), ".tmp", "binaries", "snapflow");
+  private readonly snapflowBinaryUrl: string;
+  private readonly TERMINAL_BINARY_PATH = path.join(process.cwd(), ".tmp", "binaries", "terminal");
   private readonly terminalBinaryUrl: string;
 
   constructor(
     @Inject(ConfigService)
     private readonly configService: ConfigService,
-    @Inject(DockerRegistryService)
-    private readonly dockerRegistryService: DockerRegistryService,
+    @Inject(RegistryService)
+    private readonly registryService: RegistryService
   ) {
     if (this.configService.get<string>("DOCKER_SSH_HOST")) {
       process.env.DOCKER_HOST = `ssh://${this.configService.get<string>("DOCKER_SSH_USERNAME")}@${this.configService.get<string>("DOCKER_SSH_HOST")}`;
@@ -39,12 +29,8 @@ export class DockerProvider implements OnModuleInit {
       this.docker = new Docker({ socketPath: "/var/run/docker.sock" });
     }
 
-    this.daytonaBinaryUrl = this.configService.get<string>(
-      "SNAPFLOW_BINARY_URL",
-    );
-    this.terminalBinaryUrl = this.configService.get<string>(
-      "TERMINAL_BINARY_URL",
-    );
+    this.snapflowBinaryUrl = this.configService.get<string>("SNAPFLOW_BINARY_URL");
+    this.terminalBinaryUrl = this.configService.get<string>("TERMINAL_BINARY_URL");
   }
 
   async onModuleInit() {
@@ -53,19 +39,12 @@ export class DockerProvider implements OnModuleInit {
     try {
       await Promise.all(binaryPromises);
     } catch (error) {
-      this.logger.error(
-        "Failed to download binaries during initialization:",
-        error,
-      );
+      this.logger.error("Failed to download binaries during initialization:", error);
     }
   }
 
-  public async startTerminalProcess(
-    container: Docker.Container,
-    port = 22222,
-  ): Promise<void> {
+  public async startTerminalProcess(container: Docker.Container, port = 22222): Promise<void> {
     try {
-      // First check if bash is available
       const execCheckBash = await container.exec({
         Cmd: ["which", "bash"],
         AttachStdout: true,
@@ -90,7 +69,6 @@ export class DockerProvider implements OnModuleInit {
         });
       });
 
-      // Start the terminal process
       const execTerminal = await container.exec({
         Cmd: ["terminal", "-p", port.toString(), "-W", shell],
         AttachStdout: false,
@@ -103,44 +81,6 @@ export class DockerProvider implements OnModuleInit {
       });
     } catch (error) {
       this.logger.error("Error starting terminal process:", error);
-      // Don't throw the error to prevent breaking the sandbox creation
-    }
-  }
-
-  private async startDaytonaAgent(container: Docker.Container): Promise<void> {
-    try {
-      const execDaytona = await container.exec({
-        Cmd: ["daytona", "agent"],
-        //  Cmd: ['python3', '-m', 'http.server', '2280'],
-        AttachStdout: true,
-        AttachStderr: true,
-        Tty: true,
-      });
-
-      await execDaytona.start(
-        {
-          Detach: false,
-        },
-        (err, stream) => {
-          if (err) {
-            this.logger.error("Error in Daytona agent stream:", err);
-            return;
-          }
-
-          stream.on("data", (chunk) => {
-            this.logger.log("Daytona agent output:", chunk.toString());
-          });
-
-          stream.on("error", (err) => {
-            this.logger.error("Daytona agent stream error:", err);
-          });
-        },
-      );
-
-      return;
-    } catch (error) {
-      this.logger.error("Error starting Daytona agent process:", error);
-      // Don't throw the error to prevent breaking the sandbox creation
     }
   }
 
@@ -155,54 +95,34 @@ export class DockerProvider implements OnModuleInit {
   }
 
   async create(imageName: string, entrypoint?: string[]): Promise<string> {
-    // Add this before creating the container
     const isValidArch = await this.validateImageArchitecture(imageName);
-    if (!isValidArch) {
-      throw new Error(
-        `Image ${imageName} is not compatible with x64 architecture`,
-      );
-    }
+    if (!isValidArch) throw new Error(`Image ${imageName} is not compatible with x64 architecture`);
 
-    // Create container with direct path binding
     const container = await this.docker.createContainer({
-      //  name: sandbox.id,
       Image: imageName,
-      // Remove Volumes configuration since we're using direct binding
       Env: [
         "SNAPFLOW_SANDBOX_ID=init-image",
         "SNAPFLOW_SANDBOX_USER=root",
-        `SNAPFLOW_SANDBOX_SNAPSHOT=${imageName}`,
+        `SNAPFLOW_SANDBOX_IMAGE=${imageName}`,
       ],
       Entrypoint: entrypoint,
       HostConfig: {
         Binds: [
-          //  `${dirPath}:${osHome}/project`,  // Direct path binding
-          ...(this.daytonaBinaryUrl
-            ? [`${this.SNAPFLOW_BINARY_PATH}:/usr/local/bin/daytona`]
+          ...(this.snapflowBinaryUrl
+            ? [`${this.SNAPFLOW_BINARY_PATH}:/usr/local/bin/snapflow`]
             : []),
           ...(this.terminalBinaryUrl
             ? [`${this.TERMINAL_BINARY_PATH}:/usr/local/bin/terminal`]
             : []),
         ],
-        // StorageOpt: {
-        //   size: `${sandbox.volume.quota}G`,
-        // },
-        //  Runtime: 'sysbox-runc',
-        //  Privileged: true,
       },
     });
-    await container.start();
 
-    // Start both processes in parallel without waiting
-    if (this.daytonaBinaryUrl) {
-      this.startDaytonaAgent(container).catch((err) =>
-        this.logger.error("Failed to start Daytona agent:", err),
-      );
-    }
+    await container.start();
 
     if (this.terminalBinaryUrl) {
       this.startTerminalProcess(container).catch((err) =>
-        this.logger.error("Failed to start terminal process:", err),
+        this.logger.error("Failed to start terminal process:", err)
       );
     }
 
@@ -212,16 +132,15 @@ export class DockerProvider implements OnModuleInit {
   private async deleteRepositoryWithPrefix(
     repository: string,
     prefix: string,
-    registry: DockerRegistry,
+    registry: Registry
   ): Promise<void> {
-    const registryUrl = this.dockerRegistryService.getRegistryUrl(registry);
-    const encodedCredentials = Buffer.from(
-      `${registry.username}:${registry.password}`,
-    ).toString("base64");
+    const registryUrl = this.registryService.getRegistryUrl(registry);
+    const encodedCredentials = Buffer.from(`${registry.username}:${registry.password}`).toString(
+      "base64"
+    );
     const repoPath = `${registry.project}/${prefix}${repository}`;
 
     try {
-      // Step 1: List all tags in the repository
       const tagsUrl = `${registryUrl}/v2/${repoPath}/tags/list`;
 
       const tagsResponse = await axios({
@@ -234,16 +153,14 @@ export class DockerProvider implements OnModuleInit {
         timeout: 30000,
       });
 
-      if (tagsResponse.status === 404) {
-        return;
-      }
+      if (tagsResponse.status === 404) return;
 
       if (tagsResponse.status >= 300) {
         this.logger.error(
-          `Error listing tags in repository ${repoPath}: ${tagsResponse.statusText}`,
+          `Error listing tags in repository ${repoPath}: ${tagsResponse.statusText}`
         );
         throw new Error(
-          `Failed to list tags in repository ${repoPath}: ${tagsResponse.statusText}`,
+          `Failed to list tags in repository ${repoPath}: ${tagsResponse.statusText}`
         );
       }
 
@@ -254,10 +171,8 @@ export class DockerProvider implements OnModuleInit {
         return;
       }
 
-      // Step 2: Delete each tag
       for (const tag of tags) {
         try {
-          // Get the digest for this tag
           const manifestUrl = `${registryUrl}/v2/${repoPath}/manifests/${tag}`;
 
           const manifestResponse = await axios({
@@ -273,7 +188,7 @@ export class DockerProvider implements OnModuleInit {
 
           if (manifestResponse.status >= 300) {
             this.logger.warn(
-              `Couldn't get manifest for tag ${tag}: ${manifestResponse.statusText}`,
+              `Couldn't get manifest for tag ${tag}: ${manifestResponse.statusText}`
             );
             continue;
           }
@@ -284,7 +199,6 @@ export class DockerProvider implements OnModuleInit {
             continue;
           }
 
-          // Delete the manifest
           const deleteUrl = `${registryUrl}/v2/${repoPath}/manifests/${digest}`;
 
           const deleteResponse = await axios({
@@ -300,76 +214,54 @@ export class DockerProvider implements OnModuleInit {
           if (deleteResponse.status < 300) {
             this.logger.debug(`Deleted tag ${tag} from repository ${repoPath}`);
           } else {
-            this.logger.warn(
-              `Failed to delete tag ${tag}: ${deleteResponse.statusText}`,
-            );
+            this.logger.warn(`Failed to delete tag ${tag}: ${deleteResponse.statusText}`);
           }
         } catch (error) {
-          this.logger.warn(
-            `Exception when deleting tag ${tag}: ${error.message}`,
-          );
-          // Continue with other tags
+          this.logger.warn(`Exception when deleting tag ${tag}: ${error.message}`);
         }
       }
 
       this.logger.debug(`Repository ${repoPath} cleanup completed`);
     } catch (error) {
-      this.logger.error(
-        `Exception when deleting repository ${repoPath}: ${error.message}`,
-      );
+      this.logger.error(`Exception when deleting repository ${repoPath}: ${error.message}`);
       throw error;
     }
   }
 
-  async deleteSandboxRepository(
-    repository: string,
-    registry: DockerRegistry,
-  ): Promise<void> {
+  async deleteSandboxRepository(repository: string, registry: Registry): Promise<void> {
     try {
-      // Delete both backup and snapshot repositories - necessary due to renaming
       await this.deleteRepositoryWithPrefix(repository, "backup-", registry);
-      await this.deleteRepositoryWithPrefix(repository, "snapshot-", registry);
+      await this.deleteRepositoryWithPrefix(repository, "image-", registry);
     } catch (error) {
-      this.logger.error(
-        `Failed to delete repositories for ${repository}: ${error.message}`,
-      );
+      this.logger.error(`Failed to delete repositories for ${repository}: ${error.message}`);
       throw error;
     }
   }
 
-  async deleteBackupImageFromRegistry(
-    imageName: string,
-    registry: DockerRegistry,
-  ): Promise<void> {
-    // Extract tag
+  async deleteBackupImageFromRegistry(imageName: string, registry: Registry): Promise<void> {
     const lastColonIndex = imageName.lastIndexOf(":");
     const fullPath = imageName.substring(0, lastColonIndex);
     const tag = imageName.substring(lastColonIndex + 1);
 
-    const registryUrl = this.dockerRegistryService.getRegistryUrl(registry);
+    const registryUrl = this.registryService.getRegistryUrl(registry);
 
-    // Remove registry prefix if present in the image name
     let projectAndRepo = fullPath;
     if (fullPath.startsWith(registryUrl)) {
-      projectAndRepo = fullPath.substring(registryUrl.length + 1); // +1 for the slash
+      projectAndRepo = fullPath.substring(registryUrl.length + 1);
     }
 
-    // For Harbor format like: harbor.host/bbox-stage/backup-sandbox-75148d5a
     const parts = projectAndRepo.split("/");
-
-    // Construct repository path (everything after the registry host)
     const repoPath = parts.slice(1).join("/");
 
     // First, get the digest for the tag using the manifests endpoint
     const manifestUrl = `${registryUrl}/v2/${repoPath}/manifests/${tag}`;
-    const encodedCredentials = Buffer.from(
-      `${registry.username}:${registry.password}`,
-    ).toString("base64");
+    const encodedCredentials = Buffer.from(`${registry.username}:${registry.password}`).toString(
+      "base64"
+    );
 
     try {
-      // Get the digest from the headers
       const manifestResponse = await axios({
-        method: "head", // Using HEAD request to only fetch headers
+        method: "head",
         url: manifestUrl,
         headers: {
           Authorization: `Basic ${encodedCredentials}`,
@@ -381,22 +273,16 @@ export class DockerProvider implements OnModuleInit {
 
       if (manifestResponse.status >= 300) {
         this.logger.error(
-          `Error getting manifest for image ${imageName}: ${manifestResponse.statusText}`,
+          `Error getting manifest for image ${imageName}: ${manifestResponse.statusText}`
         );
         throw new Error(
-          `Failed to get manifest for image ${imageName}: ${manifestResponse.statusText}`,
+          `Failed to get manifest for image ${imageName}: ${manifestResponse.statusText}`
         );
       }
 
-      // Extract the digest from headers
       const digest = manifestResponse.headers["docker-content-digest"];
-      if (!digest) {
-        throw new Error(
-          `Docker content digest not found for image ${imageName}`,
-        );
-      }
+      if (!digest) throw new Error(`Docker content digest not found for image ${imageName}`);
 
-      // Now delete the image using the digest
       const deleteUrl = `${registryUrl}/v2/${repoPath}/manifests/${digest}`;
 
       const deleteResponse = await axios({
@@ -415,15 +301,14 @@ export class DockerProvider implements OnModuleInit {
       }
 
       this.logger.error(
-        `Error removing image ${imageName} from registry: ${deleteResponse.statusText}`,
+        `Error removing image ${imageName} from registry: ${deleteResponse.statusText}`
       );
+
       throw new Error(
-        `Failed to remove image ${imageName} from registry: ${deleteResponse.statusText}`,
+        `Failed to remove image ${imageName} from registry: ${deleteResponse.statusText}`
       );
     } catch (error) {
-      this.logger.error(
-        `Exception when deleting image ${imageName}: ${error.message}`,
-      );
+      this.logger.error(`Exception when deleting image ${imageName}: ${error.message}`);
       throw error;
     }
   }
@@ -437,7 +322,7 @@ export class DockerProvider implements OnModuleInit {
         return;
       }
       this.logger.error("Error removing Docker container:", error);
-      throw error; // Rethrow to let sandbox service handle the error state
+      throw error;
     }
   }
 
@@ -447,9 +332,7 @@ export class DockerProvider implements OnModuleInit {
     return data.NetworkSettings.IPAddress;
   }
 
-  async getImageEntrypoint(
-    image: string,
-  ): Promise<undefined | string | string[]> {
+  async getImageEntrypoint(image: string): Promise<undefined | string | string[]> {
     const dockerImage = await this.docker.getImage(image).inspect();
     return dockerImage.Config.Entrypoint;
   }
@@ -460,9 +343,7 @@ export class DockerProvider implements OnModuleInit {
       return false;
     }
     const images = await this.docker.listImages({});
-    const imageExists = images.some((imageInfo) =>
-      imageInfo.RepoTags?.includes(image),
-    );
+    const imageExists = images.some((imageInfo) => imageInfo.RepoTags?.includes(image));
     return imageExists;
   }
 
@@ -496,65 +377,43 @@ export class DockerProvider implements OnModuleInit {
   async validateImageArchitecture(image: string): Promise<boolean> {
     try {
       const imageUnified = image.replace("docker.io/", "");
-
       const dockerImage = await this.docker.getImage(imageUnified).inspect();
-
-      // Check the architecture from the image metadata
       const architecture = dockerImage.Architecture;
 
-      // Valid x64 architectures
       const x64Architectures = ["amd64", "x86_64"];
-
-      // Check if the architecture matches x64
       const isX64 = x64Architectures.includes(architecture.toLowerCase());
 
       if (!isX64) {
-        this.logger.warn(
-          `Image ${image} architecture (${architecture}) is not x64 compatible`,
-        );
+        this.logger.warn(`Image ${image} architecture (${architecture}) is not x64 compatible`);
         return false;
       }
 
       return true;
     } catch (error) {
-      this.logger.error(
-        `Error validating architecture for image ${image}:`,
-        error,
-      );
-      throw new Error(
-        `Failed to validate image architecture: ${error.message}`,
-      );
+      this.logger.error(`Error validating architecture for image ${image}:`, error);
+      throw new Error(`Failed to validate image architecture: ${error.message}`);
     }
   }
 
-  /**
-   * Checks if an image exists in the specified registry without pulling it
-   */
-  async checkImageExistsInRegistry(
-    imageName: string,
-    registry: DockerRegistry,
-  ): Promise<boolean> {
+  async checkImageExistsInRegistry(imageName: string, registry: Registry): Promise<boolean> {
     try {
-      // extract tag
       const lastColonIndex = imageName.lastIndexOf(":");
       const fullPath = imageName.substring(0, lastColonIndex);
       const tag = imageName.substring(lastColonIndex + 1);
 
-      const registryUrl = this.dockerRegistryService.getRegistryUrl(registry);
+      const registryUrl = this.registryService.getRegistryUrl(registry);
 
-      // Remove registry prefix if present in the image name
       let projectAndRepo = fullPath;
       if (fullPath.startsWith(registryUrl)) {
         projectAndRepo = fullPath.substring(registryUrl.length + 1); // +1 for the slash
       }
 
-      // For Harbor format like: harbor.host/bbox-stage/backup-sandbox-75148d5a
       const parts = projectAndRepo.split("/");
 
       const apiUrl = `${registryUrl}/v2/${parts[1]}/${parts[2]}/manifests/${tag}`;
-      const encodedCredentials = Buffer.from(
-        `${registry.username}:${registry.password}`,
-      ).toString("base64");
+      const encodedCredentials = Buffer.from(`${registry.username}:${registry.password}`).toString(
+        "base64"
+      );
 
       const response = await axios({
         method: "get",
@@ -572,12 +431,13 @@ export class DockerProvider implements OnModuleInit {
       }
 
       this.logger.debug(
-        `Image ${imageName} does not exist in registry (status: ${response.status})`,
+        `Image ${imageName} does not exist in registry (status: ${response.status})`
       );
+
       return false;
     } catch (error) {
       this.logger.error(
-        `Error checking if image ${imageName} exists in registry: ${error.message}`,
+        `Error checking if image ${imageName} exists in registry: ${error.message}`
       );
       return false;
     }
@@ -586,7 +446,7 @@ export class DockerProvider implements OnModuleInit {
   private async retryWithExponentialBackoff<T>(
     operation: () => Promise<T>,
     maxAttempts = 3,
-    initialDelayMs = 1000,
+    initialDelayMs = 1000
   ): Promise<T> {
     let attempt = 1;
     let delay = initialDelayMs;
@@ -595,22 +455,14 @@ export class DockerProvider implements OnModuleInit {
       try {
         return await operation();
       } catch (error) {
-        if (attempt === maxAttempts) {
-          throw error;
-        }
+        if (attempt === maxAttempts) throw error;
+        if (error.fatal) throw error.err;
 
-        if (error.fatal) {
-          throw error.err;
-        }
-
-        this.logger.warn(
-          `Attempt ${attempt} failed, retrying in ${delay}ms...`,
-          error,
-        );
+        this.logger.warn(`Attempt ${attempt} failed, retrying in ${delay}ms...`, error);
         await new Promise((resolve) => setTimeout(resolve, delay));
 
         attempt++;
-        delay *= 2; // Exponential backoff
+        delay *= 2;
       }
     }
 
@@ -619,7 +471,7 @@ export class DockerProvider implements OnModuleInit {
 
   async pullImage(
     image: string,
-    registry?: { url: string; username: string; password: string },
+    registry?: { url: string; username: string; password: string }
   ): Promise<void> {
     await this.retryWithExponentialBackoff(async () => {
       const options: any = {
@@ -638,11 +490,10 @@ export class DockerProvider implements OnModuleInit {
       try {
         const stream = await this.docker.pull(image, options);
         const err = await new Promise<Error | null>((resolve) =>
-          this.docker.modem.followProgress(stream, resolve),
+          this.docker.modem.followProgress(stream, resolve)
         );
-        if (err) {
-          throw err;
-        }
+
+        if (err) throw err;
       } catch (err) {
         if (err.statusCode === 404) {
           let returnErr = err;
@@ -651,7 +502,7 @@ export class DockerProvider implements OnModuleInit {
             err.message?.includes("no basic auth credentials")
           ) {
             returnErr = new Error(
-              "Repository does not exist or may require container registry login credentials.",
+              "Repository does not exist or may require container registry login credentials."
             );
           }
           throw {
@@ -663,7 +514,6 @@ export class DockerProvider implements OnModuleInit {
       }
     });
 
-    // Validate architecture after pulling
     const isValidArch = await this.validateImageArchitecture(image);
     if (!isValidArch) {
       throw new Error(`Image ${image} is not compatible with x64 architecture`);
@@ -675,21 +525,14 @@ export class DockerProvider implements OnModuleInit {
       const container = this.docker.getContainer(containerId);
       await container.start();
 
-      // Start both processes in parallel without waiting
-      if (this.daytonaBinaryUrl) {
-        this.startDaytonaAgent(container).catch((err) =>
-          this.logger.error("Failed to start Daytona agent:", err),
-        );
-      }
-
       if (this.terminalBinaryUrl) {
         this.startTerminalProcess(container).catch((err) =>
-          this.logger.error("Failed to start terminal process:", err),
+          this.logger.error("Failed to start terminal process:", err)
         );
       }
     } catch (error) {
       this.logger.error("Error starting Docker container:", error);
-      throw error; // Rethrow or handle as needed
+      throw error;
     }
   }
 
@@ -699,7 +542,7 @@ export class DockerProvider implements OnModuleInit {
       await container.stop();
     } catch (error) {
       this.logger.error("Error stopping Docker container:", error);
-      throw error; // Rethrow or handle as needed
+      throw error;
     }
   }
 
@@ -713,11 +556,10 @@ export class DockerProvider implements OnModuleInit {
   }
 
   async getImageInfo(
-    imageName: string,
+    imageName: string
   ): Promise<{ sizeGB: number; entrypoint?: string | string[] }> {
     try {
       const image = await this.docker.getImage(imageName).inspect();
-      // Size is returned in bytes, convert to GB
       return {
         sizeGB: image.Size / (1024 * 1024 * 1024),
         entrypoint: image.Config.Entrypoint,
@@ -730,7 +572,7 @@ export class DockerProvider implements OnModuleInit {
 
   async pushImage(
     image: string,
-    registry: { url: string; username: string; password: string },
+    registry: { url: string; username: string; password: string }
   ): Promise<void> {
     await this.retryWithExponentialBackoff(async () => {
       return new Promise((resolve, reject) => {
@@ -778,7 +620,7 @@ export class DockerProvider implements OnModuleInit {
                 errorEvent = event.error;
                 this.logger.error("Push progress error:", event.error);
               }
-            },
+            }
           );
         });
       });
@@ -791,9 +633,7 @@ export class DockerProvider implements OnModuleInit {
       const repo = targetImage.substring(0, lastColonIndex);
       const tag = targetImage.substring(lastColonIndex + 1);
 
-      if (!repo || !tag) {
-        throw new Error("Invalid target image format");
-      }
+      if (!repo || !tag) throw new Error("Invalid target image format");
 
       const image = this.docker.getImage(sourceImage);
       await image.tag({
@@ -801,10 +641,7 @@ export class DockerProvider implements OnModuleInit {
         tag,
       });
     } catch (error) {
-      this.logger.error(
-        `Error tagging image ${sourceImage} as ${targetImage}:`,
-        error,
-      );
+      this.logger.error(`Error tagging image ${sourceImage} as ${targetImage}:`, error);
       throw new Error(`Failed to tag image: ${error.message}`);
     }
   }

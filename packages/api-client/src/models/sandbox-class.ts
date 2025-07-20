@@ -15,7 +15,7 @@
 
 
 /**
- * The class of the runner
+ * The class of the executor
  * @export
  * @enum {string}
  */

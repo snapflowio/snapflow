@@ -5,10 +5,9 @@ export enum Path {
 
   API_KEYS = "/dashboard/keys",
   SANDBOXES = "/dashboard/sandboxes",
-  SNAPSHOTS = "/dashboard/snapshots",
+  IMAGES = "/dashboard/images",
   REGISTRIES = "/dashboard/registries",
-  VOLUMES = "/dashboard/volumes",
-  USAGE = "/dashboard/usage",
+  BUCKETS = "/dashboard/buckets",
   BILLING = "/dashboard/billing",
   MEMBERS = "/dashboard/members",
   ROLES = "/dashboard/roles",

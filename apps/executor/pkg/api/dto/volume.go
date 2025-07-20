@@ -1,6 +1,6 @@
 package dto
 
-type VolumeDTO struct {
-	VolumeId  string `json:"volumeId"`
+type BucketDTO struct {
+	BucketId  string `json:"bucketId"`
 	MountPath string `json:"mountPath"`
 }

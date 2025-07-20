@@ -1,15 +1,15 @@
 package dto
 
-type PullSnapshotRequestDTO struct {
-	Snapshot string       `json:"snapshot" validate:"required"`
+type PullImageRequestDTO struct {
+	Image    string       `json:"image" validate:"required"`
 	Registry *RegistryDTO `json:"registry,omitempty"`
-} //	@name	PullSnapshotRequestDTO
+} //	@name	PullImageRequestDTO
 
-type BuildSnapshotRequestDTO struct {
-	Snapshot               string       `json:"snapshot,omitempty"` // Snapshot ID and tag or the build's hash
+type BuildImageRequestDTO struct {
+	Image                  string       `json:"image,omitempty"` // Image ID and tag or the build's hash
 	Registry               *RegistryDTO `json:"registry,omitempty"`
 	Dockerfile             string       `json:"dockerfile" validate:"required"`
 	OrganizationId         string       `json:"organizationId" validate:"required"`
 	Context                []string     `json:"context"`
 	PushToInternalRegistry bool         `json:"pushToInternalRegistry"`
-} //	@name	BuildSnapshotRequestDTO
+} //	@name	BuildImageRequestDTO

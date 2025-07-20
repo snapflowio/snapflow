@@ -5,34 +5,33 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { InjectRedis } from "@nestjs-modules/ioredis";
 import {
   CreateSandboxDTO,
-  EnumsSandboxState as RunnerSandboxState,
+  EnumsSandboxState as ExecutorSandboxState,
 } from "@snapflow/executor-api-client";
 import { Redis } from "ioredis";
 import { In, Not, Raw, Repository } from "typeorm";
-
 import { fromAxiosError } from "../../common/utils/axios-error";
-import { DockerRegistryService } from "../../docker-registry/docker-registry.service";
+import { RegistryService } from "../../registry/registry.service";
 import { RedisLockProvider } from "../common/redis-lock.provider";
 import { SANDBOX_WARM_POOL_UNASSIGNED_ORGANIZATION } from "../constants/sandbox.constants";
 import { SandboxEvents } from "../constants/sandbox-events.constants";
 import { DockerProvider } from "../docker/docker-provider";
 import { BuildInfo } from "../entities/build-info.entity";
-import { Runner } from "../entities/runner.entity";
+import { Executor } from "../entities/executor.entity";
+import { ImageExecutor } from "../entities/image-executor.entity";
 import { Sandbox } from "../entities/sandbox.entity";
-import { SnapshotRunner } from "../entities/snapshot-runner.entity";
 import { BackupState } from "../enums/backup-state.enum";
-import { RunnerState } from "../enums/runner-state.enum";
+import { ExecutorState } from "../enums/executor-state.enum";
+import { ImageExecutorState } from "../enums/image-executor-state.enum";
 import { SandboxDesiredState } from "../enums/sandbox-desired-state.enum";
 import { SandboxState } from "../enums/sandbox-state.enum";
-import { SnapshotRunnerState } from "../enums/snapshot-runner-state.enum";
 import { SandboxArchivedEvent } from "../events/sandbox-archived.event";
 import { SandboxCreatedEvent } from "../events/sandbox-create.event";
 import { SandboxDestroyedEvent } from "../events/sandbox-destroyed.event";
 import { SandboxStartedEvent } from "../events/sandbox-started.event";
 import { SandboxStoppedEvent } from "../events/sandbox-stopped.event";
-import { RunnerApiFactory } from "../executor-api/executor-api";
-import { RunnerService } from "../services/runner.service";
-import { SnapshotService } from "../services/snapshot.service";
+import { ExecutorApiFactory } from "../executor-api/executor-api";
+import { ExecutorService } from "../services/executor.service";
+import { ImageService } from "../services/image.service";
 
 const SYNC_INSTANCE_STATE_LOCK_KEY = "sync-instance-state-";
 const SYNC_AGAIN = "sync-again";
@@ -46,13 +45,13 @@ export class SandboxManager {
   constructor(
     @InjectRepository(Sandbox)
     private readonly sandboxRepository: Repository<Sandbox>,
-    @InjectRepository(SnapshotRunner)
-    private readonly snapshotRunnerRepository: Repository<SnapshotRunner>,
-    private readonly runnerService: RunnerService,
-    private readonly runnerApiFactory: RunnerApiFactory,
-    private readonly dockerRegistryService: DockerRegistryService,
+    @InjectRepository(ImageExecutor)
+    private readonly imageExecutorRepository: Repository<ImageExecutor>,
+    private readonly executorService: ExecutorService,
+    private readonly executorApiFactory: ExecutorApiFactory,
+    private readonly registryService: RegistryService,
     @InjectRedis() private readonly redis: Redis,
-    private readonly snapshotService: SnapshotService,
+    private readonly imageService: ImageService,
     private readonly redisLockProvider: RedisLockProvider,
     private readonly dockerProvider: DockerProvider
   ) {}
@@ -61,21 +60,22 @@ export class SandboxManager {
   async autostopCheck(): Promise<void> {
     //  lock the sync to only run one instance at a time
     //  keep the worker selected for 1 minute
-
     if (!(await this.redisLockProvider.lock("auto-stop-check-worker-selected", 60))) {
       return;
     }
 
-    // Get all ready runners
-    const allRunners = await this.runnerService.findAll();
-    const readyRunners = allRunners.filter((runner) => runner.state === RunnerState.READY);
+    // Get all ready executors
+    const allExecutors = await this.executorService.findAll();
+    const readyExecutors = allExecutors.filter(
+      (executor) => executor.state === ExecutorState.READY
+    );
 
-    // Process all runners in parallel
+    // Process all executors in parallel
     await Promise.all(
-      readyRunners.map(async (runner) => {
+      readyExecutors.map(async (executor) => {
         const sandboxs = await this.sandboxRepository.find({
           where: {
-            runnerId: runner.id,
+            executorId: executor.id,
             organizationId: Not(SANDBOX_WARM_POOL_UNASSIGNED_ORGANIZATION),
             state: SandboxState.STARTED,
             desiredState: SandboxDesiredState.STARTED,
@@ -130,16 +130,18 @@ export class SandboxManager {
     //  keep the worker selected for 1 minute
     await this.redis.setex("auto-archive-check-worker-selected", 60, "1");
 
-    // Get all ready runners
-    const allRunners = await this.runnerService.findAll();
-    const readyRunners = allRunners.filter((runner) => runner.state === RunnerState.READY);
+    // Get all ready executors
+    const allExecutors = await this.executorService.findAll();
+    const readyExecutors = allExecutors.filter(
+      (executor) => executor.state === ExecutorState.READY
+    );
 
-    // Process all runners in parallel
+    // Process all executors in parallel
     await Promise.all(
-      readyRunners.map(async (runner) => {
+      readyExecutors.map(async (executor) => {
         const sandboxs = await this.sandboxRepository.find({
           where: {
-            runnerId: runner.id,
+            executorId: executor.id,
             organizationId: Not(SANDBOX_WARM_POOL_UNASSIGNED_ORGANIZATION),
             state: SandboxState.STOPPED,
             desiredState: SandboxDesiredState.STOPPED,
@@ -151,8 +153,8 @@ export class SandboxManager {
           order: {
             lastBackupAt: "ASC",
           },
-          //  max 3 sandboxs can be archived at the same time on the same runner
-          //  this is to prevent the runner from being overloaded
+          //  max 3 sandboxs can be archived at the same time on the same executor
+          //  this is to prevent the executor from being overloaded
           take: 3,
         });
 
@@ -208,6 +210,7 @@ export class SandboxManager {
         this.syncInstanceState(sandbox.id);
       })
     );
+
     await this.redisLockProvider.unlock(lockKey);
   }
 
@@ -220,11 +223,11 @@ export class SandboxManager {
       return;
     }
 
-    const runnersWith3InProgress = await this.sandboxRepository
+    const executorsWith3InProgress = await this.sandboxRepository
       .createQueryBuilder("sandbox")
-      .select('"runnerId"')
+      .select('"executorId"')
       .where('"sandbox"."state" = :state', { state: SandboxState.ARCHIVING })
-      .groupBy('"runnerId"')
+      .groupBy('"executorId"')
       .having("COUNT(*) >= 3")
       .getRawMany();
 
@@ -244,7 +247,7 @@ export class SandboxManager {
             ])
           ),
           desiredState: SandboxDesiredState.ARCHIVED,
-          runnerId: Not(In(runnersWith3InProgress.map((runner) => runner.runnerId))),
+          executorId: Not(In(executorsWith3InProgress.map((executor) => executor.executorId))),
         },
       ],
       take: 100,
@@ -262,7 +265,6 @@ export class SandboxManager {
   }
 
   async syncInstanceState(sandboxId: string): Promise<void> {
-    //  prevent syncState cron from running multiple instances of the same sandbox
     const lockKey = SYNC_INSTANCE_STATE_LOCK_KEY + sandboxId;
     const acquired = await this.redisLockProvider.lock(lockKey, 360);
     if (!acquired) {
@@ -333,77 +335,75 @@ export class SandboxManager {
   }
 
   private async handleUnassignedBuildSandbox(sandbox: Sandbox): Promise<SyncState> {
-    // Try to assign an available runner with the snapshot build
-    let runnerId: string;
+    // Try to assign an available executor with the image build
+    let executorId: string;
     try {
-      const runner = await this.runnerService.getRandomAvailableRunner({
+      const executor = await this.executorService.getRandomAvailableExecutor({
         region: sandbox.region,
         sandboxClass: sandbox.class,
-        snapshotRef: sandbox.buildInfo.snapshotRef,
+        imageRef: sandbox.buildInfo.imageRef,
       });
-      runnerId = runner.id;
+      executorId = executor.id;
     } catch (error) {
       // Continue to next assignment method
     }
 
-    if (runnerId) {
-      await this.updateSandboxState(sandbox.id, SandboxState.UNKNOWN, runnerId);
+    if (executorId) {
+      await this.updateSandboxState(sandbox.id, SandboxState.UNKNOWN, executorId);
       return SYNC_AGAIN;
     }
 
-    // Try to assign an available runner that is currently building the snapshot
-    const snapshotRunners = await this.runnerService.getSnapshotRunners(
-      sandbox.buildInfo.snapshotRef
-    );
+    // Try to assign an available executor that is currently building the image
+    const imageExecutors = await this.executorService.getImageExecutors(sandbox.buildInfo.imageRef);
 
-    for (const snapshotRunner of snapshotRunners) {
-      const runner = await this.runnerService.findOne(snapshotRunner.runnerId);
-      if (runner.used < runner.capacity) {
-        if (snapshotRunner.state === SnapshotRunnerState.BUILDING_SNAPSHOT) {
-          await this.updateSandboxState(sandbox.id, SandboxState.BUILDING_SNAPSHOT, runner.id);
+    for (const imageExecutor of imageExecutors) {
+      const executor = await this.executorService.findOne(imageExecutor.executorId);
+      if (executor.used < executor.capacity) {
+        if (imageExecutor.state === ImageExecutorState.BUILDING_IMAGE) {
+          await this.updateSandboxState(sandbox.id, SandboxState.BUILDING_IMAGE, executor.id);
           return SYNC_AGAIN;
         }
 
-        if (snapshotRunner.state === SnapshotRunnerState.ERROR) {
+        if (imageExecutor.state === ImageExecutorState.ERROR) {
           await this.updateSandboxState(
             sandbox.id,
             SandboxState.BUILD_FAILED,
             undefined,
-            snapshotRunner.errorReason
+            imageExecutor.errorReason
           );
           return DONT_SYNC_AGAIN;
         }
       }
     }
 
-    const excludedRunnerIds = await this.runnerService.getRunnersWithMultipleSnapshotsBuilding();
+    const excludedExecutorIds = await this.executorService.getExecutorsWithMultipleImagesBuilding();
 
-    // Try to assign a new available runner
-    const runner = await this.runnerService.getRandomAvailableRunner({
+    // Try to assign a new available executor
+    const executor = await this.executorService.getRandomAvailableExecutor({
       region: sandbox.region,
       sandboxClass: sandbox.class,
-      excludedRunnerIds: excludedRunnerIds,
+      excludedExecutorIds: excludedExecutorIds,
     });
-    runnerId = runner.id;
+    executorId = executor.id;
 
-    this.buildOnRunner(sandbox.buildInfo, runnerId, sandbox.organizationId);
+    this.buildOnExecutor(sandbox.buildInfo, executorId, sandbox.organizationId);
 
-    await this.updateSandboxState(sandbox.id, SandboxState.BUILDING_SNAPSHOT, runnerId);
-    await this.runnerService.recalculateRunnerUsage(runnerId);
+    await this.updateSandboxState(sandbox.id, SandboxState.BUILDING_IMAGE, executorId);
+    await this.executorService.recalculateExecutorUsage(executorId);
     return SYNC_AGAIN;
   }
 
-  // Initiates the snapshot build on the runner and creates an SnapshotRunner depending on the result
-  async buildOnRunner(buildInfo: BuildInfo, runnerId: string, organizationId: string) {
-    const runner = await this.runnerService.findOne(runnerId);
-    const runnerSnapshotApi = this.runnerApiFactory.createSnapshotApi(runner);
+  // Initiates the image build on the executor and creates an ImageExecutor depending on the result
+  async buildOnExecutor(buildInfo: BuildInfo, executorId: string, organizationId: string) {
+    const executor = await this.executorService.findOne(executorId);
+    const executorImageApi = this.executorApiFactory.createImageApi(executor);
 
     let retries = 0;
 
     while (retries < 10) {
       try {
-        await runnerSnapshotApi.buildSnapshot({
-          snapshot: buildInfo.snapshotRef,
+        await executorImageApi.buildImage({
+          image: buildInfo.imageRef,
           organizationId: organizationId,
           dockerfile: buildInfo.dockerfileContent,
           context: buildInfo.contextHashes,
@@ -411,10 +411,10 @@ export class SandboxManager {
         break;
       } catch (err) {
         if (err.code !== "ECONNRESET") {
-          await this.runnerService.createSnapshotRunner(
-            runnerId,
-            buildInfo.snapshotRef,
-            SnapshotRunnerState.ERROR,
+          await this.executorService.createImageExecutor(
+            executorId,
+            buildInfo.imageRef,
+            ImageExecutorState.ERROR,
             err.message
           );
           return;
@@ -425,33 +425,33 @@ export class SandboxManager {
     }
 
     if (retries === 10) {
-      await this.runnerService.createSnapshotRunner(
-        runnerId,
-        buildInfo.snapshotRef,
-        SnapshotRunnerState.ERROR,
+      await this.executorService.createImageExecutor(
+        executorId,
+        buildInfo.imageRef,
+        ImageExecutorState.ERROR,
         "Timeout while building"
       );
       return;
     }
 
-    const response = (await runnerSnapshotApi.snapshotExists(buildInfo.snapshotRef)).data;
-    let state = SnapshotRunnerState.BUILDING_SNAPSHOT;
+    const response = (await executorImageApi.imageExists(buildInfo.imageRef)).data;
+    let state = ImageExecutorState.BUILDING_IMAGE;
     if (response?.exists) {
-      state = SnapshotRunnerState.READY;
+      state = ImageExecutorState.READY;
     }
 
-    await this.runnerService.createSnapshotRunner(runnerId, buildInfo.snapshotRef, state);
+    await this.executorService.createImageExecutor(executorId, buildInfo.imageRef, state);
   }
 
   private async handleSandboxDesiredStateArchived(sandbox: Sandbox): Promise<SyncState> {
-    const lockKey = `archive-lock-${sandbox.runnerId}`;
+    const lockKey = `archive-lock-${sandbox.executorId}`;
     if (!(await this.redisLockProvider.lock(lockKey, 10))) {
       return DONT_SYNC_AGAIN;
     }
 
-    const inProgressOnRunner = await this.sandboxRepository.find({
+    const inProgressOnExecutor = await this.sandboxRepository.find({
       where: {
-        runnerId: sandbox.runnerId,
+        executorId: sandbox.executorId,
         state: In([SandboxState.ARCHIVING]),
       },
       order: {
@@ -460,10 +460,10 @@ export class SandboxManager {
       take: 100,
     });
 
-    if (!inProgressOnRunner.find((s) => s.id === sandbox.id)) {
-      //  max 3 sandboxs can be archived at the same time on the same runner
-      //  this is to prevent the runner from being overloaded
-      if (inProgressOnRunner.length > 2) {
+    if (!inProgressOnExecutor.find((s) => s.id === sandbox.id)) {
+      //  max 3 sandboxs can be archived at the same time on the same executor
+      //  this is to prevent the executor from being overloaded
+      if (inProgressOnExecutor.length > 2) {
         await this.redisLockProvider.unlock(lockKey);
         return;
       }
@@ -525,23 +525,23 @@ export class SandboxManager {
           return DONT_SYNC_AGAIN;
         }
 
-        //  when the backup is completed, destroy the sandbox on the runner
-        //  and deassociate the sandbox from the runner
-        const runner = await this.runnerService.findOne(sandbox.runnerId);
-        const runnerSandboxApi = this.runnerApiFactory.createSandboxApi(runner);
+        //  when the backup is completed, destroy the sandbox on the executor
+        //  and deassociate the sandbox from the executor
+        const executor = await this.executorService.findOne(sandbox.executorId);
+        const executorSandboxApi = this.executorApiFactory.createSandboxApi(executor);
 
         try {
-          const sandboxInfoResponse = await runnerSandboxApi.info(sandbox.id);
+          const sandboxInfoResponse = await executorSandboxApi.info(sandbox.id);
           const sandboxInfo = sandboxInfoResponse.data;
           switch (sandboxInfo.state) {
-            case RunnerSandboxState.SandboxStateDestroying:
-              //  wait until sandbox is destroyed on runner
+            case ExecutorSandboxState.SandboxStateDestroying:
+              //  wait until sandbox is destroyed on executor
               return SYNC_AGAIN;
-            case RunnerSandboxState.SandboxStateDestroyed:
+            case ExecutorSandboxState.SandboxStateDestroyed:
               await this.updateSandboxState(sandbox.id, SandboxState.ARCHIVED, null);
               return DONT_SYNC_AGAIN;
             default:
-              await runnerSandboxApi.destroy(sandbox.id);
+              await executorSandboxApi.destroy(sandbox.id);
               return SYNC_AGAIN;
           }
         } catch (error) {
@@ -571,9 +571,9 @@ export class SandboxManager {
       return DONT_SYNC_AGAIN;
     }
 
-    const runner = await this.runnerService.findOne(sandbox.runnerId);
-    if (runner.state !== RunnerState.READY) {
-      //  console.debug(`Runner ${runner.id} is not ready`);
+    const executor = await this.executorService.findOne(sandbox.executorId);
+    if (executor.state !== ExecutorState.READY) {
+      //  console.debug(`Executor ${executor.id} is not ready`);
       return DONT_SYNC_AGAIN;
     }
 
@@ -582,19 +582,19 @@ export class SandboxManager {
         return DONT_SYNC_AGAIN;
       case SandboxState.DESTROYING: {
         // check if sandbox is destroyed
-        const runnerSandboxApi = this.runnerApiFactory.createSandboxApi(runner);
+        const executorSandboxApi = this.executorApiFactory.createSandboxApi(executor);
 
         try {
-          const sandboxInfoResponse = await runnerSandboxApi.info(sandbox.id);
+          const sandboxInfoResponse = await executorSandboxApi.info(sandbox.id);
           const sandboxInfo = sandboxInfoResponse.data;
           if (
-            sandboxInfo.state === RunnerSandboxState.SandboxStateDestroyed ||
-            sandboxInfo.state === RunnerSandboxState.SandboxStateError
+            sandboxInfo.state === ExecutorSandboxState.SandboxStateDestroyed ||
+            sandboxInfo.state === ExecutorSandboxState.SandboxStateError
           ) {
-            await runnerSandboxApi.removeDestroyed(sandbox.id);
+            await executorSandboxApi.removeDestroyed(sandbox.id);
           }
         } catch (e) {
-          //  if the sandbox is not found on runner, it is already destroyed
+          //  if the sandbox is not found on executor, it is already destroyed
           if (!e.response || e.response.status !== 404) {
             throw e;
           }
@@ -606,16 +606,16 @@ export class SandboxManager {
       default: {
         // destroy sandbox
         try {
-          const runnerSandboxApi = this.runnerApiFactory.createSandboxApi(runner);
-          const sandboxInfoResponse = await runnerSandboxApi.info(sandbox.id);
+          const executorSandboxApi = this.executorApiFactory.createSandboxApi(executor);
+          const sandboxInfoResponse = await executorSandboxApi.info(sandbox.id);
           const sandboxInfo = sandboxInfoResponse.data;
-          if (sandboxInfo?.state === RunnerSandboxState.SandboxStateDestroyed) {
+          if (sandboxInfo?.state === ExecutorSandboxState.SandboxStateDestroyed) {
             await this.updateSandboxState(sandbox.id, SandboxState.DESTROYING);
             return SYNC_AGAIN;
           }
-          await runnerSandboxApi.destroy(sandbox.id);
+          await executorSandboxApi.destroy(sandbox.id);
         } catch (e) {
-          //  if the sandbox is not found on runner, it is already destroyed
+          //  if the sandbox is not found on executor, it is already destroyed
           if (e.response.status !== 404) {
             throw e;
           }
@@ -631,23 +631,23 @@ export class SandboxManager {
       case SandboxState.PENDING_BUILD: {
         return this.handleUnassignedBuildSandbox(sandbox);
       }
-      case SandboxState.BUILDING_SNAPSHOT: {
-        return this.handleRunnerSandboxBuildingSnapshotStateOnDesiredStateStart(sandbox);
+      case SandboxState.BUILDING_IMAGE: {
+        return this.handleExecutorSandboxBuildingImageStateOnDesiredStateStart(sandbox);
       }
       case SandboxState.UNKNOWN: {
-        return this.handleRunnerSandboxUnknownStateOnDesiredStateStart(sandbox);
+        return this.handleExecutorSandboxUnknownStateOnDesiredStateStart(sandbox);
       }
       case SandboxState.ARCHIVED:
       case SandboxState.STOPPED: {
-        return this.handleRunnerSandboxStoppedOrArchivedStateOnDesiredStateStart(sandbox);
+        return this.handleExecutorSandboxStoppedOrArchivedStateOnDesiredStateStart(sandbox);
       }
       case SandboxState.RESTORING:
       case SandboxState.CREATING: {
-        return this.handleRunnerSandboxPullingSnapshotStateCheck(sandbox);
+        return this.handleExecutorSandboxPullingImageStateCheck(sandbox);
       }
-      case SandboxState.PULLING_SNAPSHOT:
+      case SandboxState.PULLING_IMAGE:
       case SandboxState.STARTING: {
-        return this.handleRunnerSandboxStartedStateCheck(sandbox);
+        return this.handleExecutorSandboxStartedStateCheck(sandbox);
       }
       //  TODO: remove this case
       case SandboxState.ERROR: {
@@ -656,18 +656,18 @@ export class SandboxManager {
         if (sandbox.id.startsWith("err_")) {
           return DONT_SYNC_AGAIN;
         }
-        const runner = await this.runnerService.findOne(sandbox.runnerId);
-        const runnerSandboxApi = this.runnerApiFactory.createSandboxApi(runner);
-        const sandboxInfoResponse = await runnerSandboxApi.info(sandbox.id);
+        const executor = await this.executorService.findOne(sandbox.executorId);
+        const executorSandboxApi = this.executorApiFactory.createSandboxApi(executor);
+        const sandboxInfoResponse = await executorSandboxApi.info(sandbox.id);
         const sandboxInfo = sandboxInfoResponse.data;
-        if (sandboxInfo.state === RunnerSandboxState.SandboxStateStarted) {
+        if (sandboxInfo.state === ExecutorSandboxState.SandboxStateStarted) {
           const sandboxToUpdate = await this.sandboxRepository.findOneByOrFail({
             id: sandbox.id,
           });
           sandboxToUpdate.state = SandboxState.STARTED;
           sandboxToUpdate.backupState = BackupState.NONE;
           try {
-            const daemonVersion = await this.getSandboxDaemonVersion(sandbox, runner);
+            const daemonVersion = await this.getSandboxDaemonVersion(sandbox, executor);
             sandboxToUpdate.daemonVersion = daemonVersion;
           } catch (e) {
             this.logger.error(`Failed to get sandbox daemon version for sandbox ${sandbox.id}:`, e);
@@ -681,29 +681,29 @@ export class SandboxManager {
   }
 
   private async handleSandboxDesiredStateStopped(sandbox: Sandbox): Promise<SyncState> {
-    const runner = await this.runnerService.findOne(sandbox.runnerId);
-    if (runner.state !== RunnerState.READY) {
-      //  console.debug(`Runner ${runner.id} is not ready`);
+    const executor = await this.executorService.findOne(sandbox.executorId);
+    if (executor.state !== ExecutorState.READY) {
+      //  console.debug(`Executor ${executor.id} is not ready`);
       return DONT_SYNC_AGAIN;
     }
 
     switch (sandbox.state) {
       case SandboxState.STARTED: {
         // stop sandbox
-        const runnerSandboxApi = this.runnerApiFactory.createSandboxApi(runner);
-        await runnerSandboxApi.stop(sandbox.id);
+        const executorSandboxApi = this.executorApiFactory.createSandboxApi(executor);
+        await executorSandboxApi.stop(sandbox.id);
         await this.updateSandboxState(sandbox.id, SandboxState.STOPPING);
         //  sync states again immediately for sandbox
         return SYNC_AGAIN;
       }
       case SandboxState.STOPPING: {
         // check if sandbox is stopped
-        const runner = await this.runnerService.findOne(sandbox.runnerId);
-        const runnerSandboxApi = this.runnerApiFactory.createSandboxApi(runner);
-        const sandboxInfoResponse = await runnerSandboxApi.info(sandbox.id);
+        const executor = await this.executorService.findOne(sandbox.executorId);
+        const executorSandboxApi = this.executorApiFactory.createSandboxApi(executor);
+        const sandboxInfoResponse = await executorSandboxApi.info(sandbox.id);
         const sandboxInfo = sandboxInfoResponse.data;
         switch (sandboxInfo.state) {
-          case RunnerSandboxState.SandboxStateStopped: {
+          case ExecutorSandboxState.SandboxStateStopped: {
             const sandboxToUpdate = await this.sandboxRepository.findOneByOrFail({
               id: sandbox.id,
             });
@@ -712,12 +712,12 @@ export class SandboxManager {
             await this.sandboxRepository.save(sandboxToUpdate);
             return SYNC_AGAIN;
           }
-          case RunnerSandboxState.SandboxStateError: {
+          case ExecutorSandboxState.SandboxStateError: {
             await this.updateSandboxState(
               sandbox.id,
               SandboxState.ERROR,
               undefined,
-              "Sandbox is in error state on runner"
+              "Sandbox is in error state on executor"
             );
             return DONT_SYNC_AGAIN;
           }
@@ -728,11 +728,11 @@ export class SandboxManager {
         if (sandbox.id.startsWith("err_")) {
           return DONT_SYNC_AGAIN;
         }
-        const runner = await this.runnerService.findOne(sandbox.runnerId);
-        const runnerSandboxApi = this.runnerApiFactory.createSandboxApi(runner);
-        const sandboxInfoResponse = await runnerSandboxApi.info(sandbox.id);
+        const executor = await this.executorService.findOne(sandbox.executorId);
+        const executorSandboxApi = this.executorApiFactory.createSandboxApi(executor);
+        const sandboxInfoResponse = await executorSandboxApi.info(sandbox.id);
         const sandboxInfo = sandboxInfoResponse.data;
-        if (sandboxInfo.state === RunnerSandboxState.SandboxStateStopped) {
+        if (sandboxInfo.state === ExecutorSandboxState.SandboxStateStopped) {
           await this.updateSandboxState(sandbox.id, SandboxState.STOPPED);
         }
       }
@@ -741,32 +741,32 @@ export class SandboxManager {
     return DONT_SYNC_AGAIN;
   }
 
-  private async handleRunnerSandboxBuildingSnapshotStateOnDesiredStateStart(
+  private async handleExecutorSandboxBuildingImageStateOnDesiredStateStart(
     sandbox: Sandbox
   ): Promise<SyncState> {
-    const snapshotRunner = await this.runnerService.getSnapshotRunner(
-      sandbox.runnerId,
-      sandbox.buildInfo.snapshotRef
+    const imageExecutor = await this.executorService.getImageExecutor(
+      sandbox.executorId,
+      sandbox.buildInfo.imageRef
     );
-    if (snapshotRunner) {
-      switch (snapshotRunner.state) {
-        case SnapshotRunnerState.READY: {
+    if (imageExecutor) {
+      switch (imageExecutor.state) {
+        case ImageExecutorState.READY: {
           // TODO: "UNKNOWN" should probably be changed to something else
           await this.updateSandboxState(sandbox.id, SandboxState.UNKNOWN);
           return SYNC_AGAIN;
         }
-        case SnapshotRunnerState.ERROR: {
+        case ImageExecutorState.ERROR: {
           await this.updateSandboxState(
             sandbox.id,
             SandboxState.BUILD_FAILED,
             undefined,
-            snapshotRunner.errorReason
+            imageExecutor.errorReason
           );
           return DONT_SYNC_AGAIN;
         }
       }
     }
-    if (!snapshotRunner || snapshotRunner.state === SnapshotRunnerState.BUILDING_SNAPSHOT) {
+    if (!imageExecutor || imageExecutor.state === ImageExecutorState.BUILDING_IMAGE) {
       // Sleep for a second and go back to syncing instance state
       await new Promise((resolve) => setTimeout(resolve, 1000));
       return SYNC_AGAIN;
@@ -775,19 +775,19 @@ export class SandboxManager {
     return DONT_SYNC_AGAIN;
   }
 
-  private async handleRunnerSandboxUnknownStateOnDesiredStateStart(
+  private async handleExecutorSandboxUnknownStateOnDesiredStateStart(
     sandbox: Sandbox
   ): Promise<SyncState> {
-    const runner = await this.runnerService.findOne(sandbox.runnerId);
-    if (runner.state !== RunnerState.READY) {
-      //  console.debug(`Runner ${runner.id} is not ready`);
+    const executor = await this.executorService.findOne(sandbox.executorId);
+    if (executor.state !== ExecutorState.READY) {
+      //  console.debug(`Executor ${executor.id} is not ready`);
       return DONT_SYNC_AGAIN;
     }
 
     let createSandboxDto: CreateSandboxDTO = {
       id: sandbox.id,
       osUser: sandbox.osUser,
-      snapshot: "",
+      image: "",
       // TODO: organizationId: sandbox.organizationId,
       userId: sandbox.organizationId,
       storageQuota: sandbox.disk,
@@ -796,29 +796,26 @@ export class SandboxManager {
       // gpuQuota: sandbox.gpu,
       env: sandbox.env,
       // public: sandbox.public,
-      volumes: sandbox.volumes,
+      buckets: sandbox.buckets,
     };
 
     if (!sandbox.buildInfo) {
-      //  get internal snapshot name
-      const snapshot = await this.snapshotService.getSnapshotByName(
-        sandbox.snapshot,
-        sandbox.organizationId
-      );
-      const internalSnapshotName = snapshot.internalName;
+      //  get internal image name
+      const image = await this.imageService.getImageByName(sandbox.image, sandbox.organizationId);
+      const internalImageName = image.internalName;
 
-      const registry = await this.dockerRegistryService.findOneBySnapshotImageName(
-        internalSnapshotName,
+      const registry = await this.registryService.findOneByImageImageName(
+        internalImageName,
         sandbox.organizationId
       );
       if (!registry) {
-        throw new Error("No registry found for snapshot");
+        throw new Error("No registry found for image");
       }
 
       createSandboxDto = {
         ...createSandboxDto,
-        snapshot: internalSnapshotName,
-        entrypoint: snapshot.entrypoint,
+        image: internalImageName,
+        entrypoint: image.entrypoint,
         registry: {
           url: registry.url,
           username: registry.username,
@@ -828,13 +825,13 @@ export class SandboxManager {
     } else {
       createSandboxDto = {
         ...createSandboxDto,
-        snapshot: sandbox.buildInfo.snapshotRef,
+        image: sandbox.buildInfo.imageRef,
         entrypoint: this.getEntrypointFromDockerfile(sandbox.buildInfo.dockerfileContent),
       };
     }
 
-    const runnerSandboxApi = this.runnerApiFactory.createSandboxApi(runner);
-    await runnerSandboxApi.create(createSandboxDto);
+    const executorSandboxApi = this.executorApiFactory.createSandboxApi(executor);
+    await executorSandboxApi.create(createSandboxDto);
     await this.updateSandboxState(sandbox.id, SandboxState.CREATING);
     //  sync states again immediately for sandbox
     return SYNC_AGAIN;
@@ -875,27 +872,27 @@ export class SandboxManager {
     return ["sleep", "infinity"];
   }
 
-  private async handleRunnerSandboxStoppedOrArchivedStateOnDesiredStateStart(
+  private async handleExecutorSandboxStoppedOrArchivedStateOnDesiredStateStart(
     sandbox: Sandbox
   ): Promise<SyncState> {
-    //  check if sandbox is assigned to a runner and if that runner is unschedulable
-    //  if it is, move sandbox to prevRunnerId, and set runnerId to null
-    //  this will assign a new runner to the sandbox and restore the sandbox from the latest backup
-    if (sandbox.runnerId) {
-      const runner = await this.runnerService.findOne(sandbox.runnerId);
-      if (runner.unschedulable) {
+    //  check if sandbox is assigned to a executor and if that executor is unschedulable
+    //  if it is, move sandbox to prevExecutorId, and set executorId to null
+    //  this will assign a new executor to the sandbox and restore the sandbox from the latest backup
+    if (sandbox.executorId) {
+      const executor = await this.executorService.findOne(sandbox.executorId);
+      if (executor.unschedulable) {
         //  check if sandbox has a valid backup
         if (sandbox.backupState !== BackupState.COMPLETED) {
-          //  if not, keep sandbox on the same runner
+          //  if not, keep sandbox on the same executor
         } else {
-          sandbox.prevRunnerId = sandbox.runnerId;
-          sandbox.runnerId = null;
+          sandbox.prevExecutorId = sandbox.executorId;
+          sandbox.executorId = null;
 
           const sandboxToUpdate = await this.sandboxRepository.findOneByOrFail({
             id: sandbox.id,
           });
-          sandboxToUpdate.prevRunnerId = sandbox.runnerId;
-          sandboxToUpdate.runnerId = null;
+          sandboxToUpdate.prevExecutorId = sandbox.executorId;
+          sandboxToUpdate.executorId = null;
           await this.sandboxRepository.save(sandboxToUpdate);
         }
       }
@@ -904,47 +901,47 @@ export class SandboxManager {
         const usageThreshold = 35;
         const runningSandboxsCount = await this.sandboxRepository.count({
           where: {
-            runnerId: sandbox.runnerId,
+            executorId: sandbox.executorId,
             state: SandboxState.STARTED,
           },
         });
         if (runningSandboxsCount > usageThreshold) {
           //  TODO: usage should be based on compute usage
 
-          const availableRunners = await this.runnerService.findAvailableRunners({
+          const availableExecutors = await this.executorService.findAvailableExecutors({
             region: sandbox.region,
             sandboxClass: sandbox.class,
           });
-          const lessUsedRunners = availableRunners.filter(
-            (runner) => runner.id !== sandbox.runnerId
+          const lessUsedExecutors = availableExecutors.filter(
+            (executor) => executor.id !== sandbox.executorId
           );
 
-          //  temp workaround to move sandboxs to less used runner
-          if (lessUsedRunners.length > 0) {
+          //  temp workaround to move sandboxs to less used executor
+          if (lessUsedExecutors.length > 0) {
             await this.sandboxRepository.update(sandbox.id, {
-              runnerId: null,
-              prevRunnerId: sandbox.runnerId,
+              executorId: null,
+              prevExecutorId: sandbox.executorId,
             });
             try {
-              const runnerSandboxApi = this.runnerApiFactory.createSandboxApi(runner);
-              await runnerSandboxApi.removeDestroyed(sandbox.id);
+              const executorSandboxApi = this.executorApiFactory.createSandboxApi(executor);
+              await executorSandboxApi.removeDestroyed(sandbox.id);
             } catch (e) {
               this.logger.error(
-                `Failed to cleanup sandbox ${sandbox.id} on previous runner ${runner.id}:`,
+                `Failed to cleanup sandbox ${sandbox.id} on previous executor ${executor.id}:`,
                 fromAxiosError(e)
               );
             }
-            sandbox.prevRunnerId = sandbox.runnerId;
-            sandbox.runnerId = null;
+            sandbox.prevExecutorId = sandbox.executorId;
+            sandbox.executorId = null;
           }
         }
       }
     }
 
-    if (sandbox.runnerId === null) {
-      //  if sandbox has no runner, check if backup is completed
+    if (sandbox.executorId === null) {
+      //  if sandbox has no executor, check if backup is completed
       //  if not, set sandbox to error
-      //  if backup is completed, get random available runner and start sandbox
+      //  if backup is completed, get random available executor and start sandbox
       //  use the backup to start the sandbox
 
       if (sandbox.backupState !== BackupState.COMPLETED) {
@@ -952,18 +949,18 @@ export class SandboxManager {
           sandbox.id,
           SandboxState.ERROR,
           undefined,
-          "Sandbox has no runner and backup is not completed"
+          "Sandbox has no executor and backup is not completed"
         );
         return DONT_SYNC_AGAIN;
       }
 
-      const registry = await this.dockerRegistryService.findOne(sandbox.backupRegistryId);
+      const registry = await this.registryService.findOne(sandbox.backupRegistryId);
       if (!registry) {
         throw new Error("No registry found for backup");
       }
 
-      const existingBackups = sandbox.existingBackupSnapshots.map(
-        (existingSnapshot) => existingSnapshot.snapshotName
+      const existingBackups = sandbox.existingBackupImages.map(
+        (existingImage) => existingImage.imageName
       );
       let validBackup;
       let exists = false;
@@ -971,9 +968,9 @@ export class SandboxManager {
       while (existingBackups.length > 0) {
         try {
           if (!validBackup) {
-            //  last snapshot is the current snapshot, so we don't need to check it
-            //  just in case, we'll use the value from the backupSnapshot property
-            validBackup = sandbox.backupSnapshot;
+            //  last image is the current image, so we don't need to check it
+            //  just in case, we'll use the value from the backupImage property
+            validBackup = sandbox.backupImage;
             existingBackups.pop();
           } else {
             validBackup = existingBackups.pop();
@@ -984,7 +981,7 @@ export class SandboxManager {
           }
         } catch (error) {
           this.logger.error(
-            `Failed to check if backup snapshot ${sandbox.backupSnapshot} exists in registry ${registry.id}:`,
+            `Failed to check if backup image ${sandbox.backupImage} exists in registry ${registry.id}:`,
             fromAxiosError(error)
           );
         }
@@ -995,33 +992,34 @@ export class SandboxManager {
           sandbox.id,
           SandboxState.ERROR,
           undefined,
-          "No valid backup snapshot found"
+          "No valid backup image found"
         );
         return SYNC_AGAIN;
       }
 
-      //  exclude the runner that the last runner sandbox was on
-      const availableRunners = (
-        await this.runnerService.findAvailableRunners({
+      //  exclude the executor that the last executor sandbox was on
+      const availableExecutors = (
+        await this.executorService.findAvailableExecutors({
           region: sandbox.region,
           sandboxClass: sandbox.class,
         })
-      ).filter((runner) => runner.id !== sandbox.prevRunnerId);
+      ).filter((executor) => executor.id !== sandbox.prevExecutorId);
 
-      //  get random runner from available runners
-      const randomRunnerIndex = (min: number, max: number) =>
+      //  get random executor from available executors
+      const randomExecutorIndex = (min: number, max: number) =>
         Math.floor(Math.random() * (max - min + 1) + min);
-      const runnerId = availableRunners[randomRunnerIndex(0, availableRunners.length - 1)].id;
+      const executorId =
+        availableExecutors[randomExecutorIndex(0, availableExecutors.length - 1)].id;
 
-      const runner = await this.runnerService.findOne(runnerId);
+      const executor = await this.executorService.findOne(executorId);
 
-      const runnerSandboxApi = this.runnerApiFactory.createSandboxApi(runner);
+      const executorSandboxApi = this.executorApiFactory.createSandboxApi(executor);
 
-      await this.updateSandboxState(sandbox.id, SandboxState.RESTORING, runnerId);
+      await this.updateSandboxState(sandbox.id, SandboxState.RESTORING, executorId);
 
-      await runnerSandboxApi.create({
+      await executorSandboxApi.create({
         id: sandbox.id,
-        snapshot: validBackup,
+        image: validBackup,
         osUser: sandbox.osUser,
         // TODO: organizationId: sandbox.organizationId,
         userId: sandbox.organizationId,
@@ -1038,12 +1036,12 @@ export class SandboxManager {
         },
       });
     } else {
-      // if sandbox has runner, start sandbox
-      const runner = await this.runnerService.findOne(sandbox.runnerId);
+      // if sandbox has executor, start sandbox
+      const executor = await this.executorService.findOne(sandbox.executorId);
 
-      const runnerSandboxApi = this.runnerApiFactory.createSandboxApi(runner);
+      const executorSandboxApi = this.executorApiFactory.createSandboxApi(executor);
 
-      await runnerSandboxApi.start(sandbox.id);
+      await executorSandboxApi.start(sandbox.id);
 
       await this.updateSandboxState(sandbox.id, SandboxState.STARTING);
       return SYNC_AGAIN;
@@ -1052,21 +1050,21 @@ export class SandboxManager {
     return SYNC_AGAIN;
   }
 
-  //  used to check if sandbox is pulling snapshot on runner and update sandbox state accordingly
-  private async handleRunnerSandboxPullingSnapshotStateCheck(sandbox: Sandbox): Promise<SyncState> {
-    //  edge case when sandbox is being transferred to a new runner
-    if (!sandbox.runnerId) {
+  //  used to check if sandbox is pulling image on executor and update sandbox state accordingly
+  private async handleExecutorSandboxPullingImageStateCheck(sandbox: Sandbox): Promise<SyncState> {
+    //  edge case when sandbox is being transferred to a new executor
+    if (!sandbox.executorId) {
       return SYNC_AGAIN;
     }
 
-    const runner = await this.runnerService.findOne(sandbox.runnerId);
-    const runnerSandboxApi = this.runnerApiFactory.createSandboxApi(runner);
-    const sandboxInfoResponse = await runnerSandboxApi.info(sandbox.id);
+    const executor = await this.executorService.findOne(sandbox.executorId);
+    const executorSandboxApi = this.executorApiFactory.createSandboxApi(executor);
+    const sandboxInfoResponse = await executorSandboxApi.info(sandbox.id);
     const sandboxInfo = sandboxInfoResponse.data;
 
-    if (sandboxInfo.state === RunnerSandboxState.SandboxStatePullingSnapshot) {
-      await this.updateSandboxState(sandbox.id, SandboxState.PULLING_SNAPSHOT);
-    } else if (sandboxInfo.state === RunnerSandboxState.SandboxStateError) {
+    if (sandboxInfo.state === ExecutorSandboxState.SandboxStatePullingImage) {
+      await this.updateSandboxState(sandbox.id, SandboxState.PULLING_IMAGE);
+    } else if (sandboxInfo.state === ExecutorSandboxState.SandboxStateError) {
       await this.updateSandboxState(sandbox.id, SandboxState.ERROR);
     } else {
       await this.updateSandboxState(sandbox.id, SandboxState.STARTING);
@@ -1075,19 +1073,19 @@ export class SandboxManager {
     return SYNC_AGAIN;
   }
 
-  //  used to check if sandbox is started on runner and update sandbox state accordingly
-  //  also used to handle the case where a sandbox is started on a runner and then transferred to a new runner
-  private async handleRunnerSandboxStartedStateCheck(sandbox: Sandbox): Promise<SyncState> {
-    const runner = await this.runnerService.findOne(sandbox.runnerId);
-    const runnerSandboxApi = this.runnerApiFactory.createSandboxApi(runner);
-    const sandboxInfoResponse = await runnerSandboxApi.info(sandbox.id);
+  //  used to check if sandbox is started on executor and update sandbox state accordingly
+  //  also used to handle the case where a sandbox is started on a executor and then transferred to a new executor
+  private async handleExecutorSandboxStartedStateCheck(sandbox: Sandbox): Promise<SyncState> {
+    const executor = await this.executorService.findOne(sandbox.executorId);
+    const executorSandboxApi = this.executorApiFactory.createSandboxApi(executor);
+    const sandboxInfoResponse = await executorSandboxApi.info(sandbox.id);
     const sandboxInfo = sandboxInfoResponse.data;
 
     switch (sandboxInfo.state) {
-      case RunnerSandboxState.SandboxStateStarted: {
+      case ExecutorSandboxState.SandboxStateStarted: {
         let daemonVersion: string | undefined;
         try {
-          daemonVersion = await this.getSandboxDaemonVersion(sandbox, runner);
+          daemonVersion = await this.getSandboxDaemonVersion(sandbox, executor);
         } catch (e) {
           this.logger.error(`Failed to get sandbox daemon version for sandbox ${sandbox.id}:`, e);
         }
@@ -1114,34 +1112,34 @@ export class SandboxManager {
           );
         }
 
-        //  if sandbox was transferred to a new runner, remove it from the old runner
-        if (sandbox.prevRunnerId) {
-          const runner = await this.runnerService.findOne(sandbox.prevRunnerId);
-          if (!runner) {
+        //  if sandbox was transferred to a new executor, remove it from the old executor
+        if (sandbox.prevExecutorId) {
+          const executor = await this.executorService.findOne(sandbox.prevExecutorId);
+          if (!executor) {
             this.logger.warn(
-              `Previously assigned runner ${sandbox.prevRunnerId} for sandbox ${sandbox.id} not found`
+              `Previously assigned executor ${sandbox.prevExecutorId} for sandbox ${sandbox.id} not found`
             );
-            //  clear prevRunnerId to avoid trying to cleanup on a non-existent runner
-            sandbox.prevRunnerId = null;
+            //  clear prevExecutorId to avoid trying to cleanup on a non-existent executor
+            sandbox.prevExecutorId = null;
 
             const sandboxToUpdate = await this.sandboxRepository.findOneByOrFail({
               id: sandbox.id,
             });
-            sandboxToUpdate.prevRunnerId = null;
+            sandboxToUpdate.prevExecutorId = null;
             await this.sandboxRepository.save(sandboxToUpdate);
             break;
           }
-          const runnerSandboxApi = this.runnerApiFactory.createSandboxApi(runner);
+          const executorSandboxApi = this.executorApiFactory.createSandboxApi(executor);
           try {
             // First try to destroy the sandbox
-            await runnerSandboxApi.destroy(sandbox.id);
+            await executorSandboxApi.destroy(sandbox.id);
 
             // Wait for sandbox to be destroyed before removing
             let retries = 0;
             while (retries < 10) {
               try {
-                const sandboxInfo = await runnerSandboxApi.info(sandbox.id);
-                if (sandboxInfo.data.state === RunnerSandboxState.SandboxStateDestroyed) {
+                const sandboxInfo = await executorSandboxApi.info(sandbox.id);
+                if (sandboxInfo.data.state === ExecutorSandboxState.SandboxStateDestroyed) {
                   break;
                 }
               } catch (e) {
@@ -1155,24 +1153,24 @@ export class SandboxManager {
             }
 
             // Finally remove the destroyed sandbox
-            await runnerSandboxApi.removeDestroyed(sandbox.id);
-            sandbox.prevRunnerId = null;
+            await executorSandboxApi.removeDestroyed(sandbox.id);
+            sandbox.prevExecutorId = null;
 
             const sandboxToUpdate = await this.sandboxRepository.findOneByOrFail({
               id: sandbox.id,
             });
-            sandboxToUpdate.prevRunnerId = null;
+            sandboxToUpdate.prevExecutorId = null;
             await this.sandboxRepository.save(sandboxToUpdate);
           } catch (e) {
             this.logger.error(
-              `Failed to cleanup sandbox ${sandbox.id} on previous runner ${runner.id}:`,
+              `Failed to cleanup sandbox ${sandbox.id} on previous executor ${executor.id}:`,
               fromAxiosError(e)
             );
           }
         }
         break;
       }
-      case RunnerSandboxState.SandboxStateError: {
+      case ExecutorSandboxState.SandboxStateError: {
         await this.updateSandboxState(sandbox.id, SandboxState.ERROR);
         break;
       }
@@ -1184,7 +1182,7 @@ export class SandboxManager {
   private async updateSandboxState(
     sandboxId: string,
     state: SandboxState,
-    runnerId?: string | null | undefined,
+    executorId?: string | null | undefined,
     errorReason?: string,
     daemonVersion?: string
   ) {
@@ -1193,14 +1191,14 @@ export class SandboxManager {
     });
     if (
       sandbox.state === state &&
-      sandbox.runnerId === runnerId &&
+      sandbox.executorId === executorId &&
       sandbox.errorReason === errorReason
     ) {
       return;
     }
     sandbox.state = state;
-    if (runnerId !== undefined) {
-      sandbox.runnerId = runnerId;
+    if (executorId !== undefined) {
+      sandbox.executorId = executorId;
     }
     if (errorReason !== undefined) {
       sandbox.errorReason = errorReason;
@@ -1211,9 +1209,9 @@ export class SandboxManager {
     await this.sandboxRepository.save(sandbox);
   }
 
-  private async getSandboxDaemonVersion(sandbox: Sandbox, runner: Runner): Promise<string> {
-    const runnerSandboxApi = this.runnerApiFactory.createToolboxApi(runner);
-    const getVersionResponse = await runnerSandboxApi.sandboxesSandboxIdToolboxPathGet(
+  private async getSandboxDaemonVersion(sandbox: Sandbox, executor: Executor): Promise<string> {
+    const executorSandboxApi = this.executorApiFactory.createToolboxApi(executor);
+    const getVersionResponse = await executorSandboxApi.sandboxesSandboxIdToolboxPathGet(
       sandbox.id,
       "version"
     );

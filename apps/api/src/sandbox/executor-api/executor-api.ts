@@ -2,13 +2,13 @@ import { Injectable } from "@nestjs/common";
 import {
   Configuration,
   DefaultApi,
+  ImagesApi,
   SandboxApi,
-  SnapshotsApi,
   ToolboxApi,
 } from "@snapflow/executor-api-client";
 import axios from "axios";
 import axiosDebug from "axios-debug-log";
-import { Runner } from "../entities/runner.entity";
+import { Executor } from "../entities/executor.entity";
 
 const isDebugEnabled = process.env.DEBUG === "true";
 
@@ -30,12 +30,12 @@ if (isDebugEnabled) {
 }
 
 @Injectable()
-export class RunnerApiFactory {
-  createRunnerApi(runner: Runner): DefaultApi {
+export class ExecutorApiFactory {
+  createExecutorApi(executor: Executor): DefaultApi {
     const axiosInstance = axios.create({
-      baseURL: runner.apiUrl,
+      baseURL: executor.apiUrl,
       headers: {
-        Authorization: `Bearer ${runner.apiKey}`,
+        Authorization: `Bearer ${executor.apiKey}`,
       },
       timeout: 1 * 60 * 60 * 1000,
     });
@@ -57,25 +57,25 @@ export class RunnerApiFactory {
     return new DefaultApi(new Configuration(), "", axiosInstance);
   }
 
-  createSnapshotApi(runner: Runner): SnapshotsApi {
+  createImageApi(executor: Executor): ImagesApi {
     const axiosInstance = axios.create({
-      baseURL: runner.apiUrl,
+      baseURL: executor.apiUrl,
       headers: {
-        Authorization: `Bearer ${runner.apiKey}`,
+        Authorization: `Bearer ${executor.apiKey}`,
       },
       timeout: 1 * 60 * 60 * 1000,
     });
 
     if (isDebugEnabled) axiosDebug.addLogger(axiosInstance);
 
-    return new SnapshotsApi(new Configuration(), "", axiosInstance);
+    return new ImagesApi(new Configuration(), "", axiosInstance);
   }
 
-  createSandboxApi(runner: Runner): SandboxApi {
+  createSandboxApi(executor: Executor): SandboxApi {
     const axiosInstance = axios.create({
-      baseURL: runner.apiUrl,
+      baseURL: executor.apiUrl,
       headers: {
-        Authorization: `Bearer ${runner.apiKey}`,
+        Authorization: `Bearer ${executor.apiKey}`,
       },
       timeout: 1 * 60 * 60 * 1000,
     });
@@ -85,11 +85,11 @@ export class RunnerApiFactory {
     return new SandboxApi(new Configuration(), "", axiosInstance);
   }
 
-  createToolboxApi(runner: Runner): ToolboxApi {
+  createToolboxApi(executor: Executor): ToolboxApi {
     const axiosInstance = axios.create({
-      baseURL: runner.apiUrl,
+      baseURL: executor.apiUrl,
       headers: {
-        Authorization: `Bearer ${runner.apiKey}`,
+        Authorization: `Bearer ${executor.apiKey}`,
       },
       timeout: 1 * 60 * 60 * 1000,
     });

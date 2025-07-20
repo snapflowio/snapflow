@@ -6,8 +6,9 @@ const migrationFiles = glob.sync("apps/api/src/migrations/*");
 const migrationEntries = migrationFiles.reduce((acc, migrationFile) => {
   const entryName = migrationFile.substring(
     migrationFile.lastIndexOf("/") + 1,
-    migrationFile.lastIndexOf("."),
+    migrationFile.lastIndexOf(".")
   );
+
   acc[entryName] = migrationFile;
   return acc;
 }, {});

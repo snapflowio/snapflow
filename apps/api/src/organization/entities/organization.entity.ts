@@ -3,13 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { OrganizationInvitation } from "./organization-invitation.entity";
 import { OrganizationRole } from "./organization-role.entity";
 import { OrganizationUser } from "./organization-user.entity";
@@ -80,23 +74,23 @@ export class Organization {
   @Column({
     type: "int",
     default: 20,
-    name: "max_snapshot_size",
+    name: "max_image_size",
   })
-  maxSnapshotSize: number;
+  maxImageSize: number;
 
   @Column({
     type: "int",
     default: 100,
-    name: "snapshot_quota",
+    name: "image_quota",
   })
-  snapshotQuota: number;
+  imageQuota: number;
 
   @Column({
     type: "int",
     default: 100,
-    name: "volume_quota",
+    name: "bucket_quota",
   })
-  volumeQuota: number;
+  bucketQuota: number;
 
   @OneToMany(
     () => OrganizationRole,
@@ -104,14 +98,18 @@ export class Organization {
     {
       cascade: true,
       onDelete: "CASCADE",
-    },
+    }
   )
   roles: OrganizationRole[];
 
-  @OneToMany(() => OrganizationUser, (user) => user.organization, {
-    cascade: true,
-    onDelete: "CASCADE",
-  })
+  @OneToMany(
+    () => OrganizationUser,
+    (user) => user.organization,
+    {
+      cascade: true,
+      onDelete: "CASCADE",
+    }
+  )
   users: OrganizationUser[];
 
   @OneToMany(
@@ -120,7 +118,7 @@ export class Organization {
     {
       cascade: true,
       onDelete: "CASCADE",
-    },
+    }
   )
   invitations: OrganizationInvitation[];
 

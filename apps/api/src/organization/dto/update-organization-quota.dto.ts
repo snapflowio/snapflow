@@ -21,11 +21,11 @@ export class UpdateOrganizationQuotaDto {
   maxDiskPerSandbox?: number;
 
   @ApiProperty({ nullable: true })
-  snapshotQuota?: number;
+  imageQuota?: number;
 
   @ApiProperty({ nullable: true })
-  maxSnapshotSize?: number;
+  maxImageSize?: number;
 
   @ApiProperty({ nullable: true })
-  volumeQuota?: number;
+  bucketQuota?: number;
 }

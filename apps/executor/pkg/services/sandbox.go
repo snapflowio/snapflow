@@ -3,18 +3,18 @@ package services
 import (
 	"context"
 
-	"github.com/snapflow/manager/pkg/cache"
-	"github.com/snapflow/manager/pkg/docker"
-	"github.com/snapflow/manager/pkg/models"
-	"github.com/snapflow/manager/pkg/models/enums"
+	"github.com/snapflow/executor/pkg/cache"
+	"github.com/snapflow/executor/pkg/docker"
+	"github.com/snapflow/executor/pkg/models"
+	"github.com/snapflow/executor/pkg/models/enums"
 )
 
 type SandboxService struct {
-	cache  cache.IRunnerCache
+	cache  cache.IExecutorCache
 	docker *docker.DockerClient
 }
 
-func NewSandboxService(cache cache.IRunnerCache, docker *docker.DockerClient) *SandboxService {
+func NewSandboxService(cache cache.IExecutorCache, docker *docker.DockerClient) *SandboxService {
 	return &SandboxService{
 		cache:  cache,
 		docker: docker,

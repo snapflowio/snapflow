@@ -1,30 +1,23 @@
 import { ApiPropertyOptional, ApiSchema } from "@nestjs/swagger";
-import {
-  IsBoolean,
-  IsEnum,
-  IsNumber,
-  IsObject,
-  IsOptional,
-  IsString,
-} from "class-validator";
-import { RunnerRegion } from "../enums/runner-region.enum";
+import { IsBoolean, IsEnum, IsNumber, IsObject, IsOptional, IsString } from "class-validator";
+import { ExecutorRegion } from "../enums/executor-region.enum";
 import { SandboxClass } from "../enums/sandbox-class.enum";
 import { CreateBuildInfoDto } from "./create-build-info.dto";
-import { SandboxVolume } from "./sandbox.dto";
+import { SandboxBucket } from "./sandbox.dto";
 
 @ApiSchema({ name: "CreateSandbox" })
 export class CreateSandboxDto {
   @ApiPropertyOptional({
-    description: "The ID or name of the snapshot used for the sandbox",
+    description: "The ID or name of the image used for the sandbox",
     example: "ubuntu-4vcpu-8ram-100gb",
   })
   @IsOptional()
   @IsString()
-  snapshot?: string;
+  image?: string;
 
   @ApiPropertyOptional({
     description: "The user associated with the project",
-    example: "daytona",
+    example: "snapflow",
   })
   @IsOptional()
   @IsString()
@@ -44,7 +37,7 @@ export class CreateSandboxDto {
     description: "Labels for the sandbox",
     type: "object",
     additionalProperties: { type: "string" },
-    example: { "daytona.io/public": "true" },
+    example: { "snapflow.io/public": "true" },
   })
   @IsOptional()
   @IsObject()
@@ -69,12 +62,12 @@ export class CreateSandboxDto {
 
   @ApiPropertyOptional({
     description: "The target (region) where the sandbox will be created",
-    enum: RunnerRegion,
-    example: Object.values(RunnerRegion)[0],
+    enum: ExecutorRegion,
+    example: Object.values(ExecutorRegion)[0],
   })
   @IsOptional()
-  @IsEnum(RunnerRegion)
-  target?: RunnerRegion;
+  @IsEnum(ExecutorRegion)
+  target?: ExecutorRegion;
 
   @ApiPropertyOptional({
     description: "CPU cores allocated to the sandbox",
@@ -122,8 +115,7 @@ export class CreateSandboxDto {
   autoStopInterval?: number;
 
   @ApiPropertyOptional({
-    description:
-      "Auto-archive interval in minutes (0 means the maximum interval will be used)",
+    description: "Auto-archive interval in minutes (0 means the maximum interval will be used)",
     example: 7 * 24 * 60,
     type: "integer",
   })
@@ -132,12 +124,12 @@ export class CreateSandboxDto {
   autoArchiveInterval?: number;
 
   @ApiPropertyOptional({
-    description: "Array of volumes to attach to the sandbox",
-    type: [SandboxVolume],
+    description: "Array of buckets to attach to the sandbox",
+    type: [SandboxBucket],
     required: false,
   })
   @IsOptional()
-  volumes?: SandboxVolume[];
+  buckets?: SandboxBucket[];
 
   @ApiPropertyOptional({
     description: "Build information for the sandbox",

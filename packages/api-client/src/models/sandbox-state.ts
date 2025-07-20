@@ -32,9 +32,9 @@ export const SandboxState = {
     ERROR: 'error',
     BUILD_FAILED: 'build_failed',
     PENDING_BUILD: 'pending_build',
-    BUILDING_SNAPSHOT: 'building_snapshot',
+    BUILDING_IMAGE: 'building_image',
     UNKNOWN: 'unknown',
-    PULLING_SNAPSHOT: 'pulling_snapshot',
+    PULLING_IMAGE: 'pulling_image',
     ARCHIVING: 'archiving',
     ARCHIVED: 'archived'
 } as const;

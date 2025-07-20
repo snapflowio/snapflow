@@ -12,10 +12,10 @@ export const CREATE_API_KEY_PERMISSIONS_GROUPS: {
     ],
   },
   {
-    name: "Snapshots",
+    name: "Images",
     permissions: [
-      CreateApiKeyPermissionsEnum.WRITE_SNAPSHOTS,
-      CreateApiKeyPermissionsEnum.DELETE_SNAPSHOTS,
+      CreateApiKeyPermissionsEnum.WRITE_IMAGES,
+      CreateApiKeyPermissionsEnum.DELETE_IMAGES,
     ],
   },
   {
@@ -26,11 +26,11 @@ export const CREATE_API_KEY_PERMISSIONS_GROUPS: {
     ],
   },
   {
-    name: "Volumes",
+    name: "Buckets",
     permissions: [
-      CreateApiKeyPermissionsEnum.READ_VOLUMES,
-      CreateApiKeyPermissionsEnum.WRITE_VOLUMES,
-      CreateApiKeyPermissionsEnum.DELETE_VOLUMES,
+      CreateApiKeyPermissionsEnum.READ_BUCKETS,
+      CreateApiKeyPermissionsEnum.WRITE_BUCKETS,
+      CreateApiKeyPermissionsEnum.DELETE_BUCKETS,
     ],
   },
 ];

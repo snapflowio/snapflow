@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/snapflow/executor/pkg/common"
+	"github.com/snapflow/executor/pkg/executor"
 	proxy "github.com/snapflow/go-common/pkg/proxy"
-	"github.com/snapflow/manager/pkg/common"
-	"github.com/snapflow/manager/pkg/runner"
 )
 
 // ProxyRequest handles proxying requests to a sandbox's container
@@ -41,7 +41,7 @@ func ProxyRequest(ctx *gin.Context) {
 }
 
 func getProxyTarget(ctx *gin.Context) (*url.URL, string, map[string]string, error) {
-	manager := runner.GetInstance(nil)
+	manager := executor.GetInstance(nil)
 
 	sandboxId := ctx.Param("sandboxId")
 	if sandboxId == "" {
@@ -68,7 +68,7 @@ func getProxyTarget(ctx *gin.Context) (*url.URL, string, map[string]string, erro
 	}
 
 	// Build the target URL
-	targetURL := fmt.Sprintf("http://%s:2280", containerIP)
+	targetURL := fmt.Sprintf("http://%s:8082", containerIP)
 	target, err := url.Parse(targetURL)
 	if err != nil {
 		ctx.Error(common.NewBadRequestError(fmt.Errorf("failed to parse target URL: %w", err)))

@@ -5,7 +5,7 @@ import { IsString } from "class-validator";
 export class PortPreviewUrlDto {
   @ApiProperty({
     description: "Preview url",
-    example: "https://123456-mysandbox.runner.com",
+    example: "https://123456-mysandbox.executor.com",
   })
   @IsString()
   url: string;
@@ -18,8 +18,8 @@ export class PortPreviewUrlDto {
   token: string;
 
   @ApiProperty({
-    description: "Legacy preview url using runner domain",
-    example: "https://3000-mysandbox.runner.com",
+    description: "Legacy preview url using executor domain",
+    example: "https://3000-mysandbox.executor.com",
     required: false,
   })
   @IsString()

@@ -5,29 +5,29 @@ import { Cron, CronExpression } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import { InjectRedis } from "@nestjs-modules/ioredis";
 import { Redis } from "ioredis";
+import { filter } from "rxjs";
 import { FindOptionsWhere, In, MoreThan, Not, Repository } from "typeorm";
 import { validate as uuidValidate } from "uuid";
-
-import { BadRequestError } from "../../exceptions/bad-request.exception";
+import { BadRequestError } from "../../common/exceptions/bad-request.exception";
 import { RedisLockProvider } from "../common/redis-lock.provider";
 import { SANDBOX_WARM_POOL_UNASSIGNED_ORGANIZATION } from "../constants/sandbox.constants";
 import { SandboxEvents } from "../constants/sandbox-events.constants";
 import { WarmPoolEvents } from "../constants/warmpool-events.constants";
-import { Runner } from "../entities/runner.entity";
+import { Executor } from "../entities/executor.entity";
+import { Image } from "../entities/image.entity";
 import { Sandbox } from "../entities/sandbox.entity";
-import { Snapshot } from "../entities/snapshot.entity";
 import { WarmPool } from "../entities/warm-pool.entity";
-import { RunnerRegion } from "../enums/runner-region.enum";
+import { ExecutorRegion } from "../enums/executor-region.enum";
+import { ImageState } from "../enums/image-state.enum";
 import { SandboxClass } from "../enums/sandbox-class.enum";
 import { SandboxDesiredState } from "../enums/sandbox-desired-state.enum";
 import { SandboxState } from "../enums/sandbox-state.enum";
-import { SnapshotState } from "../enums/snapshot-state.enum";
 import { SandboxOrganizationUpdatedEvent } from "../events/sandbox-organization-updated.event";
 import { WarmPoolTopUpRequested } from "../events/warmpool-topup-requested.event";
 
 export type FetchWarmPoolSandboxParams = {
-  snapshot: string;
-  target: RunnerRegion;
+  image: string;
+  target: ExecutorRegion;
   class: SandboxClass;
   cpu: number;
   mem: number;
@@ -47,15 +47,15 @@ export class SandboxWarmPoolService {
     private readonly warmPoolRepository: Repository<WarmPool>,
     @InjectRepository(Sandbox)
     private readonly sandboxRepository: Repository<Sandbox>,
-    @InjectRepository(Snapshot)
-    private readonly snapshotRepository: Repository<Snapshot>,
-    @InjectRepository(Runner)
-    private readonly runnerRepository: Repository<Runner>,
+    @InjectRepository(Image)
+    private readonly imageRepository: Repository<Image>,
+    @InjectRepository(Executor)
+    private readonly executorRepository: Repository<Executor>,
     private readonly redisLockProvider: RedisLockProvider,
     private readonly configService: ConfigService,
     @Inject(EventEmitter2)
     private eventEmitter: EventEmitter2,
-    @InjectRedis() private readonly redis: Redis,
+    @InjectRedis() private readonly redis: Redis
   ) {}
 
   //  on init
@@ -63,46 +63,40 @@ export class SandboxWarmPoolService {
     //  await this.adHocBackupCheck()
   }
 
-  async fetchWarmPoolSandbox(
-    params: FetchWarmPoolSandboxParams,
-  ): Promise<Sandbox | null> {
-    //  validate snapshot
-    const sandboxSnapshot =
-      params.snapshot || this.configService.get<string>("DEFAULT_SNAPSHOT");
+  async fetchWarmPoolSandbox(params: FetchWarmPoolSandboxParams): Promise<Sandbox | null> {
+    //  validate image
+    const sandboxImage = params.image || this.configService.get<string>("DEFAULT_IMAGE");
 
-    const snapshotFilter: FindOptionsWhere<Snapshot>[] = [
+    const imageFilter: FindOptionsWhere<Image>[] = [
       {
         organizationId: params.organizationId,
-        name: sandboxSnapshot,
-        state: SnapshotState.ACTIVE,
+        name: sandboxImage,
+        state: ImageState.ACTIVE,
       },
-      { general: true, name: sandboxSnapshot, state: SnapshotState.ACTIVE },
+      { general: true, name: sandboxImage, state: ImageState.ACTIVE },
     ];
 
-    if (uuidValidate(sandboxSnapshot)) {
-      snapshotFilter.push(
+    if (uuidValidate(sandboxImage)) {
+      imageFilter.push(
         {
           organizationId: params.organizationId,
-          id: sandboxSnapshot,
-          state: SnapshotState.ACTIVE,
+          id: sandboxImage,
+          state: ImageState.ACTIVE,
         },
-        { general: true, id: sandboxSnapshot, state: SnapshotState.ACTIVE },
+        { general: true, id: sandboxImage, state: ImageState.ACTIVE }
       );
     }
 
-    const snapshot = await this.snapshotRepository.findOne({
-      where: snapshotFilter,
+    const image = await this.imageRepository.findOne({
+      where: imageFilter,
     });
-    if (!snapshot) {
-      throw new BadRequestError(
-        `Snapshot ${sandboxSnapshot} not found. Did you add it through the Daytona Dashboard?`,
-      );
-    }
+
+    if (!image) throw new BadRequestError(`Image ${sandboxImage} not found.`);
 
     //  check if sandbox is warm pool
     const warmPoolItem = await this.warmPoolRepository.findOne({
       where: {
-        snapshot: snapshot.name,
+        image: image.name,
         target: params.target,
         class: params.class,
         cpu: params.cpu,
@@ -114,7 +108,7 @@ export class SandboxWarmPoolService {
       },
     });
     if (warmPoolItem) {
-      const unschedulableRunners = await this.runnerRepository.find({
+      const unschedulableExecutors = await this.executorRepository.find({
         where: {
           region: params.target,
           unschedulable: true,
@@ -123,12 +117,12 @@ export class SandboxWarmPoolService {
 
       const warmPoolSandboxes = await this.sandboxRepository.find({
         where: {
-          runnerId: Not(In(unschedulableRunners.map((runner) => runner.id))),
+          executorId: Not(In(unschedulableExecutors.map((executor) => executor.id))),
           class: warmPoolItem.class,
           cpu: warmPoolItem.cpu,
           mem: warmPoolItem.mem,
           disk: warmPoolItem.disk,
-          snapshot: snapshot.name, // Use snapshot.name instead of sandboxSnapshot
+          image: image.name, // Use image.name instead of sandboxImage
           osUser: warmPoolItem.osUser,
           env: warmPoolItem.env,
           organizationId: SANDBOX_WARM_POOL_UNASSIGNED_ORGANIZATION,
@@ -170,7 +164,7 @@ export class SandboxWarmPoolService {
 
         const sandboxCount = await this.sandboxRepository.count({
           where: {
-            snapshot: warmPoolItem.snapshot,
+            image: warmPoolItem.image,
             organizationId: SANDBOX_WARM_POOL_UNASSIGNED_ORGANIZATION,
             class: warmPoolItem.class,
             osUser: warmPoolItem.osUser,
@@ -189,15 +183,15 @@ export class SandboxWarmPoolService {
         if (missingCount > 0) {
           const promises = [];
           this.logger.debug(
-            `Creating ${missingCount} sandboxes for warm pool id ${warmPoolItem.id}`,
+            `Creating ${missingCount} sandboxes for warm pool id ${warmPoolItem.id}`
           );
 
           for (let i = 0; i < missingCount; i++) {
             promises.push(
               this.eventEmitter.emitAsync(
                 WarmPoolEvents.TOPUP_REQUESTED,
-                new WarmPoolTopUpRequested(warmPoolItem),
-              ),
+                new WarmPoolTopUpRequested(warmPoolItem)
+              )
             );
           }
 
@@ -206,20 +200,18 @@ export class SandboxWarmPoolService {
         }
 
         await this.redisLockProvider.unlock(lockKey);
-      }),
+      })
     );
   }
 
   @OnEvent(SandboxEvents.ORGANIZATION_UPDATED)
-  async handleSandboxOrganizationUpdated(
-    event: SandboxOrganizationUpdatedEvent,
-  ) {
+  async handleSandboxOrganizationUpdated(event: SandboxOrganizationUpdatedEvent) {
     if (event.newOrganizationId === SANDBOX_WARM_POOL_UNASSIGNED_ORGANIZATION) {
       return;
     }
     const warmPoolItem = await this.warmPoolRepository.findOne({
       where: {
-        snapshot: event.sandbox.snapshot,
+        image: event.sandbox.image,
         class: event.sandbox.class,
         cpu: event.sandbox.cpu,
         mem: event.sandbox.mem,
@@ -237,7 +229,7 @@ export class SandboxWarmPoolService {
 
     const sandboxCount = await this.sandboxRepository.count({
       where: {
-        snapshot: warmPoolItem.snapshot,
+        image: warmPoolItem.image,
         organizationId: SANDBOX_WARM_POOL_UNASSIGNED_ORGANIZATION,
         class: warmPoolItem.class,
         osUser: warmPoolItem.osUser,
@@ -257,7 +249,7 @@ export class SandboxWarmPoolService {
     if (warmPoolItem)
       this.eventEmitter.emit(
         WarmPoolEvents.TOPUP_REQUESTED,
-        new WarmPoolTopUpRequested(warmPoolItem),
+        new WarmPoolTopUpRequested(warmPoolItem)
       );
   }
 }

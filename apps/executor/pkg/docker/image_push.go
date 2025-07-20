@@ -4,8 +4,8 @@ import (
 	"context"
 	"io"
 
-	"github.com/snapflow/manager/internal/util"
-	"github.com/snapflow/manager/pkg/api/dto"
+	"github.com/snapflow/executor/internal/util"
+	"github.com/snapflow/executor/pkg/api/dto"
 
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/pkg/jsonmessage"

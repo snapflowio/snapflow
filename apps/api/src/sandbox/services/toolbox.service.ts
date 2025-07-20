@@ -8,7 +8,7 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import axios from "axios";
 import { Repository } from "typeorm";
-import { Runner } from "../entities/runner.entity";
+import { Executor } from "../entities/executor.entity";
 import { Sandbox } from "../entities/sandbox.entity";
 import { SandboxState } from "../enums/sandbox-state.enum";
 
@@ -19,17 +19,17 @@ export class ToolboxService {
   constructor(
     @InjectRepository(Sandbox)
     private readonly sandboxRepository: Repository<Sandbox>,
-    @InjectRepository(Runner)
-    private readonly runnerRepository: Repository<Runner>,
+    @InjectRepository(Executor)
+    private readonly executorRepository: Repository<Executor>
   ) {}
 
-  async forwardRequestToRunner(
+  async forwardRequestToExecutor(
     sandboxId: string,
     method: string,
     path: string,
-    data?: any,
+    data?: any
   ): Promise<any> {
-    const runner = await this.getRunner(sandboxId);
+    const executor = await this.getExecutor(sandboxId);
 
     const maxRetries = 5;
     let attempt = 1;
@@ -37,7 +37,7 @@ export class ToolboxService {
     while (attempt <= maxRetries) {
       try {
         const headers: any = {
-          Authorization: `Bearer ${runner.apiKey}`,
+          Authorization: `Bearer ${executor.apiKey}`,
         };
 
         if (data && typeof data === "object" && Object.keys(data).length > 0)
@@ -45,7 +45,7 @@ export class ToolboxService {
 
         const requestConfig: any = {
           method,
-          url: `${runner.apiUrl}/sandboxes/${sandboxId}${path}`,
+          url: `${executor.apiUrl}/sandboxes/${sandboxId}${path}`,
           headers,
           maxBodyLength: 209715200, // 200MB in bytes
           maxContentLength: 209715200, // 200MB in bytes
@@ -59,10 +59,7 @@ export class ToolboxService {
       } catch (error) {
         if (error.message.includes("ECONNREFUSED")) {
           if (attempt === maxRetries) {
-            throw new HttpException(
-              "Failed to connect to runner after multiple attempts",
-              500,
-            );
+            throw new HttpException("Failed to connect to executor after multiple attempts", 500);
           }
           // Wait for attempt * 1000ms (1s, 2s, 3s)
           await new Promise((resolve) => setTimeout(resolve, attempt * 1000));
@@ -70,18 +67,14 @@ export class ToolboxService {
           continue;
         }
 
-        if (error.response)
-          throw new HttpException(error.response.data, error.response.status);
+        if (error.response) throw new HttpException(error.response.data, error.response.status);
 
-        throw new HttpException(
-          `Error forwarding request to runner: ${error.message}`,
-          500,
-        );
+        throw new HttpException(`Error forwarding request to executor: ${error.message}`, 500);
       }
     }
   }
 
-  public async getRunner(sandboxId: string): Promise<Runner> {
+  public async getExecutor(sandboxId: string): Promise<Executor> {
     try {
       const sandbox = await this.sandboxRepository.findOne({
         where: { id: sandboxId },
@@ -89,17 +82,16 @@ export class ToolboxService {
 
       if (!sandbox) throw new NotFoundException("Sandbox not found");
 
-      const runner = await this.runnerRepository.findOne({
-        where: { id: sandbox.runnerId },
+      const executor = await this.executorRepository.findOne({
+        where: { id: sandbox.executorId },
       });
 
-      if (!runner)
-        throw new NotFoundException("Runner not found for the sandbox");
+      if (!executor) throw new NotFoundException("Executor not found for the sandbox");
 
       if (sandbox.state !== SandboxState.STARTED)
         throw new BadRequestException("Sandbox is not running");
 
-      return runner;
+      return executor;
     } finally {
       await this.sandboxRepository.update(sandboxId, {
         lastActivityAt: new Date(),

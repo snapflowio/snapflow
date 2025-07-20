@@ -8,12 +8,12 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { Image } from "./image.entity";
 import { Sandbox } from "./sandbox.entity";
-import { Snapshot } from "./snapshot.entity";
 
 export function generateBuildInfoHash(
   dockerfileContent: string,
-  contextHashes: string[] = [],
+  contextHashes: string[] = []
 ): string {
   const sortedContextHashes = [...contextHashes].sort() || [];
   const combined = dockerfileContent + sortedContextHashes.join("");
@@ -24,7 +24,7 @@ export function generateBuildInfoHash(
 @Entity()
 export class BuildInfo {
   @PrimaryColumn()
-  snapshotRef: string;
+  imageRef: string;
 
   @Column({ type: "text", nullable: true })
   dockerfileContent?: string;
@@ -32,10 +32,16 @@ export class BuildInfo {
   @Column("simple-array", { nullable: true })
   contextHashes?: string[];
 
-  @OneToMany(() => Snapshot, (snapshot) => snapshot.buildInfo)
-  snapshots: Snapshot[];
+  @OneToMany(
+    () => Image,
+    (image) => image.buildInfo
+  )
+  images: Image[];
 
-  @OneToMany(() => Sandbox, (sandbox) => sandbox.buildInfo)
+  @OneToMany(
+    () => Sandbox,
+    (sandbox) => sandbox.buildInfo
+  )
   sandboxes: Sandbox[];
 
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
@@ -49,9 +55,6 @@ export class BuildInfo {
 
   @BeforeInsert()
   generateHash() {
-    this.snapshotRef = generateBuildInfoHash(
-      this.dockerfileContent,
-      this.contextHashes,
-    );
+    this.imageRef = generateBuildInfoHash(this.dockerfileContent, this.contextHashes);
   }
 }

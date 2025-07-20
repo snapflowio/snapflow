@@ -5,24 +5,23 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { InjectRedis } from "@nestjs-modules/ioredis";
 import { Redis } from "ioredis";
 import { In, Not, Repository } from "typeorm";
-
+import { BadRequestError } from "../../common/exceptions/bad-request.exception";
+import { ResourceNotFoundError } from "../../common/exceptions/not-found.exception";
 import { fromAxiosError } from "../../common/utils/axios-error";
-import { DockerRegistryService } from "../../docker-registry/docker-registry.service";
-import { BadRequestError } from "../../exceptions/bad-request.exception";
-import { ResourceNotFoundError } from "../../exceptions/not-found.exception";
+import { RegistryService } from "../../registry/registry.service";
 import { RedisLockProvider } from "../common/redis-lock.provider";
 import { SANDBOX_WARM_POOL_UNASSIGNED_ORGANIZATION } from "../constants/sandbox.constants";
 import { SandboxEvents } from "../constants/sandbox-events.constants";
 import { DockerProvider } from "../docker/docker-provider";
 import { Sandbox } from "../entities/sandbox.entity";
 import { BackupState } from "../enums/backup-state.enum";
-import { RunnerState } from "../enums/runner-state.enum";
+import { ExecutorState } from "../enums/executor-state.enum";
 import { SandboxState } from "../enums/sandbox-state.enum";
 import { SandboxArchivedEvent } from "../events/sandbox-archived.event";
 import { SandboxBackupCreatedEvent } from "../events/sandbox-backup-created.event";
 import { SandboxDestroyedEvent } from "../events/sandbox-destroyed.event";
-import { RunnerApiFactory } from "../executor-api/executor-api";
-import { RunnerService } from "../services/runner.service";
+import { ExecutorApiFactory } from "../executor-api/executor-api";
+import { ExecutorService } from "../services/executor.service";
 
 @Injectable()
 export class BackupManager {
@@ -31,9 +30,9 @@ export class BackupManager {
   constructor(
     @InjectRepository(Sandbox)
     private readonly sandboxRepository: Repository<Sandbox>,
-    private readonly runnerService: RunnerService,
-    private readonly runnerApiFactory: RunnerApiFactory,
-    private readonly dockerRegistryService: DockerRegistryService,
+    private readonly executorService: ExecutorService,
+    private readonly executorApiFactory: ExecutorApiFactory,
+    private readonly registryService: RegistryService,
     @InjectRedis() private readonly redis: Redis,
     private readonly dockerProvider: DockerProvider,
     private readonly redisLockProvider: RedisLockProvider
@@ -47,16 +46,18 @@ export class BackupManager {
   //  todo: make frequency configurable or more efficient
   @Cron(CronExpression.EVERY_5_MINUTES, { name: "ad-hoc-backup-check" })
   async adHocBackupCheck(): Promise<void> {
-    // Get all ready runners
-    const allRunners = await this.runnerService.findAll();
-    const readyRunners = allRunners.filter((runner) => runner.state === RunnerState.READY);
+    // Get all ready executors
+    const allExecutors = await this.executorService.findAll();
+    const readyExecutors = allExecutors.filter(
+      (executor) => executor.state === ExecutorState.READY
+    );
 
-    // Process all runners in parallel
+    // Process all executors in parallel
     await Promise.all(
-      readyRunners.map(async (runner) => {
+      readyExecutors.map(async (executor) => {
         const sandboxes = await this.sandboxRepository.find({
           where: {
-            runnerId: runner.id,
+            executorId: executor.id,
             organizationId: Not(SANDBOX_WARM_POOL_UNASSIGNED_ORGANIZATION),
             state: In([SandboxState.STARTED, SandboxState.ARCHIVING]),
             backupState: In([BackupState.NONE, BackupState.COMPLETED]),
@@ -132,8 +133,8 @@ export class BackupManager {
           return;
         }
 
-        const runner = await this.runnerService.findOne(s.runnerId);
-        if (runner.state !== RunnerState.READY) {
+        const executor = await this.executorService.findOne(s.executorId);
+        if (executor.state !== ExecutorState.READY) {
           return;
         }
 
@@ -188,16 +189,16 @@ export class BackupManager {
       return;
     }
 
-    // Allow backups for STARTED sandboxes or STOPPED sandboxes with runnerId
+    // Allow backups for STARTED sandboxes or STOPPED sandboxes with executorId
     if (
       !(
         sandbox.state === SandboxState.STARTED ||
         sandbox.state === SandboxState.ARCHIVING ||
-        (sandbox.state === SandboxState.STOPPED && sandbox.runnerId)
+        (sandbox.state === SandboxState.STOPPED && sandbox.executorId)
       )
     ) {
       throw new BadRequestError(
-        "Sandbox must be started or stopped with assigned runner to create a backup"
+        "Sandbox must be started or stopped with assigned executor to create a backup"
       );
     }
 
@@ -209,49 +210,49 @@ export class BackupManager {
     }
 
     // Get default registry
-    const registry = await this.dockerRegistryService.getDefaultInternalRegistry();
+    const registry = await this.registryService.getDefaultInternalRegistry();
     if (!registry) {
       throw new BadRequestError("No default registry configured");
     }
 
-    // Generate backup snapshot name
+    // Generate backup image name
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const backupSnapshot = `${registry.url}/${registry.project}/backup-${sandbox.id}:${timestamp}`;
+    const backupImage = `${registry.url}/${registry.project}/backup-${sandbox.id}:${timestamp}`;
 
-    //  if sandbox has a backup snapshot, add it to the existingBackupSnapshots array
+    //  if sandbox has a backup image, add it to the existingBackupImages array
     if (
       sandbox.lastBackupAt &&
-      sandbox.backupSnapshot &&
+      sandbox.backupImage &&
       [BackupState.NONE, BackupState.COMPLETED].includes(sandbox.backupState)
     ) {
-      sandbox.existingBackupSnapshots.push({
-        snapshotName: sandbox.backupSnapshot,
+      sandbox.existingBackupImages.push({
+        imageName: sandbox.backupImage,
         createdAt: sandbox.lastBackupAt,
       });
     }
-    const existingBackupSnapshots = sandbox.existingBackupSnapshots;
-    existingBackupSnapshots.push({
-      snapshotName: backupSnapshot,
+    const existingBackupImages = sandbox.existingBackupImages;
+    existingBackupImages.push({
+      imageName: backupImage,
       createdAt: new Date(),
     });
 
     const sandboxToUpdate = await this.sandboxRepository.findOneByOrFail({
       id: sandbox.id,
     });
-    sandboxToUpdate.existingBackupSnapshots = existingBackupSnapshots;
+    sandboxToUpdate.existingBackupImages = existingBackupImages;
     sandboxToUpdate.backupState = BackupState.PENDING;
     sandboxToUpdate.backupRegistryId = registry.id;
-    sandboxToUpdate.backupSnapshot = backupSnapshot;
+    sandboxToUpdate.backupImage = backupImage;
     await this.sandboxRepository.save(sandboxToUpdate);
   }
 
   private async checkBackupProgress(sandbox: Sandbox): Promise<void> {
     try {
-      const runner = await this.runnerService.findOne(sandbox.runnerId);
-      const runnerSandboxApi = this.runnerApiFactory.createSandboxApi(runner);
+      const executor = await this.executorService.findOne(sandbox.executorId);
+      const executorSandboxApi = this.executorApiFactory.createSandboxApi(executor);
 
-      // Get sandbox info from runner
-      const sandboxInfo = await runnerSandboxApi.info(sandbox.id);
+      // Get sandbox info from executor
+      const sandboxInfo = await executorSandboxApi.info(sandbox.id);
 
       switch (sandboxInfo.data.backupState?.toUpperCase()) {
         case "COMPLETED": {
@@ -280,7 +281,7 @@ export class BackupManager {
   }
 
   private async deleteSandboxBackupRepositoryFromRegistry(sandbox: Sandbox): Promise<void> {
-    const registry = await this.dockerRegistryService.findOne(sandbox.backupRegistryId);
+    const registry = await this.registryService.findOne(sandbox.backupRegistryId);
 
     try {
       await this.dockerProvider.deleteSandboxRepository(sandbox.id, registry);
@@ -294,29 +295,29 @@ export class BackupManager {
 
   private async handlePendingBackup(sandbox: Sandbox): Promise<void> {
     try {
-      const registry = await this.dockerRegistryService.findOne(sandbox.backupRegistryId);
+      const registry = await this.registryService.findOne(sandbox.backupRegistryId);
       if (!registry) {
         throw new Error("Registry not found");
       }
 
-      const runner = await this.runnerService.findOne(sandbox.runnerId);
-      const runnerSandboxApi = this.runnerApiFactory.createSandboxApi(runner);
+      const executor = await this.executorService.findOne(sandbox.executorId);
+      const executorSandboxApi = this.executorApiFactory.createSandboxApi(executor);
 
-      //  check if backup is already in progress on the runner
-      const runnerSandboxResponse = await runnerSandboxApi.info(sandbox.id);
-      const runnerSandbox = runnerSandboxResponse.data;
-      if (runnerSandbox.backupState?.toUpperCase() === "IN_PROGRESS") {
+      //  check if backup is already in progress on the executor
+      const executorSandboxResponse = await executorSandboxApi.info(sandbox.id);
+      const executorSandbox = executorSandboxResponse.data;
+      if (executorSandbox.backupState?.toUpperCase() === "IN_PROGRESS") {
         return;
       }
 
-      // Initiate backup on runner
-      await runnerSandboxApi.createBackup(sandbox.id, {
+      // Initiate backup on executor
+      await executorSandboxApi.createBackup(sandbox.id, {
         registry: {
           url: registry.url,
           username: registry.username,
           password: registry.password,
         },
-        snapshot: sandbox.backupSnapshot,
+        image: sandbox.backupImage,
       });
 
       await this.updateWorkspacBackupState(sandbox.id, BackupState.IN_PROGRESS);
@@ -354,7 +355,7 @@ export class BackupManager {
 
     await Promise.all(
       sandboxes
-        .filter((sandbox) => sandbox.runnerId !== null)
+        .filter((sandbox) => sandbox.executorId !== null)
         .map(async (sandbox) => {
           const lockKey = `sandbox-backup-${sandbox.id}`;
           const hasLock = await this.redisLockProvider.lock(lockKey, 30);
@@ -362,8 +363,8 @@ export class BackupManager {
             return;
           }
 
-          const runner = await this.runnerService.findOne(sandbox.runnerId);
-          if (runner.state !== RunnerState.READY) {
+          const executor = await this.executorService.findOne(sandbox.executorId);
+          if (executor.state !== ExecutorState.READY) {
             return;
           }
 

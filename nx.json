@@ -5,13 +5,9 @@
     "production": [
       "default",
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
-      "!{projectRoot}/tsconfig.spec.json",
-      "!{projectRoot}/jest.config.[jt]s",
-      "!{projectRoot}/src/test-setup.[jt]s",
-      "!{projectRoot}/test-setup.[jt]s"
+      "!{projectRoot}/tsconfig.spec.json"
     ],
     "sharedGlobals": [
-      "{workspaceRoot}/.github/workflows/ci.yml",
       "{workspaceRoot}/go.work"
     ]
   },
@@ -24,12 +20,6 @@
         "previewTargetName": "preview",
         "buildDepsTargetName": "build-deps",
         "watchDepsTargetName": "watch-deps"
-      }
-    },
-    {
-      "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "lint"
       }
     },
     {
@@ -85,12 +75,20 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
+    },
+    "@nx/vite:build": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
+    },
+    "@nx/vite:serve": {
+      "dependsOn": []
     }
   },
   "release": {
     "version": {
-      "preVersionCommand": "bunx nx run-many -t build"
+      "preVersionCommand": "pnpx nx run-many -t build"
     }
   },
-  "nxCloudId": "68699aa8462f6a349cd48a47"
+  "neverConnectToCloud": true
 }

@@ -9,7 +9,7 @@ import checker from "vite-plugin-checker";
 
 export default defineConfig((mode) => ({
   root: __dirname,
-  cacheDir: "../../node_modules/.vite/apps/dashboard",
+  cacheDir: "../../node_modules/.vite/apps/website",
   server: {
     port: 3000,
     host: "localhost",
@@ -30,7 +30,7 @@ export default defineConfig((mode) => ({
     mode.command === "build" &&
       checker({
         typescript: {
-          tsconfigPath: "./tsconfig.app.json",
+          tsconfigPath: path.resolve(__dirname, "tsconfig.app.json"),
         },
       }),
   ],
@@ -40,7 +40,7 @@ export default defineConfig((mode) => ({
     },
   },
   build: {
-    outDir: "../../dist/apps/dashboard",
+    outDir: "../../dist/apps/website",
     emptyOutDir: true,
     reportCompressedSize: true,
     commonjsOptions: {

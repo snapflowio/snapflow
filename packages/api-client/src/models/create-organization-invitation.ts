@@ -34,10 +34,10 @@ export interface CreateOrganizationInvitation {
     'role': CreateOrganizationInvitationRoleEnum;
     /**
      * Role IDs of the inviting user
-     * @type {string}
+     * @type {Array<string>}
      * @memberof CreateOrganizationInvitation
      */
-    'assignedRoleIds': string;
+    'assignedRoleIds': Array<string>;
     /**
      * Expiration date of the invitation
      * @type {Date}

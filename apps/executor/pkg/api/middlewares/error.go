@@ -9,8 +9,8 @@ import (
 	"github.com/docker/docker/errdefs"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"github.com/snapflow/manager/internal/util"
-	"github.com/snapflow/manager/pkg/common"
+	"github.com/snapflow/executor/internal/util"
+	"github.com/snapflow/executor/pkg/common"
 )
 
 func ErrorMiddleware() gin.HandlerFunc {

@@ -5,7 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { RunnerRegion } from "../enums/runner-region.enum";
+import { ExecutorRegion } from "../enums/executor-region.enum";
 import { SandboxClass } from "../enums/sandbox-class.enum";
 
 @Entity()
@@ -17,14 +17,14 @@ export class WarmPool {
   pool: number;
 
   @Column()
-  snapshot: string;
+  image: string;
 
   @Column({
     type: "enum",
-    enum: RunnerRegion,
-    default: RunnerRegion.EU,
+    enum: ExecutorRegion,
+    default: ExecutorRegion.EU,
   })
-  target: RunnerRegion;
+  target: ExecutorRegion;
 
   @Column()
   cpu: number;

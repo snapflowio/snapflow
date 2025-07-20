@@ -14,12 +14,6 @@ export const config = {
     clientId: process.env.OIDC_CLIENT_ID || process.env.OID_CLIENT_ID,
     issuer: process.env.OIDC_ISSUER_BASE_URL || process.env.OID_ISSUER_BASE_URL,
     audience: process.env.OIDC_AUDIENCE || process.env.OID_AUDIENCE,
-    managementApi: {
-      enabled: process.env.OIDC_MANAGEMENT_API_ENABLED === "true",
-      clientId: process.env.OIDC_MANAGEMENT_API_CLIENT_ID,
-      clientSecret: process.env.OIDC_MANAGEMENT_API_CLIENT_SECRET,
-      audience: process.env.OIDC_MANAGEMENT_API_AUDIENCE,
-    },
   },
   redis: {
     host: process.env.REDIS_HOST,
@@ -38,20 +32,8 @@ export const config = {
     secure: process.env.SMTP_SECURE === "true",
     from: process.env.SMTP_EMAIL_FROM || "noreply@mail.snapflow.io",
   },
-  defaultSnapshot: process.env.DEFAULT_SNAPSHOT,
+  defaultImage: process.env.DEFAULT_IMAGE,
   dashboardUrl: process.env.DASHBOARD_URL,
-  transientRegistry: {
-    url: process.env.TRANSIENT_REGISTRY_URL,
-    admin: process.env.TRANSIENT_REGISTRY_ADMIN,
-    password: process.env.TRANSIENT_REGISTRY_PASSWORD,
-    projectId: process.env.TRANSIENT_REGISTRY_PROJECT_ID,
-  },
-  internalRegistry: {
-    url: process.env.INTERNAL_REGISTRY_URL,
-    admin: process.env.INTERNAL_REGISTRY_ADMIN,
-    password: process.env.INTERNAL_REGISTRY_PASSWORD,
-    projectId: process.env.INTERNAL_REGISTRY_PROJECT_ID,
-  },
   s3: {
     endpoint: process.env.S3_ENDPOINT,
     region: process.env.S3_REGION,
@@ -60,10 +42,7 @@ export const config = {
     defaultBucket: process.env.S3_DEFAULT_BUCKET,
   },
   skipConnections: process.env.SKIP_CONNECTIONS === "true",
-  maxAutoArchiveInterval: Number.parseInt(
-    process.env.MAX_AUTO_ARCHIVE_INTERVAL || "43200",
-    10,
-  ),
+  maxAutoArchiveInterval: Number.parseInt(process.env.MAX_AUTO_ARCHIVE_INTERVAL || "43200", 10),
   maintananceMode: process.env.MAINTENANCE_MODE === "true",
   proxy: {
     domain: process.env.PROXY_DOMAIN,

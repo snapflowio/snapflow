@@ -1,8 +1,3 @@
-/*
- * Copyright 2025 Daytona Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
- */
-
 import {
   Body,
   Controller,
@@ -25,7 +20,6 @@ import {
   ApiResponse,
   ApiTags,
 } from "@nestjs/swagger";
-
 import { CombinedAuthGuard } from "../../auth/guards/combined-auth.guard";
 import { SystemActionGuard } from "../../auth/guards/system-action.guard";
 import { AuthContext } from "../../common/decorators/auth-context.decorator";
@@ -48,8 +42,6 @@ import { OrganizationUserService } from "../services/organization-user.service";
 
 @ApiTags("organizations")
 @Controller("organizations")
-// TODO: Rethink this. Can we allow access to these methods with API keys as well?
-// @UseGuards(AuthGuard('jwt'))
 @ApiOAuth2(["openid", "profile", "email"])
 @ApiBearerAuth()
 export class OrganizationController {

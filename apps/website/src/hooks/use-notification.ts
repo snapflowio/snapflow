@@ -1,12 +1,9 @@
 import { useContext } from "react";
-import { NotificationSocketContext } from "@/context/notification-context";
+import { realtimeSocketContext } from "@/context/notification-context";
 
-export function useNotificationSocket() {
-  const context = useContext(NotificationSocketContext);
-  if (!context)
-    throw new Error(
-      "useNotificationSocket must be used within a NotificationSocketProvider",
-    );
+export function userealtimeSocket() {
+  const context = useContext(realtimeSocketContext);
+  if (!context) throw new Error("userealtimeSocket must be used within a realtimeSocketProvider");
 
   return context;
 }

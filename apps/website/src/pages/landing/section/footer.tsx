@@ -7,7 +7,7 @@ import { FOOTER_LINKS } from "@/constants/links";
 import { SITE_CONFIG } from "@/constants/site";
 import Container from "../components/container";
 
-const Footer = () => {
+export function Footer() {
   return (
     <footer className="relative w-full py-10">
       <Container>
@@ -24,9 +24,7 @@ const Footer = () => {
               <Logo size={24} />
               <span className="font-bold text-xl">{SITE_CONFIG.NAME}</span>
             </div>
-            <p className="max-w mt-4 text-base">
-              Your personal generalist AI agent.
-            </p>
+            <p className="max-w mt-4 text-base">Intelligent, scalable sandboxes.</p>
             <Button className="mt-8">
               <Link to="/app">Start for free</Link>
             </Button>
@@ -55,13 +53,10 @@ const Footer = () => {
       <Container>
         <Wrapper className="relative flex items-center justify-between pt-10">
           <p className="text-secondary-foreground text-sm">
-            &copy; {new Date().getFullYear()} {SITE_CONFIG.NAME}. All rights
-            reserved.
+            &copy; {new Date().getFullYear()} {SITE_CONFIG.NAME}. All rights reserved.
           </p>
         </Wrapper>
       </Container>
     </footer>
   );
-};
-
-export default Footer;
+}

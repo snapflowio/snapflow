@@ -7,8 +7,8 @@ import (
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/errdefs"
-	"github.com/snapflow/manager/pkg/common"
-	"github.com/snapflow/manager/pkg/models/enums"
+	"github.com/snapflow/executor/pkg/common"
+	"github.com/snapflow/executor/pkg/models/enums"
 
 	log "github.com/sirupsen/logrus"
 )

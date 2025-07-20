@@ -4,7 +4,7 @@ import { DataSource } from "typeorm";
 import { CustomNamingStrategy } from "./common/utils/naming-strategy.util";
 
 config({
-  path: [join(__dirname, "../.env"), join(__dirname, "../.env.local")],
+  path: [join(__dirname, "../.env")],
 });
 
 const AppDataSource = new DataSource({

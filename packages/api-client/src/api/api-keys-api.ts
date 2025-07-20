@@ -79,7 +79,7 @@ export const ApiKeysApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Delete API key
+         * @summary Delete API key by name
          * @param {string} name 
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
          * @param {*} [options] Override http request option.
@@ -121,7 +121,7 @@ export const ApiKeysApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Get API key
+         * @summary Get API key by name
          * @param {string} name 
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
          * @param {*} [options] Override http request option.
@@ -263,7 +263,7 @@ export const ApiKeysApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Delete API key
+         * @summary Delete API key by name
          * @param {string} name 
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
          * @param {*} [options] Override http request option.
@@ -277,7 +277,7 @@ export const ApiKeysApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Get API key
+         * @summary Get API key by name
          * @param {string} name 
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
          * @param {*} [options] Override http request option.
@@ -338,7 +338,7 @@ export const ApiKeysApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
-         * @summary Delete API key
+         * @summary Delete API key by name
          * @param {string} name 
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
          * @param {*} [options] Override http request option.
@@ -349,7 +349,7 @@ export const ApiKeysApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
-         * @summary Get API key
+         * @summary Get API key by name
          * @param {string} name 
          * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
          * @param {*} [options] Override http request option.
@@ -403,7 +403,7 @@ export class ApiKeysApi extends BaseAPI {
 
     /**
      * 
-     * @summary Delete API key
+     * @summary Delete API key by name
      * @param {string} name 
      * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
      * @param {*} [options] Override http request option.
@@ -416,7 +416,7 @@ export class ApiKeysApi extends BaseAPI {
 
     /**
      * 
-     * @summary Get API key
+     * @summary Get API key by name
      * @param {string} name 
      * @param {string} [xSnapflowOrganizationID] Use with JWT to specify the organization ID
      * @param {*} [options] Override http request option.

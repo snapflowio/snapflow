@@ -5,12 +5,12 @@ import (
 	"sync"
 
 	"github.com/docker/docker/client"
-	"github.com/snapflow/manager/pkg/cache"
+	"github.com/snapflow/executor/pkg/cache"
 )
 
 type DockerClientConfig struct {
 	ApiClient          client.APIClient
-	Cache              cache.IRunnerCache
+	Cache              cache.IExecutorCache
 	LogWriter          io.Writer
 	AWSRegion          string
 	AWSEndpointUrl     string
@@ -28,20 +28,20 @@ func NewDockerClient(config DockerClientConfig) *DockerClient {
 		awsEndpointUrl:     config.AWSEndpointUrl,
 		awsAccessKeyId:     config.AWSAccessKeyId,
 		awsSecretAccessKey: config.AWSSecretAccessKey,
-		volumeMutexes:      make(map[string]*sync.Mutex),
+		bucketMutexes:      make(map[string]*sync.Mutex),
 		daemonPath:         config.DaemonPath,
 	}
 }
 
 type DockerClient struct {
 	apiClient          client.APIClient
-	cache              cache.IRunnerCache
+	cache              cache.IExecutorCache
 	logWriter          io.Writer
 	awsRegion          string
 	awsEndpointUrl     string
 	awsAccessKeyId     string
 	awsSecretAccessKey string
-	volumeMutexes      map[string]*sync.Mutex
-	volumeMutexesMutex sync.Mutex
+	bucketMutexes      map[string]*sync.Mutex
+	bucketMutexesMutex sync.Mutex
 	daemonPath         string
 }

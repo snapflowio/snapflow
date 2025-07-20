@@ -1,25 +1,12 @@
-import {
-  ForbiddenException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from "@nestjs/common";
+import { ForbiddenException, Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { EventEmitter2, OnEvent } from "@nestjs/event-emitter";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
-import {
-  FindOptionsWhere,
-  In,
-  JsonContains,
-  LessThan,
-  Not,
-  Repository,
-} from "typeorm";
+import { FindOptionsWhere, In, JsonContains, LessThan, Not, Repository } from "typeorm";
 import { validate as uuidValidate } from "uuid";
-
+import { BadRequestError } from "../../common/exceptions/bad-request.exception";
+import { SandboxError } from "../../common/exceptions/sandbox-error.exception";
 import { TypedConfigService } from "../../config/typed-config.service";
-import { BadRequestError } from "../../exceptions/bad-request.exception";
-import { SandboxError } from "../../exceptions/sandbox-error.exception";
 import { OrganizationEvents } from "../../organization/constants/organization-events.constant";
 import { Organization } from "../../organization/entities/organization.entity";
 import { OrganizationSuspendedSandboxStoppedEvent } from "../../organization/events/organization-suspended-sandbox-stopped.event";
@@ -32,19 +19,19 @@ import { PortPreviewUrlDto } from "../dto/port-preview-url.dto";
 import { SandboxDto } from "../dto/sandbox.dto";
 import {
   BuildInfo,
-  generateBuildInfoHash as generateBuildSnapshotRef,
+  generateBuildInfoHash as generateBuildImageRef,
 } from "../entities/build-info.entity";
-import { Runner } from "../entities/runner.entity";
+import { Executor } from "../entities/executor.entity";
+import { Image } from "../entities/image.entity";
 import { Sandbox } from "../entities/sandbox.entity";
-import { Snapshot } from "../entities/snapshot.entity";
 import { WarmPool } from "../entities/warm-pool.entity";
 import { BackupState } from "../enums/backup-state.enum";
-import { RunnerRegion } from "../enums/runner-region.enum";
-import { RunnerState } from "../enums/runner-state.enum";
+import { ExecutorRegion } from "../enums/executor-region.enum";
+import { ExecutorState } from "../enums/executor-state.enum";
+import { ImageState } from "../enums/image-state.enum";
 import { SandboxClass } from "../enums/sandbox-class.enum";
 import { SandboxDesiredState } from "../enums/sandbox-desired-state.enum";
 import { SandboxState } from "../enums/sandbox-state.enum";
-import { SnapshotState } from "../enums/snapshot-state.enum";
 import { SandboxArchivedEvent } from "../events/sandbox-archived.event";
 import { SandboxBackupCreatedEvent } from "../events/sandbox-backup-created.event";
 import { SandboxDestroyedEvent } from "../events/sandbox-destroyed.event";
@@ -52,7 +39,7 @@ import { SandboxStartedEvent } from "../events/sandbox-started.event";
 import { SandboxStateUpdatedEvent } from "../events/sandbox-state-updated.event";
 import { SandboxStoppedEvent } from "../events/sandbox-stopped.event";
 import { WarmPoolTopUpRequested } from "../events/warmpool-topup-requested.event";
-import { RunnerService } from "./runner.service";
+import { ExecutorService } from "./executor.service";
 import { SandboxWarmPoolService } from "./sandbox-warm-pool.service";
 
 const DEFAULT_CPU = 1;
@@ -67,17 +54,17 @@ export class SandboxService {
   constructor(
     @InjectRepository(Sandbox)
     private readonly sandboxRepository: Repository<Sandbox>,
-    @InjectRepository(Snapshot)
-    private readonly snapshotRepository: Repository<Snapshot>,
-    @InjectRepository(Runner)
-    private readonly runnerRepository: Repository<Runner>,
+    @InjectRepository(Image)
+    private readonly imageRepository: Repository<Image>,
+    @InjectRepository(Executor)
+    private readonly executorRepository: Repository<Executor>,
     @InjectRepository(BuildInfo)
     private readonly buildInfoRepository: Repository<BuildInfo>,
-    private readonly runnerService: RunnerService,
+    private readonly executorService: ExecutorService,
     private readonly configService: TypedConfigService,
     private readonly warmPoolService: SandboxWarmPoolService,
     private readonly eventEmitter: EventEmitter2,
-    private readonly organizationService: OrganizationService,
+    private readonly organizationService: OrganizationService
   ) {}
 
   private async validateOrganizationQuotas(
@@ -85,24 +72,24 @@ export class SandboxService {
     cpu: number,
     memory: number,
     disk: number,
-    excludeSandboxId?: string,
+    excludeSandboxId?: string
   ): Promise<void> {
     this.organizationService.assertOrganizationIsNotSuspended(organization);
 
     // Check per-sandbox resource limits
     if (cpu > organization.maxCpuPerSandbox) {
       throw new ForbiddenException(
-        `CPU request ${cpu} exceeds maximum allowed per sandbox (${organization.maxCpuPerSandbox})`,
+        `CPU request ${cpu} exceeds maximum allowed per sandbox (${organization.maxCpuPerSandbox})`
       );
     }
     if (memory > organization.maxMemoryPerSandbox) {
       throw new ForbiddenException(
-        `Memory request ${memory}GB exceeds maximum allowed per sandbox (${organization.maxMemoryPerSandbox}GB)`,
+        `Memory request ${memory}GB exceeds maximum allowed per sandbox (${organization.maxMemoryPerSandbox}GB)`
       );
     }
     if (disk > organization.maxDiskPerSandbox) {
       throw new ForbiddenException(
-        `Disk request ${disk}GB exceeds maximum allowed per sandbox (${organization.maxDiskPerSandbox}GB)`,
+        `Disk request ${disk}GB exceeds maximum allowed per sandbox (${organization.maxDiskPerSandbox}GB)`
       );
     }
 
@@ -113,11 +100,7 @@ export class SandboxService {
       SandboxState.BUILD_FAILED,
     ];
 
-    const inactiveStates = [
-      ...ignoredStates,
-      SandboxState.STOPPED,
-      SandboxState.ARCHIVING,
-    ];
+    const inactiveStates = [...ignoredStates, SandboxState.STOPPED, SandboxState.ARCHIVING];
 
     const resourceMetrics: {
       used_disk: number;
@@ -135,7 +118,7 @@ export class SandboxService {
       })
       .andWhere(
         excludeSandboxId ? "sandbox.id != :excludeSandboxId" : "1=1",
-        excludeSandboxId ? { excludeSandboxId } : {},
+        excludeSandboxId ? { excludeSandboxId } : {}
       )
       .setParameter("ignoredStates", ignoredStates)
       .setParameter("inactiveStates", inactiveStates)
@@ -147,20 +130,20 @@ export class SandboxService {
 
     if (usedDisk + disk > organization.totalDiskQuota) {
       throw new ForbiddenException(
-        `Total disk quota exceeded (${usedDisk + disk}GB > ${organization.totalDiskQuota}GB)`,
+        `Total disk quota exceeded (${usedDisk + disk}GB > ${organization.totalDiskQuota}GB)`
       );
     }
 
     // Check total resource quotas
     if (usedCpu + cpu > organization.totalCpuQuota) {
       throw new ForbiddenException(
-        `Total CPU quota exceeded (${usedCpu + cpu} > ${organization.totalCpuQuota})`,
+        `Total CPU quota exceeded (${usedCpu + cpu} > ${organization.totalCpuQuota})`
       );
     }
 
     if (usedMem + memory > organization.totalMemoryQuota) {
       throw new ForbiddenException(
-        `Total memory quota exceeded (${usedMem + memory}GB > ${organization.totalMemoryQuota}GB)`,
+        `Total memory quota exceeded (${usedMem + memory}GB > ${organization.totalMemoryQuota}GB)`
       );
     }
   }
@@ -191,10 +174,7 @@ export class SandboxService {
     sandbox.desiredState = SandboxDesiredState.ARCHIVED;
     await this.sandboxRepository.save(sandbox);
 
-    this.eventEmitter.emit(
-      SandboxEvents.ARCHIVED,
-      new SandboxArchivedEvent(sandbox),
-    );
+    this.eventEmitter.emit(SandboxEvents.ARCHIVED, new SandboxArchivedEvent(sandbox));
   }
 
   async createForWarmPool(warmPoolItem: WarmPool): Promise<Sandbox> {
@@ -204,9 +184,9 @@ export class SandboxService {
 
     sandbox.region = warmPoolItem.target;
     sandbox.class = warmPoolItem.class;
-    sandbox.snapshot = warmPoolItem.snapshot;
+    sandbox.image = warmPoolItem.image;
     //  TODO: default user should be configurable
-    sandbox.osUser = "daytona";
+    sandbox.osUser = "snapflow";
     sandbox.env = warmPoolItem.env || {};
 
     sandbox.cpu = warmPoolItem.cpu;
@@ -214,88 +194,77 @@ export class SandboxService {
     sandbox.mem = warmPoolItem.mem;
     sandbox.disk = warmPoolItem.disk;
 
-    const snapshot = await this.snapshotRepository.findOne({
+    const image = await this.imageRepository.findOne({
       where: [
         {
           organizationId: sandbox.organizationId,
-          name: sandbox.snapshot,
-          state: SnapshotState.ACTIVE,
+          name: sandbox.image,
+          state: ImageState.ACTIVE,
         },
-        { general: true, name: sandbox.snapshot, state: SnapshotState.ACTIVE },
+        { general: true, name: sandbox.image, state: ImageState.ACTIVE },
       ],
     });
-    if (!snapshot) {
+    if (!image) {
       throw new BadRequestError(
-        `Snapshot ${sandbox.snapshot} not found while creating warm pool sandbox`,
+        `Image ${sandbox.image} not found while creating warm pool sandbox`
       );
     }
 
-    const runner = await this.runnerService.getRandomAvailableRunner({
+    const executor = await this.executorService.getRandomAvailableExecutor({
       region: sandbox.region,
       sandboxClass: sandbox.class,
-      snapshotRef: snapshot.internalName,
+      imageRef: image.internalName,
     });
 
-    sandbox.runnerId = runner.id;
+    sandbox.executorId = executor.id;
 
     await this.sandboxRepository.insert(sandbox);
     return sandbox;
   }
 
-  async createFromSnapshot(
+  async createFromImage(
     createSandboxDto: CreateSandboxDto,
     organization: Organization,
-    useSandboxResourceParams_deprecated?: boolean,
+    useSandboxResourceParams_deprecated?: boolean
   ): Promise<SandboxDto> {
     const region = this.getValidatedOrDefaultRegion(createSandboxDto.target);
-    const sandboxClass = this.getValidatedOrDefaultClass(
-      createSandboxDto.class,
-    );
+    const sandboxClass = this.getValidatedOrDefaultClass(createSandboxDto.class);
 
-    let snapshotIdOrName = createSandboxDto.snapshot;
+    let imageIdOrName = createSandboxDto.image;
 
-    if (!createSandboxDto.snapshot?.trim()) {
-      snapshotIdOrName = this.configService.getOrThrow("defaultSnapshot");
+    if (!createSandboxDto.image?.trim()) {
+      imageIdOrName = this.configService.getOrThrow("defaultImage");
     }
 
-    const snapshotFilter: FindOptionsWhere<Snapshot>[] = [
-      { organizationId: organization.id, name: snapshotIdOrName },
-      { general: true, name: snapshotIdOrName },
+    const imageFilter: FindOptionsWhere<Image>[] = [
+      { organizationId: organization.id, name: imageIdOrName },
+      { general: true, name: imageIdOrName },
     ];
 
-    if (uuidValidate(snapshotIdOrName)) {
-      snapshotFilter.push(
-        { organizationId: organization.id, id: snapshotIdOrName },
-        { general: true, id: snapshotIdOrName },
+    if (uuidValidate(imageIdOrName)) {
+      imageFilter.push(
+        { organizationId: organization.id, id: imageIdOrName },
+        { general: true, id: imageIdOrName }
       );
     }
 
-    const snapshots = await this.snapshotRepository.find({
-      where: snapshotFilter,
+    const images = await this.imageRepository.find({
+      where: imageFilter,
     });
 
-    if (snapshots.length === 0) {
-      throw new BadRequestError(
-        `Snapshot ${snapshotIdOrName} not found. Did you add it through the Daytona Dashboard?`,
-      );
+    if (images.length === 0) throw new BadRequestError(`Image ${imageIdOrName} not found.`);
+
+    let image = images.find((s) => s.state === ImageState.ACTIVE);
+    if (!image) image = images[0];
+
+    if (image.state !== ImageState.ACTIVE) {
+      throw new BadRequestError(`Image ${imageIdOrName} is ${image.state}`);
     }
 
-    let snapshot = snapshots.find((s) => s.state === SnapshotState.ACTIVE);
-
-    if (!snapshot) {
-      snapshot = snapshots[0];
-    }
-
-    if (snapshot.state !== SnapshotState.ACTIVE) {
-      throw new BadRequestError(
-        `Snapshot ${snapshotIdOrName} is ${snapshot.state}`,
-      );
-    }
-
-    let cpu = snapshot.cpu;
-    let mem = snapshot.mem;
-    let disk = snapshot.disk;
-    let gpu = snapshot.gpu;
+    let cpu = image.cpu;
+    let mem = image.mem;
+    let disk = image.disk;
+    let gpu = image.gpu;
 
     // Remove the deprecated behavior in a future release
     if (useSandboxResourceParams_deprecated) {
@@ -317,7 +286,7 @@ export class SandboxService {
 
     const warmPoolSandbox = await this.warmPoolService.fetchWarmPoolSandbox({
       organizationId: organization.id,
-      snapshot: snapshotIdOrName,
+      image: imageIdOrName,
       target: createSandboxDto.target,
       class: createSandboxDto.class,
       cpu: cpu,
@@ -329,18 +298,19 @@ export class SandboxService {
     });
 
     if (warmPoolSandbox) {
-      return await this.assignWarmPoolSandbox(
-        warmPoolSandbox,
-        createSandboxDto,
-        organization.id,
-      );
+      return await this.assignWarmPoolSandbox(warmPoolSandbox, createSandboxDto, organization.id);
     }
 
-    const runner = await this.runnerService.getRandomAvailableRunner({
+    console.log("YEEEEEEEEEEEEEEEEEEEEEEe");
+
+    // LEVEL 1
+    const executor = await this.executorService.getRandomAvailableExecutor({
       region,
       sandboxClass,
-      snapshotRef: snapshot.internalName,
+      imageRef: image.internalName,
     });
+
+    console.log("EXE", executor);
 
     const sandbox = new Sandbox();
 
@@ -349,12 +319,12 @@ export class SandboxService {
     //  TODO: make configurable
     sandbox.region = region;
     sandbox.class = sandboxClass;
-    sandbox.snapshot = snapshot.name;
+    sandbox.image = image.name;
     //  TODO: default user should be configurable
-    sandbox.osUser = createSandboxDto.user || "daytona";
+    sandbox.osUser = createSandboxDto.user || "snapflow";
     sandbox.env = createSandboxDto.env || {};
     sandbox.labels = createSandboxDto.labels || {};
-    sandbox.volumes = createSandboxDto.volumes || [];
+    sandbox.buckets = createSandboxDto.buckets || [];
 
     sandbox.cpu = cpu;
     sandbox.gpu = gpu;
@@ -369,20 +339,20 @@ export class SandboxService {
 
     if (createSandboxDto.autoArchiveInterval !== undefined) {
       sandbox.autoArchiveInterval = this.resolveAutoArchiveInterval(
-        createSandboxDto.autoArchiveInterval,
+        createSandboxDto.autoArchiveInterval
       );
     }
 
-    sandbox.runnerId = runner.id;
+    sandbox.executorId = executor.id;
 
     await this.sandboxRepository.insert(sandbox);
-    return SandboxDto.fromSandbox(sandbox, runner.domain);
+    return SandboxDto.fromSandbox(sandbox, executor.domain);
   }
 
   private async assignWarmPoolSandbox(
     warmPoolSandbox: Sandbox,
     createSandboxDto: CreateSandboxDto,
-    organizationId: string,
+    organizationId: string
   ): Promise<SandboxDto> {
     warmPoolSandbox.public = createSandboxDto.public || false;
     warmPoolSandbox.labels = createSandboxDto.labels || {};
@@ -395,34 +365,28 @@ export class SandboxService {
 
     if (createSandboxDto.autoArchiveInterval !== undefined) {
       warmPoolSandbox.autoArchiveInterval = this.resolveAutoArchiveInterval(
-        createSandboxDto.autoArchiveInterval,
+        createSandboxDto.autoArchiveInterval
       );
     }
 
-    const runner = await this.runnerService.findOne(warmPoolSandbox.runnerId);
+    const executor = await this.executorService.findOne(warmPoolSandbox.executorId);
 
     const result = await this.sandboxRepository.save(warmPoolSandbox);
 
     // Treat this as a newly started sandbox
     this.eventEmitter.emit(
       SandboxEvents.STATE_UPDATED,
-      new SandboxStateUpdatedEvent(
-        warmPoolSandbox,
-        SandboxState.STARTED,
-        SandboxState.STARTED,
-      ),
+      new SandboxStateUpdatedEvent(warmPoolSandbox, SandboxState.STARTED, SandboxState.STARTED)
     );
-    return SandboxDto.fromSandbox(result, runner.domain);
+    return SandboxDto.fromSandbox(result, executor.domain);
   }
 
   async createFromBuildInfo(
     createSandboxDto: CreateSandboxDto,
-    organization: Organization,
+    organization: Organization
   ): Promise<SandboxDto> {
     const region = this.getValidatedOrDefaultRegion(createSandboxDto.target);
-    const sandboxClass = this.getValidatedOrDefaultClass(
-      createSandboxDto.class,
-    );
+    const sandboxClass = this.getValidatedOrDefaultClass(createSandboxDto.class);
 
     const cpu = createSandboxDto.cpu || DEFAULT_CPU;
     const mem = createSandboxDto.memory || DEFAULT_MEMORY;
@@ -441,10 +405,10 @@ export class SandboxService {
     sandbox.region = region;
     sandbox.class = sandboxClass;
     //  TODO: default user should be configurable
-    sandbox.osUser = createSandboxDto.user || "daytona";
+    sandbox.osUser = createSandboxDto.user || "snapflow";
     sandbox.env = createSandboxDto.env || {};
     sandbox.labels = createSandboxDto.labels || {};
-    sandbox.volumes = createSandboxDto.volumes || [];
+    sandbox.buckets = createSandboxDto.buckets || [];
 
     sandbox.cpu = cpu;
     sandbox.gpu = gpu;
@@ -458,23 +422,23 @@ export class SandboxService {
 
     if (createSandboxDto.autoArchiveInterval !== undefined) {
       sandbox.autoArchiveInterval = this.resolveAutoArchiveInterval(
-        createSandboxDto.autoArchiveInterval,
+        createSandboxDto.autoArchiveInterval
       );
     }
 
-    const buildInfoSnapshotRef = generateBuildSnapshotRef(
+    const buildInfoImageRef = generateBuildImageRef(
       createSandboxDto.buildInfo.dockerfileContent,
-      createSandboxDto.buildInfo.contextHashes,
+      createSandboxDto.buildInfo.contextHashes
     );
 
-    // Check if buildInfo with the same snapshotRef already exists
+    // Check if buildInfo with the same imageRef already exists
     const existingBuildInfo = await this.buildInfoRepository.findOne({
-      where: { snapshotRef: buildInfoSnapshotRef },
+      where: { imageRef: buildInfoImageRef },
     });
 
     if (existingBuildInfo) {
       sandbox.buildInfo = existingBuildInfo;
-      await this.buildInfoRepository.update(sandbox.buildInfo.snapshotRef, {
+      await this.buildInfoRepository.update(sandbox.buildInfo.imageRef, {
         lastUsedAt: new Date(),
       });
     } else {
@@ -485,19 +449,20 @@ export class SandboxService {
       sandbox.buildInfo = buildInfoEntity;
     }
 
-    let runner: Runner;
+    let executor: Executor;
 
     try {
-      runner = await this.runnerService.getRandomAvailableRunner({
+      executor = await this.executorService.getRandomAvailableExecutor({
         region: sandbox.region,
         sandboxClass: sandbox.class,
-        snapshotRef: sandbox.buildInfo.snapshotRef,
+        imageRef: sandbox.buildInfo.imageRef,
       });
-      sandbox.runnerId = runner.id;
+
+      sandbox.executorId = executor.id;
     } catch (error) {
       if (
         error instanceof BadRequestError === false ||
-        error.message !== "No available runners" ||
+        error.message !== "No available executors" ||
         !sandbox.buildInfo
       ) {
         throw error;
@@ -506,7 +471,7 @@ export class SandboxService {
     }
 
     await this.sandboxRepository.insert(sandbox);
-    return SandboxDto.fromSandbox(sandbox, runner?.domain);
+    return SandboxDto.fromSandbox(sandbox, executor?.domain);
   }
 
   async createBackup(sandboxId: string): Promise<void> {
@@ -520,9 +485,7 @@ export class SandboxService {
       throw new NotFoundException(`Sandbox with ID ${sandboxId} not found`);
     }
 
-    if (
-      ![BackupState.COMPLETED, BackupState.NONE].includes(sandbox.backupState)
-    ) {
+    if (![BackupState.COMPLETED, BackupState.NONE].includes(sandbox.backupState)) {
       throw new SandboxError("Sandbox backup is already in progress");
     }
 
@@ -530,49 +493,37 @@ export class SandboxService {
       backupState: BackupState.PENDING,
     });
 
-    this.eventEmitter.emit(
-      SandboxEvents.BACKUP_CREATED,
-      new SandboxBackupCreatedEvent(sandbox),
-    );
+    this.eventEmitter.emit(SandboxEvents.BACKUP_CREATED, new SandboxBackupCreatedEvent(sandbox));
   }
 
   async findAll(
     organizationId: string,
     labels?: { [key: string]: string },
-    includeErroredDestroyed?: boolean,
+    includeErroredDestroyed?: boolean
   ): Promise<Sandbox[]> {
     const baseFindOptions: FindOptionsWhere<Sandbox> = {
       organizationId,
       ...(labels ? { labels: JsonContains(labels) } : {}),
     };
 
+    console.log("ORG ID:", organizationId);
+
     const where: FindOptionsWhere<Sandbox>[] = [
       {
         ...baseFindOptions,
-        state: Not(
-          In([
-            SandboxState.DESTROYED,
-            SandboxState.ERROR,
-            SandboxState.BUILD_FAILED,
-          ]),
-        ),
+        state: Not(In([SandboxState.DESTROYED, SandboxState.ERROR, SandboxState.BUILD_FAILED])),
       },
       {
         ...baseFindOptions,
         state: In([SandboxState.ERROR, SandboxState.BUILD_FAILED]),
-        ...(includeErroredDestroyed
-          ? {}
-          : { desiredState: Not(SandboxDesiredState.DESTROYED) }),
+        ...(includeErroredDestroyed ? {} : { desiredState: Not(SandboxDesiredState.DESTROYED) }),
       },
     ];
 
     return this.sandboxRepository.find({ where });
   }
 
-  async findOne(
-    sandboxId: string,
-    returnDestroyed?: boolean,
-  ): Promise<Sandbox> {
+  async findOne(sandboxId: string, returnDestroyed?: boolean): Promise<Sandbox> {
     const sandbox = await this.sandboxRepository.findOne({
       where: {
         id: sandboxId,
@@ -583,9 +534,7 @@ export class SandboxService {
     if (
       !sandbox ||
       (!returnDestroyed &&
-        [SandboxState.ERROR, SandboxState.BUILD_FAILED].includes(
-          sandbox.state,
-        ) &&
+        [SandboxState.ERROR, SandboxState.BUILD_FAILED].includes(sandbox.state) &&
         sandbox.desiredState !== SandboxDesiredState.DESTROYED)
     ) {
       throw new NotFoundException(`Sandbox with ID ${sandboxId} not found`);
@@ -594,10 +543,7 @@ export class SandboxService {
     return sandbox;
   }
 
-  async getPortPreviewUrl(
-    sandboxId: string,
-    port: number,
-  ): Promise<PortPreviewUrlDto> {
+  async getPortPreviewUrl(sandboxId: string, port: number): Promise<PortPreviewUrlDto> {
     if (port < 1 || port > 65535) {
       throw new BadRequestError("Invalid port");
     }
@@ -615,14 +561,14 @@ export class SandboxService {
       throw new SandboxError("Sandbox must be started to get port preview URL");
     }
 
-    // Get runner info
-    const runner = await this.runnerService.findOne(sandbox.runnerId);
-    if (!runner) {
-      throw new NotFoundException(`Runner not found for sandbox ${sandboxId}`);
+    // Get executor info
+    const executor = await this.executorService.findOne(sandbox.executorId);
+    if (!executor) {
+      throw new NotFoundException(`Executor not found for sandbox ${sandboxId}`);
     }
 
     return {
-      url: `https://${port}-${sandbox.id}.${runner.domain}`,
+      url: `https://${port}-${sandbox.id}.${executor.domain}`,
       token: sandbox.authToken,
     };
   }
@@ -645,10 +591,7 @@ export class SandboxService {
     sandbox.desiredState = SandboxDesiredState.DESTROYED;
     await this.sandboxRepository.save(sandbox);
 
-    this.eventEmitter.emit(
-      SandboxEvents.DESTROYED,
-      new SandboxDestroyedEvent(sandbox),
-    );
+    this.eventEmitter.emit(SandboxEvents.DESTROYED, new SandboxDestroyedEvent(sandbox));
   }
 
   async start(sandboxId: string, organization: Organization): Promise<void> {
@@ -666,19 +609,17 @@ export class SandboxService {
       throw new SandboxError("State change in progress");
     }
 
-    if (
-      ![SandboxState.STOPPED, SandboxState.ARCHIVED].includes(sandbox.state)
-    ) {
+    if (![SandboxState.STOPPED, SandboxState.ARCHIVED].includes(sandbox.state)) {
       throw new SandboxError("Sandbox is not in valid state");
     }
 
     this.organizationService.assertOrganizationIsNotSuspended(organization);
 
-    if (sandbox.runnerId) {
-      // Add runner readiness check
-      const runner = await this.runnerService.findOne(sandbox.runnerId);
-      if (runner.state !== RunnerState.READY) {
-        throw new SandboxError("Runner is not ready");
+    if (sandbox.executorId) {
+      // Add executor readiness check
+      const executor = await this.executorService.findOne(sandbox.executorId);
+      if (executor.state !== ExecutorState.READY) {
+        throw new SandboxError("Executor is not ready");
       }
     } else {
       //  restore operation
@@ -688,7 +629,7 @@ export class SandboxService {
         sandbox.cpu,
         sandbox.mem,
         sandbox.disk,
-        sandbox.id,
+        sandbox.id
       );
     }
 
@@ -700,10 +641,7 @@ export class SandboxService {
     sandbox.desiredState = SandboxDesiredState.STARTED;
     await this.sandboxRepository.save(sandbox);
 
-    this.eventEmitter.emit(
-      SandboxEvents.STARTED,
-      new SandboxStartedEvent(sandbox),
-    );
+    this.eventEmitter.emit(SandboxEvents.STARTED, new SandboxStartedEvent(sandbox));
   }
 
   async stop(sandboxId: string): Promise<void> {
@@ -732,16 +670,10 @@ export class SandboxService {
     sandbox.desiredState = SandboxDesiredState.STOPPED;
     await this.sandboxRepository.save(sandbox);
 
-    this.eventEmitter.emit(
-      SandboxEvents.STOPPED,
-      new SandboxStoppedEvent(sandbox),
-    );
+    this.eventEmitter.emit(SandboxEvents.STOPPED, new SandboxStoppedEvent(sandbox));
   }
 
-  async updatePublicStatus(
-    sandboxId: string,
-    isPublic: boolean,
-  ): Promise<void> {
+  async updatePublicStatus(sandboxId: string, isPublic: boolean): Promise<void> {
     const sandbox = await this.sandboxRepository.findOne({
       where: { id: sandboxId },
     });
@@ -754,10 +686,10 @@ export class SandboxService {
     await this.sandboxRepository.save(sandbox);
   }
 
-  private getValidatedOrDefaultRegion(region: RunnerRegion): RunnerRegion {
-    if (!region) return RunnerRegion.US;
+  private getValidatedOrDefaultRegion(region: ExecutorRegion): ExecutorRegion {
+    if (!region) return ExecutorRegion.US;
 
-    if (Object.values(RunnerRegion).includes(region)) return region;
+    if (Object.values(ExecutorRegion).includes(region)) return region;
 
     throw new BadRequestError("Invalid region");
   }
@@ -771,7 +703,7 @@ export class SandboxService {
 
   async replaceLabels(
     sandboxId: string,
-    labels: { [key: string]: string },
+    labels: { [key: string]: string }
   ): Promise<{ [key: string]: string }> {
     const sandbox = await this.sandboxRepository.findOne({
       where: { id: sandboxId },
@@ -799,16 +731,11 @@ export class SandboxService {
     });
 
     if (destroyedSandboxs.affected > 0) {
-      this.logger.debug(
-        `Cleaned up ${destroyedSandboxs.affected} destroyed sandboxs`,
-      );
+      this.logger.debug(`Cleaned up ${destroyedSandboxs.affected} destroyed sandboxs`);
     }
   }
 
-  async setAutostopInterval(
-    sandboxId: string,
-    interval: number,
-  ): Promise<void> {
+  async setAutostopInterval(sandboxId: string, interval: number): Promise<void> {
     const sandbox = await this.sandboxRepository.findOne({
       where: { id: sandboxId },
     });
@@ -826,10 +753,7 @@ export class SandboxService {
     await this.sandboxRepository.save(sandbox);
   }
 
-  async setAutoArchiveInterval(
-    sandboxId: string,
-    interval: number,
-  ): Promise<void> {
+  async setAutoArchiveInterval(sandboxId: string, interval: number): Promise<void> {
     const sandbox = await this.sandboxRepository.findOne({
       where: { id: sandboxId },
     });
@@ -848,19 +772,19 @@ export class SandboxService {
   }
 
   @Cron(CronExpression.EVERY_MINUTE)
-  private async handleUnschedulableRunners() {
-    const runners = await this.runnerRepository.find({
+  private async handleUnschedulableExecutors() {
+    const executors = await this.executorRepository.find({
       where: { unschedulable: true },
     });
 
-    if (runners.length === 0) {
+    if (executors.length === 0) {
       return;
     }
 
-    //  find all sandboxs that are using the unschedulable runners and have organizationId = '00000000-0000-0000-0000-000000000000'
+    //  find all sandboxs that are using the unschedulable executors and have organizationId = '00000000-0000-0000-0000-000000000000'
     const sandboxs = await this.sandboxRepository.find({
       where: {
-        runnerId: In(runners.map((runner) => runner.id)),
+        executorId: In(executors.map((executor) => executor.id)),
         organizationId: "00000000-0000-0000-0000-000000000000",
         state: SandboxState.STARTED,
         desiredState: Not(SandboxDesiredState.DESTROYED),
@@ -876,9 +800,7 @@ export class SandboxService {
 
     results.forEach((result, index) => {
       if (result.status === "rejected") {
-        this.logger.error(
-          `Failed to destroy sandbox ${sandboxs[index].id}: ${result.reason}`,
-        );
+        this.logger.error(`Failed to destroy sandbox ${sandboxs[index].id}: ${result.reason}`);
       }
     });
   }
@@ -896,14 +818,12 @@ export class SandboxService {
   }
 
   @OnEvent(OrganizationEvents.SUSPENDED_SANDBOX_STOPPED)
-  async handleSuspendedSandboxStopped(
-    event: OrganizationSuspendedSandboxStoppedEvent,
-  ) {
+  async handleSuspendedSandboxStopped(event: OrganizationSuspendedSandboxStoppedEvent) {
     await this.stop(event.sandboxId).catch((error) => {
       //  log the error for now, but don't throw it as it will be retried
       this.logger.error(
         `Error stopping sandbox from suspended organization. SandboxId: ${event.sandboxId}: `,
-        error,
+        error
       );
     });
   }
@@ -913,9 +833,7 @@ export class SandboxService {
       throw new BadRequestError("Auto-archive interval must be non-negative");
     }
 
-    const maxAutoArchiveInterval = this.configService.getOrThrow(
-      "maxAutoArchiveInterval",
-    );
+    const maxAutoArchiveInterval = this.configService.getOrThrow("maxAutoArchiveInterval");
 
     if (autoArchiveInterval === 0) {
       return maxAutoArchiveInterval;

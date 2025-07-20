@@ -10,9 +10,9 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { SandboxVolume } from "../dto/sandbox.dto";
+import { SandboxBucket } from "../dto/sandbox.dto";
 import { BackupState } from "../enums/backup-state.enum";
-import { RunnerRegion } from "../enums/runner-region.enum";
+import { ExecutorRegion } from "../enums/executor-region.enum";
 import { SandboxClass } from "../enums/sandbox-class.enum";
 import { SandboxDesiredState } from "../enums/sandbox-desired-state.enum";
 import { SandboxState } from "../enums/sandbox-state.enum";
@@ -31,22 +31,22 @@ export class Sandbox {
 
   @Column({
     type: "enum",
-    enum: RunnerRegion,
-    default: RunnerRegion.EU,
+    enum: ExecutorRegion,
+    default: ExecutorRegion.EU,
   })
-  region: RunnerRegion;
+  region: ExecutorRegion;
 
   @Column({
     type: "uuid",
     nullable: true,
   })
-  runnerId?: string;
+  executorId?: string;
 
   @Column({
     type: "uuid",
     nullable: true,
   })
-  prevRunnerId?: string;
+  prevExecutorId?: string;
 
   @Column({
     type: "enum",
@@ -70,7 +70,7 @@ export class Sandbox {
   desiredState: SandboxDesiredState;
 
   @Column({ nullable: true })
-  snapshot?: string;
+  image?: string;
 
   @Column()
   osUser: string;
@@ -94,7 +94,7 @@ export class Sandbox {
   backupRegistryId: string;
 
   @Column({ nullable: true })
-  backupSnapshot: string;
+  backupImage: string;
 
   @Column({ nullable: true })
   lastBackupAt: Date;
@@ -110,8 +110,8 @@ export class Sandbox {
     type: "jsonb",
     default: [],
   })
-  existingBackupSnapshots: Array<{
-    snapshotName: string;
+  existingBackupImages: Array<{
+    imageName: string;
     createdAt: Date;
   }>;
 
@@ -131,7 +131,7 @@ export class Sandbox {
     type: "jsonb",
     default: [],
   })
-  volumes: SandboxVolume[];
+  buckets: SandboxBucket[];
 
   @CreateDateColumn()
   createdAt: Date;
@@ -154,10 +154,14 @@ export class Sandbox {
   @Column({ default: () => "MD5(random()::text)" })
   authToken: string;
 
-  @ManyToOne(() => BuildInfo, (buildInfo) => buildInfo.sandboxes, {
-    nullable: true,
-    eager: true,
-  })
+  @ManyToOne(
+    () => BuildInfo,
+    (buildInfo) => buildInfo.sandboxes,
+    {
+      nullable: true,
+      eager: true,
+    }
+  )
   @JoinColumn()
   buildInfo?: BuildInfo;
 
@@ -190,8 +194,8 @@ export class Sandbox {
             SandboxState.UNKNOWN,
             SandboxState.RESTORING,
             SandboxState.PENDING_BUILD,
-            SandboxState.BUILDING_SNAPSHOT,
-            SandboxState.PULLING_SNAPSHOT,
+            SandboxState.BUILDING_IMAGE,
+            SandboxState.PULLING_IMAGE,
             SandboxState.ERROR,
             SandboxState.BUILD_FAILED,
           ].includes(this.state)
@@ -199,7 +203,7 @@ export class Sandbox {
           break;
         }
         throw new Error(
-          `Sandbox ${this.id} is not in a valid state to be started. State: ${this.state}`,
+          `Sandbox ${this.id} is not in a valid state to be started. State: ${this.state}`
         );
       case SandboxDesiredState.STOPPED:
         if (
@@ -214,7 +218,7 @@ export class Sandbox {
           break;
         }
         throw new Error(
-          `Sandbox ${this.id} is not in a valid state to be stopped. State: ${this.state}`,
+          `Sandbox ${this.id} is not in a valid state to be stopped. State: ${this.state}`
         );
       case SandboxDesiredState.ARCHIVED:
         if (
@@ -229,7 +233,7 @@ export class Sandbox {
           break;
         }
         throw new Error(
-          `Sandbox ${this.id} is not in a valid state to be archived. State: ${this.state}`,
+          `Sandbox ${this.id} is not in a valid state to be archived. State: ${this.state}`
         );
       case SandboxDesiredState.DESTROYED:
         if (
@@ -246,7 +250,7 @@ export class Sandbox {
           break;
         }
         throw new Error(
-          `Sandbox ${this.id} is not in a valid state to be destroyed. State: ${this.state}`,
+          `Sandbox ${this.id} is not in a valid state to be destroyed. State: ${this.state}`
         );
     }
   }
@@ -254,10 +258,7 @@ export class Sandbox {
   @BeforeUpdate()
   updatePendingFlag() {
     if (String(this.state) === String(this.desiredState)) this.pending = false;
-    if (
-      this.state === SandboxState.ERROR ||
-      this.state === SandboxState.BUILD_FAILED
-    )
+    if (this.state === SandboxState.ERROR || this.state === SandboxState.BUILD_FAILED)
       this.pending = false;
   }
 }

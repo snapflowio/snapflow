@@ -6,7 +6,7 @@ import * as packageJson from "../../../../../package.json";
 export class VersionHeaderMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const version = packageJson.version;
-    res.setHeader("X-Snapflow-Api-Version", `v${version}`);
+    res.setHeader("X-Snapflow-Version", `v${version}`);
     next();
   }
 }

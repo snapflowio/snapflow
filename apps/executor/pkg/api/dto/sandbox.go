@@ -2,9 +2,9 @@ package dto
 
 type CreateSandboxDTO struct {
 	Id           string            `json:"id" validate:"required"`
-	FromVolumeId string            `json:"fromVolumeId,omitempty"`
+	FromBucketId string            `json:"fromBucketId,omitempty"`
 	UserId       string            `json:"userId" validate:"required"`
-	Snapshot     string            `json:"snapshot" validate:"required"`
+	Image        string            `json:"image" validate:"required"`
 	OsUser       string            `json:"osUser" validate:"required"`
 	CpuQuota     int64             `json:"cpuQuota" validate:"min=1"`
 	GpuQuota     int64             `json:"gpuQuota" validate:"min=0"`
@@ -13,7 +13,7 @@ type CreateSandboxDTO struct {
 	Env          map[string]string `json:"env,omitempty"`
 	Registry     *RegistryDTO      `json:"registry,omitempty"`
 	Entrypoint   []string          `json:"entrypoint,omitempty"`
-	Volumes      []VolumeDTO       `json:"volumes,omitempty"`
+	Buckets      []BucketDTO       `json:"buckets,omitempty"`
 } //	@name	CreateSandboxDTO
 
 type ResizeSandboxDTO struct {

@@ -7,11 +7,11 @@ import (
 	"time"
 
 	"github.com/docker/docker/errdefs"
+	"github.com/snapflow/executor/internal/constants"
+	"github.com/snapflow/executor/pkg/api/dto"
+	"github.com/snapflow/executor/pkg/common"
+	"github.com/snapflow/executor/pkg/models/enums"
 	"github.com/snapflow/go-common/pkg/timer"
-	"github.com/snapflow/manager/internal/constants"
-	"github.com/snapflow/manager/pkg/api/dto"
-	"github.com/snapflow/manager/pkg/common"
-	"github.com/snapflow/manager/pkg/models/enums"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -32,7 +32,7 @@ func (d *DockerClient) Create(ctx context.Context, sandboxDto dto.CreateSandboxD
 		return "", err
 	}
 
-	if state == enums.SandboxStateStarted || state == enums.SandboxStatePullingSnapshot || state == enums.SandboxStateStarting {
+	if state == enums.SandboxStateStarted || state == enums.SandboxStatePullingImage || state == enums.SandboxStateStarting {
 		return sandboxDto.Id, nil
 	}
 
@@ -48,28 +48,28 @@ func (d *DockerClient) Create(ctx context.Context, sandboxDto dto.CreateSandboxD
 	d.cache.SetSandboxState(ctx, sandboxDto.Id, enums.SandboxStateCreating)
 
 	ctx = context.WithValue(ctx, constants.ID_KEY, sandboxDto.Id)
-	err = d.PullImage(ctx, sandboxDto.Snapshot, sandboxDto.Registry)
+	err = d.PullImage(ctx, sandboxDto.Image, sandboxDto.Registry)
 	if err != nil {
 		return "", err
 	}
 
 	d.cache.SetSandboxState(ctx, sandboxDto.Id, enums.SandboxStateCreating)
 
-	err = d.validateImageArchitecture(ctx, sandboxDto.Snapshot)
+	err = d.validateImageArchitecture(ctx, sandboxDto.Image)
 	if err != nil {
 		log.Errorf("ERROR: %s.\n", err.Error())
 		return "", err
 	}
 
-	volumeMountPathBinds := make([]string, 0)
-	if sandboxDto.Volumes != nil {
-		volumeMountPathBinds, err = d.getVolumesMountPathBinds(ctx, sandboxDto.Volumes)
+	bucketMountPathBinds := make([]string, 0)
+	if sandboxDto.Buckets != nil {
+		bucketMountPathBinds, err = d.getBucketsMountPathBinds(ctx, sandboxDto.Buckets)
 		if err != nil {
 			return "", err
 		}
 	}
 
-	containerConfig, hostConfig, networkingConfig, err := d.getContainerConfigs(ctx, sandboxDto, volumeMountPathBinds)
+	containerConfig, hostConfig, networkingConfig, err := d.getContainerConfigs(ctx, sandboxDto, bucketMountPathBinds)
 	if err != nil {
 		return "", err
 	}

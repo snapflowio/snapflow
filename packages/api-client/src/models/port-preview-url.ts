@@ -33,7 +33,7 @@ export interface PortPreviewUrl {
      */
     'token': string;
     /**
-     * Legacy preview url using runner domain
+     * Legacy preview url using executor domain
      * @type {string}
      * @memberof PortPreviewUrl
      */

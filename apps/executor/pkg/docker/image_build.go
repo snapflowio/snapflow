@@ -9,16 +9,16 @@ import (
 	"os"
 	"strings"
 
-	"github.com/snapflow/manager/cmd/manager/config"
-	"github.com/snapflow/manager/pkg/api/dto"
-	"github.com/snapflow/manager/pkg/storage"
+	"github.com/snapflow/executor/cmd/executor/config"
+	"github.com/snapflow/executor/pkg/api/dto"
+	"github.com/snapflow/executor/pkg/storage"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/pkg/jsonmessage"
 )
 
-func (d *DockerClient) BuildImage(ctx context.Context, buildImageDto dto.BuildSnapshotRequestDTO) error {
-	if !strings.Contains(buildImageDto.Snapshot, ":") || strings.HasSuffix(buildImageDto.Snapshot, ":") {
+func (d *DockerClient) BuildImage(ctx context.Context, buildImageDto dto.BuildImageRequestDTO) error {
+	if !strings.Contains(buildImageDto.Image, ":") || strings.HasSuffix(buildImageDto.Image, ":") {
 		return fmt.Errorf("invalid image format: must contain exactly one colon (e.g., 'myimage:1.0')")
 	}
 
@@ -27,7 +27,7 @@ func (d *DockerClient) BuildImage(ctx context.Context, buildImageDto dto.BuildSn
 	}
 
 	// Check if image already exists
-	exists, err := d.ImageExists(ctx, buildImageDto.Snapshot, true)
+	exists, err := d.ImageExists(ctx, buildImageDto.Image, true)
 	if err != nil {
 		return fmt.Errorf("failed to check if image exists: %w", err)
 	}
@@ -139,7 +139,7 @@ func (d *DockerClient) BuildImage(ctx context.Context, buildImageDto dto.BuildSn
 	buildContext := io.NopCloser(buildContextTar)
 
 	resp, err := d.apiClient.ImageBuild(ctx, buildContext, types.ImageBuildOptions{
-		Tags:        []string{buildImageDto.Snapshot},
+		Tags:        []string{buildImageDto.Image},
 		Dockerfile:  "Dockerfile",
 		Remove:      true,
 		ForceRemove: true,
@@ -152,7 +152,7 @@ func (d *DockerClient) BuildImage(ctx context.Context, buildImageDto dto.BuildSn
 	defer resp.Body.Close()
 
 	// Extract image name without tag
-	filePath := buildImageDto.Snapshot[:strings.LastIndex(buildImageDto.Snapshot, ":")]
+	filePath := buildImageDto.Image[:strings.LastIndex(buildImageDto.Image, ":")]
 
 	logFilePath, err := config.GetBuildLogFilePath(filePath)
 	if err != nil {

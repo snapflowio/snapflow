@@ -7,16 +7,16 @@ import { SandboxDesiredState } from "../enums/sandbox-desired-state.enum";
 import { SandboxState } from "../enums/sandbox-state.enum";
 import { BuildInfoDto } from "./build-info.dto";
 
-@ApiSchema({ name: "SandboxVolume" })
-export class SandboxVolume {
+@ApiSchema({ name: "SandboxBucket" })
+export class SandboxBucket {
   @ApiProperty({
-    description: "The ID of the volume",
-    example: "volume123",
+    description: "The ID of the bucket",
+    example: "bucket123",
   })
-  volumeId: string;
+  bucketId: string;
 
   @ApiProperty({
-    description: "The mount path for the volume",
+    description: "The mount path for the bucket",
     example: "/data",
   })
   mountPath: string;
@@ -37,14 +37,14 @@ export class SandboxDto {
   organizationId: string;
 
   @ApiPropertyOptional({
-    description: "The snapshot used for the sandbox",
-    example: "daytonaio/sandbox:latest",
+    description: "The image used for the sandbox",
+    example: "snapflowio/sandbox:latest",
   })
-  snapshot: string;
+  image: string;
 
   @ApiProperty({
     description: "The user associated with the project",
-    example: "daytona",
+    example: "snapflow",
   })
   user: string;
 
@@ -60,7 +60,7 @@ export class SandboxDto {
     description: "Labels for the sandbox",
     type: "object",
     additionalProperties: { type: "string" },
-    example: { "daytona.io/public": "true" },
+    example: { "snapflow.io/public": "true" },
   })
   labels: { [key: string]: string };
 
@@ -165,20 +165,20 @@ export class SandboxDto {
   autoArchiveInterval?: number;
 
   @ApiPropertyOptional({
-    description: "The domain name of the runner",
-    example: "runner.example.com",
+    description: "The domain name of the executor",
+    example: "executor.example.com",
     required: false,
   })
   @IsOptional()
-  runnerDomain?: string;
+  executorDomain?: string;
 
   @ApiPropertyOptional({
-    description: "Array of volumes attached to the sandbox",
-    type: [SandboxVolume],
+    description: "Array of buckets attached to the sandbox",
+    type: [SandboxBucket],
     required: false,
   })
   @IsOptional()
-  volumes?: SandboxVolume[];
+  buckets?: SandboxBucket[];
 
   @ApiPropertyOptional({
     description: "Build information for the sandbox",
@@ -223,12 +223,12 @@ export class SandboxDto {
   @IsOptional()
   daemonVersion?: string;
 
-  static fromSandbox(sandbox: Sandbox, runnerDomain: string): SandboxDto {
+  static fromSandbox(sandbox: Sandbox, executorDomain: string): SandboxDto {
     return {
       id: sandbox.id,
       organizationId: sandbox.organizationId,
       target: sandbox.region,
-      snapshot: sandbox.snapshot,
+      image: sandbox.image,
       user: sandbox.osUser,
       env: sandbox.env,
       cpu: sandbox.cpu,
@@ -237,7 +237,7 @@ export class SandboxDto {
       disk: sandbox.disk,
       public: sandbox.public,
       labels: sandbox.labels,
-      volumes: sandbox.volumes,
+      buckets: sandbox.buckets,
       state: SandboxDto.getSandboxState(sandbox),
       desiredState: sandbox.desiredState,
       errorReason: sandbox.errorReason,
@@ -256,7 +256,7 @@ export class SandboxDto {
             updatedAt: sandbox.buildInfo.updatedAt,
           }
         : undefined,
-      runnerDomain: runnerDomain,
+      executorDomain: executorDomain,
       daemonVersion: sandbox.daemonVersion,
     };
   }

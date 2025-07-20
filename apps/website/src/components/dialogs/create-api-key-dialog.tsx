@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ApiKeyResponse, CreateApiKeyPermissionsEnum } from "@snapflow/api-client";
 import { Check, Copy, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,10 +29,10 @@ interface CreateApiKeyDialogProps {
   ) => Promise<ApiKeyResponse | null>;
 }
 
-export const CreateApiKeyDialog: React.FC<CreateApiKeyDialogProps> = ({
+export function CreateApiKeyDialog({
   availablePermissions,
   onCreateApiKey,
-}) => {
+}: CreateApiKeyDialogProps) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [expiresAt, setExpiresAt] = useState<Date | undefined>(undefined);
@@ -265,4 +265,4 @@ export const CreateApiKeyDialog: React.FC<CreateApiKeyDialogProps> = ({
       </DialogContent>
     </Dialog>
   );
-};
+}

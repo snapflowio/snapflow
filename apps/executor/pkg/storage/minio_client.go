@@ -8,7 +8,7 @@ import (
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	"github.com/snapflow/manager/cmd/manager/config"
+	"github.com/snapflow/executor/cmd/executor/config"
 )
 
 const CONTEXT_TAR_FILE_NAME = "context.tar"

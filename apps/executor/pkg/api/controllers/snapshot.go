@@ -12,191 +12,191 @@ import (
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"github.com/snapflow/manager/cmd/manager/config"
-	"github.com/snapflow/manager/pkg/api/dto"
-	"github.com/snapflow/manager/pkg/common"
-	"github.com/snapflow/manager/pkg/runner"
+	"github.com/snapflow/executor/cmd/executor/config"
+	"github.com/snapflow/executor/pkg/api/dto"
+	"github.com/snapflow/executor/pkg/common"
+	"github.com/snapflow/executor/pkg/executor"
 )
 
-// PullSnapshot godoc
+// PullImage godoc
 //
-//	@Tags			snapshots
-//	@Summary		Pull a snapshot
-//	@Description	Pull a snapshot from a registry
-//	@Param			request	body		dto.PullSnapshotRequestDTO	true	"Pull snapshot"
-//	@Success		200		{string}	string						"Snapshot successfully pulled"
+//	@Tags			images
+//	@Summary		Pull a image
+//	@Description	Pull a image from a registry
+//	@Param			request	body		dto.PullImageRequestDTO	true	"Pull image"
+//	@Success		200		{string}	string					"Image successfully pulled"
 //	@Failure		400		{object}	common.ErrorResponse
 //	@Failure		401		{object}	common.ErrorResponse
 //	@Failure		404		{object}	common.ErrorResponse
 //	@Failure		409		{object}	common.ErrorResponse
 //	@Failure		500		{object}	common.ErrorResponse
 //
-//	@Router			/snapshots/pull [post]
+//	@Router			/images/pull [post]
 //
-//	@id				PullSnapshot
-func PullSnapshot(ctx *gin.Context) {
-	var request dto.PullSnapshotRequestDTO
+//	@id				PullImage
+func PullImage(ctx *gin.Context) {
+	var request dto.PullImageRequestDTO
 	err := ctx.ShouldBindJSON(&request)
 	if err != nil {
 		ctx.Error(common.NewInvalidBodyRequestError(err))
 		return
 	}
 
-	runner := runner.GetInstance(nil)
+	executor := executor.GetInstance(nil)
 
-	err = runner.Docker.PullImage(ctx.Request.Context(), request.Snapshot, request.Registry)
+	err = executor.Docker.PullImage(ctx.Request.Context(), request.Image, request.Registry)
 	if err != nil {
 		ctx.Error(err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, "Snapshot pulled successfully")
+	ctx.JSON(http.StatusOK, "Image pulled successfully")
 }
 
-// BuildSnapshot godoc
+// BuildImage godoc
 //
-//	@Tags			snapshots
-//	@Summary		Build a snapshot
-//	@Description	Build a snapshot from a Dockerfile and context hashes
-//	@Param			request	body		dto.BuildSnapshotRequestDTO	true	"Build snapshot request"
-//	@Success		200		{string}	string						"Snapshot successfully built"
+//	@Tags			images
+//	@Summary		Build a image
+//	@Description	Build a image from a Dockerfile and context hashes
+//	@Param			request	body		dto.BuildImageRequestDTO	true	"Build image request"
+//	@Success		200		{string}	string						"Image successfully built"
 //	@Failure		400		{object}	common.ErrorResponse
 //	@Failure		401		{object}	common.ErrorResponse
 //	@Failure		404		{object}	common.ErrorResponse
 //	@Failure		409		{object}	common.ErrorResponse
 //	@Failure		500		{object}	common.ErrorResponse
 //
-//	@Router			/snapshots/build [post]
+//	@Router			/images/build [post]
 //
-//	@id				BuildSnapshot
-func BuildSnapshot(ctx *gin.Context) {
-	var request dto.BuildSnapshotRequestDTO
+//	@id				BuildImage
+func BuildImage(ctx *gin.Context) {
+	var request dto.BuildImageRequestDTO
 	err := ctx.ShouldBindJSON(&request)
 	if err != nil {
 		ctx.Error(common.NewInvalidBodyRequestError(err))
 		return
 	}
 
-	if !strings.Contains(request.Snapshot, ":") || strings.HasSuffix(request.Snapshot, ":") {
-		ctx.Error(common.NewBadRequestError(errors.New("snapshot name must include a valid tag")))
+	if !strings.Contains(request.Image, ":") || strings.HasSuffix(request.Image, ":") {
+		ctx.Error(common.NewBadRequestError(errors.New("image name must include a valid tag")))
 		return
 	}
 
-	runner := runner.GetInstance(nil)
+	executor := executor.GetInstance(nil)
 
-	err = runner.Docker.BuildImage(ctx.Request.Context(), request)
+	err = executor.Docker.BuildImage(ctx.Request.Context(), request)
 	if err != nil {
 		ctx.Error(err)
 		return
 	}
 
-	tag := request.Snapshot
+	tag := request.Image
 
 	if request.PushToInternalRegistry {
 		if request.Registry.Project == nil {
 			ctx.Error(common.NewBadRequestError(errors.New("project is required when pushing to internal registry")))
 			return
 		}
-		tag = fmt.Sprintf("%s/%s/%s", request.Registry.Url, *request.Registry.Project, request.Snapshot)
+		tag = fmt.Sprintf("%s/%s/%s", request.Registry.Url, *request.Registry.Project, request.Image)
 	}
 
-	err = runner.Docker.TagImage(ctx.Request.Context(), request.Snapshot, tag)
+	err = executor.Docker.TagImage(ctx.Request.Context(), request.Image, tag)
 	if err != nil {
 		ctx.Error(err)
 		return
 	}
 
 	if request.PushToInternalRegistry {
-		err = runner.Docker.PushImage(ctx.Request.Context(), tag, request.Registry)
+		err = executor.Docker.PushImage(ctx.Request.Context(), tag, request.Registry)
 		if err != nil {
 			ctx.Error(err)
 			return
 		}
 	}
 
-	ctx.JSON(http.StatusOK, "Snapshot built successfully")
+	ctx.JSON(http.StatusOK, "Image built successfully")
 }
 
-// SnapshotExists godoc
+// ImageExists godoc
 //
-//	@Tags			snapshots
-//	@Summary		Check if a snapshot exists
-//	@Description	Check if a specified snapshot exists locally
+//	@Tags			images
+//	@Summary		Check if a image exists
+//	@Description	Check if a specified image exists locally
 //	@Produce		json
-//	@Param			snapshot	query		string	true	"Snapshot name and tag"	example:"nginx:latest"
-//	@Success		200			{object}	SnapshotExistsResponse
-//	@Failure		400			{object}	common.ErrorResponse
-//	@Failure		401			{object}	common.ErrorResponse
-//	@Failure		404			{object}	common.ErrorResponse
-//	@Failure		409			{object}	common.ErrorResponse
-//	@Failure		500			{object}	common.ErrorResponse
-//	@Router			/snapshots/exists [get]
+//	@Param			image	query		string	true	"Image name and tag"	example:"nginx:latest"
+//	@Success		200		{object}	ImageExistsResponse
+//	@Failure		400		{object}	common.ErrorResponse
+//	@Failure		401		{object}	common.ErrorResponse
+//	@Failure		404		{object}	common.ErrorResponse
+//	@Failure		409		{object}	common.ErrorResponse
+//	@Failure		500		{object}	common.ErrorResponse
+//	@Router			/images/exists [get]
 //
-//	@id				SnapshotExists
-func SnapshotExists(ctx *gin.Context) {
-	snapshot := ctx.Query("snapshot")
-	if snapshot == "" {
-		ctx.Error(common.NewBadRequestError(errors.New("snapshot parameter is required")))
+//	@id				ImageExists
+func ImageExists(ctx *gin.Context) {
+	image := ctx.Query("image")
+	if image == "" {
+		ctx.Error(common.NewBadRequestError(errors.New("image parameter is required")))
 		return
 	}
 
-	runner := runner.GetInstance(nil)
+	executor := executor.GetInstance(nil)
 
-	exists, err := runner.Docker.ImageExists(ctx.Request.Context(), snapshot, false)
+	exists, err := executor.Docker.ImageExists(ctx.Request.Context(), image, false)
 	if err != nil {
 		ctx.Error(err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, SnapshotExistsResponse{
+	ctx.JSON(http.StatusOK, ImageExistsResponse{
 		Exists: exists,
 	})
 }
 
-// RemoveSnapshot godoc
+// RemoveImage godoc
 //
-//	@Tags			snapshots
-//	@Summary		Remove a snapshot
-//	@Description	Remove a specified snapshot from the local system
+//	@Tags			images
+//	@Summary		Remove a image
+//	@Description	Remove a specified image from the local system
 //	@Produce		json
-//	@Param			snapshot	query		string	true	"Snapshot name and tag"	example:"nginx:latest"
-//	@Success		200			{string}	string	"Snapshot successfully removed"
-//	@Failure		400			{object}	common.ErrorResponse
-//	@Failure		401			{object}	common.ErrorResponse
-//	@Failure		404			{object}	common.ErrorResponse
-//	@Failure		409			{object}	common.ErrorResponse
-//	@Failure		500			{object}	common.ErrorResponse
-//	@Router			/snapshots/remove [post]
+//	@Param			image	query		string	true	"Image name and tag"	example:"nginx:latest"
+//	@Success		200		{string}	string	"Image successfully removed"
+//	@Failure		400		{object}	common.ErrorResponse
+//	@Failure		401		{object}	common.ErrorResponse
+//	@Failure		404		{object}	common.ErrorResponse
+//	@Failure		409		{object}	common.ErrorResponse
+//	@Failure		500		{object}	common.ErrorResponse
+//	@Router			/images/remove [post]
 //
-//	@id				RemoveSnapshot
-func RemoveSnapshot(ctx *gin.Context) {
-	snapshot := ctx.Query("snapshot")
-	if snapshot == "" {
-		ctx.Error(common.NewBadRequestError(errors.New("snapshot parameter is required")))
+//	@id				RemoveImage
+func RemoveImage(ctx *gin.Context) {
+	image := ctx.Query("image")
+	if image == "" {
+		ctx.Error(common.NewBadRequestError(errors.New("image parameter is required")))
 		return
 	}
 
-	runner := runner.GetInstance(nil)
+	executor := executor.GetInstance(nil)
 
-	err := runner.Docker.RemoveImage(ctx.Request.Context(), snapshot, true)
+	err := executor.Docker.RemoveImage(ctx.Request.Context(), image, true)
 	if err != nil {
 		ctx.Error(err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, "Snapshot removed successfully")
+	ctx.JSON(http.StatusOK, "Image removed successfully")
 }
 
-type SnapshotExistsResponse struct {
+type ImageExistsResponse struct {
 	Exists bool `json:"exists" example:"true"`
-} //	@name	SnapshotExistsResponse
+} //	@name	ImageExistsResponse
 
 // GetBuildLogs godoc
 //
-//	@Tags			snapshots
+//	@Tags			images
 //	@Summary		Get build logs
 //	@Description	Stream build logs
-//	@Param			snapshotRef	query		string	true	"Snapshot ID or snapshot ref without the tag"
+//	@Param			imageRef	query		string	true	"Image ID or image ref without the tag"
 //	@Param			follow		query		boolean	false	"Whether to follow the log output"
 //	@Success		200			{string}	string	"Build logs stream"
 //	@Failure		400			{object}	common.ErrorResponse
@@ -204,26 +204,26 @@ type SnapshotExistsResponse struct {
 //	@Failure		404			{object}	common.ErrorResponse
 //	@Failure		500			{object}	common.ErrorResponse
 //
-//	@Router			/snapshots/logs [get]
+//	@Router			/images/logs [get]
 //
 //	@id				GetBuildLogs
 func GetBuildLogs(ctx *gin.Context) {
-	snapshotRef := ctx.Query("snapshotRef")
-	if snapshotRef == "" {
-		ctx.Error(common.NewBadRequestError(errors.New("snapshotRef parameter is required")))
+	imageRef := ctx.Query("imageRef")
+	if imageRef == "" {
+		ctx.Error(common.NewBadRequestError(errors.New("imageRef parameter is required")))
 		return
 	}
 
 	follow := ctx.Query("follow") == "true"
 
-	logFilePath, err := config.GetBuildLogFilePath(snapshotRef)
+	logFilePath, err := config.GetBuildLogFilePath(imageRef)
 	if err != nil {
 		ctx.Error(common.NewCustomError(http.StatusInternalServerError, err.Error(), "INTERNAL_SERVER_ERROR"))
 		return
 	}
 
 	if _, err := os.Stat(logFilePath); os.IsNotExist(err) {
-		ctx.Error(common.NewNotFoundError(fmt.Errorf("build logs not found for ref: %s", snapshotRef)))
+		ctx.Error(common.NewNotFoundError(fmt.Errorf("build logs not found for ref: %s", imageRef)))
 		return
 	}
 
@@ -246,13 +246,13 @@ func GetBuildLogs(ctx *gin.Context) {
 	}
 
 	reader := bufio.NewReader(file)
-	runner := runner.GetInstance(nil)
+	executor := executor.GetInstance(nil)
 
-	checkSnapshotRef := snapshotRef
+	checkImageRef := imageRef
 
-	// Fixed tag for instances where we are not looking for an entry with snapshot ID
-	if strings.HasPrefix(snapshotRef, "snapflow") {
-		checkSnapshotRef = snapshotRef + ":snapflow"
+	// Fixed tag for instances where we are not looking for an entry with image ID
+	if strings.HasPrefix(imageRef, "snapflow") {
+		checkImageRef = imageRef + ":snapflow"
 	}
 
 	flusher, ok := ctx.Writer.(http.Flusher)
@@ -281,7 +281,7 @@ func GetBuildLogs(ctx *gin.Context) {
 	}()
 
 	for {
-		exists, err := runner.Docker.ImageExists(ctx.Request.Context(), checkSnapshotRef, false)
+		exists, err := executor.Docker.ImageExists(ctx.Request.Context(), checkImageRef, false)
 		if err != nil {
 			log.Errorf("Error checking build status: %v", err)
 			break

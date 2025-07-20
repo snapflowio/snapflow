@@ -9,9 +9,9 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/snapflow/executor/pkg/common"
+	"github.com/snapflow/executor/pkg/models/enums"
 	"github.com/snapflow/go-common/pkg/timer"
-	"github.com/snapflow/manager/pkg/common"
-	"github.com/snapflow/manager/pkg/models/enums"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -107,7 +107,7 @@ func (d *DockerClient) waitForDaemonRunning(ctx context.Context, containerIP str
 	defer timer.Timer()()
 
 	// Build the target URL
-	targetURL := fmt.Sprintf("http://%s:2280/version", containerIP)
+	targetURL := fmt.Sprintf("http://%s:8082/version", containerIP)
 	target, err := url.Parse(targetURL)
 	if err != nil {
 		return common.NewBadRequestError(fmt.Errorf("failed to parse target URL: %w", err))

@@ -18,13 +18,13 @@
 import type { BuildInfo } from './build-info';
 // May contain unused imports in some cases
 // @ts-ignore
+import type { SandboxBucket } from './sandbox-bucket';
+// May contain unused imports in some cases
+// @ts-ignore
 import type { SandboxDesiredState } from './sandbox-desired-state';
 // May contain unused imports in some cases
 // @ts-ignore
 import type { SandboxState } from './sandbox-state';
-// May contain unused imports in some cases
-// @ts-ignore
-import type { SandboxVolume } from './sandbox-volume';
 
 /**
  * 
@@ -45,11 +45,11 @@ export interface Sandbox {
      */
     'organizationId': string;
     /**
-     * The snapshot used for the sandbox
+     * The image used for the sandbox
      * @type {string}
      * @memberof Sandbox
      */
-    'snapshot'?: string;
+    'image'?: string;
     /**
      * The user associated with the project
      * @type {string}
@@ -147,17 +147,17 @@ export interface Sandbox {
      */
     'autoArchiveInterval'?: number;
     /**
-     * The domain name of the runner
+     * The domain name of the executor
      * @type {string}
      * @memberof Sandbox
      */
-    'runnerDomain'?: string;
+    'executorDomain'?: string;
     /**
-     * Array of volumes attached to the sandbox
-     * @type {Array<SandboxVolume>}
+     * Array of buckets attached to the sandbox
+     * @type {Array<SandboxBucket>}
      * @memberof Sandbox
      */
-    'volumes'?: Array<SandboxVolume>;
+    'buckets'?: Array<SandboxBucket>;
     /**
      * Build information for the sandbox
      * @type {BuildInfo}

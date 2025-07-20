@@ -1,7 +1,7 @@
 export const SITE_CONFIG = {
   NAME: "Snapflow",
   DESCIPTION:
-    "Setup isolated sandboxes, deploy custom container images, safely run code, and more. Powered by our AI that builds a custom environment from natural language, giving you scalable sandboxes on demand. ",
+    "Create, deploy, and manage intelligent sandboxes with ease. Build secure environments for testing, development, automation, and experimentation.",
   URL: "https://snapflow.io",
   DOMAIN: "snapflow.io",
 };

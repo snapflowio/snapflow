@@ -21,7 +21,7 @@
  */
 export interface ToggleState {
     /**
-     * Enable or disable the snapshot/tag
+     * Enable or disable the image/tag
      * @type {boolean}
      * @memberof ToggleState
      */

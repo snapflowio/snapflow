@@ -1,11 +1,10 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-
 import { RedisLockProvider } from "../sandbox/common/redis-lock.provider";
+import { Bucket } from "../sandbox/entities/bucket.entity";
+import { Image } from "../sandbox/entities/image.entity";
+import { ImageExecutor } from "../sandbox/entities/image-executor.entity";
 import { Sandbox } from "../sandbox/entities/sandbox.entity";
-import { Snapshot } from "../sandbox/entities/snapshot.entity";
-import { SnapshotRunner } from "../sandbox/entities/snapshot-runner.entity";
-import { Volume } from "../sandbox/entities/volume.entity";
 import { UserModule } from "../user/user.module";
 import { OrganizationController } from "./controllers/organization.controller";
 import { OrganizationInvitationController } from "./controllers/organization-invitation.controller";
@@ -29,9 +28,9 @@ import { OrganizationUserService } from "./services/organization-user.service";
       OrganizationUser,
       OrganizationInvitation,
       Sandbox,
-      Snapshot,
-      Volume,
-      SnapshotRunner,
+      Image,
+      Bucket,
+      ImageExecutor,
     ]),
   ],
   controllers: [

@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/snapflow/manager/internal/constants"
-	"github.com/snapflow/manager/pkg/common"
+	"github.com/snapflow/executor/internal/constants"
+	"github.com/snapflow/executor/pkg/common"
 )
 
 func AuthMiddleware() gin.HandlerFunc {

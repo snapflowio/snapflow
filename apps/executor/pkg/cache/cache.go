@@ -5,11 +5,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/snapflow/manager/pkg/models"
-	"github.com/snapflow/manager/pkg/models/enums"
+	"github.com/snapflow/executor/pkg/models"
+	"github.com/snapflow/executor/pkg/models/enums"
 )
 
-type IRunnerCache interface {
+type IExecutorCache interface {
 	SetSandboxState(ctx context.Context, sandboxId string, state enums.SandboxState)
 	SetBackupState(ctx context.Context, sandboxId string, state enums.BackupState)
 
@@ -20,18 +20,18 @@ type IRunnerCache interface {
 	Cleanup(ctx context.Context)
 }
 
-type InMemoryRunnerCacheConfig struct {
+type InMemoryExecutorCacheConfig struct {
 	Cache         map[string]*models.CacheData
 	RetentionDays int
 }
 
-type InMemoryRunnerCache struct {
+type InMemoryExecutorCache struct {
 	mutex         sync.RWMutex
 	cache         map[string]*models.CacheData
 	retentionDays int
 }
 
-func NewInMemoryRunnerCache(config InMemoryRunnerCacheConfig) IRunnerCache {
+func NewInMemoryExecutorCache(config InMemoryExecutorCacheConfig) IExecutorCache {
 	retentionDays := config.RetentionDays
 	if retentionDays <= 0 {
 		retentionDays = 7
@@ -42,13 +42,13 @@ func NewInMemoryRunnerCache(config InMemoryRunnerCacheConfig) IRunnerCache {
 		cache = make(map[string]*models.CacheData)
 	}
 
-	return &InMemoryRunnerCache{
+	return &InMemoryExecutorCache{
 		cache:         cache,
 		retentionDays: config.RetentionDays,
 	}
 }
 
-func (c *InMemoryRunnerCache) SetSandboxState(ctx context.Context, sandboxId string, state enums.SandboxState) {
+func (c *InMemoryExecutorCache) SetSandboxState(ctx context.Context, sandboxId string, state enums.SandboxState) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -66,7 +66,7 @@ func (c *InMemoryRunnerCache) SetSandboxState(ctx context.Context, sandboxId str
 	c.cache[sandboxId] = data
 }
 
-func (c *InMemoryRunnerCache) SetBackupState(ctx context.Context, sandboxId string, state enums.BackupState) {
+func (c *InMemoryExecutorCache) SetBackupState(ctx context.Context, sandboxId string, state enums.BackupState) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -84,7 +84,7 @@ func (c *InMemoryRunnerCache) SetBackupState(ctx context.Context, sandboxId stri
 	c.cache[sandboxId] = data
 }
 
-func (c *InMemoryRunnerCache) Set(ctx context.Context, sandboxId string, data models.CacheData) {
+func (c *InMemoryExecutorCache) Set(ctx context.Context, sandboxId string, data models.CacheData) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -95,7 +95,7 @@ func (c *InMemoryRunnerCache) Set(ctx context.Context, sandboxId string, data mo
 	}
 }
 
-func (c *InMemoryRunnerCache) Get(ctx context.Context, sandboxId string) *models.CacheData {
+func (c *InMemoryExecutorCache) Get(ctx context.Context, sandboxId string) *models.CacheData {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
@@ -111,7 +111,7 @@ func (c *InMemoryRunnerCache) Get(ctx context.Context, sandboxId string) *models
 	return data
 }
 
-func (c *InMemoryRunnerCache) Remove(ctx context.Context, sandboxId string) {
+func (c *InMemoryExecutorCache) Remove(ctx context.Context, sandboxId string) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -123,7 +123,7 @@ func (c *InMemoryRunnerCache) Remove(ctx context.Context, sandboxId string) {
 	}
 }
 
-func (c *InMemoryRunnerCache) List(ctx context.Context) []string {
+func (c *InMemoryExecutorCache) List(ctx context.Context) []string {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
 
@@ -135,7 +135,7 @@ func (c *InMemoryRunnerCache) List(ctx context.Context) []string {
 	return keys
 }
 
-func (c *InMemoryRunnerCache) Cleanup(ctx context.Context) {
+func (c *InMemoryExecutorCache) Cleanup(ctx context.Context) {
 	go func() {
 		// Run cleanup every hour
 		ticker := time.NewTicker(1 * time.Hour)
@@ -152,7 +152,7 @@ func (c *InMemoryRunnerCache) Cleanup(ctx context.Context) {
 	}()
 }
 
-func (c *InMemoryRunnerCache) cleanupExpiredEntries() {
+func (c *InMemoryExecutorCache) cleanupExpiredEntries() {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 

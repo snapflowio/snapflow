@@ -18,7 +18,7 @@
 import type { CreateBuildInfo } from './create-build-info';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { SandboxVolume } from './sandbox-volume';
+import type { SandboxBucket } from './sandbox-bucket';
 
 /**
  * 
@@ -27,11 +27,11 @@ import type { SandboxVolume } from './sandbox-volume';
  */
 export interface CreateSandbox {
     /**
-     * The ID or name of the snapshot used for the sandbox
+     * The ID or name of the image used for the sandbox
      * @type {string}
      * @memberof CreateSandbox
      */
-    'snapshot'?: string;
+    'image'?: string;
     /**
      * The user associated with the project
      * @type {string}
@@ -105,11 +105,11 @@ export interface CreateSandbox {
      */
     'autoArchiveInterval'?: number;
     /**
-     * Array of volumes to attach to the sandbox
-     * @type {Array<SandboxVolume>}
+     * Array of buckets to attach to the sandbox
+     * @type {Array<SandboxBucket>}
      * @memberof CreateSandbox
      */
-    'volumes'?: Array<SandboxVolume>;
+    'buckets'?: Array<SandboxBucket>;
     /**
      * Build information for the sandbox
      * @type {CreateBuildInfo}

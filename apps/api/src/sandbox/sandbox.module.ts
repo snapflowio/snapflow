@@ -1,42 +1,41 @@
 import { MiddlewareConsumer, Module, RequestMethod } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-
 import { AuthModule } from "../auth/auth.module";
-import { DockerRegistryModule } from "../docker-registry/docker-registry.module";
-import { DockerRegistry } from "../docker-registry/entities/docker-registry.entity";
 import { OrganizationModule } from "../organization/organization.module";
+import { Registry } from "../registry/entities/registry.entity";
+import { DockerRegistryModule } from "../registry/registry.module";
 import { UserModule } from "../user/user.module";
 import { RedisLockProvider } from "./common/redis-lock.provider";
+import { BucketController } from "./controllers/bucket.controller";
+import { ExecutorController } from "./controllers/executor.controller";
+import { ImageController } from "./controllers/image.controller";
 import { PreviewController } from "./controllers/preview.controller";
-import { RunnerController } from "./controllers/runner.controller";
 import { SandboxController } from "./controllers/sandbox.controller";
-import { SnapshotController } from "./controllers/snapshot.controller";
 import { ToolboxController } from "./controllers/toolbox.controller";
-import { VolumeController } from "./controllers/volume.controller";
 import { DockerProvider } from "./docker/docker-provider";
+import { Bucket } from "./entities/bucket.entity";
 import { BuildInfo } from "./entities/build-info.entity";
-import { Runner } from "./entities/runner.entity";
+import { Executor } from "./entities/executor.entity";
+import { Image } from "./entities/image.entity";
+import { ImageExecutor } from "./entities/image-executor.entity";
 import { Sandbox } from "./entities/sandbox.entity";
-import { Snapshot } from "./entities/snapshot.entity";
-import { SnapshotRunner } from "./entities/snapshot-runner.entity";
-import { Volume } from "./entities/volume.entity";
 import { WarmPool } from "./entities/warm-pool.entity";
-import { RunnerApiFactory } from "./executor-api/executor-api";
+import { ExecutorApiFactory } from "./executor-api/executor-api";
 import { BackupManager } from "./managers/backup.manager";
+import { BucketManager } from "./managers/bucket.manager";
+import { ImageManager } from "./managers/image.manager";
 import { SandboxManager } from "./managers/sandbox.manager";
-import { SnapshotManager } from "./managers/snapshot.manager";
-import { VolumeManager } from "./managers/volume.manager";
 import { RequestLoggerMiddleware } from "./middleware/request-logger.middleware";
-import { RunnerService } from "./services/runner.service";
+import { BucketService } from "./services/bucket.service";
+import { ExecutorService } from "./services/executor.service";
+import { ImageService } from "./services/image.service";
+import { ImageExecutorService } from "./services/image-executor.service";
 import { SandboxService } from "./services/sandbox.service";
 import { SandboxWarmPoolService } from "./services/sandbox-warm-pool.service";
-import { SnapshotService } from "./services/snapshot.service";
-import { SnapshotRunnerService } from "./services/snapshot-runner.service";
 import { ToolboxService } from "./services/toolbox.service";
-import { VolumeService } from "./services/volume.service";
+import { BucketSubscriber } from "./subscribers/bucket.subscriber";
+import { ImageSubscriber } from "./subscribers/image.subscriber";
 import { SandboxSubscriber } from "./subscribers/sandbox.subscriber";
-import { SnapshotSubscriber } from "./subscribers/snapshot.subscriber";
-import { VolumeSubscriber } from "./subscribers/volume.subscriber";
 
 @Module({
   imports: [
@@ -46,50 +45,50 @@ import { VolumeSubscriber } from "./subscribers/volume.subscriber";
     OrganizationModule,
     TypeOrmModule.forFeature([
       Sandbox,
-      Runner,
-      Snapshot,
+      Executor,
+      Image,
       BuildInfo,
-      SnapshotRunner,
-      DockerRegistry,
+      ImageExecutor,
+      Registry,
       WarmPool,
-      Volume,
+      Bucket,
     ]),
   ],
   controllers: [
     SandboxController,
-    RunnerController,
+    ExecutorController,
     ToolboxController,
-    SnapshotController,
+    ImageController,
     PreviewController,
-    VolumeController,
+    BucketController,
   ],
   providers: [
     SandboxService,
     SandboxManager,
     BackupManager,
     SandboxWarmPoolService,
-    RunnerService,
-    RunnerApiFactory,
+    ExecutorService,
+    ExecutorApiFactory,
     ToolboxService,
-    SnapshotService,
-    SnapshotManager,
+    ImageService,
+    ImageManager,
     DockerProvider,
     SandboxSubscriber,
     RedisLockProvider,
-    SnapshotSubscriber,
-    VolumeService,
-    VolumeManager,
-    VolumeSubscriber,
-    SnapshotRunnerService,
+    ImageSubscriber,
+    BucketService,
+    BucketManager,
+    BucketSubscriber,
+    ImageExecutorService,
   ],
   exports: [
     SandboxService,
-    RunnerService,
+    ExecutorService,
     RedisLockProvider,
-    SnapshotService,
-    VolumeService,
-    VolumeManager,
-    SnapshotRunnerService,
+    ImageService,
+    BucketService,
+    BucketManager,
+    ImageExecutorService,
   ],
 })
 export class SandboxModule {

@@ -1,12 +1,13 @@
 import {
   ApiKeysApi,
+  BucketsApi,
   Configuration,
-  DockerRegistryApi,
+  ImagesApi,
   OrganizationsApi,
+  RegistryApi,
   SandboxApi,
-  SnapshotsApi,
+  ToolboxApi,
   UsersApi,
-  VolumesApi,
 } from "@snapflow/api-client";
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { SnapflowError } from "./errors";
@@ -14,13 +15,14 @@ import { SnapflowError } from "./errors";
 export class ApiClient {
   private config: Configuration;
   private axiosInstance: AxiosInstance;
-  private _snapshotApi: SnapshotsApi;
+  private _imageApi: ImagesApi;
   private _sandboxApi: SandboxApi;
   private _userApi: UsersApi;
   private _apiKeyApi: ApiKeysApi;
-  private _dockerRegistryApi: DockerRegistryApi;
+  private _registryApi: RegistryApi;
   private _organizationsApi: OrganizationsApi;
-  private _volumeApi: VolumesApi;
+  private _bucketApi: BucketsApi;
+  private _toolboxApi: ToolboxApi;
 
   constructor(accessToken: string) {
     this.config = new Configuration({
@@ -45,21 +47,22 @@ export class ApiClient {
       }
     );
 
-    this._snapshotApi = new SnapshotsApi(this.config, undefined, this.axiosInstance);
+    this._imageApi = new ImagesApi(this.config, undefined, this.axiosInstance);
     this._sandboxApi = new SandboxApi(this.config, undefined, this.axiosInstance);
     this._userApi = new UsersApi(this.config, undefined, this.axiosInstance);
     this._apiKeyApi = new ApiKeysApi(this.config, undefined, this.axiosInstance);
-    this._dockerRegistryApi = new DockerRegistryApi(this.config, undefined, this.axiosInstance);
+    this._registryApi = new RegistryApi(this.config, undefined, this.axiosInstance);
     this._organizationsApi = new OrganizationsApi(this.config, undefined, this.axiosInstance);
-    this._volumeApi = new VolumesApi(this.config, undefined, this.axiosInstance);
+    this._bucketApi = new BucketsApi(this.config, undefined, this.axiosInstance);
+    this._toolboxApi = new ToolboxApi(this.config, undefined, this.axiosInstance);
   }
 
   public setAccessToken(accessToken: string): void {
     this.config.accessToken = accessToken;
   }
 
-  public get snapshotApi(): SnapshotsApi {
-    return this._snapshotApi;
+  public get imageApi(): ImagesApi {
+    return this._imageApi;
   }
 
   public get sandboxApi(): SandboxApi {
@@ -74,15 +77,19 @@ export class ApiClient {
     return this._apiKeyApi;
   }
 
-  public get dockerRegistryApi(): DockerRegistryApi {
-    return this._dockerRegistryApi;
+  public get registryApi(): RegistryApi {
+    return this._registryApi;
   }
 
   public get organizationsApi(): OrganizationsApi {
     return this._organizationsApi;
   }
 
-  public get volumeApi(): VolumesApi {
-    return this._volumeApi;
+  public get bucketApi(): BucketsApi {
+    return this._bucketApi;
+  }
+
+  public get toolboxApi() {
+    return this._toolboxApi;
   }
 }
