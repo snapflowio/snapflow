@@ -9,6 +9,13 @@ services:
       - redis
     ports:
       - "8081:8081"
+    command: >
+      sh -c "
+        echo 'Running database migrations...' &&
+        node node_modules/typeorm/cli.js migration:run -d dist/apps/api/src/data-source.js &&
+        echo 'Migrations complete, starting application...' &&
+        node dist/apps/api/main.js
+      "
     environment:
       - NODE_ENV=production
       - PORT=${PORT}
@@ -54,6 +61,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
     expose:
       - "5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   redis:
     image: redis:latest
     container_name: snapflow_redis

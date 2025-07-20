@@ -8,6 +8,7 @@
     "format": "biome format .",
     "lint": "biome check .",
     "lint:fix": "biome check . --write",
+	"run":  "node --env-file=apps/api/.env ./dist/apps/api/main.js",
     "preview": "nx run-many --target=serve --all --exclude=node --configuration=development",
     "build:development": "nx run-many --target=build --all --configuration=development",
     "build:production": "nx run-many --target=build --all --configuration=production",
