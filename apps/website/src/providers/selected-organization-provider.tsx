@@ -1,5 +1,4 @@
 import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
 import {
   Organization,
   OrganizationRolePermissionsEnum,
@@ -21,8 +20,7 @@ type Props = {
 };
 
 export function SelectedOrganizationProvider(props: Props) {
-  const { user } = useAuth0();
-  const { organizationsApi } = useApi();
+  const { organizationsApi, user } = useApi();
   const { organizations } = useOrganizations();
 
   const [selectedOrganizationId, setSelectedOrganizationId] = useState<string | null>(() => {

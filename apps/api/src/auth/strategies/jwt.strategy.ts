@@ -11,7 +11,6 @@ import { UserService } from "../../user/user.service";
 
 interface JwtStrategyConfig {
   jwksUri: string;
-  audience: string;
   issuer: string;
 }
 
@@ -22,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   constructor(
     private readonly options: JwtStrategyConfig,
-    private readonly userService: UserService,
+    private readonly userService: UserService
   ) {
     super({
       secretOrKeyProvider: passportJwtSecret({
@@ -32,9 +31,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         jwksUri: options.jwksUri,
       }),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      audience: options.audience,
       issuer: options.issuer,
-      algorithms: ["RS256"],
+      algorithms: ["ES384"],
       passReqToCallback: true,
     });
 
@@ -47,10 +45,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     let user = await this.userService.findOne(userId);
 
     if (user && !user.emailVerified && payload.email_verified)
-      await this.userService.updateEmailVerified(
-        user.id,
-        payload.email_verified,
-      );
+      await this.userService.updateEmailVerified(user.id, payload.email_verified);
 
     if (!user) {
       user = await this.userService.create({
@@ -63,15 +58,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
       this.logger.debug(`Created new user with ID: ${userId}`);
     } else if (user.name === "Unknown" || !user.email) {
-      await this.userService.updateName(
-        user.id,
-        payload.name || payload.username || "Unknown",
-      );
+      await this.userService.updateName(user.id, payload.name || payload.username || "Unknown");
       await this.userService.updateEmail(user.id, payload.email || "");
 
-      this.logger.debug(
-        `Updated name and email address for existing user with ID: ${userId}`,
-      );
+      this.logger.debug(`Updated name and email address for existing user with ID: ${userId}`);
     }
 
     const organizationId = request.get(CustomHeaders.ORGANIZATION_ID.name);
@@ -86,9 +76,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async verifyToken(token: string): Promise<JWTPayload> {
     const { payload } = await jwtVerify(token, this.JWKS, {
-      audience: this.options.audience,
       issuer: this.options.issuer,
-      algorithms: ["RS256"],
+      algorithms: ["ES384"],
     });
 
     return payload;

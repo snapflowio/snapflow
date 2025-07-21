@@ -1,0 +1,6755 @@
+openapi: 3.0.0
+info:
+  contact:
+    email: support@snapflow.com
+    name: Snapflow Platforms Inc.
+    url: https://www.snapflow.io
+  description: Snapflow AI platform API Docs
+  title: Snapflow
+  version: "1.0"
+servers:
+- url: http://localhost:3000
+paths:
+  /mcp:
+    delete:
+      operationId: StreamableHttpController_handleDeleteRequest
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+      - StreamableHttp
+    get:
+      operationId: StreamableHttpController_handleGetRequest
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+      - StreamableHttp
+    post:
+      operationId: StreamableHttpController_handlePostRequest
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags:
+      - StreamableHttp
+  /sse:
+    get:
+      operationId: SseController_sse
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      tags:
+      - Sse
+  /messages:
+    post:
+      operationId: SseController_messages
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags:
+      - Sse
+  /users/me:
+    get:
+      operationId: getAuthenticatedUser
+      parameters: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: The details of the authenticated user.
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get authenticated user
+      tags:
+      - users
+  /users:
+    get:
+      operationId: listUsers
+      parameters: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/User'
+                type: array
+          description: An array of all users.
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: List all users
+      tags:
+      - users
+    post:
+      operationId: createUser
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: The user has been successfully created.
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Create a new user
+      tags:
+      - users
+  /users/{id}:
+    get:
+      operationId: getUser
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: The details of the user.
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get a user by ID
+      tags:
+      - users
+  /api-keys:
+    get:
+      operationId: listApiKeys
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ApiKeyList'
+                type: array
+          description: API keys retrieved successfully.
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: List API keys
+      tags:
+      - api-keys
+    post:
+      operationId: createApiKey
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApiKey'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKeyResponse'
+          description: API key created successfully.
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Create API key
+      tags:
+      - api-keys
+  /api-keys/current:
+    get:
+      operationId: getCurrentApiKey
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKeyList'
+          description: API key retrieved successfully.
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get current API key's details
+      tags:
+      - api-keys
+  /api-keys/{name}:
+    delete:
+      operationId: deleteApiKey
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: API key deleted successfully.
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Delete API key by name
+      tags:
+      - api-keys
+    get:
+      operationId: getApiKey
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKeyList'
+          description: API key retrieved successfully.
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get API key by name
+      tags:
+      - api-keys
+  /organizations/invitations:
+    get:
+      operationId: listOrganizationInvitationsForAuthenticatedUser
+      parameters: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/OrganizationInvitation'
+                type: array
+          description: List of organization invitations
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: List organization invitations for authenticated user
+      tags:
+      - organizations
+  /organizations/invitations/count:
+    get:
+      operationId: getOrganizationInvitationsCountForAuthenticatedUser
+      parameters: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: number
+          description: Count of organization invitations
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get count of organization invitations for authenticated user
+      tags:
+      - organizations
+  /organizations/invitations/{invitationId}/accept:
+    post:
+      operationId: acceptOrganizationInvitation
+      parameters:
+      - description: Invitation ID
+        explode: false
+        in: path
+        name: invitationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Organization invitation accepted successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Accept organization invitation
+      tags:
+      - organizations
+  /organizations/invitations/{invitationId}/decline:
+    post:
+      operationId: declineOrganizationInvitation
+      parameters:
+      - description: Invitation ID
+        explode: false
+        in: path
+        name: invitationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Organization invitation declined successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Decline organization invitation
+      tags:
+      - organizations
+  /organizations:
+    get:
+      operationId: listOrganizations
+      parameters: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Organization'
+                type: array
+          description: List of organizations
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: List organizations
+      tags:
+      - organizations
+    post:
+      operationId: createOrganization
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrganization'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: Organization created successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Create organization
+      tags:
+      - organizations
+  /organizations/{organizationId}:
+    delete:
+      operationId: deleteOrganization
+      parameters:
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Organization deleted successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Delete organization
+      tags:
+      - organizations
+    get:
+      operationId: getOrganization
+      parameters:
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: Organization details
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get organization by ID
+      tags:
+      - organizations
+  /organizations/{organizationId}/usage:
+    get:
+      operationId: getOrganizationUsageOverview
+      parameters:
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageOverview'
+          description: Current usage overview
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get organization current usage overview
+      tags:
+      - organizations
+  /organizations/{organizationId}/quota:
+    patch:
+      operationId: updateOrganizationQuota
+      parameters:
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrganizationQuota'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+          description: Organization details
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Update organization quota
+      tags:
+      - organizations
+  /organizations/{organizationId}/leave:
+    post:
+      operationId: leaveOrganization
+      parameters:
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Organization left successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Leave organization
+      tags:
+      - organizations
+  /organizations/{organizationId}/suspend:
+    post:
+      operationId: suspendOrganization
+      parameters:
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationSuspension'
+        required: false
+      responses:
+        "204":
+          description: Organization suspended successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Suspend organization
+      tags:
+      - organizations
+  /organizations/{organizationId}/unsuspend:
+    post:
+      operationId: unsuspendOrganization
+      parameters:
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Organization unsuspended successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Unsuspend organization
+      tags:
+      - organizations
+  /organizations/{organizationId}/roles:
+    get:
+      operationId: listOrganizationRoles
+      parameters:
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/OrganizationRole'
+                type: array
+          description: List of organization roles
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: List organization roles
+      tags:
+      - organizations
+    post:
+      operationId: createOrganizationRole
+      parameters:
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrganizationRole'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationRole'
+          description: Organization role created successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Create organization role
+      tags:
+      - organizations
+  /organizations/{organizationId}/roles/{roleId}:
+    delete:
+      operationId: deleteOrganizationRole
+      parameters:
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Role ID
+        explode: false
+        in: path
+        name: roleId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Organization role deleted successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Delete organization role
+      tags:
+      - organizations
+    put:
+      operationId: updateOrganizationRole
+      parameters:
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Role ID
+        explode: false
+        in: path
+        name: roleId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrganizationRole'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationRole'
+          description: Role updated successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Update organization role
+      tags:
+      - organizations
+  /organizations/{organizationId}/users:
+    get:
+      operationId: listOrganizationMembers
+      parameters:
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/OrganizationUser'
+                type: array
+          description: List of organization members
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: List organization members
+      tags:
+      - organizations
+  /organizations/{organizationId}/users/{userId}/role:
+    post:
+      operationId: updateRoleForOrganizationMember
+      parameters:
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: User ID
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrganizationMemberRole'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationUser'
+          description: Role updated successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Update role for organization member
+      tags:
+      - organizations
+  /organizations/{organizationId}/users/{userId}/assigned-roles:
+    post:
+      operationId: updateAssignedOrganizationRoles
+      parameters:
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: User ID
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAssignedOrganizationRoles'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationUser'
+          description: Assigned roles updated successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Update assigned roles to organization member
+      tags:
+      - organizations
+  /organizations/{organizationId}/users/{userId}:
+    delete:
+      operationId: deleteOrganizationMember
+      parameters:
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: User ID
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: User removed from organization successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Delete organization member
+      tags:
+      - organizations
+  /organizations/{organizationId}/invitations:
+    get:
+      operationId: listOrganizationInvitations
+      parameters:
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/OrganizationInvitation'
+                type: array
+          description: List of pending organization invitations
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: List pending organization invitations
+      tags:
+      - organizations
+    post:
+      operationId: createOrganizationInvitation
+      parameters:
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrganizationInvitation'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationInvitation'
+          description: Organization invitation created successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Create organization invitation
+      tags:
+      - organizations
+  /organizations/{organizationId}/invitations/{invitationId}:
+    put:
+      operationId: updateOrganizationInvitation
+      parameters:
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Invitation ID
+        explode: false
+        in: path
+        name: invitationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrganizationInvitation'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationInvitation'
+          description: Organization invitation updated successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Update organization invitation
+      tags:
+      - organizations
+  /organizations/{organizationId}/invitations/{invitationId}/cancel:
+    post:
+      operationId: cancelOrganizationInvitation
+      parameters:
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Invitation ID
+        explode: false
+        in: path
+        name: invitationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Organization invitation cancelled successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Cancel organization invitation
+      tags:
+      - organizations
+  /registry:
+    get:
+      operationId: listRegistries
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/DockerRegistry'
+                type: array
+          description: List of all container registries
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: List registries
+      tags:
+      - registry
+    post:
+      operationId: createRegistry
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDockerRegistry'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DockerRegistry'
+          description: The registry has been successfully created.
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Create registry
+      tags:
+      - registry
+  /registry/registry-push-access:
+    get:
+      operationId: getTransientPushAccess
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistryPushAccessDto'
+          description: Temporary registry access has been generated
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get temporary registry access for pushing images
+      tags:
+      - registry
+  /registry/{id}:
+    delete:
+      operationId: deleteRegistry
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: ID of the container registry
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: The container registry has been successfully deleted.
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Delete registry
+      tags:
+      - registry
+    get:
+      operationId: getRegistry
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: ID of the registry
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DockerRegistry'
+          description: The container registry
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get registry
+      tags:
+      - registry
+    patch:
+      operationId: updateRegistry
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: ID of the docker registry
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDockerRegistry'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DockerRegistry'
+          description: The container registry has been successfully updated.
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Update registry
+      tags:
+      - registry
+  /registry/{id}/set-default:
+    post:
+      operationId: setDefaultRegistry
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: ID of the container registry
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DockerRegistry'
+          description: The container registry has been set as default.
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Set default registry
+      tags:
+      - registry
+  /sandbox:
+    get:
+      operationId: listSandboxes
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Include verbose output
+        explode: true
+        in: query
+        name: verbose
+        required: false
+        schema:
+          type: boolean
+        style: form
+      - description: JSON encoded labels to filter by
+        explode: true
+        in: query
+        name: labels
+        required: false
+        schema:
+          example: "{\"label1\": \"value1\", \"label2\": \"value2\"}"
+          type: string
+        style: form
+      - description: Include errored and deleted sandboxes
+        explode: true
+        in: query
+        name: includeErroredDeleted
+        required: false
+        schema:
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Sandbox'
+                type: array
+          description: List of all sandboxes
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: List all sandboxes
+      tags:
+      - sandbox
+    post:
+      operationId: createSandbox
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSandbox'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sandbox'
+          description: The sandbox has been successfully created.
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Create a new sandbox
+      tags:
+      - sandbox
+  /sandbox/{sandboxId}:
+    delete:
+      operationId: deleteSandbox
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: ID of the sandbox
+        explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: force
+        required: true
+        schema:
+          type: boolean
+        style: form
+      responses:
+        "200":
+          description: Sandbox has been deleted
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Delete sandbox
+      tags:
+      - sandbox
+    get:
+      operationId: getSandbox
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Include verbose output
+        explode: true
+        in: query
+        name: verbose
+        required: false
+        schema:
+          type: boolean
+        style: form
+      - description: ID of the sandbox
+        explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sandbox'
+          description: Sandbox details
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get sandbox details
+      tags:
+      - sandbox
+  /sandbox/{sandboxId}/start:
+    post:
+      operationId: startSandbox
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: ID of the sandbox
+        explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sandbox'
+          description: Sandbox has been started
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Start sandbox
+      tags:
+      - sandbox
+  /sandbox/{sandboxId}/stop:
+    post:
+      operationId: stopSandbox
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: ID of the sandbox
+        explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Sandbox has been stopped
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Stop sandbox
+      tags:
+      - sandbox
+  /sandbox/{sandboxId}/labels:
+    put:
+      operationId: replaceLabels
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: ID of the sandbox
+        explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SandboxLabels'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SandboxLabels'
+          description: Labels have been successfully replaced
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Replace sandbox labels
+      tags:
+      - sandbox
+  /sandbox/{sandboxId}/backup:
+    post:
+      operationId: createBackup
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: ID of the sandbox
+        explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sandbox'
+          description: Sandbox backup has been initiated
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Create sandbox backup
+      tags:
+      - sandbox
+  /sandbox/{sandboxId}/public/{isPublic}:
+    post:
+      operationId: updatePublicStatus
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: ID of the sandbox
+        explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Public status to set
+        explode: false
+        in: path
+        name: isPublic
+        required: true
+        schema:
+          type: boolean
+        style: simple
+      responses:
+        "201":
+          description: ""
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Update public status
+      tags:
+      - sandbox
+  /sandbox/{sandboxId}/autostop/{interval}:
+    post:
+      operationId: setAutostopInterval
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: ID of the sandbox
+        explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Auto-stop interval in minutes (0 to disable)
+        explode: false
+        in: path
+        name: interval
+        required: true
+        schema:
+          type: number
+        style: simple
+      responses:
+        "200":
+          description: Auto-stop interval has been set
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Set sandbox auto-stop interval
+      tags:
+      - sandbox
+  /sandbox/{sandboxId}/autoarchive/{interval}:
+    post:
+      operationId: setAutoArchiveInterval
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: ID of the sandbox
+        explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Auto-archive interval in minutes (0 means the maximum interval
+          will be used)
+        explode: false
+        in: path
+        name: interval
+        required: true
+        schema:
+          type: number
+        style: simple
+      responses:
+        "200":
+          description: Auto-archive interval has been set
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Set sandbox auto-archive interval
+      tags:
+      - sandbox
+  /sandbox/{sandboxId}/archive:
+    post:
+      operationId: archiveSandbox
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Sandbox has been archived
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Archive sandbox
+      tags:
+      - sandbox
+  /sandbox/{sandboxId}/ports/{port}/preview-url:
+    get:
+      operationId: getPortPreviewUrl
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: ID of the sandbox
+        explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Port number to get preview URL for
+        explode: false
+        in: path
+        name: port
+        required: true
+        schema:
+          type: number
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortPreviewUrl'
+          description: Preview URL for the specified port
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get preview URL for a sandbox port
+      tags:
+      - sandbox
+  /sandbox/{sandboxId}/build-logs:
+    get:
+      operationId: getBuildLogs
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: ID of the sandbox
+        explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Whether to follow the logs stream
+        explode: true
+        in: query
+        name: follow
+        required: false
+        schema:
+          type: boolean
+        style: form
+      responses:
+        "200":
+          description: Build logs stream
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get build logs
+      tags:
+      - sandbox
+  /executors:
+    get:
+      operationId: listExecutors
+      parameters: []
+      responses:
+        "200":
+          description: ""
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: List all executors
+      tags:
+      - executors
+    post:
+      operationId: createExecutor
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateExecutor'
+        required: true
+      responses:
+        "201":
+          description: ""
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Create executor
+      tags:
+      - executors
+  /executors/{id}/scheduling:
+    patch:
+      operationId: updateExecutorScheduling
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: ""
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Update executor scheduling status
+      tags:
+      - executors
+  /executors/by-sandbox/{sandboxId}:
+    get:
+      operationId: getExecutorBySandboxId
+      parameters:
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Executor'
+          description: Executor found
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get executor by sandbox ID
+      tags:
+      - executors
+  /executors/by-image:
+    get:
+      operationId: getExecutorsByImageInternalName
+      parameters:
+      - description: Internal name of the image
+        explode: true
+        in: query
+        name: internalName
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ExecutorImageDto'
+                type: array
+          description: Executors found for the image
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get executors by image internal name
+      tags:
+      - executors
+  /toolbox/{sandboxId}/toolbox/project-dir:
+    get:
+      operationId: getProjectDir
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDirResponse'
+          description: Project directory retrieved successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get sandbox project dir
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/files:
+    delete:
+      description: Delete file inside sandbox
+      operationId: deleteFile
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: path
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          description: File deleted successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Delete file
+      tags:
+      - toolbox
+    get:
+      operationId: listFiles
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: path
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/FileInfo'
+                type: array
+          description: Files listed successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: List files
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/files/download:
+    get:
+      description: Download file from sandbox
+      operationId: downloadFile
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: path
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                format: binary
+                type: string
+          description: File downloaded successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Download file
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/files/find:
+    get:
+      description: Search for text/pattern inside sandbox files
+      operationId: findInFiles
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: path
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: pattern
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Match'
+                type: array
+          description: Search completed successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Search for text/pattern in files
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/files/folder:
+    post:
+      description: Create folder inside sandbox
+      operationId: createFolder
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: path
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: mode
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          description: Folder created successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Create folder
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/files/info:
+    get:
+      description: Get file info inside sandbox
+      operationId: getFileInfo
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: path
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileInfo'
+          description: File info retrieved successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get file info
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/files/move:
+    post:
+      description: Move file inside sandbox
+      operationId: moveFile
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: source
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: destination
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          description: File moved successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Move file
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/files/permissions:
+    post:
+      description: Set file owner/group/permissions inside sandbox
+      operationId: setFilePermissions
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: path
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: owner
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: group
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: mode
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          description: File permissions updated successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Set file permissions
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/files/replace:
+    post:
+      description: Replace text/pattern in multiple files inside sandbox
+      operationId: replaceInFiles
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplaceRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ReplaceResult'
+                type: array
+          description: Text replaced successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Replace in files
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/files/search:
+    get:
+      description: Search for files inside sandbox
+      operationId: searchFiles
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: path
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: pattern
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchFilesResponse'
+          description: Search completed successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Search files
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/files/bulk-upload:
+    post:
+      description: Upload multiple files inside sandbox
+      operationId: uploadFiles
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              items:
+                $ref: '#/components/schemas/UploadFile'
+              type: array
+        required: true
+      responses:
+        "200":
+          description: Files uploaded successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Upload multiple files
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/git/add:
+    post:
+      description: Add files to git commit
+      operationId: gitAddFiles
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GitAddRequest'
+        required: true
+      responses:
+        "200":
+          description: Files added to git successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Add files
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/git/branches:
+    delete:
+      description: Delete branch on git repository
+      operationId: gitDeleteBranch
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GitDeleteBranchRequest'
+        required: true
+      responses:
+        "200":
+          description: Branch deleted successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Delete branch
+      tags:
+      - toolbox
+    get:
+      description: Get branch list from git repository
+      operationId: gitListBranches
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: path
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListBranchResponse'
+          description: Branch list retrieved successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get branch list
+      tags:
+      - toolbox
+    post:
+      description: Create branch on git repository
+      operationId: gitCreateBranch
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GitBranchRequest'
+        required: true
+      responses:
+        "200":
+          description: Branch created successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Create branch
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/git/clone:
+    post:
+      description: Clone git repository
+      operationId: gitCloneRepository
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GitCloneRequest'
+        required: true
+      responses:
+        "200":
+          description: Repository cloned successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Clone repository
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/git/commit:
+    post:
+      description: Commit changes to git repository
+      operationId: gitCommitChanges
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GitCommitRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GitCommitResponse'
+          description: Changes committed successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Commit changes
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/git/history:
+    get:
+      description: Get commit history from git repository
+      operationId: gitGetHistory
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: path
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/GitCommitInfo'
+                type: array
+          description: Commit history retrieved successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get commit history
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/git/pull:
+    post:
+      description: Pull changes from remote
+      operationId: gitPullChanges
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GitRepoRequest'
+        required: true
+      responses:
+        "200":
+          description: Changes pulled successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Pull changes
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/git/push:
+    post:
+      description: Push changes to remote
+      operationId: gitPushChanges
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GitRepoRequest'
+        required: true
+      responses:
+        "200":
+          description: Changes pushed successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Push changes
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/git/checkout:
+    post:
+      description: Checkout branch or commit in git repository
+      operationId: gitCheckoutBranch
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GitCheckoutRequest'
+        required: true
+      responses:
+        "200":
+          description: Branch checked out successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Checkout branch
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/git/status:
+    get:
+      description: Get status from git repository
+      operationId: gitGetStatus
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: path
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GitStatus'
+          description: Git status retrieved successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get git status
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/process/execute:
+    post:
+      description: Execute command synchronously inside sandbox
+      operationId: executeCommand
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExecuteRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecuteResponse'
+          description: Command executed successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Execute command
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/process/session:
+    get:
+      description: List all active sessions in the sandbox
+      operationId: listSessions
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Session'
+                type: array
+          description: Sessions retrieved successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: List sessions
+      tags:
+      - toolbox
+    post:
+      description: Create a new session in the sandbox
+      operationId: createSession
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSessionRequest'
+        required: true
+      responses:
+        "200":
+          description: ""
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Create session
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/process/session/{sessionId}:
+    delete:
+      description: Delete a specific session
+      operationId: deleteSession
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sessionId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Session deleted successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Delete session
+      tags:
+      - toolbox
+    get:
+      description: Get session by ID
+      operationId: getSession
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sessionId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+          description: Session retrieved successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get session
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/process/session/{sessionId}/exec:
+    post:
+      description: Execute a command in a specific session
+      operationId: executeSessionCommand
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sessionId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionExecuteRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionExecuteResponse'
+          description: Command executed successfully
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionExecuteResponse'
+          description: Command accepted and is being processed
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Execute command in session
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/process/session/{sessionId}/command/{commandId}:
+    get:
+      description: Get session command by ID
+      operationId: getSessionCommand
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sessionId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: commandId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Command'
+          description: Session command retrieved successfully
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get session command
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/process/session/{sessionId}/command/{commandId}/logs:
+    get:
+      description: Get logs for a specific command in a session
+      operationId: getSessionCommandLogs
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sessionId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: commandId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: follow
+        required: false
+        schema:
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Command log stream
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get command logs
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/lsp/completions:
+    post:
+      description: The Completion request is sent from the client to the server to
+        compute completion items at a given cursor position.
+      operationId: LspCompletions
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LspCompletionParams'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompletionList'
+          description: OK
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get Lsp Completions
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/lsp/did-close:
+    post:
+      description: The document close notification is sent from the client to the
+        server when the document got closed in the client.
+      operationId: LspDidClose
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LspDocumentRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Call Lsp DidClose
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/lsp/did-open:
+    post:
+      description: The document open notification is sent from the client to the server
+        to signal newly opened text documents.
+      operationId: LspDidOpen
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LspDocumentRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Call Lsp DidOpen
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/lsp/document-symbols:
+    get:
+      description: The document symbol request is sent from the client to the server.
+      operationId: LspDocumentSymbols
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: languageId
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: pathToProject
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: uri
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/LspSymbol'
+                type: array
+          description: OK
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Call Lsp DocumentSymbols
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/lsp/start:
+    post:
+      description: Start Lsp server process inside sandbox project
+      operationId: LspStart
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LspServerRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Start Lsp server
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/lsp/stop:
+    post:
+      description: Stop Lsp server process inside sandbox project
+      operationId: LspStop
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LspServerRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Stop Lsp server
+      tags:
+      - toolbox
+  /toolbox/{sandboxId}/toolbox/lsp/workspace-symbols:
+    get:
+      description: The workspace symbol request is sent from the client to the server
+        to list project-wide symbols matching the query string.
+      operationId: LspWorkspaceSymbols
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: languageId
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: pathToProject
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: query
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/LspSymbol'
+                type: array
+          description: OK
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Call Lsp WorkspaceSymbols
+      tags:
+      - toolbox
+  /images:
+    get:
+      operationId: getAllImages
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Number of items per page
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          type: number
+        style: form
+      - description: Page number
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          type: number
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedImagesDto'
+          description: List of all images with pagination
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: List all images
+      tags:
+      - images
+    post:
+      operationId: createImage
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateImage'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageDto'
+          description: The image has been successfully created.
+        "400":
+          description: Bad request - Images with tag ":latest" are not allowed
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Create a new image
+      tags:
+      - images
+  /images/{id}:
+    delete:
+      operationId: removeImage
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Image ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Image has been deleted
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Delete image
+      tags:
+      - images
+    get:
+      operationId: getImage
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Image ID or name
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageDto'
+          description: The image
+        "404":
+          description: Image not found
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get image by ID or name
+      tags:
+      - images
+  /images/{id}/toggle:
+    patch:
+      operationId: toggleImageState
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Image ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ToggleState'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageDto'
+          description: Image state has been toggled
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Toggle image state
+      tags:
+      - images
+  /images/{id}/general:
+    patch:
+      operationId: setImageGeneralStatus
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Image ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetImageGeneralStatusDto'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageDto'
+          description: Image general status has been set
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Set image general status
+      tags:
+      - images
+  /images/{id}/build-logs:
+    get:
+      operationId: getImageBuildLogs
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Image ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Whether to follow the logs stream
+        explode: true
+        in: query
+        name: follow
+        required: false
+        schema:
+          type: boolean
+        style: form
+      responses:
+        "200":
+          description: ""
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get image build logs
+      tags:
+      - images
+  /images/{id}/activate:
+    post:
+      operationId: activateImage
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Image ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageDto'
+          description: The image has been successfully activated.
+        "400":
+          description: "Bad request - Image is already active, not in inactive state,\
+            \ or has associated image executors"
+        "404":
+          description: Image not found
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Activate a image
+      tags:
+      - images
+  /preview/{sandboxId}/public:
+    get:
+      operationId: isSandboxPublic
+      parameters:
+      - description: ID of the sandbox
+        explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: boolean
+          description: Public status of the sandbox
+      summary: Check if sandbox is public
+      tags:
+      - preview
+  /preview/{sandboxId}/validate/{authToken}:
+    get:
+      operationId: isValidAuthToken
+      parameters:
+      - description: ID of the sandbox
+        explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Auth token of the sandbox
+        explode: false
+        in: path
+        name: authToken
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: boolean
+          description: Sandbox auth token validation status
+      summary: Check if sandbox auth token is valid
+      tags:
+      - preview
+  /preview/{sandboxId}/access:
+    get:
+      operationId: hasSandboxAccess
+      parameters:
+      - explode: false
+        in: path
+        name: sandboxId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: ""
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Check if user has access to the sandbox
+      tags:
+      - preview
+  /buckets:
+    get:
+      operationId: listBuckets
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Include deleted buckets in the response
+        explode: true
+        in: query
+        name: includeDeleted
+        required: false
+        schema:
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/BucketDto'
+                type: array
+          description: List of all buckets
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: List all buckets
+      tags:
+      - buckets
+    post:
+      operationId: createBucket
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBucket'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BucketDto'
+          description: The bucket has been successfully created.
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Create a new bucket
+      tags:
+      - buckets
+  /buckets/{bucketId}:
+    delete:
+      operationId: deleteBucket
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: ID of the bucket
+        explode: false
+        in: path
+        name: bucketId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Bucket has been marked for deletion
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Delete bucket
+      tags:
+      - buckets
+    get:
+      operationId: getBucket
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: ID of the bucket
+        explode: false
+        in: path
+        name: bucketId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BucketDto'
+          description: Bucket details
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get bucket details
+      tags:
+      - buckets
+  /buckets/by-name/{name}:
+    get:
+      operationId: getBucketByName
+      parameters:
+      - description: Use with JWT to specify the organization ID
+        explode: false
+        in: header
+        name: X-Snapflow-Organization-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      - description: Name of the bucket
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BucketDto'
+          description: Bucket details
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get bucket details by name
+      tags:
+      - buckets
+components:
+  schemas:
+    User:
+      example:
+        name: name
+        id: id
+        email: email
+      properties:
+        id:
+          description: User ID
+          type: string
+        name:
+          description: User name
+          type: string
+        email:
+          description: User email
+          type: string
+      required:
+      - email
+      - id
+      - name
+      type: object
+    CreateOrganizationQuota:
+      example:
+        totalCpuQuota: 0.8008281904610115
+        maxCpuPerSandbox: 5.962133916683182
+        imageQuota: 7.061401241503109
+        maxDiskPerSandbox: 2.3021358869347655
+        maxMemoryPerSandbox: 5.637376656633329
+        maxImageSize: 9.301444243932576
+        totalMemoryQuota: 6.027456183070403
+        bucketQuota: 3.616076749251911
+        totalDiskQuota: 1.4658129805029452
+      properties:
+        totalCpuQuota:
+          type: number
+        totalMemoryQuota:
+          type: number
+        totalDiskQuota:
+          type: number
+        maxCpuPerSandbox:
+          type: number
+        maxMemoryPerSandbox:
+          type: number
+        maxDiskPerSandbox:
+          type: number
+        imageQuota:
+          type: number
+        maxImageSize:
+          type: number
+        bucketQuota:
+          type: number
+      type: object
+    CreateUser:
+      example:
+        emailVerified: true
+        role: admin
+        name: name
+        id: id
+        personalOrganizationQuota:
+          totalCpuQuota: 0.8008281904610115
+          maxCpuPerSandbox: 5.962133916683182
+          imageQuota: 7.061401241503109
+          maxDiskPerSandbox: 2.3021358869347655
+          maxMemoryPerSandbox: 5.637376656633329
+          maxImageSize: 9.301444243932576
+          totalMemoryQuota: 6.027456183070403
+          bucketQuota: 3.616076749251911
+          totalDiskQuota: 1.4658129805029452
+        email: email
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        emailVerified:
+          type: boolean
+        role:
+          enum:
+          - admin
+          - user
+          type: string
+        personalOrganizationQuota:
+          $ref: '#/components/schemas/CreateOrganizationQuota'
+      required:
+      - id
+      - name
+      type: object
+    CreateApiKey:
+      example:
+        permissions:
+        - write:registries
+        - write:registries
+        name: Test API Key
+        expiresAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        name:
+          description: The name of the API key
+          example: Test API Key
+          type: string
+        permissions:
+          description: The list of organization resource permissions assigned to the
+            API key
+          items:
+            enum:
+            - write:registries
+            - delete:registries
+            - write:images
+            - delete:images
+            - write:sandboxes
+            - delete:sandboxes
+            - read:buckets
+            - write:buckets
+            - delete:buckets
+            type: string
+          type: array
+        expiresAt:
+          description: When the API key is set to expire
+          format: date-time
+          nullable: true
+          type: string
+      required:
+      - name
+      - permissions
+      type: object
+    ApiKeyResponse:
+      example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        permissions:
+        - write:registries
+        - write:registries
+        name: Test API Key
+        value: snapflow_1234567890abcdef
+        expiresAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        name:
+          description: The name of the API key
+          example: Test API Key
+          type: string
+        value:
+          description: The value of the API key
+          example: snapflow_1234567890abcdef
+          type: string
+        permissions:
+          description: List of permissions given to the API key
+          items:
+            enum:
+            - write:registries
+            - delete:registries
+            - write:images
+            - delete:images
+            - write:sandboxes
+            - delete:sandboxes
+            - read:buckets
+            - write:buckets
+            - delete:buckets
+            type: string
+          type: array
+        createdAt:
+          description: When the API key was made
+          format: date-time
+          type: string
+        expiresAt:
+          description: When the API key is set to expire
+          format: date-time
+          nullable: true
+          type: string
+      required:
+      - createdAt
+      - expiresAt
+      - name
+      - permissions
+      - value
+      type: object
+    ApiKeyList:
+      example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        lastUsedAt: 2000-01-23T04:56:07.000+00:00
+        permissions:
+        - write:registries
+        - write:registries
+        name: Test API Key
+        value: snapflow_************************
+        expiresAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        name:
+          description: The name of the API key
+          example: Test API Key
+          type: string
+        value:
+          description: The hidden API key value
+          example: snapflow_************************
+          type: string
+        permissions:
+          description: List of permissions given to the API key
+          items:
+            enum:
+            - write:registries
+            - delete:registries
+            - write:images
+            - delete:images
+            - write:sandboxes
+            - delete:sandboxes
+            - read:buckets
+            - write:buckets
+            - delete:buckets
+            type: string
+          type: array
+        createdAt:
+          description: When the API key was made
+          format: date-time
+          type: string
+        expiresAt:
+          description: When the API key is set to expire
+          format: date-time
+          nullable: true
+          type: string
+        lastUsedAt:
+          description: When the latest request was made using the API key
+          format: date-time
+          nullable: true
+          type: string
+      required:
+      - createdAt
+      - expiresAt
+      - lastUsedAt
+      - name
+      - permissions
+      - value
+      type: object
+    OrganizationRole:
+      example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        permissions:
+        - write:registries
+        - write:registries
+        name: name
+        isGlobal: true
+        description: description
+        id: id
+        updatedAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          description: Role ID
+          type: string
+        name:
+          description: Role name
+          type: string
+        description:
+          description: Role description
+          type: string
+        permissions:
+          description: Roles assigned to the user
+          items:
+            enum:
+            - write:registries
+            - delete:registries
+            - write:images
+            - delete:images
+            - write:sandboxes
+            - delete:sandboxes
+            - read:buckets
+            - write:buckets
+            - delete:buckets
+            type: string
+          type: array
+        isGlobal:
+          description: Global role flag
+          type: boolean
+        createdAt:
+          description: Creation timestamp
+          format: date-time
+          type: string
+        updatedAt:
+          description: Last update timestamp
+          format: date-time
+          type: string
+      required:
+      - createdAt
+      - description
+      - id
+      - isGlobal
+      - name
+      - permissions
+      - updatedAt
+      type: object
+    OrganizationInvitation:
+      example:
+        organizationId: organizationId
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        invitedBy: invitedBy
+        role: owner
+        organizationName: organizationName
+        assignedRoles:
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          permissions:
+          - write:registries
+          - write:registries
+          name: name
+          isGlobal: true
+          description: description
+          id: id
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          permissions:
+          - write:registries
+          - write:registries
+          name: name
+          isGlobal: true
+          description: description
+          id: id
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+        id: id
+        email: email
+        expiresAt: 2000-01-23T04:56:07.000+00:00
+        status: pending
+        updatedAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          description: Invitation ID
+          type: string
+        email:
+          description: Email address of the user being invited
+          type: string
+        invitedBy:
+          description: Email address of the inviter
+          type: string
+        organizationId:
+          description: Organization ID
+          type: string
+        organizationName:
+          description: Organization name
+          type: string
+        expiresAt:
+          description: Expiration date of the invitation
+          format: date-time
+          type: string
+        status:
+          description: Invitation status
+          enum:
+          - pending
+          - accepted
+          - declined
+          - cancelled
+          type: string
+        role:
+          description: Member role
+          enum:
+          - owner
+          - member
+          type: string
+        assignedRoles:
+          description: Assigned roles
+          items:
+            $ref: '#/components/schemas/OrganizationRole'
+          type: array
+        createdAt:
+          description: Creation timestamp
+          format: date-time
+          type: string
+        updatedAt:
+          description: Last update timestamp
+          format: date-time
+          type: string
+      required:
+      - assignedRoles
+      - createdAt
+      - email
+      - expiresAt
+      - id
+      - invitedBy
+      - organizationId
+      - organizationName
+      - role
+      - status
+      - updatedAt
+      type: object
+    CreateOrganization:
+      example:
+        name: Example organization
+      properties:
+        name:
+          description: Name of the organization
+          example: Example organization
+          type: string
+      required:
+      - name
+      type: object
+    Organization:
+      example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        suspendedUntil: 2000-01-23T04:56:07.000+00:00
+        createdBy: createdBy
+        suspensionReason: suspensionReason
+        suspendedAt: 2000-01-23T04:56:07.000+00:00
+        name: name
+        personal: true
+        id: id
+        suspended: true
+        updatedAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          description: Organization ID
+          type: string
+        name:
+          description: Organization name
+          type: string
+        createdBy:
+          description: The id of the organization creator
+          type: string
+        personal:
+          description: Personal organization flag
+          type: boolean
+        createdAt:
+          description: Creation timestamp
+          format: date-time
+          type: string
+        updatedAt:
+          description: Last update timestamp
+          format: date-time
+          type: string
+        suspended:
+          description: Suspended flag
+          type: boolean
+        suspendedAt:
+          description: Suspended at
+          format: date-time
+          type: string
+        suspensionReason:
+          description: Suspended reason
+          type: string
+        suspendedUntil:
+          description: Suspended until
+          format: date-time
+          type: string
+      required:
+      - createdAt
+      - createdBy
+      - id
+      - name
+      - personal
+      - suspended
+      - suspendedAt
+      - suspendedUntil
+      - suspensionReason
+      - updatedAt
+      type: object
+    UsageOverview:
+      example:
+        totalCpuQuota: 0.8008281904610115
+        currentDiskUsage: 7.061401241503109
+        currentMemoryUsage: 2.3021358869347655
+        currentCpuUsage: 5.637376656633329
+        totalGpuQuota: 6.027456183070403
+        totalMemoryQuota: 1.4658129805029452
+        totalDiskQuota: 5.962133916683182
+      properties:
+        totalCpuQuota:
+          type: number
+        totalGpuQuota:
+          type: number
+        totalMemoryQuota:
+          type: number
+        totalDiskQuota:
+          type: number
+        currentCpuUsage:
+          type: number
+        currentMemoryUsage:
+          type: number
+        currentDiskUsage:
+          type: number
+      required:
+      - currentCpuUsage
+      - currentDiskUsage
+      - currentMemoryUsage
+      - totalCpuQuota
+      - totalDiskQuota
+      - totalGpuQuota
+      - totalMemoryQuota
+      type: object
+    UpdateOrganizationQuota:
+      example:
+        totalCpuQuota: 0.8008281904610115
+        maxCpuPerSandbox: 5.962133916683182
+        imageQuota: 7.061401241503109
+        maxDiskPerSandbox: 2.3021358869347655
+        maxMemoryPerSandbox: 5.637376656633329
+        maxImageSize: 9.301444243932576
+        totalMemoryQuota: 6.027456183070403
+        bucketQuota: 3.616076749251911
+        totalDiskQuota: 1.4658129805029452
+      properties:
+        totalCpuQuota:
+          nullable: true
+          type: number
+        totalMemoryQuota:
+          nullable: true
+          type: number
+        totalDiskQuota:
+          nullable: true
+          type: number
+        maxCpuPerSandbox:
+          nullable: true
+          type: number
+        maxMemoryPerSandbox:
+          nullable: true
+          type: number
+        maxDiskPerSandbox:
+          nullable: true
+          type: number
+        imageQuota:
+          nullable: true
+          type: number
+        maxImageSize:
+          nullable: true
+          type: number
+        bucketQuota:
+          nullable: true
+          type: number
+      required:
+      - bucketQuota
+      - imageQuota
+      - maxCpuPerSandbox
+      - maxDiskPerSandbox
+      - maxImageSize
+      - maxMemoryPerSandbox
+      - totalCpuQuota
+      - totalDiskQuota
+      - totalMemoryQuota
+      type: object
+    OrganizationSuspension:
+      example:
+        reason: reason
+        until: 2000-01-23T04:56:07.000+00:00
+      properties:
+        reason:
+          description: Suspension reason
+          type: string
+        until:
+          description: Suspension until
+          format: date-time
+          type: string
+      required:
+      - reason
+      - until
+      type: object
+    CreateOrganizationRole:
+      example:
+        permissions:
+        - write:registries
+        - write:registries
+        name: Billing
+        description: Responsible for billing
+      properties:
+        name:
+          description: The name of the role
+          example: Billing
+          type: string
+        description:
+          description: The description of the role
+          example: Responsible for billing
+          type: string
+        permissions:
+          description: The list of permissions assigned to the created role
+          items:
+            enum:
+            - write:registries
+            - delete:registries
+            - write:images
+            - delete:images
+            - write:sandboxes
+            - delete:sandboxes
+            - read:buckets
+            - write:buckets
+            - delete:buckets
+            type: string
+          type: array
+      required:
+      - description
+      - name
+      - permissions
+      type: object
+    UpdateOrganizationRole:
+      example:
+        permissions:
+        - write:registries
+        - write:registries
+        name: Maintainer
+        description: Can manage all resources
+      properties:
+        name:
+          description: The name of the role
+          example: Maintainer
+          type: string
+        description:
+          description: The description of the role
+          example: Can manage all resources
+          type: string
+        permissions:
+          description: The list of permissions assigned to the role
+          items:
+            enum:
+            - write:registries
+            - delete:registries
+            - write:images
+            - delete:images
+            - write:sandboxes
+            - delete:sandboxes
+            - read:buckets
+            - write:buckets
+            - delete:buckets
+            type: string
+          type: array
+      required:
+      - description
+      - name
+      - permissions
+      type: object
+    OrganizationUser:
+      example:
+        organizationId: organizationId
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        role: owner
+        assignedRoles:
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          permissions:
+          - write:registries
+          - write:registries
+          name: name
+          isGlobal: true
+          description: description
+          id: id
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          permissions:
+          - write:registries
+          - write:registries
+          name: name
+          isGlobal: true
+          description: description
+          id: id
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+        name: name
+        userId: userId
+        email: email
+        updatedAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        userId:
+          description: User ID
+          type: string
+        organizationId:
+          description: Organization ID
+          type: string
+        name:
+          description: User name
+          type: string
+        email:
+          description: User email
+          type: string
+        role:
+          description: Member role
+          enum:
+          - owner
+          - member
+          type: string
+        assignedRoles:
+          description: Roles assigned to the user
+          items:
+            $ref: '#/components/schemas/OrganizationRole'
+          type: array
+        createdAt:
+          description: Creation timestamp
+          format: date-time
+          type: string
+        updatedAt:
+          description: Last update timestamp
+          format: date-time
+          type: string
+      required:
+      - assignedRoles
+      - createdAt
+      - email
+      - name
+      - organizationId
+      - role
+      - updatedAt
+      - userId
+      type: object
+    UpdateOrganizationMemberRole:
+      example:
+        role: owner
+      properties:
+        role:
+          description: Organization member role
+          enum:
+          - owner
+          - member
+          type: string
+      required:
+      - role
+      type: object
+    UpdateAssignedOrganizationRoles:
+      example:
+        roleIds:
+        - roleIds
+        - roleIds
+      properties:
+        roleIds:
+          description: List of role IDs
+          items:
+            type: string
+          type: array
+      required:
+      - roleIds
+      type: object
+    CreateOrganizationInvitation:
+      example:
+        role: member
+        assignedRoleIds:
+        - assignedRoleIds
+        - assignedRoleIds
+        email: test@mail.com
+        expiresAt: 2025-07-03T23:59:59Z
+      properties:
+        email:
+          description: Email address of the inviting user
+          example: test@mail.com
+          type: string
+        role:
+          default: member
+          description: Organization role of the inviting user
+          enum:
+          - owner
+          - member
+          type: string
+        assignedRoleIds:
+          default:
+          - 00000000-0000-0000-0000-000000000001
+          description: Role IDs of the inviting user
+          items:
+            type: string
+          type: array
+        expiresAt:
+          description: Expiration date of the invitation
+          example: 2025-07-03T23:59:59Z
+          format: date-time
+          type: string
+      required:
+      - assignedRoleIds
+      - email
+      - role
+      type: object
+    UpdateOrganizationInvitation:
+      example:
+        role: owner
+        assignedRoleIds:
+        - assignedRoleIds
+        - assignedRoleIds
+        expiresAt: 2025-07-03T23:59:59Z
+      properties:
+        role:
+          description: Organization member role
+          enum:
+          - owner
+          - member
+          type: string
+        assignedRoleIds:
+          description: Array of role IDs
+          items:
+            type: string
+          type: array
+        expiresAt:
+          description: Expiration date of the invitation
+          example: 2025-07-03T23:59:59Z
+          format: date-time
+          type: string
+      required:
+      - assignedRoleIds
+      - role
+      type: object
+    CreateDockerRegistry:
+      example:
+        registryType: internal
+        password: password
+        isDefault: false
+        name: name
+        project: project
+        url: url
+        username: username
+      properties:
+        name:
+          description: Registry name
+          type: string
+        url:
+          description: Registry URL
+          type: string
+        username:
+          description: Registry username
+          type: string
+        password:
+          description: Registry password
+          type: string
+        project:
+          description: Registry project
+          type: string
+        registryType:
+          default: internal
+          description: Registry type
+          enum:
+          - internal
+          - organization
+          - public
+          - transient
+          type: string
+        isDefault:
+          default: false
+          description: Set as default registry
+          type: boolean
+      required:
+      - isDefault
+      - name
+      - password
+      - project
+      - registryType
+      - url
+      - username
+      type: object
+    DockerRegistry:
+      example:
+        registryType: internal
+        createdAt: 2024-01-31T12:00:00Z
+        name: My Docker Hub
+        project: my-project
+        id: 123e4567-e89b-12d3-a456-426614174000
+        url: https://registry.hub.docker.com
+        username: username
+        updatedAt: 2024-01-31T12:00:00Z
+      properties:
+        id:
+          description: Registry ID
+          example: 123e4567-e89b-12d3-a456-426614174000
+          type: string
+        name:
+          description: Registry name
+          example: My Docker Hub
+          type: string
+        url:
+          description: Registry URL
+          example: https://registry.hub.docker.com
+          type: string
+        username:
+          description: Registry username
+          example: username
+          type: string
+        project:
+          description: Registry project
+          example: my-project
+          type: string
+        registryType:
+          description: Registry type
+          enum:
+          - internal
+          - organization
+          - public
+          - transient
+          example: internal
+          type: string
+        createdAt:
+          description: Creation timestamp
+          example: 2024-01-31T12:00:00Z
+          format: date-time
+          type: string
+        updatedAt:
+          description: Last update timestamp
+          example: 2024-01-31T12:00:00Z
+          format: date-time
+          type: string
+      required:
+      - createdAt
+      - id
+      - name
+      - project
+      - registryType
+      - updatedAt
+      - url
+      - username
+      type: object
+    RegistryPushAccessDto:
+      example:
+        registryUrl: registry.example.com
+        registryId: 123e4567-e89b-12d3-a456-426614174000
+        project: library
+        secret: eyJhbGciOiJIUzI1NiIs...
+        expiresAt: 2023-12-31T23:59:59Z
+        username: temp-user-123
+      properties:
+        username:
+          description: Temporary username for registry authentication
+          example: temp-user-123
+          type: string
+        secret:
+          description: Temporary secret for registry authentication
+          example: eyJhbGciOiJIUzI1NiIs...
+          type: string
+        registryUrl:
+          description: Registry URL
+          example: registry.example.com
+          type: string
+        registryId:
+          description: Registry ID
+          example: 123e4567-e89b-12d3-a456-426614174000
+          type: string
+        project:
+          description: Registry project ID
+          example: library
+          type: string
+        expiresAt:
+          description: Token expiration time in ISO format
+          example: 2023-12-31T23:59:59Z
+          type: string
+      required:
+      - expiresAt
+      - project
+      - registryId
+      - registryUrl
+      - secret
+      - username
+      type: object
+    UpdateDockerRegistry:
+      example:
+        password: password
+        name: name
+        username: username
+      properties:
+        name:
+          description: Registry name
+          type: string
+        username:
+          description: Registry username
+          type: string
+        password:
+          description: Registry password
+          type: string
+      required:
+      - name
+      - username
+      type: object
+    SandboxState:
+      description: The state of the sandbox
+      enum:
+      - creating
+      - restoring
+      - destroyed
+      - destroying
+      - started
+      - stopped
+      - starting
+      - stopping
+      - error
+      - build_failed
+      - pending_build
+      - building_image
+      - unknown
+      - pulling_image
+      - archiving
+      - archived
+      type: string
+    SandboxDesiredState:
+      description: The desired state of the sandbox
+      enum:
+      - destroyed
+      - started
+      - stopped
+      - resized
+      - archived
+      type: string
+    SandboxBucket:
+      example:
+        mountPath: /data
+        bucketId: bucket123
+      properties:
+        bucketId:
+          description: The ID of the bucket
+          example: bucket123
+          type: string
+        mountPath:
+          description: The mount path for the bucket
+          example: /data
+          type: string
+      required:
+      - bucketId
+      - mountPath
+      type: object
+    BuildInfo:
+      properties:
+        dockerfileContent:
+          description: The Dockerfile content used for the build
+          example: |-
+            FROM node:14
+            WORKDIR /app
+            COPY . .
+            RUN npm install
+            CMD ["npm", "start"]
+          type: string
+        contextHashes:
+          description: The context hashes used for the build
+          example:
+          - hash1
+          - hash2
+          items:
+            type: string
+          type: array
+        createdAt:
+          description: The creation timestamp
+          format: date-time
+          type: string
+        updatedAt:
+          description: The last update timestamp
+          format: date-time
+          type: string
+      required:
+      - createdAt
+      - updatedAt
+      type: object
+    Sandbox:
+      example:
+        memory: 4
+        buildInfo: ""
+        autoStopInterval: 30
+        organizationId: organization123
+        createdAt: 2024-10-01T12:00:00Z
+        public: false
+        errorReason: The sandbox is not running
+        id: sandbox123
+        state: creating
+        class: small
+        updatedAt: 2024-10-01T12:00:00Z
+        image: snapflowio/sandbox:latest
+        desiredState: destroyed
+        buckets:
+        - mountPath: /data
+          bucketId: bucket123
+        - mountPath: /data
+          bucketId: bucket123
+        cpu: 2
+        env:
+          NODE_ENV: production
+        gpu: 0
+        daemonVersion: 1.0.0
+        backupCreatedAt: 2024-10-01T12:00:00Z
+        labels:
+          snapflow.io/public: "true"
+        target: local
+        executorDomain: executor.example.com
+        disk: 10
+        backupState: None
+        user: snapflow
+        autoArchiveInterval: 10080
+      properties:
+        id:
+          description: The ID of the sandbox
+          example: sandbox123
+          type: string
+        organizationId:
+          description: The organization ID of the sandbox
+          example: organization123
+          type: string
+        image:
+          description: The image used for the sandbox
+          example: snapflowio/sandbox:latest
+          type: string
+        user:
+          description: The user associated with the project
+          example: snapflow
+          type: string
+        env:
+          additionalProperties:
+            type: string
+          description: Environment variables for the sandbox
+          example:
+            NODE_ENV: production
+          type: object
+        labels:
+          additionalProperties:
+            type: string
+          description: Labels for the sandbox
+          example:
+            snapflow.io/public: "true"
+          type: object
+        public:
+          description: Whether the sandbox http preview is public
+          example: false
+          type: boolean
+        target:
+          description: The target environment for the sandbox
+          example: local
+          type: string
+        cpu:
+          description: The CPU quota for the sandbox
+          example: 2
+          type: number
+        gpu:
+          description: The GPU quota for the sandbox
+          example: 0
+          type: number
+        memory:
+          description: The memory quota for the sandbox
+          example: 4
+          type: number
+        disk:
+          description: The disk quota for the sandbox
+          example: 10
+          type: number
+        state:
+          allOf:
+          - $ref: '#/components/schemas/SandboxState'
+          description: The state of the sandbox
+          example: creating
+        desiredState:
+          allOf:
+          - $ref: '#/components/schemas/SandboxDesiredState'
+          description: The desired state of the sandbox
+          example: destroyed
+        errorReason:
+          description: The error reason of the sandbox
+          example: The sandbox is not running
+          type: string
+        backupState:
+          description: The state of the backup
+          enum:
+          - None
+          - Pending
+          - InProgress
+          - Completed
+          - Error
+          example: None
+          type: string
+        backupCreatedAt:
+          description: The creation timestamp of the last backup
+          example: 2024-10-01T12:00:00Z
+          type: string
+        autoStopInterval:
+          description: Auto-stop interval in minutes (0 means disabled)
+          example: 30
+          type: number
+        autoArchiveInterval:
+          description: Auto-archive interval in minutes
+          example: 10080
+          type: number
+        executorDomain:
+          description: The domain name of the executor
+          example: executor.example.com
+          type: string
+        buckets:
+          description: Array of buckets attached to the sandbox
+          items:
+            $ref: '#/components/schemas/SandboxBucket'
+          type: array
+        buildInfo:
+          allOf:
+          - $ref: '#/components/schemas/BuildInfo'
+          description: Build information for the sandbox
+        createdAt:
+          description: The creation timestamp of the sandbox
+          example: 2024-10-01T12:00:00Z
+          type: string
+        updatedAt:
+          description: The last update timestamp of the sandbox
+          example: 2024-10-01T12:00:00Z
+          type: string
+        class:
+          deprecated: true
+          description: The class of the sandbox
+          enum:
+          - small
+          - medium
+          - large
+          example: small
+          type: string
+        daemonVersion:
+          description: The version of the daemon running in the sandbox
+          example: 1.0.0
+          type: string
+      required:
+      - cpu
+      - disk
+      - env
+      - gpu
+      - id
+      - labels
+      - memory
+      - organizationId
+      - public
+      - target
+      - user
+      type: object
+    CreateBuildInfo:
+      properties:
+        dockerfileContent:
+          description: The Dockerfile content used for the build
+          example: |-
+            FROM node:14
+            WORKDIR /app
+            COPY . .
+            RUN npm install
+            CMD ["npm", "start"]
+          type: string
+        contextHashes:
+          description: The context hashes used for the build
+          example:
+          - hash1
+          - hash2
+          items:
+            type: string
+          type: array
+      required:
+      - dockerfileContent
+      type: object
+    CreateSandbox:
+      example:
+        image: ubuntu-4vcpu-8ram-100gb
+        memory: 1
+        buildInfo: ""
+        buckets:
+        - mountPath: /data
+          bucketId: bucket123
+        - mountPath: /data
+          bucketId: bucket123
+        cpu: 2
+        env:
+          NODE_ENV: production
+        gpu: 1
+        autoStopInterval: 30
+        labels:
+          snapflow.io/public: "true"
+        target: eu
+        disk: 3
+        public: false
+        user: snapflow
+        class: small
+        autoArchiveInterval: 10080
+      properties:
+        image:
+          description: The ID or name of the image used for the sandbox
+          example: ubuntu-4vcpu-8ram-100gb
+          type: string
+        user:
+          description: The user associated with the project
+          example: snapflow
+          type: string
+        env:
+          additionalProperties:
+            type: string
+          description: Environment variables for the sandbox
+          example:
+            NODE_ENV: production
+          type: object
+        labels:
+          additionalProperties:
+            type: string
+          description: Labels for the sandbox
+          example:
+            snapflow.io/public: "true"
+          type: object
+        public:
+          description: Whether the sandbox http preview is publicly accessible
+          example: false
+          type: boolean
+        class:
+          description: The sandbox class type
+          enum:
+          - small
+          - medium
+          - large
+          example: small
+          type: string
+        target:
+          description: The target (region) where the sandbox will be created
+          enum:
+          - eu
+          - us
+          - asia
+          example: eu
+          type: string
+        cpu:
+          description: CPU cores allocated to the sandbox
+          example: 2
+          type: integer
+        gpu:
+          description: GPU units allocated to the sandbox
+          example: 1
+          type: integer
+        memory:
+          description: Memory allocated to the sandbox in GB
+          example: 1
+          type: integer
+        disk:
+          description: Disk space allocated to the sandbox in GB
+          example: 3
+          type: integer
+        autoStopInterval:
+          description: Auto-stop interval in minutes (0 means disabled)
+          example: 30
+          type: integer
+        autoArchiveInterval:
+          description: Auto-archive interval in minutes (0 means the maximum interval
+            will be used)
+          example: 10080
+          type: integer
+        buckets:
+          description: Array of buckets to attach to the sandbox
+          items:
+            $ref: '#/components/schemas/SandboxBucket'
+          type: array
+        buildInfo:
+          allOf:
+          - $ref: '#/components/schemas/CreateBuildInfo'
+          description: Build information for the sandbox
+      type: object
+    SandboxLabels:
+      example:
+        labels:
+          environment: dev
+          team: backend
+      properties:
+        labels:
+          additionalProperties:
+            type: string
+          description: Key-value pairs of labels
+          example:
+            environment: dev
+            team: backend
+          type: object
+      required:
+      - labels
+      type: object
+    PortPreviewUrl:
+      example:
+        url: https://123456-mysandbox.executor.com
+        legacyProxyUrl: https://3000-mysandbox.executor.com
+        token: ul67qtv-jl6wb9z5o3eii-ljqt9qed6l
+      properties:
+        url:
+          description: Preview url
+          example: https://123456-mysandbox.executor.com
+          type: string
+        token:
+          description: Access token
+          example: ul67qtv-jl6wb9z5o3eii-ljqt9qed6l
+          type: string
+        legacyProxyUrl:
+          description: Legacy preview url using executor domain
+          example: https://3000-mysandbox.executor.com
+          type: string
+      required:
+      - token
+      - url
+      type: object
+    CreateExecutor:
+      example:
+        disk: 1.4658129805029452
+        memory: 6.027456183070403
+        apiUrl: apiUrl
+        apiKey: apiKey
+        domain: domain
+        cpu: 0.8008281904610115
+        region: eu
+        gpu: 5.962133916683182
+        class: small
+        gpuType: gpuType
+        capacity: 5.637376656633329
+      properties:
+        domain:
+          type: string
+        apiUrl:
+          type: string
+        apiKey:
+          type: string
+        cpu:
+          type: number
+        memory:
+          type: number
+        disk:
+          type: number
+        gpu:
+          type: number
+        gpuType:
+          type: string
+        class:
+          enum:
+          - small
+          - medium
+          - large
+          example: small
+          type: string
+        capacity:
+          type: number
+        region:
+          enum:
+          - eu
+          - us
+          - asia
+          example: eu
+          type: string
+      required:
+      - apiKey
+      - apiUrl
+      - capacity
+      - class
+      - cpu
+      - disk
+      - domain
+      - gpu
+      - gpuType
+      - memory
+      - region
+      type: object
+    SandboxClass:
+      description: The class of the executor
+      enum:
+      - small
+      - medium
+      - large
+      type: string
+    ExecutorRegion:
+      description: The region of the executor
+      enum:
+      - eu
+      - us
+      - asia
+      type: string
+    ExecutorState:
+      description: The state of the executor
+      enum:
+      - initializing
+      - ready
+      - disabled
+      - decommissioned
+      - unresponsive
+      type: string
+    Executor:
+      example:
+        memory: 16
+        apiKey: api-key-123
+        cpu: 8
+        used: 2
+        gpu: 1
+        capacity: 10
+        createdAt: 2023-10-01T12:00:00Z
+        disk: 100
+        apiUrl: https://api.executor1.example.com
+        domain: executor1.example.com
+        id: executor123
+        state: initializing
+        region: eu
+        unschedulable: false
+        class: small
+        lastChecked: 2024-10-01T12:00:00Z
+        gpuType: gpuType
+        updatedAt: 2023-10-01T12:00:00Z
+      properties:
+        id:
+          description: The ID of the executor
+          example: executor123
+          type: string
+        domain:
+          description: The domain of the executor
+          example: executor1.example.com
+          type: string
+        apiUrl:
+          description: The API URL of the executor
+          example: https://api.executor1.example.com
+          type: string
+        apiKey:
+          description: The API key for the executor
+          example: api-key-123
+          type: string
+        cpu:
+          description: The CPU capacity of the executor
+          example: 8
+          type: number
+        memory:
+          description: The memory capacity of the executor in GB
+          example: 16
+          type: number
+        disk:
+          description: The disk capacity of the executor in GB
+          example: 100
+          type: number
+        gpu:
+          description: The GPU capacity of the executor
+          example: 1
+          type: number
+        gpuType:
+          description: The type of GPU
+          type: string
+        class:
+          allOf:
+          - $ref: '#/components/schemas/SandboxClass'
+          description: The class of the executor
+          example: small
+        used:
+          description: The current usage of the executor
+          example: 2
+          type: number
+        capacity:
+          description: The capacity of the executor
+          example: 10
+          type: number
+        region:
+          allOf:
+          - $ref: '#/components/schemas/ExecutorRegion'
+          description: The region of the executor
+          example: eu
+        state:
+          allOf:
+          - $ref: '#/components/schemas/ExecutorState'
+          description: The state of the executor
+          example: initializing
+        lastChecked:
+          description: The last time the executor was checked
+          example: 2024-10-01T12:00:00Z
+          type: string
+        unschedulable:
+          description: Whether the executor is unschedulable
+          example: false
+          type: boolean
+        createdAt:
+          description: The creation timestamp of the executor
+          example: 2023-10-01T12:00:00Z
+          type: string
+        updatedAt:
+          description: The last update timestamp of the executor
+          example: 2023-10-01T12:00:00Z
+          type: string
+      required:
+      - apiKey
+      - apiUrl
+      - capacity
+      - class
+      - cpu
+      - createdAt
+      - disk
+      - domain
+      - gpu
+      - gpuType
+      - id
+      - memory
+      - region
+      - state
+      - unschedulable
+      - updatedAt
+      - used
+      type: object
+    ExecutorImageDto:
+      example:
+        executorDomain: executor.example.com
+        executorId: 123e4567-e89b-12d3-a456-426614174000
+        executorImageId: 123e4567-e89b-12d3-a456-426614174000
+      properties:
+        executorImageId:
+          description: Executor image ID
+          example: 123e4567-e89b-12d3-a456-426614174000
+          type: string
+        executorId:
+          description: Executor ID
+          example: 123e4567-e89b-12d3-a456-426614174000
+          type: string
+        executorDomain:
+          description: Executor domain
+          example: executor.example.com
+          type: string
+      required:
+      - executorDomain
+      - executorId
+      - executorImageId
+      type: object
+    ProjectDirResponse:
+      example:
+        dir: dir
+      properties:
+        dir:
+          type: string
+      type: object
+    FileInfo:
+      example:
+        mode: mode
+        owner: owner
+        size: 0.8008281904610115
+        modTime: modTime
+        permissions: permissions
+        name: name
+        isDir: true
+        group: group
+      properties:
+        name:
+          type: string
+        isDir:
+          type: boolean
+        size:
+          type: number
+        modTime:
+          type: string
+        mode:
+          type: string
+        permissions:
+          type: string
+        owner:
+          type: string
+        group:
+          type: string
+      required:
+      - group
+      - isDir
+      - modTime
+      - mode
+      - name
+      - owner
+      - permissions
+      - size
+      type: object
+    Match:
+      example:
+        file: file
+        line: 0.8008281904610115
+        content: content
+      properties:
+        file:
+          type: string
+        line:
+          type: number
+        content:
+          type: string
+      required:
+      - content
+      - file
+      - line
+      type: object
+    ReplaceRequest:
+      example:
+        newValue: newValue
+        pattern: pattern
+        files:
+        - files
+        - files
+      properties:
+        files:
+          items:
+            type: string
+          type: array
+        pattern:
+          type: string
+        newValue:
+          type: string
+      required:
+      - files
+      - newValue
+      - pattern
+      type: object
+    ReplaceResult:
+      example:
+        file: file
+        success: true
+        error: error
+      properties:
+        file:
+          type: string
+        success:
+          type: boolean
+        error:
+          type: string
+      type: object
+    SearchFilesResponse:
+      example:
+        files:
+        - files
+        - files
+      properties:
+        files:
+          items:
+            type: string
+          type: array
+      required:
+      - files
+      type: object
+    UploadFile:
+      properties:
+        file:
+          format: binary
+          type: string
+        path:
+          type: string
+      required:
+      - file
+      - path
+      type: object
+    GitAddRequest:
+      example:
+        path: path
+        files:
+        - files
+        - files
+      properties:
+        path:
+          type: string
+        files:
+          description: files to add (use . for all files)
+          items:
+            type: string
+          type: array
+      required:
+      - files
+      - path
+      type: object
+    ListBranchResponse:
+      example:
+        branches:
+        - branches
+        - branches
+      properties:
+        branches:
+          items:
+            type: string
+          type: array
+      required:
+      - branches
+      type: object
+    GitBranchRequest:
+      example:
+        path: path
+        name: name
+      properties:
+        path:
+          type: string
+        name:
+          type: string
+      required:
+      - name
+      - path
+      type: object
+    GitDeleteBranchRequest:
+      example:
+        path: path
+        name: name
+      properties:
+        path:
+          type: string
+        name:
+          type: string
+      required:
+      - name
+      - path
+      type: object
+    GitCloneRequest:
+      example:
+        path: path
+        password: password
+        branch: branch
+        commit_id: commit_id
+        url: url
+        username: username
+      properties:
+        url:
+          type: string
+        path:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        branch:
+          type: string
+        commit_id:
+          type: string
+      required:
+      - path
+      - url
+      type: object
+    GitCommitRequest:
+      example:
+        path: path
+        author: author
+        message: message
+        email: email
+      properties:
+        path:
+          type: string
+        message:
+          type: string
+        author:
+          type: string
+        email:
+          type: string
+      required:
+      - author
+      - email
+      - message
+      - path
+      type: object
+    GitCommitResponse:
+      example:
+        hash: hash
+      properties:
+        hash:
+          type: string
+      required:
+      - hash
+      type: object
+    GitCommitInfo:
+      example:
+        author: author
+        message: message
+        hash: hash
+        email: email
+        timestamp: timestamp
+      properties:
+        hash:
+          type: string
+        message:
+          type: string
+        author:
+          type: string
+        email:
+          type: string
+        timestamp:
+          type: string
+      required:
+      - author
+      - email
+      - hash
+      - message
+      - timestamp
+      type: object
+    GitRepoRequest:
+      example:
+        path: path
+        password: password
+        username: username
+      properties:
+        path:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+      required:
+      - path
+      type: object
+    GitCheckoutRequest:
+      example:
+        path: path
+        branch: branch
+      properties:
+        path:
+          type: string
+        branch:
+          type: string
+      required:
+      - branch
+      - path
+      type: object
+    FileStatus:
+      example:
+        extra: extra
+        name: name
+        staging: staging
+        worktree: worktree
+      properties:
+        name:
+          type: string
+        staging:
+          type: string
+        worktree:
+          type: string
+        extra:
+          type: string
+      required:
+      - extra
+      - name
+      - staging
+      - worktree
+      type: object
+    GitStatus:
+      example:
+        behind: 6.027456183070403
+        fileStatus:
+        - extra: extra
+          name: name
+          staging: staging
+          worktree: worktree
+        - extra: extra
+          name: name
+          staging: staging
+          worktree: worktree
+        ahead: 0.8008281904610115
+        branchPublished: true
+        currentBranch: currentBranch
+      properties:
+        currentBranch:
+          type: string
+        fileStatus:
+          items:
+            $ref: '#/components/schemas/FileStatus'
+          type: array
+        ahead:
+          type: number
+        behind:
+          type: number
+        branchPublished:
+          type: boolean
+      required:
+      - currentBranch
+      - fileStatus
+      type: object
+    ExecuteRequest:
+      example:
+        cwd: cwd
+        command: command
+        timeout: 0.8008281904610115
+      properties:
+        command:
+          type: string
+        cwd:
+          description: Current working directory
+          type: string
+        timeout:
+          description: "Timeout in seconds, defaults to 10 seconds"
+          type: number
+      required:
+      - command
+      type: object
+    ExecuteResponse:
+      example:
+        result: Command output here
+        exitCode: 0
+      properties:
+        exitCode:
+          description: Exit code
+          example: 0
+          type: number
+        result:
+          description: Command output
+          example: Command output here
+          type: string
+      required:
+      - exitCode
+      - result
+      type: object
+    Command:
+      example:
+        exitCode: 0
+        id: cmd-123
+        command: ls -la
+      properties:
+        id:
+          description: The ID of the command
+          example: cmd-123
+          type: string
+        command:
+          description: The command that was executed
+          example: ls -la
+          type: string
+        exitCode:
+          description: The exit code of the command
+          example: 0
+          type: number
+      required:
+      - command
+      - id
+      type: object
+    Session:
+      example:
+        sessionId: session-123
+        commands:
+        - exitCode: 0
+          id: cmd-123
+          command: ls -la
+        - exitCode: 0
+          id: cmd-123
+          command: ls -la
+      properties:
+        sessionId:
+          description: The ID of the session
+          example: session-123
+          type: string
+        commands:
+          description: The list of commands executed in this session
+          items:
+            $ref: '#/components/schemas/Command'
+          nullable: true
+          type: array
+      required:
+      - commands
+      - sessionId
+      type: object
+    CreateSessionRequest:
+      example:
+        sessionId: session-123
+      properties:
+        sessionId:
+          description: The ID of the session
+          example: session-123
+          type: string
+      required:
+      - sessionId
+      type: object
+    SessionExecuteRequest:
+      example:
+        async: false
+        command: ls -la
+        runAsync: false
+      properties:
+        command:
+          description: The command to execute
+          example: ls -la
+          type: string
+        runAsync:
+          description: Whether to execute the command asynchronously
+          example: false
+          type: boolean
+        async:
+          deprecated: true
+          description: "Deprecated: Use runAsync instead. Whether to execute the command\
+            \ asynchronously"
+          example: false
+          type: boolean
+      required:
+      - command
+      type: object
+    SessionExecuteResponse:
+      example:
+        output: |-
+          total 20
+          drwxr-xr-x  4 user group  128 Mar 15 10:30 .
+        cmdId: cmd-123
+        exitCode: 0
+      properties:
+        cmdId:
+          description: The ID of the executed command
+          example: cmd-123
+          type: string
+        output:
+          description: The output of the executed command
+          example: |-
+            total 20
+            drwxr-xr-x  4 user group  128 Mar 15 10:30 .
+          type: string
+        exitCode:
+          description: The exit code of the executed command
+          example: 0
+          type: number
+      type: object
+    Position:
+      example:
+        character: 6.027456183070403
+        line: 0.8008281904610115
+      properties:
+        line:
+          type: number
+        character:
+          type: number
+      required:
+      - character
+      - line
+      type: object
+    CompletionContext:
+      example:
+        triggerCharacter: triggerCharacter
+        triggerKind: 1.4658129805029452
+      properties:
+        triggerKind:
+          type: number
+        triggerCharacter:
+          type: string
+      required:
+      - triggerKind
+      type: object
+    LspCompletionParams:
+      example:
+        pathToProject: pathToProject
+        languageId: languageId
+        context:
+          triggerCharacter: triggerCharacter
+          triggerKind: 1.4658129805029452
+        position:
+          character: 6.027456183070403
+          line: 0.8008281904610115
+        uri: uri
+      properties:
+        languageId:
+          description: Language identifier
+          type: string
+        pathToProject:
+          description: Path to the project
+          type: string
+        uri:
+          description: Document URI
+          type: string
+        position:
+          $ref: '#/components/schemas/Position'
+        context:
+          $ref: '#/components/schemas/CompletionContext'
+      required:
+      - languageId
+      - pathToProject
+      - position
+      - uri
+      type: object
+    CompletionItem:
+      example:
+        insertText: insertText
+        kind: 0.8008281904610115
+        sortText: sortText
+        documentation: "{}"
+        label: label
+        detail: detail
+        filterText: filterText
+      properties:
+        label:
+          type: string
+        kind:
+          type: number
+        detail:
+          type: string
+        documentation:
+          type: object
+        sortText:
+          type: string
+        filterText:
+          type: string
+        insertText:
+          type: string
+      required:
+      - label
+      type: object
+    CompletionList:
+      example:
+        items:
+        - insertText: insertText
+          kind: 0.8008281904610115
+          sortText: sortText
+          documentation: "{}"
+          label: label
+          detail: detail
+          filterText: filterText
+        - insertText: insertText
+          kind: 0.8008281904610115
+          sortText: sortText
+          documentation: "{}"
+          label: label
+          detail: detail
+          filterText: filterText
+        isIncomplete: true
+      properties:
+        isIncomplete:
+          type: boolean
+        items:
+          items:
+            $ref: '#/components/schemas/CompletionItem'
+          type: array
+      required:
+      - isIncomplete
+      - items
+      type: object
+    LspDocumentRequest:
+      example:
+        pathToProject: pathToProject
+        languageId: languageId
+        uri: uri
+      properties:
+        languageId:
+          description: Language identifier
+          type: string
+        pathToProject:
+          description: Path to the project
+          type: string
+        uri:
+          description: Document URI
+          type: string
+      required:
+      - languageId
+      - pathToProject
+      - uri
+      type: object
+    Range:
+      example:
+        start:
+          character: 6.027456183070403
+          line: 0.8008281904610115
+        end:
+          character: 6.027456183070403
+          line: 0.8008281904610115
+      properties:
+        start:
+          $ref: '#/components/schemas/Position'
+        end:
+          $ref: '#/components/schemas/Position'
+      required:
+      - end
+      - start
+      type: object
+    LspLocation:
+      example:
+        range:
+          start:
+            character: 6.027456183070403
+            line: 0.8008281904610115
+          end:
+            character: 6.027456183070403
+            line: 0.8008281904610115
+        uri: uri
+      properties:
+        range:
+          $ref: '#/components/schemas/Range'
+        uri:
+          type: string
+      required:
+      - range
+      - uri
+      type: object
+    LspSymbol:
+      example:
+        kind: 0.8008281904610115
+        name: name
+        location:
+          range:
+            start:
+              character: 6.027456183070403
+              line: 0.8008281904610115
+            end:
+              character: 6.027456183070403
+              line: 0.8008281904610115
+          uri: uri
+      properties:
+        kind:
+          type: number
+        location:
+          $ref: '#/components/schemas/LspLocation'
+        name:
+          type: string
+      required:
+      - kind
+      - location
+      - name
+      type: object
+    LspServerRequest:
+      example:
+        pathToProject: pathToProject
+        languageId: languageId
+      properties:
+        languageId:
+          description: Language identifier
+          type: string
+        pathToProject:
+          description: Path to the project
+          type: string
+      required:
+      - languageId
+      - pathToProject
+      type: object
+    CreateImage:
+      example:
+        general: true
+        disk: 3
+        imageName: ubuntu:22.04
+        memory: 1
+        buildInfo: ""
+        entrypoint: sleep infinity
+        name: ubuntu-4vcpu-8ram-100gb
+        cpu: 1
+        gpu: 0
+      properties:
+        name:
+          description: The name of the image
+          example: ubuntu-4vcpu-8ram-100gb
+          type: string
+        imageName:
+          description: The image name of the image
+          example: ubuntu:22.04
+          type: string
+        entrypoint:
+          description: The entrypoint command for the image
+          example: sleep infinity
+          items:
+            type: string
+          type: array
+        general:
+          description: Whether the image is general
+          type: boolean
+        cpu:
+          description: CPU cores allocated to the resulting sandbox
+          example: 1
+          type: integer
+        gpu:
+          description: GPU units allocated to the resulting sandbox
+          example: 0
+          type: integer
+        memory:
+          description: Memory allocated to the resulting sandbox in GB
+          example: 1
+          type: integer
+        disk:
+          description: Disk space allocated to the sandbox in GB
+          example: 3
+          type: integer
+        buildInfo:
+          allOf:
+          - $ref: '#/components/schemas/CreateBuildInfo'
+          description: Build information for the image
+      required:
+      - name
+      type: object
+    ImageState:
+      enum:
+      - build_pending
+      - building
+      - pending
+      - pulling
+      - pending_validation
+      - validating
+      - active
+      - inactive
+      - error
+      - build_failed
+      - removing
+      type: string
+    ImageDto:
+      example:
+        imageName: imageName
+        buildInfo: ""
+        cpu: 6.027456183070403
+        gpu: 1.4658129805029452
+        enabled: true
+        organizationId: organizationId
+        general: true
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        disk: 5.637376656633329
+        size: 0.8008281904610115
+        mem: 5.962133916683182
+        lastUsedAt: 2000-01-23T04:56:07.000+00:00
+        entrypoint:
+        - entrypoint
+        - entrypoint
+        errorReason: errorReason
+        name: name
+        id: id
+        state: ""
+        updatedAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        general:
+          type: boolean
+        name:
+          type: string
+        imageName:
+          type: string
+        enabled:
+          type: boolean
+        state:
+          allOf:
+          - $ref: '#/components/schemas/ImageState'
+        size:
+          nullable: true
+          type: number
+        entrypoint:
+          items:
+            type: string
+          nullable: true
+          type: array
+        cpu:
+          type: number
+        gpu:
+          type: number
+        mem:
+          type: number
+        disk:
+          type: number
+        errorReason:
+          nullable: true
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        lastUsedAt:
+          format: date-time
+          nullable: true
+          type: string
+        buildInfo:
+          allOf:
+          - $ref: '#/components/schemas/BuildInfo'
+          description: Build information for the image
+      required:
+      - cpu
+      - createdAt
+      - disk
+      - enabled
+      - entrypoint
+      - errorReason
+      - general
+      - gpu
+      - id
+      - lastUsedAt
+      - mem
+      - name
+      - size
+      - state
+      - updatedAt
+      type: object
+    ToggleState:
+      example:
+        enabled: true
+      properties:
+        enabled:
+          description: Enable or disable the image/tag
+          example: true
+          type: boolean
+      required:
+      - enabled
+      type: object
+    PaginatedImagesDto:
+      example:
+        total: 2.3021358869347655
+        totalPages: 9.301444243932576
+        page: 7.061401241503109
+        items:
+        - imageName: imageName
+          buildInfo: ""
+          cpu: 6.027456183070403
+          gpu: 1.4658129805029452
+          enabled: true
+          organizationId: organizationId
+          general: true
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          disk: 5.637376656633329
+          size: 0.8008281904610115
+          mem: 5.962133916683182
+          lastUsedAt: 2000-01-23T04:56:07.000+00:00
+          entrypoint:
+          - entrypoint
+          - entrypoint
+          errorReason: errorReason
+          name: name
+          id: id
+          state: ""
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+        - imageName: imageName
+          buildInfo: ""
+          cpu: 6.027456183070403
+          gpu: 1.4658129805029452
+          enabled: true
+          organizationId: organizationId
+          general: true
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          disk: 5.637376656633329
+          size: 0.8008281904610115
+          mem: 5.962133916683182
+          lastUsedAt: 2000-01-23T04:56:07.000+00:00
+          entrypoint:
+          - entrypoint
+          - entrypoint
+          errorReason: errorReason
+          name: name
+          id: id
+          state: ""
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/ImageDto'
+          type: array
+        total:
+          type: number
+        page:
+          type: number
+        totalPages:
+          type: number
+      required:
+      - items
+      - page
+      - total
+      - totalPages
+      type: object
+    SetImageGeneralStatusDto:
+      example:
+        general: true
+      properties:
+        general:
+          description: Whether the image is general
+          example: true
+          type: boolean
+      required:
+      - general
+      type: object
+    BucketState:
+      description: Bucket state
+      enum:
+      - creating
+      - ready
+      - pending_create
+      - pending_delete
+      - deleting
+      - deleted
+      - error
+      type: string
+    BucketDto:
+      example:
+        organizationId: 123e4567-e89b-12d3-a456-426614174000
+        createdAt: 2023-01-01T00:00:00.000Z
+        lastUsedAt: 2023-01-01T00:00:00.000Z
+        errorReason: Error processing bucket
+        name: my-bucket
+        id: vol-12345678
+        state: ready
+        updatedAt: 2023-01-01T00:00:00.000Z
+      properties:
+        id:
+          description: Bucket ID
+          example: vol-12345678
+          type: string
+        name:
+          description: Bucket name
+          example: my-bucket
+          type: string
+        organizationId:
+          description: Organization ID
+          example: 123e4567-e89b-12d3-a456-426614174000
+          type: string
+        state:
+          allOf:
+          - $ref: '#/components/schemas/BucketState'
+          description: Bucket state
+          example: ready
+        createdAt:
+          description: Creation timestamp
+          example: 2023-01-01T00:00:00.000Z
+          type: string
+        updatedAt:
+          description: Last update timestamp
+          example: 2023-01-01T00:00:00.000Z
+          type: string
+        lastUsedAt:
+          description: Last used timestamp
+          example: 2023-01-01T00:00:00.000Z
+          nullable: true
+          type: string
+        errorReason:
+          description: The error reason of the bucket
+          example: Error processing bucket
+          nullable: true
+          type: string
+      required:
+      - createdAt
+      - errorReason
+      - id
+      - name
+      - organizationId
+      - state
+      - updatedAt
+      type: object
+    CreateBucket:
+      example:
+        name: name
+      properties:
+        name:
+          type: string
+      required:
+      - name
+      type: object
+  securitySchemes:
+    bearer:
+      bearerFormat: JWT
+      description: API Key access
+      scheme: bearer
+      type: http

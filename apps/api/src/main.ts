@@ -2,7 +2,7 @@ import { ConsoleLogger, Logger, type LogLevel, ValidationPipe } from "@nestjs/co
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import type { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import { AppModule } from "./app.module";
+import { AppModule } from "./app/app.module";
 import { NotFoundExceptionFilter } from "./common/middleware/frontend.middleware";
 import { TypedConfigService } from "./config/typed-config.service";
 import { AllExceptionsFilter } from "./filters/all-exceptions.filter";
@@ -62,10 +62,7 @@ async function bootstrap() {
       initOAuth: {
         clientId: configService.get("oidc.clientId"),
         appName: "Snapflow",
-        scopes: ["openid", "profile", "email"],
-        additionalQueryStringParams: {
-          audience: configService.get("oidc.audience"),
-        },
+        scopes: ["open_id", "email", "profile"],
       },
     },
   });

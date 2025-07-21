@@ -25,16 +25,16 @@ func GetObjectStorageClient() (ObjectStorageClient, error) {
 		return instance, nil
 	}
 
-	runnerConfig, err := config.GetConfig()
+	executorConfig, err := config.GetConfig()
 	if err != nil {
 		return nil, err
 	}
 
-	endpoint := runnerConfig.AWSEndpointUrl
-	accessKeyId := runnerConfig.AWSAccessKeyId
-	secretKey := runnerConfig.AWSSecretAccessKey
-	bucketName := runnerConfig.AWSDefaultBucket
-	region := runnerConfig.AWSRegion
+	endpoint := executorConfig.AWSEndpointUrl
+	accessKeyId := executorConfig.AWSAccessKeyId
+	secretKey := executorConfig.AWSSecretAccessKey
+	bucketName := executorConfig.AWSDefaultBucket
+	region := executorConfig.AWSRegion
 
 	endpoint = strings.TrimPrefix(endpoint, "http://")
 	endpoint = strings.TrimPrefix(endpoint, "https://")

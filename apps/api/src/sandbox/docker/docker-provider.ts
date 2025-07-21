@@ -1,3 +1,5 @@
+import * as fsSync from "fs";
+import { promises as fs } from "fs";
 import path from "path";
 import { Inject, Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -11,8 +13,6 @@ export class DockerProvider implements OnModuleInit {
   public docker: Docker;
 
   private readonly logger = new Logger(DockerProvider.name);
-  private readonly SNAPFLOW_BINARY_PATH = path.join(process.cwd(), ".tmp", "binaries", "snapflow");
-  private readonly snapflowBinaryUrl: string;
   private readonly TERMINAL_BINARY_PATH = path.join(process.cwd(), ".tmp", "binaries", "terminal");
   private readonly terminalBinaryUrl: string;
 
@@ -29,17 +29,158 @@ export class DockerProvider implements OnModuleInit {
       this.docker = new Docker({ socketPath: "/var/run/docker.sock" });
     }
 
-    this.snapflowBinaryUrl = this.configService.get<string>("SNAPFLOW_BINARY_URL");
     this.terminalBinaryUrl = this.configService.get<string>("TERMINAL_BINARY_URL");
   }
 
   async onModuleInit() {
-    const binaryPromises = [];
+    const binaryPromises = [this.ensureTerminalBinary()];
 
     try {
       await Promise.all(binaryPromises);
     } catch (error) {
       this.logger.error("Failed to download binaries during initialization:", error);
+    }
+  }
+
+  private async ensureTerminalBinary(): Promise<void> {
+    this.logger.log("Starting terminal binary setup...");
+
+    try {
+      const binaryDir = path.dirname(this.TERMINAL_BINARY_PATH);
+      this.logger.debug("Creating directory:", binaryDir);
+      this.logger.debug("Expected binary path:", this.TERMINAL_BINARY_PATH);
+
+      await fs.mkdir(binaryDir, { recursive: true });
+
+      try {
+        const stats = await fs.stat(this.TERMINAL_BINARY_PATH);
+
+        if (stats.isFile()) {
+          this.logger.debug("Terminal binary already exists");
+          return;
+        }
+        if (stats.isDirectory()) {
+          this.logger.warn("Path exists but is a directory, not a file. Removing directory...");
+          await fs.rmdir(this.TERMINAL_BINARY_PATH, { recursive: true });
+          this.logger.debug("Directory removed, proceeding with download...");
+        }
+      } catch (error) {
+        this.logger.debug("Terminal binary not found, downloading...");
+      }
+
+      if (!this.terminalBinaryUrl) {
+        this.logger.warn(
+          "TERMINAL_BINARY_URL is not configured - terminal support will be disabled"
+        );
+        return;
+      }
+
+      this.logger.log(`Downloading terminal binary from ${this.terminalBinaryUrl}`);
+
+      let response: axios.AxiosResponse<any, any>;
+      try {
+        response = await axios({
+          method: "GET",
+          url: this.terminalBinaryUrl,
+          responseType: "stream",
+          timeout: 60000,
+          maxRedirects: 5,
+          validateStatus: (status) => status < 400,
+          headers: {
+            "User-Agent": "Snapflow-Docker-Provider/1.0",
+          },
+        });
+      } catch (downloadError) {
+        if (downloadError.response) {
+          this.logger.error(
+            `Download failed with status ${downloadError.response.status}: ${downloadError.response.statusText}`
+          );
+          this.logger.error(`Response headers:`, downloadError.response.headers);
+        } else if (downloadError.request) {
+          this.logger.error("Download failed - no response received:", downloadError.message);
+        } else {
+          this.logger.error("Download failed - request setup error:", downloadError.message);
+        }
+        throw downloadError;
+      }
+
+      this.logger.debug("Download response received, status:", response.status);
+
+      // Create a temporary file first
+      const tempPath = `${this.TERMINAL_BINARY_PATH}.tmp`;
+      const writer = fsSync.createWriteStream(tempPath);
+
+      // Track download progress
+      let downloadedBytes = 0;
+      const contentLength = Number.parseInt(response.headers["content-length"] || "0", 10);
+
+      response.data.on("data", (chunk: Buffer) => {
+        downloadedBytes += chunk.length;
+        if (contentLength > 0) {
+          const progress = Math.round((downloadedBytes / contentLength) * 100);
+          if (progress % 10 === 0) {
+            this.logger.debug(`Download progress: ${progress}%`);
+          }
+        }
+      });
+
+      response.data.pipe(writer);
+
+      await new Promise((resolve, reject) => {
+        writer.on("finish", () => {
+          this.logger.debug("File write completed");
+          resolve(undefined);
+        });
+        writer.on("error", (err) => {
+          this.logger.error("File write error:", err);
+          // Clean up temp file on error
+          fs.unlink(tempPath).catch(() => {});
+          reject(err);
+        });
+        response.data.on("error", (err) => {
+          this.logger.error("Download stream error:", err);
+          writer.destroy();
+          // Clean up temp file on error
+          fs.unlink(tempPath).catch(() => {});
+          reject(err);
+        });
+      });
+
+      // Verify the downloaded file
+      const tempStats = await fs.stat(tempPath);
+      if (tempStats.size === 0) {
+        await fs.unlink(tempPath);
+        throw new Error("Downloaded file is empty");
+      }
+
+      // Move temp file to final location
+      await fs.rename(tempPath, this.TERMINAL_BINARY_PATH);
+
+      // Make executable
+      await fs.chmod(this.TERMINAL_BINARY_PATH, 0o755);
+
+      // Verify the file was created successfully
+      const finalStats = await fs.stat(this.TERMINAL_BINARY_PATH);
+      this.logger.debug("Final file stats:", {
+        size: finalStats.size,
+        isFile: finalStats.isFile(),
+        mode: finalStats.mode.toString(8),
+      });
+
+      this.logger.log("Terminal binary downloaded and made executable");
+    } catch (error) {
+      this.logger.error("Failed to download terminal binary:", error);
+      // Don't throw - just log the error and continue without terminal support
+      this.logger.warn("Terminal support will be disabled for containers");
+    }
+  }
+
+  private async fileExists(filePath: string): Promise<boolean> {
+    try {
+      const stats = await fs.stat(filePath);
+      return stats.isFile();
+    } catch {
+      return false;
     }
   }
 
@@ -70,7 +211,7 @@ export class DockerProvider implements OnModuleInit {
       });
 
       const execTerminal = await container.exec({
-        Cmd: ["terminal", "-p", port.toString(), "-W", shell],
+        Cmd: ["/usr/local/bin/terminal", "-p", port.toString(), "-W", shell],
         AttachStdout: false,
         AttachStderr: false,
         Tty: true,
@@ -79,6 +220,8 @@ export class DockerProvider implements OnModuleInit {
       await execTerminal.start({
         Detach: true,
       });
+
+      this.logger.debug(`Terminal process started on port ${port} with shell ${shell}`);
     } catch (error) {
       this.logger.error("Error starting terminal process:", error);
     }
@@ -98,6 +241,16 @@ export class DockerProvider implements OnModuleInit {
     const isValidArch = await this.validateImageArchitecture(imageName);
     if (!isValidArch) throw new Error(`Image ${imageName} is not compatible with x64 architecture`);
 
+    const binds: string[] = [];
+    const terminalBinaryExists = await this.fileExists(this.TERMINAL_BINARY_PATH);
+
+    if (terminalBinaryExists) {
+      binds.push(`${this.TERMINAL_BINARY_PATH}:/usr/local/bin/terminal`);
+      this.logger.debug("Terminal binary will be mounted in container");
+    } else {
+      this.logger.debug("Terminal binary not available, container will not have terminal support");
+    }
+
     const container = await this.docker.createContainer({
       Image: imageName,
       Env: [
@@ -106,21 +259,15 @@ export class DockerProvider implements OnModuleInit {
         `SNAPFLOW_SANDBOX_IMAGE=${imageName}`,
       ],
       Entrypoint: entrypoint,
+      platform: "linux/amd64",
       HostConfig: {
-        Binds: [
-          ...(this.snapflowBinaryUrl
-            ? [`${this.SNAPFLOW_BINARY_PATH}:/usr/local/bin/snapflow`]
-            : []),
-          ...(this.terminalBinaryUrl
-            ? [`${this.TERMINAL_BINARY_PATH}:/usr/local/bin/terminal`]
-            : []),
-        ],
+        Binds: binds,
       },
     });
 
     await container.start();
 
-    if (this.terminalBinaryUrl) {
+    if (terminalBinaryExists) {
       this.startTerminalProcess(container).catch((err) =>
         this.logger.error("Failed to start terminal process:", err)
       );
@@ -171,8 +318,10 @@ export class DockerProvider implements OnModuleInit {
         return;
       }
 
+      // Step 2: Delete each tag
       for (const tag of tags) {
         try {
+          // Get the digest for this tag
           const manifestUrl = `${registryUrl}/v2/${repoPath}/manifests/${tag}`;
 
           const manifestResponse = await axios({
@@ -199,6 +348,7 @@ export class DockerProvider implements OnModuleInit {
             continue;
           }
 
+          // Delete the manifest
           const deleteUrl = `${registryUrl}/v2/${repoPath}/manifests/${digest}`;
 
           const deleteResponse = await axios({
@@ -218,6 +368,7 @@ export class DockerProvider implements OnModuleInit {
           }
         } catch (error) {
           this.logger.warn(`Exception when deleting tag ${tag}: ${error.message}`);
+          // Continue with other tags
         }
       }
 
@@ -230,8 +381,9 @@ export class DockerProvider implements OnModuleInit {
 
   async deleteSandboxRepository(repository: string, registry: Registry): Promise<void> {
     try {
+      // Delete both backup and snapshot repositories - necessary due to renaming
       await this.deleteRepositoryWithPrefix(repository, "backup-", registry);
-      await this.deleteRepositoryWithPrefix(repository, "image-", registry);
+      await this.deleteRepositoryWithPrefix(repository, "snapshot-", registry);
     } catch (error) {
       this.logger.error(`Failed to delete repositories for ${repository}: ${error.message}`);
       throw error;
@@ -239,18 +391,23 @@ export class DockerProvider implements OnModuleInit {
   }
 
   async deleteBackupImageFromRegistry(imageName: string, registry: Registry): Promise<void> {
+    // Extract tag
     const lastColonIndex = imageName.lastIndexOf(":");
     const fullPath = imageName.substring(0, lastColonIndex);
     const tag = imageName.substring(lastColonIndex + 1);
 
     const registryUrl = this.registryService.getRegistryUrl(registry);
 
+    // Remove registry prefix if present in the image name
     let projectAndRepo = fullPath;
     if (fullPath.startsWith(registryUrl)) {
-      projectAndRepo = fullPath.substring(registryUrl.length + 1);
+      projectAndRepo = fullPath.substring(registryUrl.length + 1); // +1 for the slash
     }
 
+    // For Harbor format like: harbor.host/bbox-stage/backup-sandbox-75148d5a
     const parts = projectAndRepo.split("/");
+
+    // Construct repository path (everything after the registry host)
     const repoPath = parts.slice(1).join("/");
 
     // First, get the digest for the tag using the manifests endpoint
@@ -260,6 +417,7 @@ export class DockerProvider implements OnModuleInit {
     );
 
     try {
+      // Get the digest from the headers
       const manifestResponse = await axios({
         method: "head",
         url: manifestUrl,
@@ -280,9 +438,11 @@ export class DockerProvider implements OnModuleInit {
         );
       }
 
+      // Extract the digest from headers
       const digest = manifestResponse.headers["docker-content-digest"];
       if (!digest) throw new Error(`Docker content digest not found for image ${imageName}`);
 
+      // Now delete the image using the digest
       const deleteUrl = `${registryUrl}/v2/${repoPath}/manifests/${digest}`;
 
       const deleteResponse = await axios({
@@ -303,7 +463,6 @@ export class DockerProvider implements OnModuleInit {
       this.logger.error(
         `Error removing image ${imageName} from registry: ${deleteResponse.statusText}`
       );
-
       throw new Error(
         `Failed to remove image ${imageName} from registry: ${deleteResponse.statusText}`
       );
@@ -318,11 +477,9 @@ export class DockerProvider implements OnModuleInit {
       const container = this.docker.getContainer(containerId);
       await container.remove({ force: true });
     } catch (error) {
-      if (error.statusCode === 404) {
-        return;
-      }
+      if (error.statusCode === 404) return;
       this.logger.error("Error removing Docker container:", error);
-      throw error;
+      throw error; // Rethrow to let sandbox service handle the error state
     }
   }
 
@@ -348,9 +505,8 @@ export class DockerProvider implements OnModuleInit {
   }
 
   async isRunning(containerId: string): Promise<boolean> {
-    if (!containerId) {
-      return false;
-    }
+    if (!containerId) return false;
+
     try {
       const container = this.docker.getContainer(containerId);
       const data = await container.inspect();
@@ -377,10 +533,16 @@ export class DockerProvider implements OnModuleInit {
   async validateImageArchitecture(image: string): Promise<boolean> {
     try {
       const imageUnified = image.replace("docker.io/", "");
+
       const dockerImage = await this.docker.getImage(imageUnified).inspect();
+
+      // Check the architecture from the image metadata
       const architecture = dockerImage.Architecture;
 
+      // Valid x64 architectures
       const x64Architectures = ["amd64", "x86_64"];
+
+      // Check if the architecture matches x64
       const isX64 = x64Architectures.includes(architecture.toLowerCase());
 
       if (!isX64) {
@@ -395,19 +557,25 @@ export class DockerProvider implements OnModuleInit {
     }
   }
 
+  /**
+   * Checks if an image exists in the specified registry without pulling it
+   */
   async checkImageExistsInRegistry(imageName: string, registry: Registry): Promise<boolean> {
     try {
+      // extract tag
       const lastColonIndex = imageName.lastIndexOf(":");
       const fullPath = imageName.substring(0, lastColonIndex);
       const tag = imageName.substring(lastColonIndex + 1);
 
       const registryUrl = this.registryService.getRegistryUrl(registry);
 
+      // Remove registry prefix if present in the image name
       let projectAndRepo = fullPath;
       if (fullPath.startsWith(registryUrl)) {
         projectAndRepo = fullPath.substring(registryUrl.length + 1); // +1 for the slash
       }
 
+      // For Harbor format like: harbor.host/bbox-stage/backup-sandbox-75148d5a
       const parts = projectAndRepo.split("/");
 
       const apiUrl = `${registryUrl}/v2/${parts[1]}/${parts[2]}/manifests/${tag}`;
@@ -433,7 +601,6 @@ export class DockerProvider implements OnModuleInit {
       this.logger.debug(
         `Image ${imageName} does not exist in registry (status: ${response.status})`
       );
-
       return false;
     } catch (error) {
       this.logger.error(
@@ -455,14 +622,19 @@ export class DockerProvider implements OnModuleInit {
       try {
         return await operation();
       } catch (error) {
-        if (attempt === maxAttempts) throw error;
-        if (error.fatal) throw error.err;
+        if (attempt === maxAttempts) {
+          throw error;
+        }
+
+        if (error.fatal) {
+          throw error.err;
+        }
 
         this.logger.warn(`Attempt ${attempt} failed, retrying in ${delay}ms...`, error);
         await new Promise((resolve) => setTimeout(resolve, delay));
 
         attempt++;
-        delay *= 2;
+        delay *= 2; // Exponential backoff
       }
     }
 
@@ -492,8 +664,9 @@ export class DockerProvider implements OnModuleInit {
         const err = await new Promise<Error | null>((resolve) =>
           this.docker.modem.followProgress(stream, resolve)
         );
-
-        if (err) throw err;
+        if (err) {
+          throw err;
+        }
       } catch (err) {
         if (err.statusCode === 404) {
           let returnErr = err;
@@ -514,10 +687,9 @@ export class DockerProvider implements OnModuleInit {
       }
     });
 
+    // Validate architecture after pulling
     const isValidArch = await this.validateImageArchitecture(image);
-    if (!isValidArch) {
-      throw new Error(`Image ${image} is not compatible with x64 architecture`);
-    }
+    if (!isValidArch) throw new Error(`Image ${image} is not compatible with x64 architecture`);
   }
 
   async start(containerId: string): Promise<void> {
@@ -525,10 +697,13 @@ export class DockerProvider implements OnModuleInit {
       const container = this.docker.getContainer(containerId);
       await container.start();
 
-      if (this.terminalBinaryUrl) {
+      const terminalBinaryExists = await this.fileExists(this.TERMINAL_BINARY_PATH);
+      if (terminalBinaryExists) {
         this.startTerminalProcess(container).catch((err) =>
           this.logger.error("Failed to start terminal process:", err)
         );
+      } else {
+        this.logger.debug("Terminal binary not available, skipping terminal process start");
       }
     } catch (error) {
       this.logger.error("Error starting Docker container:", error);
@@ -542,7 +717,7 @@ export class DockerProvider implements OnModuleInit {
       await container.stop();
     } catch (error) {
       this.logger.error("Error stopping Docker container:", error);
-      throw error;
+      throw error; // Rethrow or handle as needed
     }
   }
 
@@ -560,6 +735,7 @@ export class DockerProvider implements OnModuleInit {
   ): Promise<{ sizeGB: number; entrypoint?: string | string[] }> {
     try {
       const image = await this.docker.getImage(imageName).inspect();
+      // Size is returned in bytes, convert to GB
       return {
         sizeGB: image.Size / (1024 * 1024 * 1024),
         entrypoint: image.Config.Entrypoint,
@@ -633,7 +809,9 @@ export class DockerProvider implements OnModuleInit {
       const repo = targetImage.substring(0, lastColonIndex);
       const tag = targetImage.substring(lastColonIndex + 1);
 
-      if (!repo || !tag) throw new Error("Invalid target image format");
+      if (!repo || !tag) {
+        throw new Error("Invalid target image format");
+      }
 
       const image = this.docker.getImage(sourceImage);
       await image.tag({

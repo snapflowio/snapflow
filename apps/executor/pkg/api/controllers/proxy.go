@@ -41,7 +41,7 @@ func ProxyRequest(ctx *gin.Context) {
 }
 
 func getProxyTarget(ctx *gin.Context) (*url.URL, string, map[string]string, error) {
-	manager := executor.GetInstance(nil)
+	executor := executor.GetInstance(nil)
 
 	sandboxId := ctx.Param("sandboxId")
 	if sandboxId == "" {
@@ -50,7 +50,7 @@ func getProxyTarget(ctx *gin.Context) (*url.URL, string, map[string]string, erro
 	}
 
 	// Get container details
-	container, err := manager.Docker.ContainerInspect(ctx.Request.Context(), sandboxId)
+	container, err := executor.Docker.ContainerInspect(ctx.Request.Context(), sandboxId)
 	if err != nil {
 		ctx.Error(common.NewNotFoundError(fmt.Errorf("sandbox container not found: %w", err)))
 		return nil, "", nil, fmt.Errorf("sandbox container not found: %w", err)

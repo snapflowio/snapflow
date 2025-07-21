@@ -1,14 +1,16 @@
 import { ReactNode, useEffect, useRef } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useLogto } from "@logto/react";
 import { io } from "socket.io-client";
 import { RealtimeContext } from "@/context/realtime-context";
+import { useApi } from "@/hooks/use-api";
 
 type Props = {
   children: ReactNode;
 };
 
 export function RealtimeSocketProvider(props: Props) {
-  const { user, getAccessTokenSilently } = useAuth0();
+  const { user } = useApi();
+  const { getIdToken } = useLogto();
   const RealtimeSocketRef = useRef(
     io(window.location.origin, {
       path: "/api/realtime/",
@@ -21,7 +23,7 @@ export function RealtimeSocketProvider(props: Props) {
     const connectToSocket = async () => {
       const socket = RealtimeSocketRef.current;
       if (user) {
-        const token = await getAccessTokenSilently();
+        const token = await getIdToken();
         socket.auth = { token };
         socket.connect();
       }

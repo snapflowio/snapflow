@@ -1,61 +1,61 @@
-import { useEffect, useRef, useState } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useLocation } from "react-router";
+import { useEffect, useMemo, useState } from "react";
+import { IdTokenClaims, useLogto } from "@logto/react";
 import { Loading } from "@/components/loading";
 import { ApiClient } from "@/api/api-client";
 import { ApiContext } from "@/context/api-context";
+import { Path } from "@/enums/paths";
 
-export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const {
-    user,
-    isAuthenticated,
-    isLoading,
-    loginWithRedirect,
-    getAccessTokenSilently,
-  } = useAuth0();
-  const location = useLocation();
+export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, isLoading, getIdTokenClaims, getIdToken, signIn } = useLogto();
 
-  const apiRef = useRef<ApiClient | null>(null);
-  const [isApiReady, setIsApiReady] = useState(false);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [authState, setAuthState] = useState<{
+    user?: IdTokenClaims;
+    apiClient?: ApiClient;
+    isInitialized: boolean;
+  }>({
+    isInitialized: false,
+  });
 
   useEffect(() => {
-    const fetchToken = async () => {
-      if (isAuthenticated) {
-        try {
-          const token = await getAccessTokenSilently();
-          setAccessToken(token);
-        } catch (error) {
-          void loginWithRedirect({ appState: { returnTo: location.pathname } });
+    if (isLoading || authState.isInitialized) return;
+
+    if (!isAuthenticated) {
+      void signIn({ redirectUri: window.location.origin + Path.CALLBACK });
+      return;
+    }
+
+    const initialize = async () => {
+      try {
+        const [token, user] = await Promise.all([getIdToken(), getIdTokenClaims()]);
+
+        if (token && user) {
+          setAuthState({
+            user,
+            apiClient: new ApiClient(token),
+            isInitialized: true,
+          });
         }
+      } catch (error) {
+        console.error("Error during auth initialization:", error);
       }
     };
-    fetchToken();
-  }, [isAuthenticated, getAccessTokenSilently, loginWithRedirect, location]);
 
-  useEffect(() => {
-    if (user && accessToken) {
-      if (!apiRef.current) {
-        apiRef.current = new ApiClient(accessToken);
-      } else {
-        apiRef.current.setAccessToken(accessToken);
-      }
-      setIsApiReady(true);
-    } else {
-      setIsApiReady(false);
+    initialize();
+  }, [isLoading, isAuthenticated, authState.isInitialized, getIdToken, getIdTokenClaims, signIn]);
+
+  const contextValue = useMemo(() => {
+    if (!authState.apiClient || !authState.user) {
+      return null;
     }
-  }, [user, accessToken]);
 
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated)
-      void loginWithRedirect({ appState: { returnTo: location.pathname } });
-  }, [isLoading, isAuthenticated, loginWithRedirect, location]);
+    return Object.assign(
+      Object.create(Object.getPrototypeOf(authState.apiClient)),
+      authState.apiClient,
+      { user: authState.user }
+    );
+  }, [authState.apiClient, authState.user]);
 
-  if (isLoading || !isApiReady) return <Loading />;
+  if (!contextValue) return <Loading />;
 
-  return (
-    <ApiContext.Provider value={apiRef.current}>{children}</ApiContext.Provider>
-  );
+  return <ApiContext.Provider value={contextValue}>{children}</ApiContext.Provider>;
 };

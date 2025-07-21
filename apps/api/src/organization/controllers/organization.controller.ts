@@ -34,6 +34,7 @@ import { OrganizationInvitationDto } from "../dto/organization-invitation.dto";
 import { OrganizationSuspensionDto } from "../dto/organization-suspension.dto";
 import { OverviewDto } from "../dto/overview.dto";
 import { UpdateOrganizationQuotaDto } from "../dto/update-organization-quota.dto";
+import { Organization } from "../entities/organization.entity";
 import { OrganizationMemberRole } from "../enums/organization-member-role.enum";
 import { OrganizationActionGuard } from "../guards/organization-action.guard";
 import { OrganizationService } from "../services/organization.service";
@@ -354,7 +355,7 @@ export class OrganizationController {
   })
   @RequiredSystemRole(SystemRole.ADMIN)
   @UseGuards(CombinedAuthGuard, SystemActionGuard)
-  async unsuspend(@Param("organizationId") organizationId: string): Promise<void> {
+  async unsuspend(@Param("organizationId") organizationId: string): Promise<Organization> {
     return this.organizationService.unsuspend(organizationId);
   }
 }

@@ -216,20 +216,20 @@ export class OrganizationService implements OnModuleInit {
     await this.organizationRepository.save(organization);
   }
 
-  async unsuspend(organizationId: string): Promise<void> {
+  async unsuspend(organizationId: string): Promise<Organization> {
     const organization = await this.organizationRepository.findOne({
       where: { id: organizationId },
     });
-    if (!organization) {
+
+    if (!organization)
       throw new NotFoundException(`Organization with ID ${organizationId} not found`);
-    }
 
     organization.suspended = false;
     organization.suspensionReason = null;
     organization.suspendedUntil = null;
     organization.suspendedAt = null;
 
-    await this.organizationRepository.save(organization);
+    return await this.organizationRepository.save(organization);
   }
 
   private async createWithEntityManager(

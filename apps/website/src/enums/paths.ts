@@ -2,6 +2,7 @@ export enum Path {
   LANDING = "/",
   LOGOUT = "/logout",
   DASHBOARD = "/dashboard",
+  CALLBACK = "/callback",
 
   API_KEYS = "/dashboard/keys",
   SANDBOXES = "/dashboard/sandboxes",

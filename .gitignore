@@ -5,6 +5,7 @@ out-tsc
 
 # environment
 .env
+.env.production
 .env.local
 
 # dependencies

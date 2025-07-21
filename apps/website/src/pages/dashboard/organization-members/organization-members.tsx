@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
 import {
   CreateOrganizationInvitationRoleEnum,
   OrganizationInvitation,
@@ -17,8 +16,7 @@ import { OrganizationInvitationTable } from "./components/organization-invitatio
 import { OrganizationMemberTable } from "./components/organization-member-table";
 
 export function OrganizationMembers() {
-  const { user } = useAuth0();
-  const { organizationsApi } = useApi();
+  const { organizationsApi, user } = useApi();
 
   const { refreshOrganizations } = useOrganizations();
   const {

@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { NestFactory } from "@nestjs/core";
 import { SwaggerModule } from "@nestjs/swagger";
-import { AppModule } from "./app.module";
+import { AppModule } from "./app/app.module";
 import { getOpenApiConfig } from "./openapi.config";
 
 async function generateOpenAPI() {

@@ -1,13 +1,13 @@
 import { useEffect } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useLogto } from "@logto/react";
 import { Loading } from "@/components/loading";
 
 export default function Logout() {
-  const { logout } = useAuth0();
+  const { signOut } = useLogto();
 
   useEffect(() => {
-    void logout();
-  }, [logout]);
+    void signOut();
+  }, [signOut]);
 
   return <Loading />;
 }

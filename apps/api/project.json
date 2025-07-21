@@ -34,7 +34,7 @@
     "openapi": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm ts-node apps/api/src/generate-openapi.ts -o dist/apps/api/openapi.json",
+        "command": "pnpx ts-node apps/api/src/generate-openapi.ts -o dist/apps/api/openapi.json",
         "env": {
           "TS_NODE_PROJECT": "apps/api/tsconfig.app.json",
           "NODE_OPTIONS": "--require tsconfig-paths/register",
@@ -63,7 +63,7 @@
     "format": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "cd {projectRoot} && node run format"
+        "command": "cd {projectRoot} && pnpm run format"
       }
     },
     "test": {
@@ -74,7 +74,7 @@
     "migration:generate": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:generate -d ./src/data-source.ts ./src/migrations/migration"
+        "command": "pnpx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:generate -d ./src/data-source.ts ./src/migrations/migration"
       }
     }
   }

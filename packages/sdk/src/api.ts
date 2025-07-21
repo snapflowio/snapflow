@@ -179,9 +179,7 @@ export class Snapflow {
       options.timeout = 60
     }
 
-    if (params == null) {
-      params = { language: 'python' }
-    }
+    if (params == null) params = { language: 'typescript' }
 
     const labels = params.labels || {}
     if (params.language) {
@@ -333,7 +331,9 @@ export class Snapflow {
       case CodeLanguage.JAVASCRIPT:
       case CodeLanguage.TYPESCRIPT:
         return new SandboxTsCodeToolbox()
-        default: {
+	case undefined:
+        return new SandboxTsCodeToolbox()
+    default: {
         const errMsg = `Unsupported language: ${language}, supported languages: ${Object.values(CodeLanguage).join(', ')}`
         throw new SnapflowError(errMsg)
       }

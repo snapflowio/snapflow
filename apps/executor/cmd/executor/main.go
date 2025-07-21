@@ -16,7 +16,7 @@ import (
 	"github.com/snapflow/executor/pkg/api"
 	"github.com/snapflow/executor/pkg/cache"
 	"github.com/snapflow/executor/pkg/docker"
-	runner "github.com/snapflow/executor/pkg/executor"
+	executor "github.com/snapflow/executor/pkg/executor"
 	"github.com/snapflow/executor/pkg/models"
 	"github.com/snapflow/executor/pkg/node"
 	"github.com/snapflow/executor/pkg/services"
@@ -35,10 +35,7 @@ func main() {
 	}
 
 	apiServer := api.NewApiServer(api.ApiServerConfig{
-		ApiPort:     cfg.ApiPort,
-		TLSCertFile: cfg.TLSCertFile,
-		TLSKeyFile:  cfg.TLSKeyFile,
-		EnableTLS:   cfg.EnableTLS,
+		ApiPort: cfg.ApiPort,
 	})
 
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
@@ -47,7 +44,7 @@ func main() {
 		return
 	}
 
-	runnerCache := cache.NewInMemoryExecutorCache(cache.InMemoryExecutorCacheConfig{
+	executorCache := cache.NewInMemoryExecutorCache(cache.InMemoryExecutorCacheConfig{
 		Cache:         make(map[string]*models.CacheData),
 		RetentionDays: cfg.CacheRetentionDays,
 	})
@@ -55,7 +52,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	runnerCache.Cleanup(ctx)
+	executorCache.Cleanup(ctx)
 
 	daemonPath, err := node.WriteNodeBinary()
 	if err != nil {
@@ -65,7 +62,7 @@ func main() {
 
 	dockerClient := docker.NewDockerClient(docker.DockerClientConfig{
 		ApiClient:          cli,
-		Cache:              runnerCache,
+		Cache:              executorCache,
 		LogWriter:          os.Stdout,
 		AWSRegion:          cfg.AWSRegion,
 		AWSEndpointUrl:     cfg.AWSEndpointUrl,
@@ -74,10 +71,10 @@ func main() {
 		DaemonPath:         daemonPath,
 	})
 
-	sandboxService := services.NewSandboxService(runnerCache, dockerClient)
+	sandboxService := services.NewSandboxService(executorCache, dockerClient)
 
-	_ = runner.GetInstance(&runner.ExecutorInstanceConfig{
-		Cache:          runnerCache,
+	_ = executor.GetInstance(&executor.ExecutorInstanceConfig{
+		Cache:          executorCache,
 		Docker:         dockerClient,
 		SandboxService: sandboxService,
 	})
@@ -85,7 +82,7 @@ func main() {
 	apiServerErrChan := make(chan error)
 
 	go func() {
-		log.Infof("Starting Snapflow manager on port %d", cfg.ApiPort)
+		log.Infof("Starting Snapflow exector on port %d", cfg.ApiPort)
 		apiServerErrChan <- apiServer.Start()
 	}()
 
@@ -97,14 +94,13 @@ func main() {
 		log.Error(err)
 		return
 	case <-interruptChannel:
-		log.Info("Shutting down Snapflow manager")
+		log.Info("Shutting down Snapflow executor")
 		apiServer.Stop()
 	}
 }
 
 func init() {
 	logLevel := log.WarnLevel
-
 	logLevelEnv, logLevelSet := os.LookupEnv("LOG_LEVEL")
 
 	if logLevelSet {

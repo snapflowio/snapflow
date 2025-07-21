@@ -24,7 +24,6 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
     let statusCode: number;
     let message: string;
     let error: string;
-
     if (exception instanceof HttpException) {
       statusCode = exception.getStatus();
       const response = exception.getResponse();

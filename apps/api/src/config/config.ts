@@ -13,7 +13,18 @@ export const config = {
   oidc: {
     clientId: process.env.OIDC_CLIENT_ID || process.env.OID_CLIENT_ID,
     issuer: process.env.OIDC_ISSUER_BASE_URL || process.env.OID_ISSUER_BASE_URL,
-    audience: process.env.OIDC_AUDIENCE || process.env.OID_AUDIENCE,
+  },
+  transientRegistry: {
+    url: process.env.TRANSIENT_REGISTRY_URL,
+    admin: process.env.TRANSIENT_REGISTRY_ADMIN,
+    password: process.env.TRANSIENT_REGISTRY_PASSWORD,
+    projectId: process.env.TRANSIENT_REGISTRY_PROJECT_ID,
+  },
+  internalRegistry: {
+    url: process.env.INTERNAL_REGISTRY_URL,
+    admin: process.env.INTERNAL_REGISTRY_ADMIN,
+    password: process.env.INTERNAL_REGISTRY_PASSWORD,
+    projectId: process.env.INTERNAL_REGISTRY_PROJECT_ID,
   },
   redis: {
     host: process.env.REDIS_HOST,

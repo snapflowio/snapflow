@@ -1,32 +1,29 @@
 import React from "react";
-import { Auth0Provider } from "@auth0/auth0-react";
+import { LogtoConfig, LogtoProvider, UserScope } from "@logto/react";
 import ReactDOM from "react-dom/client";
 import { ErrorBoundary } from "react-error-boundary";
 import { BrowserRouter } from "react-router";
-import { Path } from "./enums/paths";
 import { ErrorBoundaryProvider } from "./providers/error-boundary";
 import { PosthogProvider } from "./providers/posthog-provider";
 import { Routes } from "./routes/routes";
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 
+const config: LogtoConfig = {
+  appId: import.meta.env.VITE_OIDC_CLIENT_ID,
+  endpoint: import.meta.env.VITE_OIDC_DOMAIN,
+  scopes: [UserScope.Email, UserScope.Profile],
+};
+
 root.render(
   <React.StrictMode>
     <ErrorBoundary FallbackComponent={ErrorBoundaryProvider}>
       <PosthogProvider>
-        <Auth0Provider
-          domain={import.meta.env.VITE_OIDC_DOMAIN}
-          clientId={import.meta.env.VITE_OIDC_CLIENT_ID}
-          authorizationParams={{
-            audience: import.meta.env.VITE_OIDC_AUDIENCE,
-            redirect_uri: window.location.origin + Path.DASHBOARD,
-          }}
-          cacheLocation="memory"
-        >
+        <LogtoProvider config={config}>
           <BrowserRouter>
             <Routes />
           </BrowserRouter>
-        </Auth0Provider>
+        </LogtoProvider>
       </PosthogProvider>
     </ErrorBoundary>
   </React.StrictMode>

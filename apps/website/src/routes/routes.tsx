@@ -3,6 +3,7 @@ import { OrganizationRolePermissionsEnum } from "@snapflow/api-client/src";
 import { Routes as ReactRoutes, Route } from "react-router";
 import { NotPersonalOrganizationPageWrapper } from "@/components/not-personal-organization-wrapper";
 import { OrganizationPageWrapper } from "@/components/organization-page-wrapper";
+import { Callback } from "@/pages/callback";
 import { Buckets } from "@/pages/dashboard/buckets/buckets";
 import { OrganizationMembers } from "@/pages/dashboard/organization-members/organization-members";
 import { OrganizationSettings } from "@/pages/dashboard/organization-settings/organization-settings";
@@ -26,6 +27,7 @@ export function Routes() {
     <ReactRoutes>
       <Route path="*" element={<NotFound />} />
       <Route path="/" element={<Landing />} />
+      <Route path="/callback" element={<Callback />} />
       <Route path={Path.LOGOUT} element={<Logout />} />
       <Route
         path={Path.DASHBOARD}

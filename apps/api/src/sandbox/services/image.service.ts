@@ -56,9 +56,7 @@ export class ImageService {
 
   async createImage(organization: Organization, createImageDto: CreateImageDto, general = false) {
     const nameValidationError = this.validateImageName(createImageDto.name);
-    if (nameValidationError) {
-      throw new BadRequestException(nameValidationError);
-    }
+    if (nameValidationError) throw new BadRequestException(nameValidationError);
 
     if (createImageDto.imageName) {
       const imageValidationError = this.validateRegistryImageName(createImageDto.imageName);
@@ -67,9 +65,12 @@ export class ImageService {
       }
     }
 
+    console.log("Organization object:", JSON.stringify(organization, null, 2));
+    console.log("Organization suspended status:", organization.suspended);
+    console.log("Organization suspended type:", typeof organization.suspended);
+
     this.organizationService.assertOrganizationIsNotSuspended(organization);
 
-    // check if the organization has reached the image quota
     const images = await this.imageRepository.find({
       where: { organizationId: organization.id },
     });

@@ -43,36 +43,37 @@ var proxyClient = &http.Client{
 				}
 			}
 		}
-
 		if len(via) >= 10 {
 			return errors.New("stopped after 10 redirects")
 		}
-
 		return nil
 	},
 }
 
 // ProxyRequest handles proxying requests to a sandbox's container
 //
-//	@Tags			toolbox
-//	@Summary		Proxy requests to the sandbox toolbox
-//	@Description	Forwards the request to the specified sandbox's container
-//	@Param			workspaceId	path		string	true	"Sandbox ID"
-//	@Param			projectId	path		string	true	"Project ID"
-//	@Param			path		path		string	true	"Path to forward"
-//	@Success		200			{object}	string	"Proxied response"
-//	@Failure		400			{object}	string	"Bad request"
-//	@Failure		401			{object}	string	"Unauthorized"
-//	@Failure		404			{object}	string	"Sandbox container not found"
-//	@Failure		409			{object}	string	"Sandbox container conflict"
-//	@Failure		500			{object}	string	"Internal server error"
-//	@Router			/workspaces/{workspaceId}/{projectId}/toolbox/{path} [get]
+// @Tags toolbox
+// @Summary Proxy requests to the sandbox toolbox
+// @Description Forwards the request to the specified sandbox's container
+// @Param workspaceId path string true "Sandbox ID"
+// @Param projectId path string true "Project ID"
+// @Param path path string true "Path to forward"
+// @Success 200 {object} string "Proxied response"
+// @Failure 400 {object} string "Bad request"
+// @Failure 401 {object} string "Unauthorized"
+// @Failure 404 {object} string "Sandbox container not found"
+// @Failure 409 {object} string "Sandbox container conflict"
+// @Failure 500 {object} string "Internal server error"
+// @Router /workspaces/{workspaceId}/{projectId}/toolbox/{path} [get]
 func NewProxyRequestHandler(getProxyTarget func(*gin.Context) (*url.URL, string, map[string]string, error)) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		target, fullTargetURL, extraHeaders, err := getProxyTarget(ctx)
+		target, targetHost, extraHeaders, err := getProxyTarget(ctx)
 		if err != nil {
 			return
 		}
+
+		// Use the full URL from target, not just the host
+		fullTargetURL := target.String()
 
 		outReq, err := http.NewRequestWithContext(
 			ctx.Request.Context(),
@@ -85,6 +86,7 @@ func NewProxyRequestHandler(getProxyTarget func(*gin.Context) (*url.URL, string,
 			return
 		}
 
+		// Copy headers from original request
 		for key, values := range ctx.Request.Header {
 			if key != "Connection" {
 				for _, value := range values {
@@ -93,13 +95,16 @@ func NewProxyRequestHandler(getProxyTarget func(*gin.Context) (*url.URL, string,
 			}
 		}
 
-		outReq.Host = target.Host
+		// Use the targetHost for the Host header (this comes from your GetProxyTarget function)
+		outReq.Host = targetHost
 		outReq.Header.Set("Connection", "keep-alive")
 
+		// Add extra headers from getProxyTarget
 		for key, value := range extraHeaders {
-			outReq.Header.Add(key, value)
+			outReq.Header.Set(key, value)
 		}
 
+		// Handle WebSocket upgrade
 		if ctx.Request.Header.Get("Upgrade") == "websocket" {
 			ws, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
 			if err != nil {
@@ -108,27 +113,37 @@ func NewProxyRequestHandler(getProxyTarget func(*gin.Context) (*url.URL, string,
 			}
 			defer ws.Close()
 
+			// Prepare headers for WebSocket connection
 			reqExtraHeaders := http.Header{}
 			for key, value := range extraHeaders {
-				reqExtraHeaders.Add(key, value)
+				reqExtraHeaders.Set(key, value)
 			}
 
-			conn, _, err := websocket.DefaultDialer.DialContext(ctx.Request.Context(), strings.Replace(fullTargetURL, "http", "ws", 1), reqExtraHeaders)
+			// Convert HTTP URL to WebSocket URL
+			wsURL := strings.Replace(fullTargetURL, "http://", "ws://", 1)
+			wsURL = strings.Replace(wsURL, "https://", "wss://", 1)
+
+			conn, _, err := websocket.DefaultDialer.DialContext(ctx.Request.Context(), wsURL, reqExtraHeaders)
 			if err != nil {
 				ctx.AbortWithError(http.StatusInternalServerError, err)
 				return
 			}
 			defer conn.Close()
 
+			// Proxy WebSocket messages bidirectionally
 			go func() {
+				defer conn.Close()
+				defer ws.Close()
 				io.Copy(ws.NetConn(), conn.NetConn())
 			}()
 
+			defer conn.Close()
+			defer ws.Close()
 			io.Copy(conn.NetConn(), ws.NetConn())
-
 			return
 		}
 
+		// Make the HTTP request
 		resp, err := proxyClient.Do(outReq)
 		if err != nil {
 			ctx.AbortWithError(http.StatusBadGateway, fmt.Errorf("proxy request failed: %w", err))
@@ -136,14 +151,17 @@ func NewProxyRequestHandler(getProxyTarget func(*gin.Context) (*url.URL, string,
 		}
 		defer resp.Body.Close()
 
+		// Copy response headers
 		for key, values := range resp.Header {
 			for _, value := range values {
 				ctx.Writer.Header().Add(key, value)
 			}
 		}
 
+		// Set status code
 		ctx.Writer.WriteHeader(resp.StatusCode)
 
+		// Copy response body
 		if _, err := io.Copy(ctx.Writer, resp.Body); err != nil {
 			log.Errorf("Error copying response body: %v", err)
 		}

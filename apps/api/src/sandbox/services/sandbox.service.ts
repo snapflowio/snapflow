@@ -506,8 +506,6 @@ export class SandboxService {
       ...(labels ? { labels: JsonContains(labels) } : {}),
     };
 
-    console.log("ORG ID:", organizationId);
-
     const where: FindOptionsWhere<Sandbox>[] = [
       {
         ...baseFindOptions,

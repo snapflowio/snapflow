@@ -15,9 +15,6 @@ import (
 type Config struct {
 	ApiToken           string `envconfig:"API_TOKEN" validate:"required"`
 	ApiPort            int    `envconfig:"API_PORT"`
-	TLSCertFile        string `envconfig:"TLS_CERT_FILE"`
-	TLSKeyFile         string `envconfig:"TLS_KEY_FILE"`
-	EnableTLS          bool   `envconfig:"ENABLE_TLS"`
 	CacheRetentionDays int    `envconfig:"CACHE_RETENTION_DAYS"`
 	Environment        string `envconfig:"ENVIRONMENT"`
 	ContainerRuntime   string `envconfig:"CONTAINER_RUNTIME"`
@@ -45,7 +42,6 @@ func GetConfig() (*Config, error) {
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("Warning: Error loading .env file:", err)
-		// Continue anyway, as environment variables might be set directly
 	}
 
 	err = envconfig.Process("", config)

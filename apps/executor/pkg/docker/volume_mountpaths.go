@@ -20,7 +20,7 @@ func (d *DockerClient) getBucketsMountPathBinds(ctx context.Context, buckets []d
 
 	for _, vol := range buckets {
 		bucketIdPrefixed := fmt.Sprintf("snapflow-bucket-%s", vol.BucketId)
-		runnerBucketMountPath := d.getExecutorBucketMountPath(bucketIdPrefixed)
+		executorBucketMountPath := d.getExecutorBucketMountPath(bucketIdPrefixed)
 
 		// Get or create mutex for this bucket
 		d.bucketMutexesMutex.Lock()
@@ -35,28 +35,28 @@ func (d *DockerClient) getBucketsMountPathBinds(ctx context.Context, buckets []d
 		bucketMutex.Lock()
 		defer bucketMutex.Unlock()
 
-		if d.isDirectoryMounted(runnerBucketMountPath) {
-			log.Infof("bucket %s is already mounted to %s", bucketIdPrefixed, runnerBucketMountPath)
-			bucketMountPathBinds = append(bucketMountPathBinds, fmt.Sprintf("%s/:%s/", runnerBucketMountPath, vol.MountPath))
+		if d.isDirectoryMounted(executorBucketMountPath) {
+			log.Infof("bucket %s is already mounted to %s", bucketIdPrefixed, executorBucketMountPath)
+			bucketMountPathBinds = append(bucketMountPathBinds, fmt.Sprintf("%s/:%s/", executorBucketMountPath, vol.MountPath))
 			continue
 		}
 
-		err := os.MkdirAll(runnerBucketMountPath, 0755)
+		err := os.MkdirAll(executorBucketMountPath, 0755)
 		if err != nil {
-			return nil, fmt.Errorf("failed to create mount directory %s: %s", runnerBucketMountPath, err)
+			return nil, fmt.Errorf("failed to create mount directory %s: %s", executorBucketMountPath, err)
 		}
 
-		log.Infof("mounting S3 bucket %s to %s", bucketIdPrefixed, runnerBucketMountPath)
+		log.Infof("mounting S3 bucket %s to %s", bucketIdPrefixed, executorBucketMountPath)
 
-		cmd := d.getMountCmd(ctx, bucketIdPrefixed, runnerBucketMountPath)
+		cmd := d.getMountCmd(ctx, bucketIdPrefixed, executorBucketMountPath)
 		err = cmd.Run()
 		if err != nil {
-			return nil, fmt.Errorf("failed to mount S3 bucket %s to %s: %s", bucketIdPrefixed, runnerBucketMountPath, err)
+			return nil, fmt.Errorf("failed to mount S3 bucket %s to %s: %s", bucketIdPrefixed, executorBucketMountPath, err)
 		}
 
-		log.Infof("mounted S3 bucket %s to %s", bucketIdPrefixed, runnerBucketMountPath)
+		log.Infof("mounted S3 bucket %s to %s", bucketIdPrefixed, executorBucketMountPath)
 
-		bucketMountPathBinds = append(bucketMountPathBinds, fmt.Sprintf("%s/:%s/", runnerBucketMountPath, vol.MountPath))
+		bucketMountPathBinds = append(bucketMountPathBinds, fmt.Sprintf("%s/:%s/", executorBucketMountPath, vol.MountPath))
 	}
 
 	return bucketMountPathBinds, nil

@@ -20,24 +20,24 @@ type Executor struct {
 	SandboxService *services.SandboxService
 }
 
-var runner *Executor
+var executor *Executor
 
 func GetInstance(config *ExecutorInstanceConfig) *Executor {
-	if config != nil && runner != nil {
+	if config != nil && executor != nil {
 		log.Fatal("Executor already initialized")
 	}
 
-	if runner == nil {
+	if executor == nil {
 		if config == nil {
 			log.Fatal("Executor not initialized")
 		}
 
-		runner = &Executor{
+		executor = &Executor{
 			Cache:          config.Cache,
 			Docker:         config.Docker,
 			SandboxService: config.SandboxService,
 		}
 	}
 
-	return runner
+	return executor
 }

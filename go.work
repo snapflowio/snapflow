@@ -4,4 +4,6 @@ use (
 	./apps/node
 	./apps/executor
 	./apps/go-common
+	./apps/proxy
+	./packages/api-client-go
 )
