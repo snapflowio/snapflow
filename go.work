@@ -3,7 +3,7 @@ go 1.24.4
 use (
 	./apps/node
 	./apps/executor
-	./apps/go-common
 	./apps/proxy
+	./packages/go-common
 	./packages/api-client-go
 )

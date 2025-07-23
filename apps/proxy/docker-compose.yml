@@ -4,7 +4,7 @@ services:
   proxy:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./apps/proxy/Dockerfile
     container_name: snapflow_proxy
     restart: always
     ports:
