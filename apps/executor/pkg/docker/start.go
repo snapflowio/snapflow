@@ -63,7 +63,7 @@ func (d *DockerClient) Start(ctx context.Context, containerId string) error {
 	processesCtx := context.Background()
 	go func() {
 		if err := d.startSnapflowNode(processesCtx, containerId); err != nil {
-			log.Errorf("Failed to start Snapflow daemon: %s\n", err.Error())
+			log.Errorf("Failed to start Snapflow node: %s\n", err.Error())
 		}
 	}()
 
@@ -119,7 +119,7 @@ func (d *DockerClient) waitForDaemonRunning(ctx context.Context, containerIP str
 	for {
 		select {
 		case <-timeoutCtx.Done():
-			return fmt.Errorf("timeout waiting for daemon to start")
+			return fmt.Errorf("timeout waiting for node to start")
 		default:
 			conn, err := net.DialTimeout("tcp", target.Host, 1*time.Second)
 			if err != nil {

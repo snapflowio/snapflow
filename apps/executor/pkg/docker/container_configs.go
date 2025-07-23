@@ -49,7 +49,7 @@ func (d *DockerClient) getContainerCreateConfig(sandboxDto dto.CreateSandboxDTO)
 func (d *DockerClient) getContainerHostConfig(ctx context.Context, sandboxDto dto.CreateSandboxDTO, bucketMountPathBinds []string) (*container.HostConfig, error) {
 	var binds []string
 
-	binds = append(binds, fmt.Sprintf("%s:/usr/local/bin/snapflow:ro", d.daemonPath))
+	binds = append(binds, fmt.Sprintf("%s:/usr/local/bin/snapflow:ro", d.nodePath))
 
 	if len(bucketMountPathBinds) > 0 {
 		binds = append(binds, bucketMountPathBinds...)

@@ -166,7 +166,7 @@ export class Sandbox {
   buildInfo?: BuildInfo;
 
   @Column({ nullable: true })
-  daemonVersion?: string;
+  nodeVersion?: string;
 
   @BeforeUpdate()
   updateAccessToken() {

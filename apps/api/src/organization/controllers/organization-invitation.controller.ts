@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Put,
-  UseGuards,
-} from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import {
   ApiBearerAuth,
@@ -32,9 +24,7 @@ import { OrganizationInvitationService } from "../services/organization-invitati
 @ApiOAuth2(["openid", "profile", "email"])
 @ApiBearerAuth()
 export class OrganizationInvitationController {
-  constructor(
-    private readonly organizationInvitationService: OrganizationInvitationService,
-  ) {}
+  constructor(private readonly organizationInvitationService: OrganizationInvitationService) {}
 
   @Post()
   @ApiOperation({
@@ -55,12 +45,12 @@ export class OrganizationInvitationController {
   async create(
     @AuthContext() authContext: IAuthContext,
     @Param("organizationId") organizationId: string,
-    @Body() createOrganizationInvitationDto: CreateOrganizationInvitationDto,
+    @Body() createOrganizationInvitationDto: CreateOrganizationInvitationDto
   ): Promise<OrganizationInvitationDto> {
     const invitation = await this.organizationInvitationService.create(
       organizationId,
       createOrganizationInvitationDto,
-      authContext.email,
+      authContext.email
     );
     return OrganizationInvitationDto.fromOrganizationInvitation(invitation);
   }
@@ -87,13 +77,12 @@ export class OrganizationInvitationController {
   })
   @RequiredOrganizationMemberRole(OrganizationMemberRole.OWNER)
   async update(
-    @Param("organizationId") organizationId: string,
     @Param("invitationId") invitationId: string,
-    @Body() updateOrganizationInvitationDto: UpdateOrganizationInvitationDto,
+    @Body() updateOrganizationInvitationDto: UpdateOrganizationInvitationDto
   ): Promise<OrganizationInvitationDto> {
     const invitation = await this.organizationInvitationService.update(
       invitationId,
-      updateOrganizationInvitationDto,
+      updateOrganizationInvitationDto
     );
     return OrganizationInvitationDto.fromOrganizationInvitation(invitation);
   }
@@ -114,13 +103,10 @@ export class OrganizationInvitationController {
     type: "string",
   })
   async findPending(
-    @Param("organizationId") organizationId: string,
+    @Param("organizationId") organizationId: string
   ): Promise<OrganizationInvitationDto[]> {
-    const invitations =
-      await this.organizationInvitationService.findPending(organizationId);
-    return invitations.map(
-      OrganizationInvitationDto.fromOrganizationInvitation,
-    );
+    const invitations = await this.organizationInvitationService.findPending(organizationId);
+    return invitations.map(OrganizationInvitationDto.fromOrganizationInvitation);
   }
 
   @Post("/:invitationId/cancel")
@@ -143,10 +129,7 @@ export class OrganizationInvitationController {
     type: "string",
   })
   @RequiredOrganizationMemberRole(OrganizationMemberRole.OWNER)
-  async cancel(
-    @Param("organizationId") organizationId: string,
-    @Param("invitationId") invitationId: string,
-  ): Promise<void> {
+  async cancel(@Param("invitationId") invitationId: string): Promise<void> {
     return this.organizationInvitationService.cancel(invitationId);
   }
 }

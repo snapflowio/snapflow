@@ -184,11 +184,11 @@ export interface Sandbox {
      */
     'class'?: SandboxClassEnum;
     /**
-     * The version of the daemon running in the sandbox
+     * The version of the node running in the sandbox
      * @type {string}
      * @memberof Sandbox
      */
-    'daemonVersion'?: string;
+    'nodeVersion'?: string;
 }
 
 export const SandboxBackupStateEnum = {

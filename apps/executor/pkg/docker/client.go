@@ -29,7 +29,7 @@ func NewDockerClient(config DockerClientConfig) *DockerClient {
 		awsAccessKeyId:     config.AWSAccessKeyId,
 		awsSecretAccessKey: config.AWSSecretAccessKey,
 		bucketMutexes:      make(map[string]*sync.Mutex),
-		daemonPath:         config.DaemonPath,
+		nodePath:           config.DaemonPath,
 	}
 }
 
@@ -43,5 +43,5 @@ type DockerClient struct {
 	awsSecretAccessKey string
 	bucketMutexes      map[string]*sync.Mutex
 	bucketMutexesMutex sync.Mutex
-	daemonPath         string
+	nodePath           string
 }

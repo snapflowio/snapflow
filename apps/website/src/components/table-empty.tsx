@@ -8,13 +8,7 @@ interface TableEmptyStateProps {
   className?: string;
 }
 
-export function TableEmptyState({
-  colSpan,
-  message,
-  icon,
-  description,
-  className = "",
-}: TableEmptyStateProps) {
+export function TableEmptyState({ colSpan, message, icon, description }: TableEmptyStateProps) {
   return (
     <TableRow>
       <TableCell colSpan={colSpan} className={`h-32 text-center`}>

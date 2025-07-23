@@ -7,6 +7,7 @@ import { ImageExecutor } from "../sandbox/entities/image-executor.entity";
 import { Sandbox } from "../sandbox/entities/sandbox.entity";
 import { UserModule } from "../user/user.module";
 import { OrganizationController } from "./controllers/organization.controller";
+import { OrganizationBillingController } from "./controllers/organization-billing.controller";
 import { OrganizationInvitationController } from "./controllers/organization-invitation.controller";
 import { OrganizationRoleController } from "./controllers/organization-role.controller";
 import { OrganizationUserController } from "./controllers/organization-user.controller";
@@ -15,6 +16,7 @@ import { OrganizationInvitation } from "./entities/organization-invitation.entit
 import { OrganizationRole } from "./entities/organization-role.entity";
 import { OrganizationUser } from "./entities/organization-user.entity";
 import { OrganizationService } from "./services/organization.service";
+import { OrganizationBillingService } from "./services/organization-billing.service";
 import { OrganizationInvitationService } from "./services/organization-invitation.service";
 import { OrganizationRoleService } from "./services/organization-role.service";
 import { OrganizationUserService } from "./services/organization-user.service";
@@ -38,6 +40,7 @@ import { OrganizationUserService } from "./services/organization-user.service";
     OrganizationRoleController,
     OrganizationUserController,
     OrganizationInvitationController,
+    OrganizationBillingController,
   ],
   providers: [
     OrganizationService,
@@ -45,12 +48,14 @@ import { OrganizationUserService } from "./services/organization-user.service";
     OrganizationUserService,
     OrganizationInvitationService,
     RedisLockProvider,
+    OrganizationBillingService,
   ],
   exports: [
     OrganizationService,
     OrganizationRoleService,
     OrganizationUserService,
     OrganizationInvitationService,
+    OrganizationBillingService,
   ],
 })
 export class OrganizationModule {}

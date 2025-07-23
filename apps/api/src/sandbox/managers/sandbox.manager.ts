@@ -667,10 +667,10 @@ export class SandboxManager {
           sandboxToUpdate.state = SandboxState.STARTED;
           sandboxToUpdate.backupState = BackupState.NONE;
           try {
-            const daemonVersion = await this.getSandboxDaemonVersion(sandbox, executor);
-            sandboxToUpdate.daemonVersion = daemonVersion;
+            const nodeVersion = await this.getSandboxDaemonVersion(sandbox, executor);
+            sandboxToUpdate.nodeVersion = nodeVersion;
           } catch (e) {
-            this.logger.error(`Failed to get sandbox daemon version for sandbox ${sandbox.id}:`, e);
+            this.logger.error(`Failed to get sandbox node version for sandbox ${sandbox.id}:`, e);
           }
           await this.sandboxRepository.save(sandboxToUpdate);
         }
@@ -1083,11 +1083,11 @@ export class SandboxManager {
 
     switch (sandboxInfo.state) {
       case ExecutorSandboxState.SandboxStateStarted: {
-        let daemonVersion: string | undefined;
+        let nodeVersion: string | undefined;
         try {
-          daemonVersion = await this.getSandboxDaemonVersion(sandbox, executor);
+          nodeVersion = await this.getSandboxDaemonVersion(sandbox, executor);
         } catch (e) {
-          this.logger.error(`Failed to get sandbox daemon version for sandbox ${sandbox.id}:`, e);
+          this.logger.error(`Failed to get sandbox node version for sandbox ${sandbox.id}:`, e);
         }
         //  if previous backup state is error or completed, set backup state to none
         if ([BackupState.ERROR, BackupState.COMPLETED].includes(sandbox.backupState)) {
@@ -1098,8 +1098,8 @@ export class SandboxManager {
           });
           sandboxToUpdate.state = SandboxState.STARTED;
           sandboxToUpdate.backupState = BackupState.NONE;
-          if (daemonVersion) {
-            sandboxToUpdate.daemonVersion = daemonVersion;
+          if (nodeVersion) {
+            sandboxToUpdate.nodeVersion = nodeVersion;
           }
           await this.sandboxRepository.save(sandboxToUpdate);
         } else {
@@ -1108,7 +1108,7 @@ export class SandboxManager {
             SandboxState.STARTED,
             undefined,
             undefined,
-            daemonVersion
+            nodeVersion
           );
         }
 
@@ -1184,7 +1184,7 @@ export class SandboxManager {
     state: SandboxState,
     executorId?: string | null | undefined,
     errorReason?: string,
-    daemonVersion?: string
+    nodeVersion?: string
   ) {
     const sandbox = await this.sandboxRepository.findOneByOrFail({
       id: sandboxId,
@@ -1203,8 +1203,8 @@ export class SandboxManager {
     if (errorReason !== undefined) {
       sandbox.errorReason = errorReason;
     }
-    if (daemonVersion !== undefined) {
-      sandbox.daemonVersion = daemonVersion;
+    if (nodeVersion !== undefined) {
+      sandbox.nodeVersion = nodeVersion;
     }
     await this.sandboxRepository.save(sandbox);
   }
@@ -1216,7 +1216,7 @@ export class SandboxManager {
       "version"
     );
     if (!getVersionResponse.data || !(getVersionResponse.data as any).version) {
-      throw new Error("Failed to get sandbox daemon version");
+      throw new Error("Failed to get sandbox node version");
     }
 
     return (getVersionResponse.data as any).version;

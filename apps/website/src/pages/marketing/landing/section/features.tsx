@@ -1,38 +1,37 @@
 import { StarIcon } from "lucide-react";
 import Avatar from "../components/avatar";
-import Container from "../components/container";
 import FeatureCard from "../components/feature-card";
 import Key from "../components/key";
 import { SectionBadge } from "../components/section-badge";
 
 const features = [
-  "Run code safely",
-  "AI Builder",
-  "1 second startup time",
-  "MCP Server",
+  "Run code",
+  "Fully isolated",
+  "Quick startup time",
+  "MCP Access",
   "Deploy Docker images",
   "Remote access",
-  "Automated sandboxes",
+  "Sandbox automation",
 ];
 
 export default function Features() {
   return (
     <div className="flex w-full flex-col items-center justify-center">
-      <Container>
+      <div className="h-full w-full">
         <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
           <SectionBadge title="Features" />
           <h2 className="!leading-snug mt-4 font-bold font-heading text-2xl md:text-4xl lg:text-5xl">
-            Your powerful sanboxes
+            Built to do anything
           </h2>
           <p className="mt-4 text-center text-accent-foreground/80 text-base md:text-lg">
-            Create one or multiple sandboxes to run Docker images, run user generated code, automate
-            tasks, and more.
+            Create one or more sandboxes to run Docker images, run code, automate tasks, scrape data
+            and more; easily and quickly.
           </p>
         </div>
-      </Container>
+      </div>
       <div className="mt-16 w-full">
         <div className="flex w-full flex-col items-center gap-5 lg:gap-5">
-          <Container>
+          <div className="h-full w-full">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-3">
               <FeatureCard
                 title="Workspaces"
@@ -71,7 +70,7 @@ export default function Features() {
               </FeatureCard>
               <FeatureCard
                 title="Build with AI"
-                description="Create sandboxes to preform specific tasks using natural language; whether its web scraping, data analysis, or automated tasks."
+                description="Use our CLI tool to create sandboxes using natural language. Just say what you want us to do."
                 className="group md:col-span-2 lg:col-span-1"
               >
                 <div className="flex aspect-video items-center justify-center">
@@ -108,14 +107,14 @@ export default function Features() {
                   key={feature}
                   className="group inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-neutral-900 px-3 py-1.5 transition duration-500 hover:scale-105 md:px-5 md:py-2"
                 >
-                  <span className="inline-flex size-5 items-center justify-center rounded-full bg-green-400 text-neutral-950 text-xl transition duration-500 group-hover:rotate-45">
+                  <span className="inline-flex size-5 items-center justify-center rounded-full bg-primary text-neutral-950 text-xl transition duration-500 group-hover:rotate-45">
                     <StarIcon fill="#000" className="size-4" />
                   </span>
                   <span className="font-medium md:text-lg">{feature}</span>
                 </div>
               ))}
             </div>
-          </Container>
+          </div>
         </div>
       </div>
     </div>

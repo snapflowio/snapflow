@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { CURRENCIES, Currency } from "@/constants/plans";
 import { Path } from "@/enums/paths";
 
 export function cn(...inputs: ClassValue[]): string {
@@ -69,4 +70,27 @@ export function capitalize(value: string): string {
 export function getMaskedApiKey(key: string): string {
   if (key.length <= 6) return "*".repeat(key.length);
   return `${key.slice(0, 3)}${"*".repeat(Math.max(0, key.length - 6))}${key.slice(-3)}`;
+}
+
+export function formatCurrency(
+  price: number,
+  currency: Currency = CURRENCIES.DEFAULT,
+  showSymbol = true,
+  showCents = true
+): string {
+  const amount = price / 100;
+
+  const config = {
+    [CURRENCIES.USD]: { symbol: "$", locale: "en-US" },
+    [CURRENCIES.EUR]: { symbol: "€", locale: "en-US" },
+  };
+
+  const currencyConfig = config[currency] || config[CURRENCIES.DEFAULT];
+
+  const formattedAmount = amount.toLocaleString(currencyConfig.locale, {
+    minimumFractionDigits: showCents ? 2 : 0,
+    maximumFractionDigits: showCents ? 2 : 0,
+  });
+
+  return showSymbol ? `${currencyConfig.symbol}${formattedAmount}` : formattedAmount;
 }

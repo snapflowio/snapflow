@@ -16,6 +16,7 @@ import {
 import {
   AlertTriangle,
   Archive,
+  ArchiveIcon,
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
@@ -23,7 +24,9 @@ import {
   CheckCircle,
   Circle,
   MoreHorizontal,
-  Terminal,
+  PlayIcon,
+  StopCircleIcon,
+  TerminalIcon,
   Timer,
 } from "lucide-react";
 import { DebouncedInput } from "@/components/debounce-input";
@@ -527,43 +530,24 @@ const getColumns = ({
       },
     },
     {
-      id: "access",
-      header: "Access",
+      id: "actions",
+      enableHiding: false,
       cell: ({ row }) => {
-        if (row.original.state !== SandboxState.STARTED) return "";
+        if (!writePermitted && !deletePermitted) return null;
+
+        const sandbox = row.original;
 
         let terminalUrl: string | null = null;
 
-        if (!row.original.daemonVersion) {
-          terminalUrl = `https://22222-${row.original.id}.${row.original.executorDomain}`;
+        if (!sandbox.nodeVersion) {
+          terminalUrl = `https://22222-${sandbox.id}.${sandbox.executorDomain}`;
         } else {
           terminalUrl =
             import.meta.env.VITE_PROXY_TEMPLATE_URL?.replace("{{PORT}}", "22222").replace(
               "{{sandboxId}}",
-              row.original.id
+              sandbox.id
             ) || null;
         }
-
-        return (
-          <div className="flex items-center gap-2">
-            {terminalUrl && (
-              <a href={terminalUrl} target="_blank" rel="noopener noreferrer">
-                <Terminal className="h-4 w-4" />
-              </a>
-            )}
-          </div>
-        );
-      },
-    },
-    {
-      id: "actions",
-      enableHiding: false,
-      cell: ({ row }) => {
-        if (!writePermitted && !deletePermitted) {
-          return null;
-        }
-
-        const sandbox = row.original;
 
         return (
           <DropdownMenu>
@@ -577,12 +561,22 @@ const getColumns = ({
               {writePermitted && (
                 <>
                   {sandbox.state === SandboxState.STARTED && (
-                    <DropdownMenuItem
-                      onClick={() => handleStop(sandbox.id)}
-                      className="cursor-pointer"
-                    >
-                      Stop
-                    </DropdownMenuItem>
+                    <>
+                      <DropdownMenuItem
+                        onClick={() => handleStop(sandbox.id)}
+                        className="cursor-pointer"
+                      >
+                        <StopCircleIcon className="h-4 w-4" /> Stop
+                      </DropdownMenuItem>
+
+                      {terminalUrl && (
+                        <DropdownMenuItem asChild className="cursor-pointer">
+                          <a href={terminalUrl} target="_blank" rel="noopener noreferrer">
+                            <TerminalIcon className="h-4 w-4" /> Terminal
+                          </a>
+                        </DropdownMenuItem>
+                      )}
+                    </>
                   )}
                   {(sandbox.state === SandboxState.STOPPED ||
                     sandbox.state === SandboxState.ARCHIVED) && (
@@ -590,7 +584,7 @@ const getColumns = ({
                       onClick={() => handleStart(sandbox.id)}
                       className="cursor-pointer"
                     >
-                      Start
+                      <PlayIcon className="h-4 w-4" /> Start
                     </DropdownMenuItem>
                   )}
                   {sandbox.state === SandboxState.STOPPED && (
@@ -598,7 +592,7 @@ const getColumns = ({
                       onClick={() => handleArchive(sandbox.id)}
                       className="cursor-pointer"
                     >
-                      Archive
+                      <ArchiveIcon className="h-4 w-4" /> Archive
                     </DropdownMenuItem>
                   )}
                 </>

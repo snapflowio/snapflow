@@ -6,11 +6,11 @@
 .dark {
 	--background: oklch(0 0 0);
 	--foreground: oklch(1 0 0);
-	--card: oklch(0.2103 0.0059 285.8852);
+	--card: oklch(0.1684 0 0);
 	--card-foreground: oklch(1 0 0);
 	--popover: oklch(0.2452 0.0075 285.8319);
 	--popover-foreground: oklch(1 0 0);
-	--primary: oklch(1 0 0);
+	--primary: oklch(0.7914 0.2091 151.6619);
 	--primary-foreground: oklch(0.21 0 none);
 	--secondary: oklch(0.2739 0.0055 286.0326);
 	--secondary-foreground: oklch(1 0 0);
@@ -22,7 +22,7 @@
 	--destructive-foreground: oklch(0 0 0);
 	--border: oklch(0.2692 0.0075 274.6762);
 	--input: oklch(0.2711 0.0035 228.9199);
-	--ring: oklch(1 0 0);
+	--ring: oklch(0.7914 0.2091 151.6619);
 	--chart-1: oklch(0.6296 0.2208 293.1713);
 	--chart-2: oklch(0.5975 0.2338 347.7411);
 	--chart-3: oklch(0.8975 0.0042 91.4501);

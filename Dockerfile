@@ -54,6 +54,7 @@ COPY --from=builder /app/node_modules ./node_modules
 RUN chmod +x ./dist/apps/executor
 RUN chmod +x ./dist/apps/node
 RUN chmod +x ./dist/apps/node-amd64
+RUN chmod +x ./dist/apps/proxy
 
 COPY ./entrypoint.sh /
 RUN chmod +x /entrypoint.sh

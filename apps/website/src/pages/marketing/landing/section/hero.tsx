@@ -1,9 +1,11 @@
 "use client";
 import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
+import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Particles } from "@/components/ui/particles";
 import { SITE_CONFIG } from "@/constants/site";
+import { Path } from "@/enums/paths";
 import { AnimatedCube } from "../components/animated-cube";
 
 export function Hero() {
@@ -57,11 +59,11 @@ export function Hero() {
               }}
               className="mb-8 flex flex-wrap gap-4"
             >
-              <Button size="lg" className="bg-green-400 text-background">
+              <Button size="lg" className="bg-primary text-background">
                 Get Started
               </Button>
-              <Button variant="outline" size="lg">
-                Pricing
+              <Button variant="outline" size="lg" asChild>
+                <Link to={Path.PRICING}>Pricing</Link>
               </Button>
               <Button variant="ghost" size="lg">
                 Visit our blog

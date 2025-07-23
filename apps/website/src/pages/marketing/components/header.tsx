@@ -2,11 +2,8 @@ import { ArrowRightIcon } from "lucide-react";
 import { Link } from "react-router";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
-import {
-  NavigationMenu,
-  NavigationMenuLink,
-  NavigationMenuList,
-} from "@/components/ui/navigation-menu";
+import { NavigationMenu, NavigationMenuList } from "@/components/ui/navigation-menu";
+import { Path } from "@/enums/paths";
 
 export function Header() {
   return (
@@ -20,24 +17,21 @@ export function Header() {
                 <span className="font-bold text-xl">Snapflow</span>
               </div>
               <NavigationMenu className="hidden items-center md:flex" aria-label="Main menu">
-                <NavigationMenuList className="flex items-center space-x-4 text-slate-200">
-                  <NavigationMenuLink
-                    href="/pricing"
-                    className="flex items-center font-bold transition-colors hover:bg-transparent hover:underline"
+                <NavigationMenuList className="mt-0.5 flex items-center space-x-4 text-slate-200">
+                  <Link
+                    to={Path.PRICING}
+                    className="flex items-center font-bold text-sm hover:underline"
                   >
                     Pricing
-                  </NavigationMenuLink>
-                  <NavigationMenuLink
-                    href="/docs"
-                    className="flex items-center font-bold transition-colors hover:bg-transparent hover:underline"
-                  >
-                    Documentation
-                  </NavigationMenuLink>
+                  </Link>
+                  <Link to={"/"} className="flex items-center font-bold text-sm hover:underline">
+                    Docs
+                  </Link>
                 </NavigationMenuList>
               </NavigationMenu>
             </div>
             <div className="flex items-center">
-              <Button className="flex items-center rounded-lg" size="lg" asChild>
+              <Button className="flex items-center rounded-lg" variant={"mono"} size="lg" asChild>
                 <Link to="/dashboard" className="flex items-center">
                   Open App
                   <ArrowRightIcon />

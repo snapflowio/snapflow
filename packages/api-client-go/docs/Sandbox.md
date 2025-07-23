@@ -29,7 +29,7 @@ Name | Type | Description | Notes
 **CreatedAt** | Pointer to **string** | The creation timestamp of the sandbox | [optional] 
 **UpdatedAt** | Pointer to **string** | The last update timestamp of the sandbox | [optional] 
 **Class** | Pointer to **string** | The class of the sandbox | [optional] 
-**DaemonVersion** | Pointer to **string** | The version of the daemon running in the sandbox | [optional] 
+**DaemonVersion** | Pointer to **string** | The version of the node running in the sandbox | [optional] 
 
 ## Methods
 

@@ -2,7 +2,6 @@ import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Particles } from "@/components/ui/particles";
 import { RetroGrid } from "@/components/ui/retro-grid";
-import Container from "../components/container";
 
 const COLOR = "#05DF72";
 
@@ -16,7 +15,7 @@ export function CallToAction() {
 
   return (
     <div className="relative flex w-full flex-col items-center justify-center py-12 md:py-16 lg:py-24">
-      <Container>
+      <div className="h-full w-full">
         <div className="relative mx-auto flex h-[500px] w-full flex-col items-center justify-center overflow-hidden rounded-3xl border border-foreground/10 bg-black/50 px-4 text-center md:px-0">
           <div
             className="-translate-x-1/2 pointer-events-none absolute bottom-0 left-1/2 h-[300px] w-[200%]"
@@ -56,7 +55,7 @@ export function CallToAction() {
             >
               Spin up your own <br className="hidden md:block" /> sandboxes now
             </h2>
-            <p className="mx-auto mt-6 max-w-xl text-center text-accent-foreground/80 text-base md:text-lg">
+            <p className="mx-auto mt-6 max-w-md text-center text-accent-foreground/80 text-base md:text-lg">
               Ready to get started? Create your own sandboxes, for free. No credit card required.
             </p>
             <div className="mt-6 flex w-full flex-col items-center justify-center gap-6 md:flex-row">
@@ -64,23 +63,12 @@ export function CallToAction() {
                 asChild
                 size="lg"
                 className="w-full transition-all duration-500 md:w-max"
+                variant={"mono"}
                 style={{
                   boxShadow: `0 0 30px ${hexToRgba(COLOR, 0.3)}, 0 4px 20px ${hexToRgba(COLOR, 0.2)}`,
                 }}
               >
                 <Link to="">Get Started</Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="w-full border-white/20 transition-all md:w-max"
-                style={{
-                  borderColor: hexToRgba(COLOR, 0.3),
-                  boxShadow: `0 0 20px ${hexToRgba(COLOR, 0.1)}`,
-                }}
-              >
-                <Link to="">Learn More</Link>
               </Button>
             </div>
           </div>
@@ -100,7 +88,7 @@ export function CallToAction() {
             className="pointer-events-none absolute inset-0 size-full opacity-30"
           />
         </div>
-      </Container>
+      </div>
     </div>
   );
 }

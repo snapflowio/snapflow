@@ -5221,7 +5221,7 @@ components:
         env:
           NODE_ENV: production
         gpu: 0
-        daemonVersion: 1.0.0
+        nodeVersion: 1.0.0
         backupCreatedAt: 2024-10-01T12:00:00Z
         labels:
           snapflow.io/public: "true"
@@ -5352,8 +5352,8 @@ components:
           - large
           example: small
           type: string
-        daemonVersion:
-          description: The version of the daemon running in the sandbox
+        nodeVersion:
+          description: The version of the node running in the sandbox
           example: 1.0.0
           type: string
       required:

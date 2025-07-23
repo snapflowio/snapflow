@@ -15,7 +15,7 @@ type Config struct {
 	LogFilePath *string `envconfig:"SNAPFLOW_DAEMON_LOG_FILE_PATH"`
 }
 
-var DEFAULT_LOG_FILE_PATH = "/tmp/snapflow-daemon.log"
+var DEFAULT_LOG_FILE_PATH = "/tmp/snapflow-node.log"
 
 var config *Config
 

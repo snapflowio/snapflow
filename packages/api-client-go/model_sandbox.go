@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -73,8 +73,8 @@ type Sandbox struct {
 	// The class of the sandbox
 	// Deprecated
 	Class *string `json:"class,omitempty"`
-	// The version of the daemon running in the sandbox
-	DaemonVersion *string `json:"daemonVersion,omitempty"`
+	// The version of the node running in the sandbox
+	DaemonVersion *string `json:"nodeVersion,omitempty"`
 }
 
 type _Sandbox Sandbox
@@ -855,7 +855,7 @@ func (o *Sandbox) SetDaemonVersion(v string) {
 }
 
 func (o Sandbox) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -918,7 +918,7 @@ func (o Sandbox) ToMap() (map[string]interface{}, error) {
 		toSerialize["class"] = o.Class
 	}
 	if !IsNil(o.DaemonVersion) {
-		toSerialize["daemonVersion"] = o.DaemonVersion
+		toSerialize["nodeVersion"] = o.DaemonVersion
 	}
 	return toSerialize, nil
 }
@@ -946,10 +946,10 @@ func (o *Sandbox) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -1005,5 +1005,3 @@ func (v *NullableSandbox) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -15,10 +15,9 @@ const (
 )
 
 func main() {
-	// Get project root path
 	_, filename, _, _ := runtime.Caller(0)
 	projectRoot := filepath.Join(filepath.Dir(filename), "..")
-	// Create static directory structure
+
 	staticDir := filepath.Join(projectRoot, "pkg", "terminal", "static")
 	err := os.MkdirAll(staticDir, 0755)
 	if err != nil {
@@ -26,14 +25,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Files to download from cdnjs
 	files := map[string]string{
 		filepath.Join(staticDir, "xterm.js"):           fmt.Sprintf("https://cdn.jsdelivr.net/npm/xterm@%s/lib/xterm.js", XTERM_VERSION),
 		filepath.Join(staticDir, "xterm.css"):          fmt.Sprintf("https://cdn.jsdelivr.net/npm/xterm@%s/css/xterm.css", XTERM_VERSION),
 		filepath.Join(staticDir, "xterm-addon-fit.js"): fmt.Sprintf("https://cdn.jsdelivr.net/npm/xterm-addon-fit@%s/lib/xterm-addon-fit.js", XTERM_FIT_VERSION),
 	}
 
-	// Download each file
 	for filePath, url := range files {
 		fmt.Printf("Downloading %s...\n", filePath)
 

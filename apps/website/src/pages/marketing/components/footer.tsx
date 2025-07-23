@@ -5,12 +5,11 @@ import { Particles } from "@/components/ui/particles";
 import { Wrapper } from "@/components/wrapper";
 import { FOOTER_LINKS } from "@/constants/links";
 import { SITE_CONFIG } from "@/constants/site";
-import Container from "../components/container";
 
 export function Footer() {
   return (
     <footer className="relative w-full py-10">
-      <Container>
+      <div className="h-full w-full">
         <Wrapper className="footer relative flex flex-col justify-between overflow-hidden pb-40 md:flex-row">
           <Particles
             className="-z-10 absolute inset-0 w-full"
@@ -49,14 +48,14 @@ export function Footer() {
             ))}
           </div>
         </Wrapper>
-      </Container>
-      <Container>
+      </div>
+      <div className="h-full w-full">
         <Wrapper className="relative flex items-center justify-between pt-10">
           <p className="text-secondary-foreground text-sm">
             &copy; {new Date().getFullYear()} {SITE_CONFIG.NAME}. All rights reserved.
           </p>
         </Wrapper>
-      </Container>
+      </div>
     </footer>
   );
 }

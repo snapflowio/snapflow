@@ -9,7 +9,6 @@ import { ConfigService } from "@nestjs/config";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DataSource, MoreThan, Repository } from "typeorm";
-
 import { UserService } from "../../user/user.service";
 import { OrganizationEvents } from "../constants/organization-events.constant";
 import { CreateOrganizationInvitationDto } from "../dto/create-organization-invitation.dto";
@@ -32,55 +31,49 @@ export class OrganizationInvitationService {
     private readonly organizationRoleService: OrganizationRoleService,
     private readonly userService: UserService,
     private readonly eventEmitter: EventEmitter2,
-    private readonly dataSource: DataSource,
-    private readonly configService: ConfigService,
+    private readonly dataSource: DataSource
   ) {}
 
   async create(
     organizationId: string,
     createOrganizationInvitationDto: CreateOrganizationInvitationDto,
-    invitedBy: string,
+    invitedBy: string
   ): Promise<OrganizationInvitation> {
     const organization = await this.organizationService.findOne(organizationId);
     if (!organization)
-      throw new NotFoundException(
-        `Organization with ID ${organizationId} not found`,
-      );
+      throw new NotFoundException(`Organization with ID ${organizationId} not found`);
 
     if (organization.personal)
-      throw new ForbiddenException(
-        "Cannot invite users to personal organization",
-      );
+      throw new ForbiddenException("Cannot invite users to personal organization");
 
     const existingUser = await this.userService.findOneByEmail(
-      createOrganizationInvitationDto.email,
+      createOrganizationInvitationDto.email
     );
 
     if (existingUser) {
       const organizationUser = await this.organizationUserService.findOne(
         organizationId,
-        existingUser.id,
+        existingUser.id
       );
       if (organizationUser) {
         throw new ConflictException(
-          `User with email ${createOrganizationInvitationDto.email} is already associated with this organization`,
+          `User with email ${createOrganizationInvitationDto.email} is already associated with this organization`
         );
       }
     }
 
-    const existingInvitation =
-      await this.organizationInvitationRepository.findOne({
-        where: {
-          organizationId,
-          email: createOrganizationInvitationDto.email,
-          status: OrganizationInvitationStatus.PENDING,
-          expiresAt: MoreThan(new Date()),
-        },
-      });
+    const existingInvitation = await this.organizationInvitationRepository.findOne({
+      where: {
+        organizationId,
+        email: createOrganizationInvitationDto.email,
+        status: OrganizationInvitationStatus.PENDING,
+        expiresAt: MoreThan(new Date()),
+      },
+    });
 
     if (existingInvitation)
       throw new ConflictException(
-        `User with email "${createOrganizationInvitationDto.email}" already invited to this organization`,
+        `User with email "${createOrganizationInvitationDto.email}" already invited to this organization`
       );
 
     let invitation = new OrganizationInvitation();
@@ -88,19 +81,15 @@ export class OrganizationInvitationService {
     invitation.organization = organization;
     invitation.email = createOrganizationInvitationDto.email;
     invitation.expiresAt =
-      createOrganizationInvitationDto.expiresAt ||
-      new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      createOrganizationInvitationDto.expiresAt || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     invitation.role = createOrganizationInvitationDto.role;
     invitation.invitedBy = invitedBy;
 
     const assignedRoles = await this.organizationRoleService.findByIds(
-      createOrganizationInvitationDto.assignedRoleIds,
+      createOrganizationInvitationDto.assignedRoleIds
     );
 
-    if (
-      assignedRoles.length !==
-      createOrganizationInvitationDto.assignedRoleIds.length
-    )
+    if (assignedRoles.length !== createOrganizationInvitationDto.assignedRoleIds.length)
       throw new BadRequestException("One or more role IDs are invalid");
     invitation.assignedRoles = assignedRoles;
 
@@ -113,8 +102,8 @@ export class OrganizationInvitationService {
         invitation.invitedBy,
         invitation.email,
         invitation.id,
-        invitation.expiresAt,
-      ),
+        invitation.expiresAt
+      )
     );
 
     return invitation;
@@ -122,7 +111,7 @@ export class OrganizationInvitationService {
 
   async update(
     invitationId: string,
-    updateOrganizationInvitationDto: UpdateOrganizationInvitationDto,
+    updateOrganizationInvitationDto: UpdateOrganizationInvitationDto
   ): Promise<OrganizationInvitation> {
     const invitation = await this.organizationInvitationRepository.findOne({
       where: { id: invitationId },
@@ -132,19 +121,14 @@ export class OrganizationInvitationService {
       },
     });
 
-    if (!invitation)
-      throw new NotFoundException(
-        `Invitation with ID ${invitationId} not found`,
-      );
+    if (!invitation) throw new NotFoundException(`Invitation with ID ${invitationId} not found`);
 
     if (invitation.expiresAt && invitation.expiresAt < new Date())
-      throw new ForbiddenException(
-        `Invitation with ID ${invitationId} is expired`,
-      );
+      throw new ForbiddenException(`Invitation with ID ${invitationId} is expired`);
 
     if (invitation.status !== OrganizationInvitationStatus.PENDING)
       throw new ForbiddenException(
-        `Invitation with ID ${invitationId} is already ${invitation.status}`,
+        `Invitation with ID ${invitationId} is already ${invitation.status}`
       );
 
     if (updateOrganizationInvitationDto.expiresAt)
@@ -153,13 +137,10 @@ export class OrganizationInvitationService {
     invitation.role = updateOrganizationInvitationDto.role;
 
     const assignedRoles = await this.organizationRoleService.findByIds(
-      updateOrganizationInvitationDto.assignedRoleIds,
+      updateOrganizationInvitationDto.assignedRoleIds
     );
 
-    if (
-      assignedRoles.length !==
-      updateOrganizationInvitationDto.assignedRoleIds.length
-    )
+    if (assignedRoles.length !== updateOrganizationInvitationDto.assignedRoleIds.length)
       throw new BadRequestException("One or more role IDs are invalid");
 
     invitation.assignedRoles = assignedRoles;
@@ -226,7 +207,7 @@ export class OrganizationInvitationService {
   async accept(invitationId: string, userId: string): Promise<void> {
     const invitation = await this.prepareStatusUpdate(
       invitationId,
-      OrganizationInvitationStatus.ACCEPTED,
+      OrganizationInvitationStatus.ACCEPTED
     );
 
     await this.dataSource.transaction(async (em) => {
@@ -238,8 +219,8 @@ export class OrganizationInvitationService {
           invitation.organizationId,
           userId,
           invitation.role,
-          invitation.assignedRoles,
-        ),
+          invitation.assignedRoles
+        )
       );
     });
   }
@@ -247,7 +228,7 @@ export class OrganizationInvitationService {
   async decline(invitationId: string): Promise<void> {
     const invitation = await this.prepareStatusUpdate(
       invitationId,
-      OrganizationInvitationStatus.DECLINED,
+      OrganizationInvitationStatus.DECLINED
     );
 
     await this.organizationInvitationRepository.save(invitation);
@@ -256,7 +237,7 @@ export class OrganizationInvitationService {
   async cancel(invitationId: string): Promise<void> {
     const invitation = await this.prepareStatusUpdate(
       invitationId,
-      OrganizationInvitationStatus.CANCELLED,
+      OrganizationInvitationStatus.CANCELLED
     );
 
     await this.organizationInvitationRepository.save(invitation);
@@ -264,7 +245,7 @@ export class OrganizationInvitationService {
 
   private async prepareStatusUpdate(
     invitationId: string,
-    newStatus: OrganizationInvitationStatus,
+    newStatus: OrganizationInvitationStatus
   ): Promise<OrganizationInvitation> {
     const invitation = await this.organizationInvitationRepository.findOne({
       where: { id: invitationId },
@@ -274,19 +255,14 @@ export class OrganizationInvitationService {
       },
     });
 
-    if (!invitation)
-      throw new NotFoundException(
-        `Invitation with ID ${invitationId} not found`,
-      );
+    if (!invitation) throw new NotFoundException(`Invitation with ID ${invitationId} not found`);
 
     if (invitation.expiresAt && invitation.expiresAt < new Date())
-      throw new ForbiddenException(
-        `Invitation with ID ${invitationId} is expired`,
-      );
+      throw new ForbiddenException(`Invitation with ID ${invitationId} is expired`);
 
     if (invitation.status !== OrganizationInvitationStatus.PENDING)
       throw new ForbiddenException(
-        `Invitation with ID ${invitationId} is already ${invitation.status}`,
+        `Invitation with ID ${invitationId} is already ${invitation.status}`
       );
 
     invitation.status = newStatus;

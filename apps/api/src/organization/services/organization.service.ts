@@ -15,8 +15,6 @@ import { EntityManager, In, IsNull, LessThan, MoreThan, Not, Or, Repository } fr
 import { DEFAULT_ORGANIZATION_QUOTA } from "../../common/constants/quota.constants";
 import { OnAsyncEvent } from "../../common/decorators/on-async-event.decorator";
 import { RedisLockProvider } from "../../sandbox/common/redis-lock.provider";
-import { Bucket } from "../../sandbox/entities/bucket.entity";
-import { Image } from "../../sandbox/entities/image.entity";
 import { ImageExecutor } from "../../sandbox/entities/image-executor.entity";
 import { Sandbox } from "../../sandbox/entities/sandbox.entity";
 import { SandboxDesiredState } from "../../sandbox/enums/sandbox-desired-state.enum";
@@ -46,12 +44,8 @@ export class OrganizationService implements OnModuleInit {
     private readonly organizationRepository: Repository<Organization>,
     @InjectRepository(Sandbox)
     private readonly sandboxRepository: Repository<Sandbox>,
-    @InjectRepository(Image)
-    private readonly imageRepository: Repository<Image>,
     @InjectRepository(ImageExecutor)
     private readonly imageExecutorRepository: Repository<ImageExecutor>,
-    @InjectRepository(Bucket)
-    private readonly bucketRepository: Repository<Bucket>,
     private readonly eventEmitter: EventEmitter2,
     private readonly configService: ConfigService,
     private readonly redisLockProvider: RedisLockProvider

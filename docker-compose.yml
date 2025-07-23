@@ -1,8 +1,10 @@
 version: '3.8'
-
 services:
   app:
-    build: .
+    image: registry:5000/snapflow:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
     container_name: snapflow_app
     depends_on:
       postgres:
@@ -23,9 +25,7 @@ services:
       - PROXY_DOMAIN=${PROXY_DOMAIN}
       - PROXY_PROTOCOL=${PROXY_PROTOCOL}
       - PROXY_API_KEY=${PROXY_API_KEY}
-      - POSTHOG_API_KEY=${POSTHOG_API_KEY}
-      - POSTHOG_HOST=${POSTHOG_HOST}
-      - DB_HOST=${DB_HOST} 
+      - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
@@ -47,6 +47,17 @@ services:
       - S3_SECRET_KEY=${S3_SECRET_KEY}
       - S3_DEFAULT_BUCKET=${S3_DEFAULT_BUCKET}
       - MAX_AUTO_ARCHIVE_INTERVAL=${MAX_AUTO_ARCHIVE_INTERVAL}
+      - INTERNAL_REGISTRY_URL=${INTERNAL_REGISTRY_URL}
+      - INTERNAL_REGISTRY_ADMIN=${INTERNAL_REGISTRY_ADMIN}
+      - INTERNAL_REGISTRY_PASSWORD=${INTERNAL_REGISTRY_PASSWORD}
+      - INTERNAL_REGISTRY_PROJECT_ID=${INTERNAL_REGISTRY_PROJECT_ID}
+      - TRANSIENT_REGISTRY_URL=${TRANSIENT_REGISTRY_URL}
+      - TRANSIENT_REGISTRY_ADMIN=${TRANSIENT_REGISTRY_ADMIN}
+      - TRANSIENT_REGISTRY_PASSWORD=${TRANSIENT_REGISTRY_PASSWORD}
+      - TRANSIENT_REGISTRY_PROJECT_ID=${TRANSIENT_REGISTRY_PROJECT_ID}
+      - TERMINAL_BINARY_URL=${TERMINAL_BINARY_URL}
+      - POLAR_ACCESS_TOKEN=${POLAR_ACCESS_TOKEN}
+
   postgres:
     image: postgres:16
     container_name: snapflow_postgres
@@ -65,10 +76,25 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
   redis:
     image: redis:latest
     container_name: snapflow_redis
     expose:
       - "6379"
+
+  registry:
+    image: registry:2
+    container_name: snapflow_registry
+    restart: always
+    expose:
+      - "5000"
+    environment:
+      REGISTRY_HTTP_ADDR: 0.0.0.0:5000
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+    volumes:
+      - registry_data:/var/lib/registry
+
 volumes:
   postgres_data:
+  registry_data:

@@ -164,7 +164,7 @@ func (s *Server) Start() error {
 		Handler: r,
 	}
 
-	// Print to stdout so the executor can know that the daemon is ready
+	// Print to stdout so the executor can know that the node is ready
 	fmt.Println("Starting toolbox server on port", config.TOOLBOX_API_PORT)
 
 	listener, err := net.Listen("tcp", httpServer.Addr)

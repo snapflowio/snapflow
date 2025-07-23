@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { ApiKeyResponse, CreateApiKeyPermissionsEnum } from "@snapflow/api-client";
-import { Check, Copy, Plus } from "lucide-react";
+import { Check, Copy, Plus, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -9,7 +9,6 @@ import {
   DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -35,6 +34,7 @@ export function CreateApiKeyDialog({
 }: CreateApiKeyDialogProps) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [expiresAt, setExpiresAt] = useState<Date | undefined>(undefined);
   const [checkedPermissions, setCheckedPermissions] =
     useState<CreateApiKeyPermissionsEnum[]>(availablePermissions);
@@ -126,142 +126,174 @@ export function CreateApiKeyDialog({
           Create Key
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Create New API Key</DialogTitle>
+      <DialogContent
+        className="flex h-[74vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-[600px]"
+        hideCloseButton
+      >
+        <DialogHeader className="flex-shrink-0 border-b px-6 py-4">
+          <div className="flex items-center justify-between">
+            <DialogTitle className="font-medium text-lg">Create API Key</DialogTitle>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 p-0"
+              onClick={() => handleDialogOpenChange(false)}
+            >
+              <XIcon className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </Button>
+          </div>
           <DialogDescription>
             Choose which actions this API key will be authorized to perform.
           </DialogDescription>
         </DialogHeader>
-        {createdKey ? (
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <Label htmlFor="api-key">API Key</Label>
-              <div className="flex items-center justify-between rounded-md bg-muted p-3">
-                <span
-                  className="cursor-text select-all overflow-x-auto pr-2"
-                  onMouseEnter={() => setIsCreatedKeyRevealed(true)}
-                  onMouseLeave={() => setIsCreatedKeyRevealed(false)}
-                >
-                  {isCreatedKeyRevealed ? createdKey.value : getMaskedApiKey(createdKey.value)}
-                </span>
-                {(copied === "API Key" && <Check className="h-4 w-4" />) || (
-                  <Copy
-                    className="h-4 w-4 cursor-pointer"
-                    onClick={() => copyToClipboard(createdKey.value, "API Key")}
-                  />
-                )}
-              </div>
-            </div>
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <div className="flex h-full flex-col">
+            <div
+              ref={scrollContainerRef}
+              className="scrollbar-thin scrollbar-thumb-muted-foreground/20 hover:scrollbar-thumb-muted-foreground/25 scrollbar-track-transparent min-h-0 flex-1 overflow-y-auto px-6"
+            >
+              <div className="flex min-h-full flex-col py-4">
+                {createdKey ? (
+                  <div className="space-y-6">
+                    <div className="space-y-3">
+                      <Label htmlFor="api-key">API Key</Label>
+                      <div className="flex items-center justify-between rounded-md bg-muted p-3">
+                        <span
+                          className="cursor-text select-all overflow-x-auto pr-2"
+                          onMouseEnter={() => setIsCreatedKeyRevealed(true)}
+                          onMouseLeave={() => setIsCreatedKeyRevealed(false)}
+                        >
+                          {isCreatedKeyRevealed
+                            ? createdKey.value
+                            : getMaskedApiKey(createdKey.value)}
+                        </span>
+                        {(copied === "API Key" && <Check className="h-4 w-4" />) || (
+                          <Copy
+                            className="h-4 w-4 cursor-pointer"
+                            onClick={() => copyToClipboard(createdKey.value, "API Key")}
+                          />
+                        )}
+                      </div>
+                    </div>
 
-            <div className="space-y-3">
-              <Label htmlFor="api-url">API URL</Label>
-              <div className="flex items-center justify-between rounded-md bg-muted p-3">
-                {import.meta.env.VITE_API_URL}
-                {(copied === "API URL" && <Check className="h-4 w-4" />) || (
-                  <Copy
-                    className="h-4 w-4 cursor-pointer"
-                    onClick={() => copyToClipboard(import.meta.env.VITE_API_URL, "API URL")}
-                  />
+                    <div className="space-y-3">
+                      <Label htmlFor="api-url">API URL</Label>
+                      <div className="flex items-center justify-between rounded-md bg-muted p-3">
+                        {import.meta.env.VITE_API_URL}
+                        {(copied === "API URL" && <Check className="h-4 w-4" />) || (
+                          <Copy
+                            className="h-4 w-4 cursor-pointer"
+                            onClick={() => copyToClipboard(import.meta.env.VITE_API_URL, "API URL")}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <form
+                    id="create-api-key-form"
+                    className="space-y-6 overflow-y-auto px-1 pb-1"
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      await handleCreateApiKey();
+                    }}
+                  >
+                    <div className="space-y-3">
+                      <Label htmlFor="key-name">Key Name</Label>
+                      <Input
+                        id="key-name"
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Name"
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      <Label htmlFor="expires-at">Expires</Label>
+                      <DatePicker
+                        value={expiresAt}
+                        onChange={setExpiresAt}
+                        disabledBefore={new Date()}
+                        id="expires-at"
+                      />
+                    </div>
+                    {availableGroups.length > 0 && (
+                      <div className="space-y-3">
+                        <Label htmlFor="permissions">Permissions</Label>
+                        <div className="space-y-6">
+                          {availableGroups.map((group) => {
+                            const groupIsChecked = isGroupChecked(group);
+
+                            return (
+                              <div key={group.name} className="space-y-3">
+                                <div className="flex items-center space-x-2">
+                                  <Checkbox
+                                    id={`group-${group.name}`}
+                                    checked={groupIsChecked}
+                                    onCheckedChange={() => handleGroupToggle(group)}
+                                  />
+                                  <Label htmlFor={`group-${group.name}`} className="font-normal">
+                                    {group.name}
+                                  </Label>
+                                </div>
+                                <div className="ml-6 space-y-2">
+                                  {group.permissions.map((permission) => (
+                                    <div key={permission} className="flex items-center space-x-2">
+                                      <Checkbox
+                                        id={permission}
+                                        checked={checkedPermissions.includes(permission)}
+                                        onCheckedChange={() => handlePermissionToggle(permission)}
+                                        disabled={groupIsChecked}
+                                        className={`${groupIsChecked ? "pointer-events-none" : ""}`}
+                                      />
+                                      <Label
+                                        htmlFor={permission}
+                                        className={`font-normal${groupIsChecked ? " pointer-events-none opacity-70" : ""}`}
+                                      >
+                                        {permission}
+                                      </Label>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </form>
                 )}
               </div>
             </div>
           </div>
-        ) : (
-          <form
-            id="create-api-key-form"
-            className="space-y-6 overflow-y-auto px-1 pb-1"
-            onSubmit={async (e) => {
-              e.preventDefault();
-              await handleCreateApiKey();
-            }}
-          >
-            <div className="space-y-3">
-              <Label htmlFor="key-name">Key Name</Label>
-              <Input
-                id="key-name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Name"
-              />
-            </div>
-            <div className="space-y-3">
-              <Label htmlFor="expires-at">Expires</Label>
-              <DatePicker
-                value={expiresAt}
-                onChange={setExpiresAt}
-                disabledBefore={new Date()}
-                id="expires-at"
-              />
-            </div>
-            {availableGroups.length > 0 && (
-              <div className="space-y-3">
-                <Label htmlFor="permissions">Permissions</Label>
-                <div className="space-y-6">
-                  {availableGroups.map((group) => {
-                    const groupIsChecked = isGroupChecked(group);
+        </div>
 
-                    return (
-                      <div key={group.name} className="space-y-3">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`group-${group.name}`}
-                            checked={groupIsChecked}
-                            onCheckedChange={() => handleGroupToggle(group)}
-                          />
-                          <Label htmlFor={`group-${group.name}`} className="font-normal">
-                            {group.name}
-                          </Label>
-                        </div>
-                        <div className="ml-6 space-y-2">
-                          {group.permissions.map((permission) => (
-                            <div key={permission} className="flex items-center space-x-2">
-                              <Checkbox
-                                id={permission}
-                                checked={checkedPermissions.includes(permission)}
-                                onCheckedChange={() => handlePermissionToggle(permission)}
-                                disabled={groupIsChecked}
-                                className={`${groupIsChecked ? "pointer-events-none" : ""}`}
-                              />
-                              <Label
-                                htmlFor={permission}
-                                className={`font-normal${groupIsChecked ? " pointer-events-none opacity-70" : ""}`}
-                              >
-                                {permission}
-                              </Label>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </form>
-        )}
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button type="button">Close</Button>
-          </DialogClose>
-          {loading ? (
-            <Button type="button" variant="default" disabled>
-              Creating...
-            </Button>
-          ) : (
-            !createdKey && (
-              <Button
-                type="submit"
-                form="create-api-key-form"
-                variant="default"
-                disabled={!name.trim() || !checkedPermissions.length}
-              >
-                Create
+        <div className="mt-auto border-t px-6 pt-4 pb-6">
+          <div className="flex justify-between">
+            <DialogClose asChild>
+              <Button type="button" variant={"outline"}>
+                Close
               </Button>
-            )
-          )}
-        </DialogFooter>
+            </DialogClose>
+            {loading ? (
+              <Button type="button" variant="default" disabled>
+                Creating...
+              </Button>
+            ) : (
+              !createdKey && (
+                <Button
+                  type="submit"
+                  form="create-api-key-form"
+                  variant="default"
+                  disabled={!name.trim() || !checkedPermissions.length}
+                >
+                  Create
+                </Button>
+              )
+            )}
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );

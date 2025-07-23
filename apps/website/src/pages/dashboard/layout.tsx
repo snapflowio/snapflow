@@ -72,7 +72,7 @@ export function DashboardLayout() {
 
   return (
     <div className="min-h-screen">
-      <div className="bg-green-400 px-4 py-2 text-center font-medium text-black text-sm">
+      <div className="bg-primary px-4 py-2 text-center font-medium text-black text-sm">
         🎁 Use voucher code "BETALAUNCH" to get an extra 24 hours of sandbox runtime!
       </div>
       <header className="mx-4 bg-background">
@@ -102,7 +102,7 @@ export function DashboardLayout() {
             <Section title="API Keys" url={Path.API_KEYS} />
             <Section title="Settings" url={Path.SETTINGS} />
             <div
-              className="absolute bottom-0 h-0.5 bg-[#00ff88] transition-all duration-300 ease-out"
+              className="absolute bottom-0 h-0.5 bg-primary transition-all duration-300 ease-out"
               style={{ left: underlineStyle.left, width: underlineStyle.width }}
             />
           </nav>

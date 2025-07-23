@@ -13,8 +13,8 @@ import axios, { AxiosError, AxiosInstance } from "axios";
 import { SnapflowError } from "./errors";
 
 export class ApiClient {
+  public axiosInstance: AxiosInstance;
   private config: Configuration;
-  private axiosInstance: AxiosInstance;
   private _imageApi: ImagesApi;
   private _sandboxApi: SandboxApi;
   private _userApi: UsersApi;

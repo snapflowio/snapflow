@@ -7,6 +7,8 @@ import { Callback } from "@/pages/callback";
 import { Buckets } from "@/pages/dashboard/buckets/buckets";
 import { OrganizationMembers } from "@/pages/dashboard/organization-members/organization-members";
 import { OrganizationSettings } from "@/pages/dashboard/organization-settings/organization-settings";
+import { MarketingLayout } from "@/pages/marketing/layout";
+import { Pricing } from "@/pages/marketing/pricing/pricing";
 import { Loading } from "../components/loading";
 import { getRouteSubPath, Path } from "../enums/paths";
 import { ApiKeys } from "../pages/dashboard/api-keys/api-keys";
@@ -14,8 +16,8 @@ import { Dashboard } from "../pages/dashboard/dashboard";
 import { Images } from "../pages/dashboard/images/images";
 import { DashboardLayout } from "../pages/dashboard/layout";
 import { Sandboxes } from "../pages/dashboard/sandboxes/sandboxes";
-import Landing from "../pages/landing/landing";
 import Logout from "../pages/logout";
+import Landing from "../pages/marketing/landing/landing";
 import { NotFound } from "../pages/not-found";
 import { ApiProvider } from "../providers/api-provider";
 import { OrganizationsProvider } from "../providers/organization-provider";
@@ -26,7 +28,11 @@ export function Routes() {
   return (
     <ReactRoutes>
       <Route path="*" element={<NotFound />} />
-      <Route path="/" element={<Landing />} />
+      <Route path="/" element={<MarketingLayout />}>
+        <Route index element={<Landing />} />
+        <Route path={Path.PRICING} element={<Pricing />} />
+      </Route>
+
       <Route path="/callback" element={<Callback />} />
       <Route path={Path.LOGOUT} element={<Logout />} />
       <Route

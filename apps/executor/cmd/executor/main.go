@@ -54,7 +54,7 @@ func main() {
 
 	executorCache.Cleanup(ctx)
 
-	daemonPath, err := node.WriteNodeBinary()
+	nodePath, err := node.WriteNodeBinary()
 	if err != nil {
 		log.Error(err)
 		return
@@ -68,7 +68,7 @@ func main() {
 		AWSEndpointUrl:     cfg.AWSEndpointUrl,
 		AWSAccessKeyId:     cfg.AWSAccessKeyId,
 		AWSSecretAccessKey: cfg.AWSSecretAccessKey,
-		DaemonPath:         daemonPath,
+		DaemonPath:         nodePath,
 	})
 
 	sandboxService := services.NewSandboxService(executorCache, dockerClient)

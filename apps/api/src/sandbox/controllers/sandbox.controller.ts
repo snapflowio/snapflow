@@ -488,7 +488,7 @@ export class SandboxController {
       }
 
       // Return new preview url only for updated sandboxes
-      if (sandbox.daemonVersion) {
+      if (sandbox.nodeVersion) {
         return {
           url: `${proxyProtocol}://${port}-${sandbox.id}.${proxyDomain}`,
           legacyProxyUrl: `https://${port}-${sandbox.id}.${executor.domain}`,

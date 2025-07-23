@@ -31,10 +31,6 @@ export const config = {
     port: Number.parseInt(process.env.REDIS_PORT || "6379", 10),
     tls: process.env.REDIS_TLS === "true" ? {} : undefined,
   },
-  posthog: {
-    apiKey: process.env.POSTHOG_API_KEY,
-    host: process.env.POSTHOG_HOST,
-  },
   smtp: {
     host: process.env.SMTP_HOST,
     port: Number.parseInt(process.env.SMTP_PORT || "587", 10),
@@ -45,6 +41,7 @@ export const config = {
   },
   defaultImage: process.env.DEFAULT_IMAGE,
   dashboardUrl: process.env.DASHBOARD_URL,
+  polarAccessKey: process.env.POLAR_ACCESS_KEY,
   s3: {
     endpoint: process.env.S3_ENDPOINT,
     region: process.env.S3_REGION,

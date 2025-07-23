@@ -6,7 +6,7 @@ import (
 )
 
 func WriteNodeBinary() (string, error) {
-	daemonBinary, err := static.ReadFile("static/node-amd64")
+	nodeBinary, err := static.ReadFile("static/node-amd64")
 	if err != nil {
 		return "", err
 	}
@@ -22,23 +22,23 @@ func WriteNodeBinary() (string, error) {
 		return "", err
 	}
 
-	daemonPath := filepath.Join(tmpBinariesDir, "node-amd64")
-	_, err = os.Stat(daemonPath)
+	nodePath := filepath.Join(tmpBinariesDir, "node-amd64")
+	_, err = os.Stat(nodePath)
 	if err != nil && !os.IsNotExist(err) {
 		return "", err
 	}
 
 	if err == nil {
-		err = os.Remove(daemonPath)
+		err = os.Remove(nodePath)
 		if err != nil {
 			return "", err
 		}
 	}
 
-	err = os.WriteFile(daemonPath, daemonBinary, 0755)
+	err = os.WriteFile(nodePath, nodeBinary, 0755)
 	if err != nil {
 		return "", err
 	}
 
-	return daemonPath, nil
+	return nodePath, nil
 }
