@@ -1,29 +1,39 @@
 package fs
 
 import (
-	"errors"
+	"io"
 	"net/http"
+	"os"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
-func UploadFile(c *gin.Context) {
-	path := c.Query("path")
+func UploadFile(c echo.Context) error {
+	path := c.QueryParam("path")
 	if path == "" {
-		c.AbortWithError(http.StatusBadRequest, errors.New("path is required"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "path is required")
 	}
 
 	file, err := c.FormFile("file")
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	if err := c.SaveUploadedFile(file, path); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+	src, err := file.Open()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	defer src.Close()
+
+	dst, err := os.Create(path)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	defer dst.Close()
+
+	if _, err = io.Copy(dst, src); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	c.Status(http.StatusOK)
+	return c.NoContent(http.StatusOK)
 }

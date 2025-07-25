@@ -8,7 +8,8 @@ import (
 	"os"
 	"path"
 
-	common_proxy "github.com/snapflow/go-common/pkg/proxy"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/snapflow/node/internal"
 	"github.com/snapflow/node/pkg/toolbox/config"
 	"github.com/snapflow/node/pkg/toolbox/fs"
@@ -19,9 +20,6 @@ import (
 	"github.com/snapflow/node/pkg/toolbox/process"
 	"github.com/snapflow/node/pkg/toolbox/process/session"
 	"github.com/snapflow/node/pkg/toolbox/proxy"
-
-	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -34,33 +32,30 @@ type ProjectDirResponse struct {
 	Dir string `json:"dir"`
 } // @name ProjectDirResponse
 
-func (s *Server) GetProjectDir(ctx *gin.Context) {
+func (s *Server) GetProjectDir(c echo.Context) error {
 	projectDir := ProjectDirResponse{
 		Dir: s.ProjectDir,
 	}
 
-	ctx.JSON(http.StatusOK, projectDir)
+	return c.JSON(http.StatusOK, projectDir)
 }
 
 func (s *Server) Start() error {
-	// Set Gin to release mode in production
-	if os.Getenv("ENVIRONMENT") == "production" {
-		gin.SetMode(gin.ReleaseMode)
-	}
+	e := echo.New()
+	e.HideBanner = true
+	e.HidePort = true
+	e.Use(middleware.Recover())
+	e.Use(middlewares.LoggingMiddleware())
+	e.Use(middlewares.ErrorMiddleware())
+	e.Validator = NewDefaultValidator()
 
-	r := gin.New()
-	r.Use(gin.Recovery())
-	r.Use(middlewares.LoggingMiddleware())
-	r.Use(middlewares.ErrorMiddleware())
-	binding.Validator = new(DefaultValidator)
-
-	r.GET("/version", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{
+	e.GET("/version", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, map[string]interface{}{
 			"version": internal.Version,
 		})
 	})
 
-	r.GET("/project-dir", s.GetProjectDir)
+	e.GET("/project-dir", s.GetProjectDir)
 
 	dirname, err := os.UserHomeDir()
 	if err != nil {
@@ -75,7 +70,7 @@ func (s *Server) Start() error {
 
 	log.Println("configDir", configDir)
 
-	fsController := r.Group("/files")
+	fsController := e.Group("/files")
 	{
 		// read operations
 		fsController.GET("/", fs.ListFiles)
@@ -96,7 +91,7 @@ func (s *Server) Start() error {
 		fsController.DELETE("/", fs.DeleteFile)
 	}
 
-	processController := r.Group("/process")
+	processController := e.Group("/process")
 	{
 		processController.POST("/execute", process.ExecuteCommand)
 
@@ -113,7 +108,7 @@ func (s *Server) Start() error {
 		}
 	}
 
-	gitController := r.Group("/git")
+	gitController := e.Group("/git")
 	{
 		gitController.GET("/branches", git.ListBranches)
 		gitController.GET("/history", git.GetCommitHistory)
@@ -129,7 +124,7 @@ func (s *Server) Start() error {
 		gitController.POST("/push", git.PushChanges)
 	}
 
-	lspController := r.Group("/lsp")
+	lspController := e.Group("/lsp")
 	{
 		//	server process
 		lspController.POST("/start", lsp.Start)
@@ -146,31 +141,29 @@ func (s *Server) Start() error {
 
 	portDetector := port.NewPortsDetector()
 
-	portController := r.Group("/port")
+	portController := e.Group("/port")
 	{
 		portController.GET("", portDetector.GetPorts)
 		portController.GET("/:port/in-use", portDetector.IsPortInUse)
 	}
 
-	proxyController := r.Group("/proxy")
+	proxyController := e.Group("/proxy")
 	{
-		proxyController.Any("/:port/*path", common_proxy.NewProxyRequestHandler(proxy.GetProxyTarget))
+		proxyController.Any("/:port/*", proxy.ProxyHandler)
 	}
 
 	go portDetector.Start(context.Background())
 
-	httpServer := &http.Server{
-		Addr:    fmt.Sprintf(":%d", config.TOOLBOX_API_PORT),
-		Handler: r,
-	}
+	addr := fmt.Sprintf(":%d", config.TOOLBOX_API_PORT)
 
 	// Print to stdout so the executor can know that the node is ready
 	fmt.Println("Starting toolbox server on port", config.TOOLBOX_API_PORT)
 
-	listener, err := net.Listen("tcp", httpServer.Addr)
+	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
 	}
 
-	return httpServer.Serve(listener)
+	e.Listener = listener
+	return e.Start("")
 }

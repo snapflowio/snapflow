@@ -1,7 +1,6 @@
 package fs
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -9,52 +8,43 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
-func SetFilePermissions(c *gin.Context) {
-	path := c.Query("path")
-	ownerParam := c.Query("owner")
-	groupParam := c.Query("group")
-	mode := c.Query("mode")
+func SetFilePermissions(c echo.Context) error {
+	path := c.QueryParam("path")
+	ownerParam := c.QueryParam("owner")
+	groupParam := c.QueryParam("group")
+	mode := c.QueryParam("mode")
 
 	if path == "" {
-		c.AbortWithError(http.StatusBadRequest, errors.New("path is required"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "path is required")
 	}
 
 	absPath, err := filepath.Abs(path)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, errors.New("invalid path"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid path")
 	}
 
 	_, err = os.Stat(absPath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			c.AbortWithError(http.StatusNotFound, err)
-			return
+			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		}
-
 		if os.IsPermission(err) {
-			c.AbortWithError(http.StatusForbidden, err)
-			return
+			return echo.NewHTTPError(http.StatusForbidden, err.Error())
 		}
-
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	if mode != "" {
 		modeNum, err := strconv.ParseUint(mode, 8, 32)
 		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, errors.New("invalid mode format"))
-			return
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid mode format")
 		}
 
 		if err := os.Chmod(absPath, os.FileMode(modeNum)); err != nil {
-			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to change mode: %w", err))
-			return
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("failed to change mode: %v", err))
 		}
 	}
 
@@ -71,12 +61,10 @@ func SetFilePermissions(c *gin.Context) {
 				// try as username
 				if u, err := user.Lookup(ownerParam); err == nil {
 					if uid, err = strconv.Atoi(u.Uid); err != nil {
-						c.AbortWithError(http.StatusBadRequest, errors.New("invalid user ID"))
-						return
+						return echo.NewHTTPError(http.StatusBadRequest, "invalid user ID")
 					}
 				} else {
-					c.AbortWithError(http.StatusBadRequest, errors.New("user not found"))
-					return
+					return echo.NewHTTPError(http.StatusBadRequest, "user not found")
 				}
 			}
 		}
@@ -90,21 +78,18 @@ func SetFilePermissions(c *gin.Context) {
 				// try as group name
 				if g, err := user.LookupGroup(groupParam); err == nil {
 					if gid, err = strconv.Atoi(g.Gid); err != nil {
-						c.AbortWithError(http.StatusBadRequest, errors.New("invalid group ID"))
-						return
+						return echo.NewHTTPError(http.StatusBadRequest, "invalid group ID")
 					}
 				} else {
-					c.AbortWithError(http.StatusBadRequest, errors.New("group not found"))
-					return
+					return echo.NewHTTPError(http.StatusBadRequest, "group not found")
 				}
 			}
 		}
 
 		if err := os.Chown(absPath, uid, gid); err != nil {
-			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to change ownership: %w", err))
-			return
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("failed to change ownership: %v", err))
 		}
 	}
 
-	c.Status(http.StatusOK)
+	return c.NoContent(http.StatusOK)
 }

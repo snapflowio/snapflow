@@ -2,87 +2,74 @@ package fs
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
-func MoveFile(c *gin.Context) {
-	sourcePath := c.Query("source")
-	destPath := c.Query("destination")
+func MoveFile(c echo.Context) error {
+	sourcePath := c.QueryParam("source")
+	destPath := c.QueryParam("destination")
 
 	if sourcePath == "" || destPath == "" {
-		c.AbortWithError(http.StatusBadRequest, errors.New("source and destination paths are required"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "source and destination paths are required")
 	}
 
 	absSourcePath, err := filepath.Abs(sourcePath)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, errors.New("invalid source path"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid source path")
 	}
 
 	absDestPath, err := filepath.Abs(destPath)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, errors.New("invalid destination path"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid destination path")
 	}
 
 	sourceInfo, err := os.Stat(absSourcePath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			c.AbortWithError(http.StatusNotFound, err)
-			return
+			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		}
 		if os.IsPermission(err) {
-			c.AbortWithError(http.StatusForbidden, err)
-			return
+			return echo.NewHTTPError(http.StatusForbidden, err.Error())
 		}
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	destDir := filepath.Dir(absDestPath)
 	_, err = os.Stat(destDir)
 	if err != nil {
 		if os.IsNotExist(err) {
-			c.AbortWithError(http.StatusNotFound, err)
-			return
+			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		}
 		if os.IsPermission(err) {
-			c.AbortWithError(http.StatusForbidden, err)
-			return
+			return echo.NewHTTPError(http.StatusForbidden, err.Error())
 		}
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	if _, err := os.Stat(absDestPath); err == nil {
-		c.AbortWithError(http.StatusConflict, errors.New("destination already exists"))
-		return
+		return echo.NewHTTPError(http.StatusConflict, "destination already exists")
 	}
 
 	err = os.Rename(absSourcePath, absDestPath)
 	if err != nil {
 		if err := copyFile(absSourcePath, absDestPath, sourceInfo); err != nil {
-			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("failed to move file: %w", err))
-			return
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("failed to move file: %v", err))
 		}
 
 		if err := os.RemoveAll(absSourcePath); err != nil {
-			c.JSON(http.StatusOK, gin.H{
+			return c.JSON(http.StatusOK, map[string]interface{}{
 				"message": "file copied successfully but source could not be deleted",
 				"error":   fmt.Sprintf("failed to delete source: %v", err),
 			})
-			return
 		}
 	}
 
-	c.Status(http.StatusOK)
+	return c.NoContent(http.StatusOK)
 }
 
 func copyFile(src, dst string, srcInfo os.FileInfo) error {

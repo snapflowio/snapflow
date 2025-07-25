@@ -4,15 +4,14 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 	"github.com/snapflow/node/pkg/git"
 )
 
-func CreateBranch(c *gin.Context) {
+func CreateBranch(c echo.Context) error {
 	var req GitBranchRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
-		return
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("invalid request body: %v", err))
 	}
 
 	gitService := git.Service{
@@ -20,9 +19,8 @@ func CreateBranch(c *gin.Context) {
 	}
 
 	if err := gitService.CreateBranch(req.Name); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	c.Status(http.StatusCreated)
+	return c.NoContent(http.StatusCreated)
 }

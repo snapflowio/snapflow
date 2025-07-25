@@ -1,56 +1,47 @@
 package fs
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
-func DownloadFile(c *gin.Context) {
-	requestedPath := c.Query("path")
+func DownloadFile(c echo.Context) error {
+	requestedPath := c.QueryParam("path")
 	if requestedPath == "" {
-		c.AbortWithError(http.StatusBadRequest, errors.New("path is required"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "path is required")
 	}
 
 	absPath, err := filepath.Abs(requestedPath)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("invalid path: %w", err))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("invalid path: %v", err))
 	}
 
 	fileInfo, err := os.Stat(absPath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			c.AbortWithError(http.StatusNotFound, err)
-			return
+			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		}
-
 		if os.IsPermission(err) {
-			c.AbortWithError(http.StatusForbidden, err)
-			return
+			return echo.NewHTTPError(http.StatusForbidden, err.Error())
 		}
-
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	if fileInfo.IsDir() {
-		c.AbortWithError(http.StatusBadRequest, errors.New("path must be a file"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "path must be a file")
 	}
 
-	c.Header("Content-Description", "File Transfer")
-	c.Header("Content-Type", "application/octet-stream")
-	c.Header("Content-Disposition", "attachment; filename="+filepath.Base(absPath))
-	c.Header("Content-Transfer-Encoding", "binary")
-	c.Header("Expires", "0")
-	c.Header("Cache-Control", "must-revalidate")
-	c.Header("Pragma", "public")
+	c.Response().Header().Set("Content-Description", "File Transfer")
+	c.Response().Header().Set("Content-Type", "application/octet-stream")
+	c.Response().Header().Set("Content-Disposition", "attachment; filename="+filepath.Base(absPath))
+	c.Response().Header().Set("Content-Transfer-Encoding", "binary")
+	c.Response().Header().Set("Expires", "0")
+	c.Response().Header().Set("Cache-Control", "must-revalidate")
+	c.Response().Header().Set("Pragma", "public")
 
-	c.File(absPath)
+	return c.File(absPath)
 }

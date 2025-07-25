@@ -1,20 +1,18 @@
 package fs
 
 import (
-	"errors"
 	"net/http"
 	"os"
 	"path/filepath"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
-func SearchFiles(c *gin.Context) {
-	path := c.Query("path")
-	pattern := c.Query("pattern")
+func SearchFiles(c echo.Context) error {
+	path := c.QueryParam("path")
+	pattern := c.QueryParam("pattern")
 	if path == "" || pattern == "" {
-		c.AbortWithError(http.StatusBadRequest, errors.New("path and pattern are required"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "path and pattern are required")
 	}
 
 	var matches []string
@@ -29,11 +27,10 @@ func SearchFiles(c *gin.Context) {
 	})
 
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	c.JSON(http.StatusOK, SearchFilesResponse{
+	return c.JSON(http.StatusOK, SearchFilesResponse{
 		Files: matches,
 	})
 }

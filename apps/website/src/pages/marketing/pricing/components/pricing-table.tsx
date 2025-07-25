@@ -60,7 +60,7 @@ function PricingCard({ pricing }: PricingCardProps) {
         <CardDescription className="mt-4">{pricing.description}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-2">
-        <p className="flex items-end gap-2 bg-gradient-to-b from-green-200 to-primary bg-clip-text text-transparent">
+        <p className="flex items-end gap-2 text-primary">
           <span className="font-bold font-heading text-5xl">
             <Check>
               <Check.When condition={pricing.id === "free"}>Free</Check.When>

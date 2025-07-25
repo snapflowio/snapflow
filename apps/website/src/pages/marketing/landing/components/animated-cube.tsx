@@ -1,6 +1,6 @@
 export function AnimatedCube() {
   return (
-    <div className="m-0 flex overflow-hidden bg-black p-0">
+    <div className="m-0 flex overflow-hidden bg-background p-0">
       <svg
         width="512"
         height="512"
@@ -11,23 +11,13 @@ export function AnimatedCube() {
         style={{ overflow: "hidden" }}
       >
         <use href="#cube" x="26" y="218" strokeWidth="2" opacity="0.3">
-          <animate
-            attributeName="stroke"
-            dur="6s"
-            repeatCount="indefinite"
-            values="#00ffaa;#00dd88;#00bb66;#00ffaa"
-          />
+          <animate attributeName="stroke" dur="6s" repeatCount="indefinite" values="#A8FF53;" />
         </use>
 
         <rect width="512" height="512" y="358" fill="url(#fade)" />
 
         <use href="#cube" x="26" y="26" strokeWidth="2">
-          <animate
-            attributeName="stroke"
-            dur="6s"
-            repeatCount="indefinite"
-            values="#00ffaa;#00dd88;#00bb66;#00ffaa"
-          />
+          <animate attributeName="stroke" dur="6s" repeatCount="indefinite" values="#A8FF53;" />
         </use>
 
         <defs>
@@ -102,13 +92,13 @@ export function AnimatedCube() {
           </g>
 
           <linearGradient id="fade" gradientTransform="rotate(90)">
-            <stop offset="0" stopColor="#00000000" />
-            <stop offset="0.25" stopColor="#000000ff" />
+            <stop offset="0" stopColor="#12131700" />
+            <stop offset="0.25" stopColor="#121317FF" />
           </linearGradient>
 
           <linearGradient id="sky" gradientTransform="rotate(90)">
-            <stop offset="0.5" stopColor="#000000" />
-            <stop offset="1" stopColor="#000000" />
+            <stop offset="0.5" stopColor="#121317" />
+            <stop offset="1" stopColor="#121317" />
           </linearGradient>
 
           <pattern
@@ -122,26 +112,26 @@ export function AnimatedCube() {
           >
             <rect width="256" height="256" fill="url(#sky)" />
             <use href="#star01" x="24" y="32" fill="white" />
-            <use href="#star01" x="64" y="96" fill="#00ff88" transform="rotate(90 80 112)" />
-            <use href="#star01" x="224" y="102" fill="#00ff88" />
+            <use href="#star01" x="64" y="96" fill="#A8FF53" transform="rotate(90 80 112)" />
+            <use href="#star01" x="224" y="102" fill="#A8FF53" />
             <use href="#star01" x="192" y="112" fill="#ffffff" transform="rotate(90 80 112)" />
-            <use href="#star02" x="16" y="64" fill="#00ff88" />
+            <use href="#star02" x="16" y="64" fill="#A8FF53" />
             <use href="#star03" x="96" y="16" fill="#ffffff" />
-            <use href="#star04" x="64" y="64" fill="#00ff88" />
-            <use href="#star04" x="8" y="16" fill="#00ff88" />
+            <use href="#star04" x="64" y="64" fill="#A8FF53" />
+            <use href="#star04" x="8" y="16" fill="#A8FF53" />
             <use href="#star04" x="110" y="96" fill="#ffffff" />
-            <use href="#star02" x="160" y="24" fill="#00ff88" />
+            <use href="#star02" x="160" y="24" fill="#A8FF53" />
             <use href="#star03" x="196" y="60" fill="#ffffff" />
-            <use href="#star04" x="64" y="212" fill="#00ff88" />
-            <use href="#star04" x="218" y="216" fill="#00ff88" />
+            <use href="#star04" x="64" y="212" fill="#A8FF53" />
+            <use href="#star04" x="218" y="216" fill="#A8FF53" />
             <use href="#star03" x="228" y="220" fill="#ffffff" />
-            <use href="#star02" x="140" y="128" fill="#00ff88" />
+            <use href="#star02" x="140" y="128" fill="#A8FF53" />
             <use href="#star03" x="24" y="140" fill="#ffffff" />
-            <use href="#star04" x="95" y="160" fill="#00ff88" />
-            <use href="#star04" x="180" y="128" fill="#00ff88" />
+            <use href="#star04" x="95" y="160" fill="#A8FF53" />
+            <use href="#star04" x="180" y="128" fill="#A8FF53" />
             <use href="#star03" x="200" y="136" fill="#ffffff" />
             <use href="#star10" x="120" y="120" stroke="#ffffff" />
-            <use href="#star11" x="48" y="64" stroke="#00ff88" />
+            <use href="#star11" x="48" y="64" stroke="#A8FF53" />
           </pattern>
 
           <path id="star01" transform="scale(0.5)">

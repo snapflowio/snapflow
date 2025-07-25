@@ -72,9 +72,6 @@ export function DashboardLayout() {
 
   return (
     <div className="min-h-screen">
-      <div className="bg-primary px-4 py-2 text-center font-medium text-black text-sm">
-        🎁 Use voucher code "BETALAUNCH" to get an extra 24 hours of sandbox runtime!
-      </div>
       <header className="mx-4 bg-background">
         <div className="border-[#1a1a1a]">
           <div className="mt-3 flex h-10 items-center space-x-2 px-4">

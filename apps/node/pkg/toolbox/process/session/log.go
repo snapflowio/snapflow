@@ -8,46 +8,42 @@ import (
 	"os"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/labstack/echo/v4"
 	"github.com/snapflow/node/internal/util"
 
 	log "github.com/sirupsen/logrus"
 )
 
-func (s *SessionController) GetSessionCommandLogs(c *gin.Context) {
+func (s *SessionController) GetSessionCommandLogs(c echo.Context) error {
 	sessionId := c.Param("sessionId")
 	cmdId := c.Param("commandId")
 
 	session, ok := sessions[sessionId]
 	if !ok || session.deleted {
-		c.AbortWithError(http.StatusNotFound, errors.New("session not found"))
-		return
+		return echo.NewHTTPError(http.StatusNotFound, "session not found")
 	}
 
 	command, ok := sessions[sessionId].commands[cmdId]
 	if !ok {
-		c.AbortWithError(http.StatusNotFound, errors.New("command not found"))
-		return
+		return echo.NewHTTPError(http.StatusNotFound, "command not found")
 	}
 
 	logFilePath, _ := command.LogFilePath(session.Dir(s.configDir))
 
-	if c.Request.Header.Get("Upgrade") == "websocket" {
+	if c.Request().Header.Get("Upgrade") == "websocket" {
 		logFile, err := os.Open(logFilePath)
 		if err != nil {
 			if os.IsNotExist(err) {
-				c.AbortWithError(http.StatusNotFound, err)
-				return
+				return echo.NewHTTPError(http.StatusNotFound, err.Error())
 			}
 			if os.IsPermission(err) {
-				c.AbortWithError(http.StatusForbidden, err)
-				return
+				return echo.NewHTTPError(http.StatusForbidden, err.Error())
 			}
-			c.AbortWithError(http.StatusBadRequest, err)
-			return
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		defer logFile.Close()
+
 		ReadLog(c, logFile, util.ReadLog, func(conn *websocket.Conn, messages chan []byte, errors chan error) {
 			for {
 				select {
@@ -67,24 +63,21 @@ func (s *SessionController) GetSessionCommandLogs(c *gin.Context) {
 				}
 			}
 		})
-		return
+		return nil
 	}
 
 	logBytes, err := os.ReadFile(logFilePath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			c.AbortWithError(http.StatusNotFound, err)
-			return
+			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		}
 		if os.IsPermission(err) {
-			c.AbortWithError(http.StatusForbidden, err)
-			return
+			return echo.NewHTTPError(http.StatusForbidden, err.Error())
 		}
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	c.String(http.StatusOK, string(logBytes))
+	return c.String(http.StatusOK, string(logBytes))
 }
 
 var upgrader = websocket.Upgrader{
@@ -93,14 +86,14 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func ReadLog[T any](ginCtx *gin.Context, logReader io.Reader, readFunc func(context.Context, io.Reader, bool, chan T, chan error), wsWriteFunc func(*websocket.Conn, chan T, chan error)) {
-	followQuery := ginCtx.Query("follow")
+func ReadLog[T any](echoCtx echo.Context, logReader io.Reader, readFunc func(context.Context, io.Reader, bool, chan T, chan error), wsWriteFunc func(*websocket.Conn, chan T, chan error)) error {
+	followQuery := echoCtx.QueryParam("follow")
 	follow := followQuery == "true"
 
-	ws, err := upgrader.Upgrade(ginCtx.Writer, ginCtx.Request, nil)
+	ws, err := upgrader.Upgrade(echoCtx.Response(), echoCtx.Request(), nil)
 	if err != nil {
 		log.Error(err)
-		return
+		return err
 	}
 
 	defer func() {
@@ -117,7 +110,7 @@ func ReadLog[T any](ginCtx *gin.Context, logReader io.Reader, readFunc func(cont
 
 	msgChannel := make(chan T)
 	errChannel := make(chan error)
-	ctx, cancel := context.WithCancel(ginCtx.Request.Context())
+	ctx, cancel := context.WithCancel(echoCtx.Request().Context())
 
 	defer cancel()
 	go readFunc(ctx, logReader, follow, msgChannel, errChannel)
@@ -134,21 +127,21 @@ func ReadLog[T any](ginCtx *gin.Context, logReader io.Reader, readFunc func(cont
 	for {
 		select {
 		case <-ctx.Done():
-			return
+			return nil
 		case err = <-errChannel:
 			if err != nil {
 				if !errors.Is(err, io.EOF) {
 					log.Error(err)
 				}
 				cancel()
-				return
+				return nil
 			}
 		case err := <-readErr:
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseAbnormalClosure) {
 				log.Error(err)
 			}
 			if err != nil {
-				return
+				return nil
 			}
 		}
 	}

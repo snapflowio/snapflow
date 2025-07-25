@@ -2,21 +2,19 @@ package fs
 
 import (
 	"bufio"
-	"errors"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
-func FindInFiles(c *gin.Context) {
-	path := c.Query("path")
-	pattern := c.Query("pattern")
+func FindInFiles(c echo.Context) error {
+	path := c.QueryParam("path")
+	pattern := c.QueryParam("pattern")
 	if path == "" || pattern == "" {
-		c.AbortWithError(http.StatusBadRequest, errors.New("path and pattern are required"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "path and pattern are required")
 	}
 
 	var matches []Match = make([]Match, 0)
@@ -70,9 +68,8 @@ func FindInFiles(c *gin.Context) {
 	})
 
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	c.JSON(http.StatusOK, matches)
+	return c.JSON(http.StatusOK, matches)
 }

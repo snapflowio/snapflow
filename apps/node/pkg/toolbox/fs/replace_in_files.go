@@ -6,14 +6,13 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
-func ReplaceInFiles(c *gin.Context) {
+func ReplaceInFiles(c echo.Context) error {
 	var req ReplaceRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
-		return
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("invalid request body: %v", err))
 	}
 
 	results := make([]ReplaceResult, 0, len(req.Files))
@@ -52,5 +51,5 @@ func ReplaceInFiles(c *gin.Context) {
 		})
 	}
 
-	c.JSON(http.StatusOK, results)
+	return c.JSON(http.StatusOK, results)
 }

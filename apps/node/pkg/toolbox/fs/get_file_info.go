@@ -1,38 +1,33 @@
 package fs
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
 	"strconv"
 	"syscall"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
-func GetFileInfo(c *gin.Context) {
-	path := c.Query("path")
+func GetFileInfo(c echo.Context) error {
+	path := c.QueryParam("path")
 	if path == "" {
-		c.AbortWithError(http.StatusBadRequest, errors.New("path is required"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "path is required")
 	}
 
 	info, err := getFileInfo(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			c.AbortWithError(http.StatusNotFound, err)
-			return
+			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		}
 		if os.IsPermission(err) {
-			c.AbortWithError(http.StatusForbidden, err)
-			return
+			return echo.NewHTTPError(http.StatusForbidden, err.Error())
 		}
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	c.JSON(http.StatusOK, info)
+	return c.JSON(http.StatusOK, info)
 }
 
 func getFileInfo(path string) (FileInfo, error) {

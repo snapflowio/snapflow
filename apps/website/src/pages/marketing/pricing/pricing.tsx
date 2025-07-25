@@ -10,8 +10,7 @@ export function Pricing() {
           "stroke-muted [mask-image:linear-gradient(to_bottom_right,white,transparent,transparent)]"
         )}
       />
-      <main className="container my-32 flex-1 items-center justify-center">
-        <div className="-z-20 absolute top-0 h-2/3 w-full rounded-lg bg-background" />
+      <main className="container flex-1 items-center justify-center py-32">
         <PricingTable />
       </main>
     </>

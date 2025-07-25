@@ -10,13 +10,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 	"github.com/snapflow/node/pkg/common"
 )
 
 var sessions = map[string]*session{}
 
-func (s *SessionController) CreateSession(c *gin.Context) {
+func (s *SessionController) CreateSession(c echo.Context) error {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	cmd := exec.CommandContext(ctx, common.GetShell())
@@ -24,30 +24,26 @@ func (s *SessionController) CreateSession(c *gin.Context) {
 	cmd.Dir = s.projectDir
 
 	var request CreateSessionRequest
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
+	if err := c.Bind(&request); err != nil {
 		cancel()
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("invalid request body: %v", err))
 	}
 
 	if _, ok := sessions[request.SessionId]; ok {
-		c.AbortWithError(http.StatusConflict, errors.New("session already exists"))
 		cancel()
-		return
+		return echo.NewHTTPError(http.StatusConflict, "session already exists")
 	}
 
 	stdinWriter, err := cmd.StdinPipe()
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
 		cancel()
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	err = cmd.Start()
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
 		cancel()
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
 	session := &session{
@@ -62,20 +58,18 @@ func (s *SessionController) CreateSession(c *gin.Context) {
 
 	err = os.MkdirAll(session.Dir(s.configDir), 0755)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	c.Status(http.StatusCreated)
+	return c.NoContent(http.StatusCreated)
 }
 
-func (s *SessionController) DeleteSession(c *gin.Context) {
+func (s *SessionController) DeleteSession(c echo.Context) error {
 	sessionId := c.Param("sessionId")
 
 	session, ok := sessions[sessionId]
 	if !ok || session.deleted {
-		c.AbortWithError(http.StatusNotFound, errors.New("session not found"))
-		return
+		return echo.NewHTTPError(http.StatusNotFound, "session not found")
 	}
 
 	session.cancel()
@@ -83,14 +77,13 @@ func (s *SessionController) DeleteSession(c *gin.Context) {
 
 	err := os.RemoveAll(session.Dir(s.configDir))
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	c.Status(http.StatusNoContent)
+	return c.NoContent(http.StatusNoContent)
 }
 
-func (s *SessionController) ListSessions(c *gin.Context) {
+func (s *SessionController) ListSessions(c echo.Context) error {
 	sessionDTOs := []Session{}
 
 	for sessionId, session := range sessions {
@@ -100,8 +93,7 @@ func (s *SessionController) ListSessions(c *gin.Context) {
 
 		commands, err := s.getSessionCommands(sessionId)
 		if err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
-			return
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 
 		sessionDTOs = append(sessionDTOs, Session{
@@ -110,41 +102,38 @@ func (s *SessionController) ListSessions(c *gin.Context) {
 		})
 	}
 
-	c.JSON(http.StatusOK, sessionDTOs)
+	return c.JSON(http.StatusOK, sessionDTOs)
 }
 
-func (s *SessionController) GetSession(c *gin.Context) {
+func (s *SessionController) GetSession(c echo.Context) error {
 	sessionId := c.Param("sessionId")
 
 	session, ok := sessions[sessionId]
 	if !ok || session.deleted {
-		c.AbortWithError(http.StatusNotFound, errors.New("session not found"))
-		return
+		return echo.NewHTTPError(http.StatusNotFound, "session not found")
 	}
 
 	commands, err := s.getSessionCommands(sessionId)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	c.JSON(http.StatusOK, Session{
+	return c.JSON(http.StatusOK, Session{
 		SessionId: sessionId,
 		Commands:  commands,
 	})
 }
 
-func (s *SessionController) GetSessionCommand(c *gin.Context) {
+func (s *SessionController) GetSessionCommand(c echo.Context) error {
 	sessionId := c.Param("sessionId")
 	cmdId := c.Param("commandId")
 
 	command, err := s.getSessionCommand(sessionId, cmdId)
 	if err != nil {
-		c.AbortWithError(http.StatusNotFound, err)
-		return
+		return echo.NewHTTPError(http.StatusNotFound, err.Error())
 	}
 
-	c.JSON(http.StatusOK, command)
+	return c.JSON(http.StatusOK, command)
 }
 
 func (s *SessionController) getSessionCommands(sessionId string) ([]*Command, error) {

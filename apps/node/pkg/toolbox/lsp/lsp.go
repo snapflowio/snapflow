@@ -1,119 +1,102 @@
 package lsp
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-
+	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
 )
 
-func Start(c *gin.Context) {
+func Start(c echo.Context) error {
 	var req LspServerRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
-		return
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("invalid request body: %v", err))
 	}
 
 	service := GetLSPService()
 	err := service.Start(req.LanguageId, req.PathToProject)
 	if err != nil {
 		log.Error(err)
-		c.AbortWithError(http.StatusInternalServerError, errors.New("error starting LSP server"))
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, "error starting LSP server")
 	}
 
-	c.Status(http.StatusOK)
+	return c.NoContent(http.StatusOK)
 }
 
-func Stop(c *gin.Context) {
+func Stop(c echo.Context) error {
 	var req LspServerRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
-		return
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("invalid request body: %v", err))
 	}
 
 	service := GetLSPService()
 	err := service.Shutdown(req.LanguageId, req.PathToProject)
 	if err != nil {
 		log.Error(err)
-		c.AbortWithError(http.StatusInternalServerError, errors.New("error stopping LSP server"))
-		return
+		return echo.NewHTTPError(http.StatusInternalServerError, "error stopping LSP server")
 	}
 
-	c.Status(http.StatusOK)
+	return c.NoContent(http.StatusOK)
 }
 
-func DidOpen(c *gin.Context) {
+func DidOpen(c echo.Context) error {
 	var req LspDocumentRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
-		return
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("invalid request body: %v", err))
 	}
 
 	service := GetLSPService()
 	server, err := service.Get(req.LanguageId, req.PathToProject)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	if !server.IsInitialized() {
-		c.AbortWithError(http.StatusBadRequest, errors.New("server not initialized"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "server not initialized")
 	}
-	err = server.HandleDidOpen(c.Request.Context(), req.Uri)
+	err = server.HandleDidOpen(c.Request().Context(), req.Uri)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	c.Status(http.StatusOK)
+	return c.NoContent(http.StatusOK)
 }
 
-func DidClose(c *gin.Context) {
+func DidClose(c echo.Context) error {
 	var req LspDocumentRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
-		return
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("invalid request body: %v", err))
 	}
 
 	service := GetLSPService()
 	server, err := service.Get(req.LanguageId, req.PathToProject)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	if !server.IsInitialized() {
-		c.AbortWithError(http.StatusBadRequest, errors.New("server not initialized"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "server not initialized")
 	}
-	err = server.HandleDidClose(c.Request.Context(), req.Uri)
+	err = server.HandleDidClose(c.Request().Context(), req.Uri)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	c.Status(http.StatusOK)
+	return c.NoContent(http.StatusOK)
 }
 
-func Completions(c *gin.Context) {
+func Completions(c echo.Context) error {
 	var req LspCompletionParams
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
-		return
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("invalid request body: %v", err))
 	}
 
 	service := GetLSPService()
 	server, err := service.Get(req.LanguageId, req.PathToProject)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	if !server.IsInitialized() {
-		c.AbortWithError(http.StatusBadRequest, errors.New("server not initialized"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "server not initialized")
 	}
 
 	textDocument := TextDocumentIdentifier{
@@ -126,89 +109,76 @@ func Completions(c *gin.Context) {
 		Context:      req.Context,
 	}
 
-	list, err := server.HandleCompletions(c.Request.Context(), completionParams)
+	list, err := server.HandleCompletions(c.Request().Context(), completionParams)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	c.JSON(http.StatusOK, list)
+	return c.JSON(http.StatusOK, list)
 }
 
-func DocumentSymbols(c *gin.Context) {
-	languageId := c.Query("languageId")
+func DocumentSymbols(c echo.Context) error {
+	languageId := c.QueryParam("languageId")
 	if languageId == "" {
-		c.AbortWithError(http.StatusBadRequest, errors.New("languageId is required"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "languageId is required")
 	}
 
-	pathToProject := c.Query("pathToProject")
+	pathToProject := c.QueryParam("pathToProject")
 	if pathToProject == "" {
-		c.AbortWithError(http.StatusBadRequest, errors.New("pathToProject is required"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "pathToProject is required")
 	}
 
-	uri := c.Query("uri")
+	uri := c.QueryParam("uri")
 	if uri == "" {
-		c.AbortWithError(http.StatusBadRequest, errors.New("uri is required"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "uri is required")
 	}
 
 	service := GetLSPService()
 	server, err := service.Get(languageId, pathToProject)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	if !server.IsInitialized() {
-		c.AbortWithError(http.StatusBadRequest, errors.New("server not initialized"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "server not initialized")
 	}
 
-	symbols, err := server.HandleDocumentSymbols(c.Request.Context(), uri)
+	symbols, err := server.HandleDocumentSymbols(c.Request().Context(), uri)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	c.JSON(http.StatusOK, symbols)
+	return c.JSON(http.StatusOK, symbols)
 }
 
-func WorkspaceSymbols(c *gin.Context) {
-	query := c.Query("query")
+func WorkspaceSymbols(c echo.Context) error {
+	query := c.QueryParam("query")
 	if query == "" {
-		c.AbortWithError(http.StatusBadRequest, errors.New("query is required"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "query is required")
 	}
 
-	languageId := c.Query("languageId")
+	languageId := c.QueryParam("languageId")
 	if languageId == "" {
-		c.AbortWithError(http.StatusBadRequest, errors.New("languageId is required"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "languageId is required")
 	}
 
-	pathToProject := c.Query("pathToProject")
+	pathToProject := c.QueryParam("pathToProject")
 	if pathToProject == "" {
-		c.AbortWithError(http.StatusBadRequest, errors.New("pathToProject is required"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "pathToProject is required")
 	}
 
 	service := GetLSPService()
 	server, err := service.Get(languageId, pathToProject)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	if !server.IsInitialized() {
-		c.AbortWithError(http.StatusBadRequest, errors.New("server not initialized"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "server not initialized")
 	}
 
-	symbols, err := server.HandleWorkspaceSymbols(c.Request.Context(), query)
+	symbols, err := server.HandleWorkspaceSymbols(c.Request().Context(), query)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	c.JSON(http.StatusOK, symbols)
+	return c.JSON(http.StatusOK, symbols)
 }

@@ -8,14 +8,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
-func UploadFiles(c *gin.Context) {
-	reader, err := c.Request.MultipartReader()
+func UploadFiles(c echo.Context) error {
+	reader, err := c.Request().MultipartReader()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"errors": []string{"invalid multipart form"}})
-		return
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{"errors": []string{"invalid multipart form"}})
 	}
 
 	dests := make(map[string]string)
@@ -75,11 +74,10 @@ func UploadFiles(c *gin.Context) {
 	}
 
 	if len(errs) > 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"errors": errs})
-		return
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{"errors": errs})
 	}
 
-	c.Status(http.StatusOK)
+	return c.NoContent(http.StatusOK)
 }
 
 func extractIndex(fieldName string) string {

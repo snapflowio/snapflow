@@ -4,29 +4,43 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 	"github.com/snapflow/node/pkg/common"
 )
 
-func ErrorMiddleware() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		ctx.Next()
+func ErrorMiddleware() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			err := next(c)
+			if err != nil {
+				he, ok := err.(*echo.HTTPError)
+				if !ok {
+					he = echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+				}
 
-		if len(ctx.Errors) > 0 {
-			err := ctx.Errors.Last()
-			statusCode := ctx.Writer.Status()
+				statusCode := he.Code
+				message := he.Message
+				if msgStr, ok := message.(string); ok {
+					message = msgStr
+				} else if msgErr, ok := message.(error); ok {
+					message = msgErr.Error()
+				} else {
+					message = "Internal Server Error"
+				}
 
-			errorResponse := common.ErrorResponse{
-				StatusCode: statusCode,
-				Message:    err.Error(),
-				Code:       http.StatusText(statusCode),
-				Timestamp:  time.Now(),
-				Path:       ctx.Request.URL.Path,
-				Method:     ctx.Request.Method,
+				errorResponse := common.ErrorResponse{
+					StatusCode: statusCode,
+					Message:    message.(string),
+					Code:       http.StatusText(statusCode),
+					Timestamp:  time.Now(),
+					Path:       c.Request().URL.Path,
+					Method:     c.Request().Method,
+				}
+
+				c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+				return c.JSON(statusCode, errorResponse)
 			}
-
-			ctx.Header("Content-Type", "application/json")
-			ctx.AbortWithStatusJSON(statusCode, errorResponse)
+			return nil
 		}
 	}
 }

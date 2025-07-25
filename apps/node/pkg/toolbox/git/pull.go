@@ -4,17 +4,16 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	go_git "github.com/go-git/go-git/v5"
 	go_git_http "github.com/go-git/go-git/v5/plumbing/transport/http"
+	"github.com/labstack/echo/v4"
 	"github.com/snapflow/node/pkg/git"
 )
 
-func PullChanges(c *gin.Context) {
+func PullChanges(c echo.Context) error {
 	var req GitRepoRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
-		return
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("invalid request body: %v", err))
 	}
 
 	var auth *go_git_http.BasicAuth
@@ -31,9 +30,8 @@ func PullChanges(c *gin.Context) {
 
 	err := gitService.Pull(auth)
 	if err != nil && err != go_git.NoErrAlreadyUpToDate {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	c.Status(http.StatusOK)
+	return c.NoContent(http.StatusOK)
 }

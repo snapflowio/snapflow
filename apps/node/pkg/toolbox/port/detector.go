@@ -2,7 +2,6 @@ package port
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -10,7 +9,7 @@ import (
 	"time"
 
 	"github.com/cakturk/go-netstat/netstat"
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 	cmap "github.com/orcaman/concurrent-map/v2"
 )
 
@@ -54,7 +53,7 @@ func (d *portsDetector) Start(ctx context.Context) {
 	}
 }
 
-func (d *portsDetector) GetPorts(c *gin.Context) {
+func (d *portsDetector) GetPorts(c echo.Context) error {
 	ports := PortList{
 		Ports: []uint{},
 	}
@@ -67,41 +66,38 @@ func (d *portsDetector) GetPorts(c *gin.Context) {
 		ports.Ports = append(ports.Ports, uint(portInt))
 	}
 
-	c.JSON(http.StatusOK, ports)
+	return c.JSON(http.StatusOK, ports)
 }
 
-func (d *portsDetector) IsPortInUse(c *gin.Context) {
+func (d *portsDetector) IsPortInUse(c echo.Context) error {
 	portParam := c.Param("port")
 
 	port, err := strconv.Atoi(portParam)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, errors.New("invalid port: must be a number between 3000 and 9999"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid port: must be a number between 3000 and 9999")
 	}
 
 	if port < 3000 || port > 9999 {
-		c.AbortWithError(http.StatusBadRequest, errors.New("port out of range: must be between 3000 and 9999"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "port out of range: must be between 3000 and 9999")
 	}
 
 	portStr := strconv.Itoa(port)
 
 	if d.portMap.Has(portStr) {
-		c.JSON(http.StatusOK, IsPortInUseResponse{
+		return c.JSON(http.StatusOK, IsPortInUseResponse{
 			IsInUse: true,
 		})
 	} else {
 		_, err := net.DialTimeout("tcp", fmt.Sprintf("localhost:%d", port), 50*time.Millisecond)
 		if err != nil {
-			c.JSON(http.StatusOK, IsPortInUseResponse{
+			return c.JSON(http.StatusOK, IsPortInUseResponse{
 				IsInUse: false,
 			})
 		} else {
 			d.portMap.Set(portStr, true)
-			c.JSON(http.StatusOK, IsPortInUseResponse{
+			return c.JSON(http.StatusOK, IsPortInUseResponse{
 				IsInUse: true,
 			})
 		}
 	}
-
 }

@@ -48,7 +48,7 @@ export default function Features() {
                       className="rounded-full"
                     />
                   </Avatar>
-                  <Avatar className="-ml-6 z-30 border-green-400">
+                  <Avatar className="-ml-6 z-30 border-primary">
                     <img
                       width={100}
                       height={100}
@@ -76,7 +76,7 @@ export default function Features() {
                 <div className="flex aspect-video items-center justify-center">
                   <p className="text-left font-extrabold text-4xl text-white/20 transition duration-500 group-hover:text-white/10">
                     Create a{" "}
-                    <span className="relative text-green-400">
+                    <span className="relative text-primary">
                       <span>sandbox</span>
                     </span>{" "}
                     that...
@@ -89,13 +89,13 @@ export default function Features() {
                 className="group md:col-span-2 md:col-start-2 lg:col-span-1 lg:col-start-auto"
               >
                 <div className="flex aspect-video items-center justify-center gap-4">
-                  <Key className="w-28 outline-2 outline-tranparent outline-offset-4 transition-all duration-500 group-hover:translate-y-1 group-hover:outline-green-400">
+                  <Key className="w-28 outline-2 outline-tranparent outline-offset-4 transition-all duration-500 group-hover:translate-y-1 group-hover:outline-primary">
                     shift
                   </Key>
-                  <Key className=" outline-2 outline-transparent outline-offset-4 transition-all delay-150 duration-500 group-hover:translate-y-1 group-hover:outline-green-400">
+                  <Key className=" outline-2 outline-transparent outline-offset-4 transition-all delay-150 duration-500 group-hover:translate-y-1 group-hover:outline-primary">
                     alt
                   </Key>
-                  <Key className="outline-2 outline-transparent outline-offset-4 transition-all delay-300 duration-500 group-hover:translate-y-1 group-hover:outline-green-400">
+                  <Key className="outline-2 outline-transparent outline-offset-4 transition-all delay-300 duration-500 group-hover:translate-y-1 group-hover:outline-primary">
                     C
                   </Key>
                 </div>

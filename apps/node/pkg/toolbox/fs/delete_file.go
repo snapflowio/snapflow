@@ -1,39 +1,33 @@
 package fs
 
 import (
-	"errors"
 	"net/http"
 	"os"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
-func DeleteFile(c *gin.Context) {
-	path := c.Query("path")
+func DeleteFile(c echo.Context) error {
+	path := c.QueryParam("path")
 	if path == "" {
-		c.AbortWithError(http.StatusBadRequest, errors.New("path is required"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "path is required")
 	}
 
-	recursive := c.Query("recursive") == "true"
+	recursive := c.QueryParam("recursive") == "true"
 
 	info, err := os.Stat(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			c.AbortWithError(http.StatusNotFound, err)
-			return
+			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		}
 		if os.IsPermission(err) {
-			c.AbortWithError(http.StatusForbidden, err)
-			return
+			return echo.NewHTTPError(http.StatusForbidden, err.Error())
 		}
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	if info.IsDir() && !recursive {
-		c.AbortWithError(http.StatusBadRequest, errors.New("cannot delete directory without recursive flag"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "cannot delete directory without recursive flag")
 	}
 
 	var deleteErr error
@@ -44,9 +38,8 @@ func DeleteFile(c *gin.Context) {
 	}
 
 	if deleteErr != nil {
-		c.AbortWithError(http.StatusBadRequest, deleteErr)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, deleteErr.Error())
 	}
 
-	c.Status(http.StatusNoContent)
+	return c.NoContent(http.StatusNoContent)
 }

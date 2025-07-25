@@ -1,5 +1,3 @@
-# Must be built from the monorepo root directory
-
 # --- Build Stage ---
 FROM golang:1.24.4-alpine AS builder
 

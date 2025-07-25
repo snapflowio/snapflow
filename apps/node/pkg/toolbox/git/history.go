@@ -1,18 +1,16 @@
 package git
 
 import (
-	"errors"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 	"github.com/snapflow/node/pkg/git"
 )
 
-func GetCommitHistory(c *gin.Context) {
-	path := c.Query("path")
+func GetCommitHistory(c echo.Context) error {
+	path := c.QueryParam("path")
 	if path == "" {
-		c.AbortWithError(http.StatusBadRequest, errors.New("path is required"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "path is required")
 	}
 
 	gitService := git.Service{
@@ -21,9 +19,8 @@ func GetCommitHistory(c *gin.Context) {
 
 	log, err := gitService.Log()
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	c.JSON(http.StatusOK, log)
+	return c.JSON(http.StatusOK, log)
 }

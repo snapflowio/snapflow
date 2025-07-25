@@ -2,27 +2,23 @@ package process
 
 import (
 	"bytes"
-	"errors"
 	"net/http"
 	"os/exec"
 	"time"
 
+	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
-
-	"github.com/gin-gonic/gin"
 )
 
-func ExecuteCommand(c *gin.Context) {
+func ExecuteCommand(c echo.Context) error {
 	var request ExecuteRequest
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.AbortWithError(http.StatusBadRequest, errors.New("command is required"))
-		return
+	if err := c.Bind(&request); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "command is required")
 	}
 
 	cmdParts := parseCommand(request.Command)
 	if len(cmdParts) == 0 {
-		c.AbortWithError(http.StatusBadRequest, errors.New("empty command"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "empty command")
 	}
 
 	cmd := exec.Command(cmdParts[0], cmdParts[1:]...)
@@ -54,32 +50,28 @@ func ExecuteCommand(c *gin.Context) {
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		if timeoutReached {
-			c.AbortWithError(http.StatusRequestTimeout, errors.New("command execution timeout"))
-			return
+			return echo.NewHTTPError(http.StatusRequestTimeout, "command execution timeout")
 		}
 		if exitError, ok := err.(*exec.ExitError); ok {
-			c.JSON(http.StatusOK, ExecuteResponse{
+			return c.JSON(http.StatusOK, ExecuteResponse{
 				Code:   exitError.ExitCode(),
 				Result: string(output),
 			})
-			return
 		}
-		c.JSON(http.StatusOK, ExecuteResponse{
+		return c.JSON(http.StatusOK, ExecuteResponse{
 			Code:   -1,
 			Result: string(output),
 		})
-		return
 	}
 
 	if cmd.ProcessState == nil {
-		c.JSON(http.StatusOK, ExecuteResponse{
+		return c.JSON(http.StatusOK, ExecuteResponse{
 			Code:   -1,
 			Result: string(output),
 		})
-		return
 	}
 
-	c.JSON(http.StatusOK, ExecuteResponse{
+	return c.JSON(http.StatusOK, ExecuteResponse{
 		Code:   cmd.ProcessState.ExitCode(),
 		Result: string(output),
 	})

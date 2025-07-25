@@ -6,16 +6,14 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
+	"github.com/labstack/echo/v4"
 )
 
 type DefaultValidator struct {
 	once     sync.Once
 	validate *validator.Validate
 }
-
-var _ binding.StructValidator = &DefaultValidator{}
 
 type SliceValidationError []error
 
@@ -36,25 +34,25 @@ func (err SliceValidationError) Error() string {
 	return b.String()
 }
 
-func (v *DefaultValidator) ValidateStruct(obj any) error {
-	if obj == nil {
+func (v *DefaultValidator) Validate(i interface{}) error {
+	if i == nil {
 		return nil
 	}
 
-	value := reflect.ValueOf(obj)
+	value := reflect.ValueOf(i)
 	switch value.Kind() {
 	case reflect.Ptr:
 		if value.Elem().Kind() != reflect.Struct {
-			return v.ValidateStruct(value.Elem().Interface())
+			return v.Validate(value.Elem().Interface())
 		}
-		return v.validateStruct(obj)
+		return v.validateStruct(i)
 	case reflect.Struct:
-		return v.validateStruct(obj)
+		return v.validateStruct(i)
 	case reflect.Slice, reflect.Array:
 		count := value.Len()
 		validateRet := make(SliceValidationError, 0)
-		for i := 0; i < count; i++ {
-			if err := v.ValidateStruct(value.Index(i).Interface()); err != nil {
+		for idx := 0; idx < count; idx++ {
+			if err := v.Validate(value.Index(idx).Interface()); err != nil {
 				validateRet = append(validateRet, err)
 			}
 		}
@@ -67,12 +65,7 @@ func (v *DefaultValidator) ValidateStruct(obj any) error {
 	}
 }
 
-func (v *DefaultValidator) Engine() interface{} {
-	v.lazyinit()
-	return v.validate
-}
-
-func (v *DefaultValidator) validateStruct(obj any) error {
+func (v *DefaultValidator) validateStruct(obj interface{}) error {
 	v.lazyinit()
 	return v.validate.Struct(obj)
 }
@@ -85,4 +78,8 @@ func (v *DefaultValidator) lazyinit() {
 			return true
 		}, true)
 	})
+}
+
+func NewDefaultValidator() echo.Validator {
+	return &DefaultValidator{}
 }

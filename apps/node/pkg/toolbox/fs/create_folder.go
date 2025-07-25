@@ -1,37 +1,32 @@
 package fs
 
 import (
-	"errors"
 	"net/http"
 	"os"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
-func CreateFolder(c *gin.Context) {
-	path := c.Query("path")
+func CreateFolder(c echo.Context) error {
+	path := c.QueryParam("path")
 	if path == "" {
-		c.AbortWithError(http.StatusBadRequest, errors.New("path is required"))
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, "path is required")
 	}
 
-	mode := c.Query("mode")
+	mode := c.QueryParam("mode")
 	var perm os.FileMode = 0755
 	if mode != "" {
 		modeNum, err := strconv.ParseUint(mode, 8, 32)
 		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, errors.New("invalid mode format"))
-			return
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid mode format")
 		}
-
 		perm = os.FileMode(modeNum)
 	}
 
 	if err := os.MkdirAll(path, perm); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	c.Status(http.StatusCreated)
+	return c.NoContent(http.StatusCreated)
 }

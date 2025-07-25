@@ -230,7 +230,7 @@ const getColumns = ({
         return (
           <div className="flex flex-row items-center gap-2 text-background text-xs">
             <div className="rounded-sm bg-blue-400/90 p-1 px-2">{image.disk} GB</div>
-            <div className="rounded-sm bg-green-400 p-1 px-2">{image.mem} GB</div>
+            <div className="rounded-sm bg-primary p-1 px-2">{image.mem} GB</div>
             <div className="rounded-sm bg-purple-400 p-1 px-2">{image.cpu} vCPU</div>
           </div>
         );

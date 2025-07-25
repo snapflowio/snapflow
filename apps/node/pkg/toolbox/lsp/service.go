@@ -36,10 +36,6 @@ func (s *LSPService) Get(languageId string, pathToProject string) (LSPServer, er
 		server := NewTypeScriptLSPServer()
 		s.servers[key] = server
 		return server, nil
-	case "python":
-		server := NewPythonLSPServer()
-		s.servers[key] = server
-		return server, nil
 	default:
 		return nil, fmt.Errorf("unsupported language: %s", languageId)
 	}

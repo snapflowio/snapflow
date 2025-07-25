@@ -4,15 +4,14 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 	"github.com/snapflow/node/pkg/git"
 )
 
-func AddFiles(c *gin.Context) {
+func AddFiles(c echo.Context) error {
 	var req GitAddRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("invalid request body: %w", err))
-		return
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("invalid request body: %v", err))
 	}
 
 	gitService := git.Service{
@@ -20,9 +19,8 @@ func AddFiles(c *gin.Context) {
 	}
 
 	if err := gitService.Add(req.Files); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	c.Status(http.StatusOK)
+	return c.NoContent(http.StatusOK)
 }

@@ -5,11 +5,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
-func ListFiles(c *gin.Context) {
-	path := c.Query("path")
+func ListFiles(c echo.Context) error {
+	path := c.QueryParam("path")
 	if path == "" {
 		path = "."
 	}
@@ -17,15 +17,12 @@ func ListFiles(c *gin.Context) {
 	files, err := os.ReadDir(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			c.AbortWithError(http.StatusNotFound, err)
-			return
+			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		}
 		if os.IsPermission(err) {
-			c.AbortWithError(http.StatusForbidden, err)
-			return
+			return echo.NewHTTPError(http.StatusForbidden, err.Error())
 		}
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	var fileInfos []FileInfo = make([]FileInfo, 0)
@@ -38,5 +35,5 @@ func ListFiles(c *gin.Context) {
 		fileInfos = append(fileInfos, info)
 	}
 
-	c.JSON(http.StatusOK, fileInfos)
+	return c.JSON(http.StatusOK, fileInfos)
 }
