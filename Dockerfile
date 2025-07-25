@@ -2,7 +2,7 @@
 # STAGE 1: Builder
 # This stage installs Go, Node.js, and all dependencies, then builds the applications.
 # ======================================================================================
-FROM golang:1.24.4-alpine as builder
+FROM golang:1.24.4-bookworm as builder
 
 # Install Node.js (LTS version 20.x) and pnpm
 RUN apt-get update && apt-get install -y curl
