@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,13 +22,13 @@ var _ MappedNullable = &CompletionItem{}
 
 // CompletionItem struct for CompletionItem
 type CompletionItem struct {
-	Label string `json:"label"`
-	Kind *float32 `json:"kind,omitempty"`
-	Detail *string `json:"detail,omitempty"`
-	Documentation map[string]interface{} `json:"documentation,omitempty"`
-	SortText *string `json:"sortText,omitempty"`
-	FilterText *string `json:"filterText,omitempty"`
-	InsertText *string `json:"insertText,omitempty"`
+	Label         string         `json:"label"`
+	Kind          *float32       `json:"kind,omitempty"`
+	Detail        *string        `json:"detail,omitempty"`
+	Documentation map[string]any `json:"documentation,omitempty"`
+	SortText      *string        `json:"sortText,omitempty"`
+	FilterText    *string        `json:"filterText,omitempty"`
+	InsertText    *string        `json:"insertText,omitempty"`
 }
 
 type _CompletionItem CompletionItem
@@ -140,9 +140,9 @@ func (o *CompletionItem) SetDetail(v string) {
 }
 
 // GetDocumentation returns the Documentation field value if set, zero value otherwise.
-func (o *CompletionItem) GetDocumentation() map[string]interface{} {
+func (o *CompletionItem) GetDocumentation() map[string]any {
 	if o == nil || IsNil(o.Documentation) {
-		var ret map[string]interface{}
+		var ret map[string]any
 		return ret
 	}
 	return o.Documentation
@@ -150,9 +150,9 @@ func (o *CompletionItem) GetDocumentation() map[string]interface{} {
 
 // GetDocumentationOk returns a tuple with the Documentation field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CompletionItem) GetDocumentationOk() (map[string]interface{}, bool) {
+func (o *CompletionItem) GetDocumentationOk() (map[string]any, bool) {
 	if o == nil || IsNil(o.Documentation) {
-		return map[string]interface{}{}, false
+		return map[string]any{}, false
 	}
 	return o.Documentation, true
 }
@@ -166,8 +166,8 @@ func (o *CompletionItem) HasDocumentation() bool {
 	return false
 }
 
-// SetDocumentation gets a reference to the given map[string]interface{} and assigns it to the Documentation field.
-func (o *CompletionItem) SetDocumentation(v map[string]interface{}) {
+// SetDocumentation gets a reference to the given map[string]any and assigns it to the Documentation field.
+func (o *CompletionItem) SetDocumentation(v map[string]any) {
 	o.Documentation = v
 }
 
@@ -268,15 +268,15 @@ func (o *CompletionItem) SetInsertText(v string) {
 }
 
 func (o CompletionItem) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o CompletionItem) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o CompletionItem) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["label"] = o.Label
 	if !IsNil(o.Kind) {
 		toSerialize["kind"] = o.Kind
@@ -307,15 +307,15 @@ func (o *CompletionItem) UnmarshalJSON(data []byte) (err error) {
 		"label",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -371,5 +371,3 @@ func (v *NullableCompletionItem) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

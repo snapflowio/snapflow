@@ -346,7 +346,7 @@ func IsNil(i interface{}) bool {
 }
 
 type MappedNullable interface {
-	ToMap() (map[string]interface{}, error)
+	ToMap() (map[string]any, error)
 }
 
 // A wrapper for strict JSON decoding

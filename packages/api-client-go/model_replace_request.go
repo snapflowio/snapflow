@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,9 +22,9 @@ var _ MappedNullable = &ReplaceRequest{}
 
 // ReplaceRequest struct for ReplaceRequest
 type ReplaceRequest struct {
-	Files []string `json:"files"`
-	Pattern string `json:"pattern"`
-	NewValue string `json:"newValue"`
+	Files    []string `json:"files"`
+	Pattern  string   `json:"pattern"`
+	NewValue string   `json:"newValue"`
 }
 
 type _ReplaceRequest ReplaceRequest
@@ -122,15 +122,15 @@ func (o *ReplaceRequest) SetNewValue(v string) {
 }
 
 func (o ReplaceRequest) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o ReplaceRequest) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o ReplaceRequest) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["files"] = o.Files
 	toSerialize["pattern"] = o.Pattern
 	toSerialize["newValue"] = o.NewValue
@@ -147,15 +147,15 @@ func (o *ReplaceRequest) UnmarshalJSON(data []byte) (err error) {
 		"newValue",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -211,5 +211,3 @@ func (v *NullableReplaceRequest) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

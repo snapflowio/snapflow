@@ -20,9 +20,9 @@ var _ MappedNullable = &ReplaceResult{}
 
 // ReplaceResult struct for ReplaceResult
 type ReplaceResult struct {
-	File *string `json:"file,omitempty"`
-	Success *bool `json:"success,omitempty"`
-	Error *string `json:"error,omitempty"`
+	File    *string `json:"file,omitempty"`
+	Success *bool   `json:"success,omitempty"`
+	Error   *string `json:"error,omitempty"`
 }
 
 // NewReplaceResult instantiates a new ReplaceResult object
@@ -139,15 +139,15 @@ func (o *ReplaceResult) SetError(v string) {
 }
 
 func (o ReplaceResult) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o ReplaceResult) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o ReplaceResult) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	if !IsNil(o.File) {
 		toSerialize["file"] = o.File
 	}
@@ -195,5 +195,3 @@ func (v *NullableReplaceResult) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

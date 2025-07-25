@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -206,15 +206,15 @@ func (o *RegistryPushAccessDto) SetExpiresAt(v string) {
 }
 
 func (o RegistryPushAccessDto) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o RegistryPushAccessDto) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o RegistryPushAccessDto) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["username"] = o.Username
 	toSerialize["secret"] = o.Secret
 	toSerialize["registryUrl"] = o.RegistryUrl
@@ -237,15 +237,15 @@ func (o *RegistryPushAccessDto) UnmarshalJSON(data []byte) (err error) {
 		"expiresAt",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -301,5 +301,3 @@ func (v *NullableRegistryPushAccessDto) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

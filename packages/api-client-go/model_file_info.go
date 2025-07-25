@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,14 +22,14 @@ var _ MappedNullable = &FileInfo{}
 
 // FileInfo struct for FileInfo
 type FileInfo struct {
-	Name string `json:"name"`
-	IsDir bool `json:"isDir"`
-	Size float32 `json:"size"`
-	ModTime string `json:"modTime"`
-	Mode string `json:"mode"`
-	Permissions string `json:"permissions"`
-	Owner string `json:"owner"`
-	Group string `json:"group"`
+	Name        string  `json:"name"`
+	IsDir       bool    `json:"isDir"`
+	Size        float32 `json:"size"`
+	ModTime     string  `json:"modTime"`
+	Mode        string  `json:"mode"`
+	Permissions string  `json:"permissions"`
+	Owner       string  `json:"owner"`
+	Group       string  `json:"group"`
 }
 
 type _FileInfo FileInfo
@@ -252,15 +252,15 @@ func (o *FileInfo) SetGroup(v string) {
 }
 
 func (o FileInfo) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o FileInfo) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o FileInfo) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["name"] = o.Name
 	toSerialize["isDir"] = o.IsDir
 	toSerialize["size"] = o.Size
@@ -287,15 +287,15 @@ func (o *FileInfo) UnmarshalJSON(data []byte) (err error) {
 		"group",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -351,5 +351,3 @@ func (v *NullableFileInfo) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

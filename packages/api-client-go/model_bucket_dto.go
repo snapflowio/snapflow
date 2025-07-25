@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -242,6 +242,7 @@ func (o *BucketDto) HasLastUsedAt() bool {
 func (o *BucketDto) SetLastUsedAt(v string) {
 	o.LastUsedAt.Set(&v)
 }
+
 // SetLastUsedAtNil sets the value for LastUsedAt to be an explicit nil
 func (o *BucketDto) SetLastUsedAtNil() {
 	o.LastUsedAt.Set(nil)
@@ -279,15 +280,15 @@ func (o *BucketDto) SetErrorReason(v string) {
 }
 
 func (o BucketDto) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o BucketDto) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o BucketDto) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["id"] = o.Id
 	toSerialize["name"] = o.Name
 	toSerialize["organizationId"] = o.OrganizationId
@@ -315,15 +316,15 @@ func (o *BucketDto) UnmarshalJSON(data []byte) (err error) {
 		"errorReason",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -379,5 +380,3 @@ func (v *NullableBucketDto) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

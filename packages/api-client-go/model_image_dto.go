@@ -12,10 +12,10 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
-	"time"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // checks if the ImageDto type satisfies the MappedNullable interface at compile time
@@ -23,23 +23,23 @@ var _ MappedNullable = &ImageDto{}
 
 // ImageDto struct for ImageDto
 type ImageDto struct {
-	Id string `json:"id"`
-	OrganizationId *string `json:"organizationId,omitempty"`
-	General bool `json:"general"`
-	Name string `json:"name"`
-	ImageName *string `json:"imageName,omitempty"`
-	Enabled bool `json:"enabled"`
-	State ImageState `json:"state"`
-	Size NullableFloat32 `json:"size"`
-	Entrypoint []string `json:"entrypoint"`
-	Cpu float32 `json:"cpu"`
-	Gpu float32 `json:"gpu"`
-	Mem float32 `json:"mem"`
-	Disk float32 `json:"disk"`
-	ErrorReason NullableString `json:"errorReason"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
-	LastUsedAt NullableTime `json:"lastUsedAt"`
+	Id             string          `json:"id"`
+	OrganizationId *string         `json:"organizationId,omitempty"`
+	General        bool            `json:"general"`
+	Name           string          `json:"name"`
+	ImageName      *string         `json:"imageName,omitempty"`
+	Enabled        bool            `json:"enabled"`
+	State          ImageState      `json:"state"`
+	Size           NullableFloat32 `json:"size"`
+	Entrypoint     []string        `json:"entrypoint"`
+	Cpu            float32         `json:"cpu"`
+	Gpu            float32         `json:"gpu"`
+	Mem            float32         `json:"mem"`
+	Disk           float32         `json:"disk"`
+	ErrorReason    NullableString  `json:"errorReason"`
+	CreatedAt      time.Time       `json:"createdAt"`
+	UpdatedAt      time.Time       `json:"updatedAt"`
+	LastUsedAt     NullableTime    `json:"lastUsedAt"`
 	// Build information for the image
 	BuildInfo *BuildInfo `json:"buildInfo,omitempty"`
 }
@@ -543,15 +543,15 @@ func (o *ImageDto) SetBuildInfo(v BuildInfo) {
 }
 
 func (o ImageDto) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o ImageDto) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o ImageDto) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["id"] = o.Id
 	if !IsNil(o.OrganizationId) {
 		toSerialize["organizationId"] = o.OrganizationId
@@ -603,15 +603,15 @@ func (o *ImageDto) UnmarshalJSON(data []byte) (err error) {
 		"lastUsedAt",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -667,5 +667,3 @@ func (v *NullableImageDto) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -178,8 +178,8 @@ func NewStdioStream(cmd *exec.Cmd) (*StdioStream, error) {
 }
 
 func (c *Client) NotifyDidClose(ctx context.Context, uri string) error {
-	params := map[string]interface{}{
-		"textDocument": map[string]interface{}{
+	params := map[string]any{
+		"textDocument": map[string]any{
 			"uri": uri,
 		},
 	}
@@ -188,7 +188,7 @@ func (c *Client) NotifyDidClose(ctx context.Context, uri string) error {
 }
 
 func (c *Client) GetWorkspaceSymbols(ctx context.Context, query string) ([]LspSymbol, error) {
-	params := map[string]interface{}{
+	params := map[string]any{
 		"query": query,
 	}
 
@@ -214,12 +214,12 @@ func (c *Client) GetCompletion(ctx context.Context, uri string, position Positio
 	// Handle both possible response types: CompletionList or []CompletionItem
 	var completionList CompletionList
 	switch v := result.(type) {
-	case map[string]interface{}:
+	case map[string]any:
 		// It's a CompletionList
 		if items, ok := v["items"].([]interface{}); ok {
 			completionItems := make([]CompletionItem, 0, len(items))
 			for _, item := range items {
-				if itemMap, ok := item.(map[string]interface{}); ok {
+				if itemMap, ok := item.(map[string]any); ok {
 					completionItems = append(completionItems, parseCompletionItem(itemMap))
 				}
 			}
@@ -230,7 +230,7 @@ func (c *Client) GetCompletion(ctx context.Context, uri string, position Positio
 		// It's an array of CompletionItems
 		completionItems := make([]CompletionItem, 0, len(v))
 		for _, item := range v {
-			if itemMap, ok := item.(map[string]interface{}); ok {
+			if itemMap, ok := item.(map[string]any); ok {
 				completionItems = append(completionItems, parseCompletionItem(itemMap))
 			}
 		}
@@ -248,8 +248,8 @@ func (c *Client) DidOpen(ctx context.Context, uri string, languageId string) err
 		return fmt.Errorf("failed to read file: %w", err)
 	}
 
-	params := map[string]interface{}{
-		"textDocument": map[string]interface{}{
+	params := map[string]any{
+		"textDocument": map[string]any{
 			"uri":        uri,
 			"languageId": languageId,
 			"version":    1,
@@ -261,8 +261,8 @@ func (c *Client) DidOpen(ctx context.Context, uri string, languageId string) err
 }
 
 func (c *Client) GetDocumentSymbols(ctx context.Context, uri string) ([]LspSymbol, error) {
-	params := map[string]interface{}{
-		"textDocument": map[string]interface{}{
+	params := map[string]any{
+		"textDocument": map[string]any{
 			"uri": uri,
 		},
 	}
@@ -272,7 +272,7 @@ func (c *Client) GetDocumentSymbols(ctx context.Context, uri string) ([]LspSymbo
 	return symbols, err
 }
 
-func parseCompletionItem(item map[string]interface{}) CompletionItem {
+func parseCompletionItem(item map[string]any) CompletionItem {
 	ci := CompletionItem{
 		Label: item["label"].(string),
 	}

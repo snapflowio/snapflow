@@ -142,15 +142,15 @@ func (o *SessionExecuteResponse) SetExitCode(v float32) {
 }
 
 func (o SessionExecuteResponse) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o SessionExecuteResponse) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o SessionExecuteResponse) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	if !IsNil(o.CmdId) {
 		toSerialize["cmdId"] = o.CmdId
 	}
@@ -198,5 +198,3 @@ func (v *NullableSessionExecuteResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

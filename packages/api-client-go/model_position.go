@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,7 +22,7 @@ var _ MappedNullable = &Position{}
 
 // Position struct for Position
 type Position struct {
-	Line float32 `json:"line"`
+	Line      float32 `json:"line"`
 	Character float32 `json:"character"`
 }
 
@@ -96,15 +96,15 @@ func (o *Position) SetCharacter(v float32) {
 }
 
 func (o Position) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o Position) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o Position) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["line"] = o.Line
 	toSerialize["character"] = o.Character
 	return toSerialize, nil
@@ -119,15 +119,15 @@ func (o *Position) UnmarshalJSON(data []byte) (err error) {
 		"character",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -183,5 +183,3 @@ func (v *NullablePosition) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

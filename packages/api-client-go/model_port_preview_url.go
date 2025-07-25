@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -132,15 +132,15 @@ func (o *PortPreviewUrl) SetLegacyProxyUrl(v string) {
 }
 
 func (o PortPreviewUrl) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o PortPreviewUrl) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o PortPreviewUrl) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["url"] = o.Url
 	toSerialize["token"] = o.Token
 	if !IsNil(o.LegacyProxyUrl) {
@@ -158,15 +158,15 @@ func (o *PortPreviewUrl) UnmarshalJSON(data []byte) (err error) {
 		"token",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -222,5 +222,3 @@ func (v *NullablePortPreviewUrl) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

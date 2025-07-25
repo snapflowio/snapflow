@@ -62,7 +62,7 @@ func MoveFile(c echo.Context) error {
 		}
 
 		if err := os.RemoveAll(absSourcePath); err != nil {
-			return c.JSON(http.StatusOK, map[string]interface{}{
+			return c.JSON(http.StatusOK, map[string]any{
 				"message": "file copied successfully but source could not be deleted",
 				"error":   fmt.Sprintf("failed to delete source: %v", err),
 			})

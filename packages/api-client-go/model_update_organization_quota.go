@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,15 +22,15 @@ var _ MappedNullable = &UpdateOrganizationQuota{}
 
 // UpdateOrganizationQuota struct for UpdateOrganizationQuota
 type UpdateOrganizationQuota struct {
-	TotalCpuQuota NullableFloat32 `json:"totalCpuQuota"`
-	TotalMemoryQuota NullableFloat32 `json:"totalMemoryQuota"`
-	TotalDiskQuota NullableFloat32 `json:"totalDiskQuota"`
-	MaxCpuPerSandbox NullableFloat32 `json:"maxCpuPerSandbox"`
+	TotalCpuQuota       NullableFloat32 `json:"totalCpuQuota"`
+	TotalMemoryQuota    NullableFloat32 `json:"totalMemoryQuota"`
+	TotalDiskQuota      NullableFloat32 `json:"totalDiskQuota"`
+	MaxCpuPerSandbox    NullableFloat32 `json:"maxCpuPerSandbox"`
 	MaxMemoryPerSandbox NullableFloat32 `json:"maxMemoryPerSandbox"`
-	MaxDiskPerSandbox NullableFloat32 `json:"maxDiskPerSandbox"`
-	ImageQuota NullableFloat32 `json:"imageQuota"`
-	MaxImageSize NullableFloat32 `json:"maxImageSize"`
-	BucketQuota NullableFloat32 `json:"bucketQuota"`
+	MaxDiskPerSandbox   NullableFloat32 `json:"maxDiskPerSandbox"`
+	ImageQuota          NullableFloat32 `json:"imageQuota"`
+	MaxImageSize        NullableFloat32 `json:"maxImageSize"`
+	BucketQuota         NullableFloat32 `json:"bucketQuota"`
 }
 
 type _UpdateOrganizationQuota UpdateOrganizationQuota
@@ -296,15 +296,15 @@ func (o *UpdateOrganizationQuota) SetBucketQuota(v float32) {
 }
 
 func (o UpdateOrganizationQuota) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o UpdateOrganizationQuota) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o UpdateOrganizationQuota) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["totalCpuQuota"] = o.TotalCpuQuota.Get()
 	toSerialize["totalMemoryQuota"] = o.TotalMemoryQuota.Get()
 	toSerialize["totalDiskQuota"] = o.TotalDiskQuota.Get()
@@ -333,15 +333,15 @@ func (o *UpdateOrganizationQuota) UnmarshalJSON(data []byte) (err error) {
 		"bucketQuota",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -397,5 +397,3 @@ func (v *NullableUpdateOrganizationQuota) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

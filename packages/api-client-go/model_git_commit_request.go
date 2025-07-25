@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,10 +22,10 @@ var _ MappedNullable = &GitCommitRequest{}
 
 // GitCommitRequest struct for GitCommitRequest
 type GitCommitRequest struct {
-	Path string `json:"path"`
+	Path    string `json:"path"`
 	Message string `json:"message"`
-	Author string `json:"author"`
-	Email string `json:"email"`
+	Author  string `json:"author"`
+	Email   string `json:"email"`
 }
 
 type _GitCommitRequest GitCommitRequest
@@ -148,15 +148,15 @@ func (o *GitCommitRequest) SetEmail(v string) {
 }
 
 func (o GitCommitRequest) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o GitCommitRequest) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o GitCommitRequest) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["path"] = o.Path
 	toSerialize["message"] = o.Message
 	toSerialize["author"] = o.Author
@@ -175,15 +175,15 @@ func (o *GitCommitRequest) UnmarshalJSON(data []byte) (err error) {
 		"email",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -239,5 +239,3 @@ func (v *NullableGitCommitRequest) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

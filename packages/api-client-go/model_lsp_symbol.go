@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,9 +22,9 @@ var _ MappedNullable = &LspSymbol{}
 
 // LspSymbol struct for LspSymbol
 type LspSymbol struct {
-	Kind float32 `json:"kind"`
+	Kind     float32     `json:"kind"`
 	Location LspLocation `json:"location"`
-	Name string `json:"name"`
+	Name     string      `json:"name"`
 }
 
 type _LspSymbol LspSymbol
@@ -122,15 +122,15 @@ func (o *LspSymbol) SetName(v string) {
 }
 
 func (o LspSymbol) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o LspSymbol) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o LspSymbol) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["kind"] = o.Kind
 	toSerialize["location"] = o.Location
 	toSerialize["name"] = o.Name
@@ -147,15 +147,15 @@ func (o *LspSymbol) UnmarshalJSON(data []byte) (err error) {
 		"name",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -211,5 +211,3 @@ func (v *NullableLspSymbol) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

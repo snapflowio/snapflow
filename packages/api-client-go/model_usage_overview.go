@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,13 +22,13 @@ var _ MappedNullable = &UsageOverview{}
 
 // UsageOverview struct for UsageOverview
 type UsageOverview struct {
-	TotalCpuQuota float32 `json:"totalCpuQuota"`
-	TotalGpuQuota float32 `json:"totalGpuQuota"`
-	TotalMemoryQuota float32 `json:"totalMemoryQuota"`
-	TotalDiskQuota float32 `json:"totalDiskQuota"`
-	CurrentCpuUsage float32 `json:"currentCpuUsage"`
+	TotalCpuQuota      float32 `json:"totalCpuQuota"`
+	TotalGpuQuota      float32 `json:"totalGpuQuota"`
+	TotalMemoryQuota   float32 `json:"totalMemoryQuota"`
+	TotalDiskQuota     float32 `json:"totalDiskQuota"`
+	CurrentCpuUsage    float32 `json:"currentCpuUsage"`
 	CurrentMemoryUsage float32 `json:"currentMemoryUsage"`
-	CurrentDiskUsage float32 `json:"currentDiskUsage"`
+	CurrentDiskUsage   float32 `json:"currentDiskUsage"`
 }
 
 type _UsageOverview UsageOverview
@@ -226,15 +226,15 @@ func (o *UsageOverview) SetCurrentDiskUsage(v float32) {
 }
 
 func (o UsageOverview) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o UsageOverview) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o UsageOverview) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["totalCpuQuota"] = o.TotalCpuQuota
 	toSerialize["totalGpuQuota"] = o.TotalGpuQuota
 	toSerialize["totalMemoryQuota"] = o.TotalMemoryQuota
@@ -259,15 +259,15 @@ func (o *UsageOverview) UnmarshalJSON(data []byte) (err error) {
 		"currentDiskUsage",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -323,5 +323,3 @@ func (v *NullableUsageOverview) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

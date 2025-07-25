@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -98,15 +98,15 @@ func (o *SandboxBucket) SetMountPath(v string) {
 }
 
 func (o SandboxBucket) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o SandboxBucket) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o SandboxBucket) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["bucketId"] = o.BucketId
 	toSerialize["mountPath"] = o.MountPath
 	return toSerialize, nil
@@ -121,15 +121,15 @@ func (o *SandboxBucket) UnmarshalJSON(data []byte) (err error) {
 		"mountPath",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -185,5 +185,3 @@ func (v *NullableSandboxBucket) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

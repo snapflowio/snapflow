@@ -12,10 +12,10 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
-	"time"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // checks if the BuildInfo type satisfies the MappedNullable interface at compile time
@@ -167,15 +167,15 @@ func (o *BuildInfo) SetUpdatedAt(v time.Time) {
 }
 
 func (o BuildInfo) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o BuildInfo) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o BuildInfo) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	if !IsNil(o.DockerfileContent) {
 		toSerialize["dockerfileContent"] = o.DockerfileContent
 	}
@@ -196,15 +196,15 @@ func (o *BuildInfo) UnmarshalJSON(data []byte) (err error) {
 		"updatedAt",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -260,5 +260,3 @@ func (v *NullableBuildInfo) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

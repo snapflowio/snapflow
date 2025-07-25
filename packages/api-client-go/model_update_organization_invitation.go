@@ -12,10 +12,10 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
-	"time"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // checks if the UpdateOrganizationInvitation type satisfies the MappedNullable interface at compile time
@@ -133,15 +133,15 @@ func (o *UpdateOrganizationInvitation) SetExpiresAt(v time.Time) {
 }
 
 func (o UpdateOrganizationInvitation) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o UpdateOrganizationInvitation) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o UpdateOrganizationInvitation) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["role"] = o.Role
 	toSerialize["assignedRoleIds"] = o.AssignedRoleIds
 	if !IsNil(o.ExpiresAt) {
@@ -159,15 +159,15 @@ func (o *UpdateOrganizationInvitation) UnmarshalJSON(data []byte) (err error) {
 		"assignedRoleIds",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -223,5 +223,3 @@ func (v *NullableUpdateOrganizationInvitation) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

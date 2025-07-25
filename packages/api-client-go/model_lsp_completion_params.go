@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -27,9 +27,9 @@ type LspCompletionParams struct {
 	// Path to the project
 	PathToProject string `json:"pathToProject"`
 	// Document URI
-	Uri string `json:"uri"`
-	Position Position `json:"position"`
-	Context *CompletionContext `json:"context,omitempty"`
+	Uri      string             `json:"uri"`
+	Position Position           `json:"position"`
+	Context  *CompletionContext `json:"context,omitempty"`
 }
 
 type _LspCompletionParams LspCompletionParams
@@ -184,15 +184,15 @@ func (o *LspCompletionParams) SetContext(v CompletionContext) {
 }
 
 func (o LspCompletionParams) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o LspCompletionParams) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o LspCompletionParams) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["languageId"] = o.LanguageId
 	toSerialize["pathToProject"] = o.PathToProject
 	toSerialize["uri"] = o.Uri
@@ -214,15 +214,15 @@ func (o *LspCompletionParams) UnmarshalJSON(data []byte) (err error) {
 		"position",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -278,5 +278,3 @@ func (v *NullableLspCompletionParams) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

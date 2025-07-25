@@ -862,8 +862,8 @@ func (o Sandbox) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o Sandbox) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o Sandbox) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["id"] = o.Id
 	toSerialize["organizationId"] = o.OrganizationId
 	if !IsNil(o.Image) {
@@ -941,7 +941,7 @@ func (o *Sandbox) UnmarshalJSON(data []byte) (err error) {
 		"disk",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 

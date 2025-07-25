@@ -14,7 +14,7 @@ import (
 func UploadFiles(c echo.Context) error {
 	reader, err := c.Request().MultipartReader()
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{"errors": []string{"invalid multipart form"}})
+		return c.JSON(http.StatusBadRequest, map[string]any{"errors": []string{"invalid multipart form"}})
 	}
 
 	dests := make(map[string]string)
@@ -74,7 +74,7 @@ func UploadFiles(c echo.Context) error {
 	}
 
 	if len(errs) > 0 {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{"errors": errs})
+		return c.JSON(http.StatusBadRequest, map[string]any{"errors": errs})
 	}
 
 	return c.NoContent(http.StatusOK)

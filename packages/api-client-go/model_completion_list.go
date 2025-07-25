@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,8 +22,8 @@ var _ MappedNullable = &CompletionList{}
 
 // CompletionList struct for CompletionList
 type CompletionList struct {
-	IsIncomplete bool `json:"isIncomplete"`
-	Items []CompletionItem `json:"items"`
+	IsIncomplete bool             `json:"isIncomplete"`
+	Items        []CompletionItem `json:"items"`
 }
 
 type _CompletionList CompletionList
@@ -96,15 +96,15 @@ func (o *CompletionList) SetItems(v []CompletionItem) {
 }
 
 func (o CompletionList) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o CompletionList) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o CompletionList) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["isIncomplete"] = o.IsIncomplete
 	toSerialize["items"] = o.Items
 	return toSerialize, nil
@@ -119,15 +119,15 @@ func (o *CompletionList) UnmarshalJSON(data []byte) (err error) {
 		"items",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -183,5 +183,3 @@ func (v *NullableCompletionList) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

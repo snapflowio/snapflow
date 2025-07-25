@@ -50,7 +50,7 @@ func (s *Server) Start() error {
 	e.Validator = NewDefaultValidator()
 
 	e.GET("/version", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]interface{}{
+		return c.JSON(http.StatusOK, map[string]any{
 			"version": internal.Version,
 		})
 	})

@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,9 +22,9 @@ var _ MappedNullable = &Match{}
 
 // Match struct for Match
 type Match struct {
-	File string `json:"file"`
-	Line float32 `json:"line"`
-	Content string `json:"content"`
+	File    string  `json:"file"`
+	Line    float32 `json:"line"`
+	Content string  `json:"content"`
 }
 
 type _Match Match
@@ -122,15 +122,15 @@ func (o *Match) SetContent(v string) {
 }
 
 func (o Match) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o Match) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o Match) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["file"] = o.File
 	toSerialize["line"] = o.Line
 	toSerialize["content"] = o.Content
@@ -147,15 +147,15 @@ func (o *Match) UnmarshalJSON(data []byte) (err error) {
 		"content",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -211,5 +211,3 @@ func (v *NullableMatch) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

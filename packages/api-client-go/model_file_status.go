@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,10 +22,10 @@ var _ MappedNullable = &FileStatus{}
 
 // FileStatus struct for FileStatus
 type FileStatus struct {
-	Name string `json:"name"`
-	Staging string `json:"staging"`
+	Name     string `json:"name"`
+	Staging  string `json:"staging"`
 	Worktree string `json:"worktree"`
-	Extra string `json:"extra"`
+	Extra    string `json:"extra"`
 }
 
 type _FileStatus FileStatus
@@ -148,15 +148,15 @@ func (o *FileStatus) SetExtra(v string) {
 }
 
 func (o FileStatus) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o FileStatus) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o FileStatus) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["name"] = o.Name
 	toSerialize["staging"] = o.Staging
 	toSerialize["worktree"] = o.Worktree
@@ -175,15 +175,15 @@ func (o *FileStatus) UnmarshalJSON(data []byte) (err error) {
 		"extra",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -239,5 +239,3 @@ func (v *NullableFileStatus) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

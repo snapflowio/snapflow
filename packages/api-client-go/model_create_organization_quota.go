@@ -20,15 +20,15 @@ var _ MappedNullable = &CreateOrganizationQuota{}
 
 // CreateOrganizationQuota struct for CreateOrganizationQuota
 type CreateOrganizationQuota struct {
-	TotalCpuQuota *float32 `json:"totalCpuQuota,omitempty"`
-	TotalMemoryQuota *float32 `json:"totalMemoryQuota,omitempty"`
-	TotalDiskQuota *float32 `json:"totalDiskQuota,omitempty"`
-	MaxCpuPerSandbox *float32 `json:"maxCpuPerSandbox,omitempty"`
+	TotalCpuQuota       *float32 `json:"totalCpuQuota,omitempty"`
+	TotalMemoryQuota    *float32 `json:"totalMemoryQuota,omitempty"`
+	TotalDiskQuota      *float32 `json:"totalDiskQuota,omitempty"`
+	MaxCpuPerSandbox    *float32 `json:"maxCpuPerSandbox,omitempty"`
 	MaxMemoryPerSandbox *float32 `json:"maxMemoryPerSandbox,omitempty"`
-	MaxDiskPerSandbox *float32 `json:"maxDiskPerSandbox,omitempty"`
-	ImageQuota *float32 `json:"imageQuota,omitempty"`
-	MaxImageSize *float32 `json:"maxImageSize,omitempty"`
-	BucketQuota *float32 `json:"bucketQuota,omitempty"`
+	MaxDiskPerSandbox   *float32 `json:"maxDiskPerSandbox,omitempty"`
+	ImageQuota          *float32 `json:"imageQuota,omitempty"`
+	MaxImageSize        *float32 `json:"maxImageSize,omitempty"`
+	BucketQuota         *float32 `json:"bucketQuota,omitempty"`
 }
 
 // NewCreateOrganizationQuota instantiates a new CreateOrganizationQuota object
@@ -337,15 +337,15 @@ func (o *CreateOrganizationQuota) SetBucketQuota(v float32) {
 }
 
 func (o CreateOrganizationQuota) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o CreateOrganizationQuota) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o CreateOrganizationQuota) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	if !IsNil(o.TotalCpuQuota) {
 		toSerialize["totalCpuQuota"] = o.TotalCpuQuota
 	}
@@ -411,5 +411,3 @@ func (v *NullableCreateOrganizationQuota) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

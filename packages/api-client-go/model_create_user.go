@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,11 +22,11 @@ var _ MappedNullable = &CreateUser{}
 
 // CreateUser struct for CreateUser
 type CreateUser struct {
-	Id string `json:"id"`
-	Name string `json:"name"`
-	Email *string `json:"email,omitempty"`
-	EmailVerified *bool `json:"emailVerified,omitempty"`
-	Role *string `json:"role,omitempty"`
+	Id                        string                   `json:"id"`
+	Name                      string                   `json:"name"`
+	Email                     *string                  `json:"email,omitempty"`
+	EmailVerified             *bool                    `json:"emailVerified,omitempty"`
+	Role                      *string                  `json:"role,omitempty"`
 	PersonalOrganizationQuota *CreateOrganizationQuota `json:"personalOrganizationQuota,omitempty"`
 }
 
@@ -228,15 +228,15 @@ func (o *CreateUser) SetPersonalOrganizationQuota(v CreateOrganizationQuota) {
 }
 
 func (o CreateUser) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o CreateUser) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o CreateUser) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["id"] = o.Id
 	toSerialize["name"] = o.Name
 	if !IsNil(o.Email) {
@@ -263,15 +263,15 @@ func (o *CreateUser) UnmarshalJSON(data []byte) (err error) {
 		"name",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -327,5 +327,3 @@ func (v *NullableCreateUser) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

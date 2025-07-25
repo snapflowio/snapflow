@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -125,15 +125,15 @@ func (o *ExecutorImageDto) SetExecutorDomain(v string) {
 }
 
 func (o ExecutorImageDto) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o ExecutorImageDto) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o ExecutorImageDto) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["executorImageId"] = o.ExecutorImageId
 	toSerialize["executorId"] = o.ExecutorId
 	toSerialize["executorDomain"] = o.ExecutorDomain
@@ -150,15 +150,15 @@ func (o *ExecutorImageDto) UnmarshalJSON(data []byte) (err error) {
 		"executorDomain",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -214,5 +214,3 @@ func (v *NullableExecutorImageDto) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -12,8 +12,8 @@ Contact: support@snapflow.com
 package apiclient
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
 )
 
@@ -23,7 +23,7 @@ var _ MappedNullable = &Range{}
 // Range struct for Range
 type Range struct {
 	Start Position `json:"start"`
-	End Position `json:"end"`
+	End   Position `json:"end"`
 }
 
 type _Range Range
@@ -96,15 +96,15 @@ func (o *Range) SetEnd(v Position) {
 }
 
 func (o Range) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o Range) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o Range) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	toSerialize["start"] = o.Start
 	toSerialize["end"] = o.End
 	return toSerialize, nil
@@ -119,15 +119,15 @@ func (o *Range) UnmarshalJSON(data []byte) (err error) {
 		"end",
 	}
 
-	allProperties := make(map[string]interface{})
+	allProperties := make(map[string]any)
 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -183,5 +183,3 @@ func (v *NullableRange) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

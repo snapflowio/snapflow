@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 **Label** | **string** |  | 
 **Kind** | Pointer to **float32** |  | [optional] 
 **Detail** | Pointer to **string** |  | [optional] 
-**Documentation** | Pointer to **map[string]interface{}** |  | [optional] 
+**Documentation** | Pointer to **map[string]any** |  | [optional] 
 **SortText** | Pointer to **string** |  | [optional] 
 **FilterText** | Pointer to **string** |  | [optional] 
 **InsertText** | Pointer to **string** |  | [optional] 
@@ -103,20 +103,20 @@ HasDetail returns a boolean if a field has been set.
 
 ### GetDocumentation
 
-`func (o *CompletionItem) GetDocumentation() map[string]interface{}`
+`func (o *CompletionItem) GetDocumentation() map[string]any`
 
 GetDocumentation returns the Documentation field if non-nil, zero value otherwise.
 
 ### GetDocumentationOk
 
-`func (o *CompletionItem) GetDocumentationOk() (*map[string]interface{}, bool)`
+`func (o *CompletionItem) GetDocumentationOk() (*map[string]any, bool)`
 
 GetDocumentationOk returns a tuple with the Documentation field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetDocumentation
 
-`func (o *CompletionItem) SetDocumentation(v map[string]interface{})`
+`func (o *CompletionItem) SetDocumentation(v map[string]any)`
 
 SetDocumentation sets Documentation field to given value.
 

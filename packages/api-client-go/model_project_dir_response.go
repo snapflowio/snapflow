@@ -73,15 +73,15 @@ func (o *ProjectDirResponse) SetDir(v string) {
 }
 
 func (o ProjectDirResponse) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
 }
 
-func (o ProjectDirResponse) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
+func (o ProjectDirResponse) ToMap() (map[string]any, error) {
+	toSerialize := map[string]any{}
 	if !IsNil(o.Dir) {
 		toSerialize["dir"] = o.Dir
 	}
@@ -123,5 +123,3 @@ func (v *NullableProjectDirResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-
