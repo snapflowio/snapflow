@@ -45,7 +45,7 @@ function PricingCard({ pricing }: PricingCardProps) {
           </div>
         </Switch.Case>
         <Switch.Case value={"hobby"}>
-          <div className="absolute inset-x-8 top-10 bottom-auto w-fit rounded-xl bg-primary p-3">
+          <div className="absolute inset-x-8 top-10 bottom-auto w-fit rounded-xl bg-accent p-3">
             <LayoutIcon size={26} />
           </div>
         </Switch.Case>
