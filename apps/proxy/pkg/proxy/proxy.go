@@ -3,20 +3,17 @@ package proxy
 import (
 	"errors"
 	"fmt"
-	"maps"
-	"net"
 	"net/http"
-	"slices"
+	"time"
 
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"github.com/gorilla/securecookie"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	apiclient "github.com/snapflow/apiclient"
 	"github.com/snapflow/proxy/cmd/proxy/config"
 	"github.com/snapflow/proxy/pkg/cache"
 
 	common_errors "github.com/snapflow/go-common/pkg/errors"
-	common_proxy "github.com/snapflow/go-common/pkg/proxy"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -38,6 +35,23 @@ type Proxy struct {
 	executorCache            cache.ICache[RunnerInfo]
 	sandboxPublicCache       cache.ICache[bool]
 	sandboxAuthKeyValidCache cache.ICache[bool]
+}
+
+func getErrorCode(statusCode int) string {
+	switch statusCode {
+	case http.StatusBadRequest:
+		return "BAD_REQUEST"
+	case http.StatusUnauthorized:
+		return "UNAUTHORIZED"
+	case http.StatusNotFound:
+		return "NOT_FOUND"
+	case http.StatusConflict:
+		return "CONFLICT"
+	case http.StatusInternalServerError:
+		return "INTERNAL_SERVER_ERROR"
+	default:
+		return "ERROR"
+	}
 }
 
 func StartProxy(config *config.Config) error {
@@ -82,72 +96,103 @@ func StartProxy(config *config.Config) error {
 		proxy.sandboxAuthKeyValidCache = cache.NewMapCache[bool]()
 	}
 
-	router := gin.New()
-	router.Use(gin.Recovery())
+	e := echo.New()
+	e.Use(middleware.Recover())
 
-	router.Use(func(ctx *gin.Context) {
-		if ctx.Request.Header.Get("X-Snapflow-Disable-CORS") == "true" {
-			ctx.Request.Header.Del("X-Snapflow-Disable-CORS")
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			if c.Request().Header.Get("X-Snapflow-Disable-CORS") == "true" {
+				c.Request().Header.Del("X-Snapflow-Disable-CORS")
+				return next(c)
+			}
+
+			corsConfig := middleware.CORSConfig{
+				AllowOriginFunc: func(origin string) (bool, error) {
+					return true, nil
+				},
+				AllowCredentials: true,
+				AllowHeaders:     []string{},
+			}
+
+			for header := range c.Request().Header {
+				corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, header)
+			}
+
+			accessControlHeaders := c.Request().Header.Values("Access-Control-Request-Headers")
+			corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, accessControlHeaders...)
+
+			return middleware.CORSWithConfig(corsConfig)(next)(c)
+		}
+	})
+
+	e.HTTPErrorHandler = func(err error, c echo.Context) {
+		if c.Response().Committed {
 			return
 		}
 
-		corsConfig := cors.DefaultConfig()
-		corsConfig.AllowOriginFunc = func(origin string) bool {
-			return true
+		var statusCode int
+		var message string
+
+		if httpErr, ok := err.(*echo.HTTPError); ok {
+			statusCode = httpErr.Code
+			message = fmt.Sprintf("%v", httpErr.Message)
+		} else if customErr, ok := err.(*common_errors.CustomError); ok {
+			statusCode = customErr.StatusCode
+			message = customErr.Message
+		} else if _, ok := err.(*common_errors.NotFoundError); ok {
+			statusCode = http.StatusNotFound
+			message = err.Error()
+		} else if _, ok := err.(*common_errors.UnauthorizedError); ok {
+			statusCode = http.StatusUnauthorized
+			message = err.Error()
+		} else if _, ok := err.(*common_errors.BadRequestError); ok {
+			statusCode = http.StatusBadRequest
+			message = err.Error()
+		} else if _, ok := err.(*common_errors.ConflictError); ok {
+			statusCode = http.StatusConflict
+			message = err.Error()
+		} else if _, ok := err.(*common_errors.InvalidBodyRequestError); ok {
+			statusCode = http.StatusBadRequest
+			message = err.Error()
+		} else {
+			statusCode = http.StatusInternalServerError
+			message = err.Error()
 		}
-		corsConfig.AllowCredentials = true
-		corsConfig.AllowHeaders = slices.Collect(maps.Keys(ctx.Request.Header))
-		corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, ctx.Request.Header.Values("Access-Control-Request-Headers")...)
 
-		cors.New(corsConfig)(ctx)
-	})
+		c.JSON(statusCode, common_errors.ErrorResponse{
+			StatusCode: statusCode,
+			Message:    message,
+			Code:       getErrorCode(statusCode),
+			Timestamp:  time.Now(),
+			Path:       c.Request().URL.Path,
+			Method:     c.Request().Method,
+		})
+	}
 
-	router.Use(common_errors.NewErrorMiddleware(func(ctx *gin.Context, err error) common_errors.ErrorResponse {
-		return common_errors.ErrorResponse{
-			StatusCode: http.StatusInternalServerError,
-			Message:    err.Error(),
-		}
-	}))
-
-	router.Any("/*path", func(ctx *gin.Context) {
-		_, _, err := proxy.parseHost(ctx.Request.Host)
+	e.Any("/*", func(c echo.Context) error {
+		_, _, err := proxy.parseHost(c.Request().Host)
 		if err != nil {
-			switch ctx.Request.Method {
+			switch c.Request().Method {
 			case "GET":
-				switch ctx.Request.URL.Path {
+				switch c.Request().URL.Path {
 				case "/callback":
-					proxy.AuthCallback(ctx)
-					return
+					return proxy.AuthCallback(c)
 				case "/health":
-					ctx.JSON(http.StatusOK, gin.H{"status": "ok"})
-					return
+					return c.JSON(http.StatusOK, echo.Map{"status": "ok"})
 				}
 			}
 
-			ctx.Error(common_errors.NewNotFoundError(errors.New("not found")))
-			return
+			return common_errors.NewNotFoundError(errors.New("not found"))
 		}
 
-		common_proxy.NewProxyRequestHandler(proxy.GetProxyTarget)(ctx)
+		return proxy.NewEchoProxyRequestHandler(proxy.GetProxyTarget)(c)
 	})
 
-	httpServer := &http.Server{
-		Addr:    fmt.Sprintf(":%d", config.ProxyPort),
-		Handler: router,
-	}
-
-	listener, err := net.Listen("tcp", httpServer.Addr)
-	if err != nil {
-		return err
-	}
-
+	addr := fmt.Sprintf(":%d", config.ProxyPort)
 	log.Infof("Proxy server is running on port %d", config.ProxyPort)
 
 	if config.EnableTLS {
-		err = httpServer.ServeTLS(listener, config.TLSCertFile, config.TLSKeyFile)
-	} else {
-		err = httpServer.Serve(listener)
+		return e.StartTLS(addr, config.TLSCertFile, config.TLSKeyFile)
 	}
-
-	return err
+	return e.Start(addr)
 }

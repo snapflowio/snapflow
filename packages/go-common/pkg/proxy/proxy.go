@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/labstack/echo/v4"
 	common_errors "github.com/snapflow/go-common/pkg/errors"
 
 	log "github.com/sirupsen/logrus"
@@ -43,9 +43,11 @@ var proxyClient = &http.Client{
 				}
 			}
 		}
+
 		if len(via) >= 10 {
 			return errors.New("stopped after 10 redirects")
 		}
+
 		return nil
 	},
 }
@@ -65,29 +67,27 @@ var proxyClient = &http.Client{
 // @Failure 409 {object} string "Sandbox container conflict"
 // @Failure 500 {object} string "Internal server error"
 // @Router /workspaces/{workspaceId}/{projectId}/toolbox/{path} [get]
-func NewProxyRequestHandler(getProxyTarget func(*gin.Context) (*url.URL, string, map[string]string, error)) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		target, targetHost, extraHeaders, err := getProxyTarget(ctx)
+func NewEchoProxyRequestHandler(getProxyTarget func(echo.Context) (*url.URL, string, map[string]string, error)) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		target, targetHost, extraHeaders, err := getProxyTarget(c)
 		if err != nil {
-			return
+			return err
 		}
 
-		// Use the full URL from target, not just the host
 		fullTargetURL := target.String()
 
 		outReq, err := http.NewRequestWithContext(
-			ctx.Request.Context(),
-			ctx.Request.Method,
+			c.Request().Context(),
+			c.Request().Method,
 			fullTargetURL,
-			ctx.Request.Body,
+			c.Request().Body,
 		)
 		if err != nil {
-			ctx.Error(common_errors.NewBadRequestError(fmt.Errorf("failed to create outgoing request: %w", err)))
-			return
+			return common_errors.NewBadRequestError(fmt.Errorf("failed to create outgoing request: %w", err))
 		}
 
 		// Copy headers from original request
-		for key, values := range ctx.Request.Header {
+		for key, values := range c.Request().Header {
 			if key != "Connection" {
 				for _, value := range values {
 					outReq.Header.Add(key, value)
@@ -95,7 +95,6 @@ func NewProxyRequestHandler(getProxyTarget func(*gin.Context) (*url.URL, string,
 			}
 		}
 
-		// Use the targetHost for the Host header (this comes from your GetProxyTarget function)
 		outReq.Host = targetHost
 		outReq.Header.Set("Connection", "keep-alive")
 
@@ -105,11 +104,10 @@ func NewProxyRequestHandler(getProxyTarget func(*gin.Context) (*url.URL, string,
 		}
 
 		// Handle WebSocket upgrade
-		if ctx.Request.Header.Get("Upgrade") == "websocket" {
-			ws, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
+		if c.Request().Header.Get("Upgrade") == "websocket" {
+			ws, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
 			if err != nil {
-				ctx.AbortWithError(http.StatusInternalServerError, err)
-				return
+				return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 			}
 			defer ws.Close()
 
@@ -123,10 +121,9 @@ func NewProxyRequestHandler(getProxyTarget func(*gin.Context) (*url.URL, string,
 			wsURL := strings.Replace(fullTargetURL, "http://", "ws://", 1)
 			wsURL = strings.Replace(wsURL, "https://", "wss://", 1)
 
-			conn, _, err := websocket.DefaultDialer.DialContext(ctx.Request.Context(), wsURL, reqExtraHeaders)
+			conn, _, err := websocket.DefaultDialer.DialContext(c.Request().Context(), wsURL, reqExtraHeaders)
 			if err != nil {
-				ctx.AbortWithError(http.StatusInternalServerError, err)
-				return
+				return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 			}
 			defer conn.Close()
 
@@ -140,30 +137,31 @@ func NewProxyRequestHandler(getProxyTarget func(*gin.Context) (*url.URL, string,
 			defer conn.Close()
 			defer ws.Close()
 			io.Copy(conn.NetConn(), ws.NetConn())
-			return
+			return nil
 		}
 
 		// Make the HTTP request
 		resp, err := proxyClient.Do(outReq)
 		if err != nil {
-			ctx.AbortWithError(http.StatusBadGateway, fmt.Errorf("proxy request failed: %w", err))
-			return
+			return echo.NewHTTPError(http.StatusBadGateway, fmt.Sprintf("proxy request failed: %v", err))
 		}
 		defer resp.Body.Close()
 
 		// Copy response headers
 		for key, values := range resp.Header {
 			for _, value := range values {
-				ctx.Writer.Header().Add(key, value)
+				c.Response().Header().Add(key, value)
 			}
 		}
 
 		// Set status code
-		ctx.Writer.WriteHeader(resp.StatusCode)
+		c.Response().WriteHeader(resp.StatusCode)
 
 		// Copy response body
-		if _, err := io.Copy(ctx.Writer, resp.Body); err != nil {
+		if _, err := io.Copy(c.Response(), resp.Body); err != nil {
 			log.Errorf("Error copying response body: %v", err)
 		}
+
+		return nil
 	}
 }

@@ -5,22 +5,22 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
-func (p *Proxy) Authenticate(ctx *gin.Context, sandboxId string) (err error, didRedirect bool) {
-	authKey := ctx.Request.Header.Get(SNAPFLOW_SANDBOX_AUTH_KEY_HEADER)
+func (p *Proxy) Authenticate(c echo.Context, sandboxId string) (err error, didRedirect bool) {
+	authKey := c.Request().Header.Get(SNAPFLOW_SANDBOX_AUTH_KEY_HEADER)
 	if authKey == "" {
-		if ctx.Query(SNAPFLOW_SANDBOX_AUTH_KEY_QUERY_PARAM) != "" {
-			authKey = ctx.Query(SNAPFLOW_SANDBOX_AUTH_KEY_QUERY_PARAM)
-			newQuery := ctx.Request.URL.Query()
+		if c.QueryParam(SNAPFLOW_SANDBOX_AUTH_KEY_QUERY_PARAM) != "" {
+			authKey = c.QueryParam(SNAPFLOW_SANDBOX_AUTH_KEY_QUERY_PARAM)
+			newQuery := c.Request().URL.Query()
 			newQuery.Del(SNAPFLOW_SANDBOX_AUTH_KEY_QUERY_PARAM)
-			ctx.Request.URL.RawQuery = newQuery.Encode()
+			c.Request().URL.RawQuery = newQuery.Encode()
 		} else {
-			cookieSandboxId, err := ctx.Cookie(SNAPFLOW_SANDBOX_AUTH_COOKIE_NAME + sandboxId)
-			if err == nil && cookieSandboxId != "" {
+			cookie, err := c.Cookie(SNAPFLOW_SANDBOX_AUTH_COOKIE_NAME + sandboxId)
+			if err == nil && cookie != nil {
 				decodedValue := ""
-				err = p.secureCookie.Decode(SNAPFLOW_SANDBOX_AUTH_COOKIE_NAME+sandboxId, cookieSandboxId, &decodedValue)
+				err = p.secureCookie.Decode(SNAPFLOW_SANDBOX_AUTH_COOKIE_NAME+sandboxId, cookie.Value, &decodedValue)
 				if err != nil {
 					return errors.New("sandbox not found"), false
 				}
@@ -31,12 +31,12 @@ func (p *Proxy) Authenticate(ctx *gin.Context, sandboxId string) (err error, did
 					return nil, false
 				}
 			} else {
-				authUrl, err := p.getAuthUrl(ctx, sandboxId)
+				authUrl, err := p.getAuthUrl(c, sandboxId)
 				if err != nil {
 					return fmt.Errorf("failed to get auth URL: %w", err), false
 				}
 
-				ctx.Redirect(http.StatusTemporaryRedirect, authUrl)
+				c.Redirect(http.StatusTemporaryRedirect, authUrl)
 
 				return errors.New("auth key is required"), true
 			}
@@ -44,7 +44,7 @@ func (p *Proxy) Authenticate(ctx *gin.Context, sandboxId string) (err error, did
 	}
 
 	if authKey != "" {
-		isValid, err := p.getSandboxAuthKeyValid(ctx, sandboxId, authKey)
+		isValid, err := p.getSandboxAuthKeyValid(c.Request().Context(), sandboxId, authKey)
 		if err != nil {
 			return fmt.Errorf("failed to get sandbox auth key valid status: %w", err), false
 		}

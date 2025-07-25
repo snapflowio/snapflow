@@ -147,7 +147,7 @@ export function ImageTable({
                   <TableRow
                     key={row.id}
                     data-state={isRowDisabled ? "disabled" : undefined}
-                    className="data-[state=disabled]:pointer-events-none data-[state=disabled]:opacity-50"
+                    className="data-[state=disabled]:pointer-events-none data-[state=disabled]:opacity-60"
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id} className="px-4 py-3">
@@ -227,7 +227,13 @@ const getColumns = ({
       header: "Resources",
       cell: ({ row }) => {
         const image = row.original;
-        return `${image.cpu}vCPU / ${image.mem}GiB / ${image.disk}GiB`;
+        return (
+          <div className="flex flex-row items-center gap-2 text-background text-xs">
+            <div className="rounded-sm bg-blue-400/90 p-1 px-2">{image.disk} GB</div>
+            <div className="rounded-sm bg-green-400 p-1 px-2">{image.mem} GB</div>
+            <div className="rounded-sm bg-purple-400 p-1 px-2">{image.cpu} vCPU</div>
+          </div>
+        );
       },
     },
     {
@@ -244,7 +250,7 @@ const getColumns = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <Badge variant={getStateColor(image.state)} className="gap-2">
+                  <Badge variant={"outline"} className="gap-2">
                     {getStateIcon(image.state)}
                     {getStateLabel(image.state)}
                   </Badge>
@@ -258,7 +264,7 @@ const getColumns = ({
         }
 
         return (
-          <Badge variant={getStateColor(image.state)} className="gap-2">
+          <Badge variant={"outline"} className="gap-2">
             {getStateIcon(image.state)}
             {getStateLabel(image.state)}
           </Badge>
@@ -355,20 +361,6 @@ const getStateIcon = (state: ImageState) => {
       return <AlertTriangle className={className} />;
     default:
       return <Loader2 className={`${className} animate-spin`} />;
-  }
-};
-
-const getStateColor = (state: ImageState) => {
-  switch (state) {
-    case ImageState.ACTIVE:
-      return "default";
-    case ImageState.INACTIVE:
-      return "outline";
-    case ImageState.ERROR:
-    case ImageState.BUILD_FAILED:
-      return "destructive";
-    default:
-      return "default";
   }
 };
 

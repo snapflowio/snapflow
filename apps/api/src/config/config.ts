@@ -11,8 +11,8 @@ export const config = {
     database: process.env.DB_DATABASE,
   },
   oidc: {
-    clientId: process.env.OIDC_CLIENT_ID || process.env.OID_CLIENT_ID,
-    issuer: process.env.OIDC_ISSUER_BASE_URL || process.env.OID_ISSUER_BASE_URL,
+    clientId: process.env.OIDC_CLIENT_ID,
+    issuer: process.env.OIDC_ISSUER_BASE_URL,
   },
   transientRegistry: {
     url: process.env.TRANSIENT_REGISTRY_URL,

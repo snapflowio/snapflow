@@ -9,76 +9,64 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 	common_errors "github.com/snapflow/go-common/pkg/errors"
 
 	log "github.com/sirupsen/logrus"
 )
 
-func (p *Proxy) GetProxyTarget(ctx *gin.Context) (*url.URL, string, map[string]string, error) {
-	targetPort, sandboxID, err := p.parseHost(ctx.Request.Host)
+func (p *Proxy) GetProxyTarget(c echo.Context) (*url.URL, string, map[string]string, error) {
+	targetPort, sandboxID, err := p.parseHost(c.Request().Host)
 	if err != nil {
-		ctx.Error(common_errors.NewBadRequestError(err))
-		return nil, "", nil, err
+		return nil, "", nil, common_errors.NewBadRequestError(err)
 	}
 
 	if targetPort == "" {
-		ctx.Error(common_errors.NewBadRequestError(errors.New("target port is required")))
-		return nil, "", nil, errors.New("target port is required")
+		return nil, "", nil, common_errors.NewBadRequestError(errors.New("target port is required"))
 	}
 
 	if sandboxID == "" {
-		ctx.Error(common_errors.NewBadRequestError(errors.New("sandbox ID is required")))
-		return nil, "", nil, errors.New("sandbox ID is required")
+		return nil, "", nil, common_errors.NewBadRequestError(errors.New("sandbox ID is required"))
 	}
 
-	isPublic, err := p.getSandboxPublic(ctx, sandboxID)
+	isPublic, err := p.getSandboxPublic(c.Request().Context(), sandboxID)
 	if err != nil {
-		ctx.Error(common_errors.NewBadRequestError(fmt.Errorf("failed to get sandbox public status: %w", err)))
-		return nil, "", nil, fmt.Errorf("failed to get sandbox public status: %w", err)
+		return nil, "", nil, common_errors.NewBadRequestError(fmt.Errorf("failed to get sandbox public status: %w", err))
 	}
 
 	if !*isPublic || targetPort == "22222" {
-		err, didRedirect := p.Authenticate(ctx, sandboxID)
+		err, didRedirect := p.Authenticate(c, sandboxID)
 		if err != nil {
 			if !didRedirect {
-				ctx.Error(common_errors.NewUnauthorizedError(err))
+				return nil, "", nil, common_errors.NewUnauthorizedError(err)
 			}
-
 			return nil, "", nil, err
 		}
 	}
 
-	executorInfo, err := p.getExecutorInfo(ctx, sandboxID)
+	executorInfo, err := p.getExecutorInfo(c.Request().Context(), sandboxID)
 	if err != nil {
-		ctx.Error(common_errors.NewBadRequestError(fmt.Errorf("failed to get executor info: %w", err)))
-		return nil, "", nil, fmt.Errorf("failed to get executor info: %w", err)
+		return nil, "", nil, common_errors.NewBadRequestError(fmt.Errorf("failed to get executor info: %w", err))
 	}
 
-	// Build the target URL
 	targetURL := fmt.Sprintf("%s/sandboxes/%s/toolbox/proxy/%s", executorInfo.ApiUrl, sandboxID, targetPort)
 
-	// Get the wildcard path and normalize it
-	path := ctx.Param("path")
+	path := c.Param("*")
 
-	// Ensure path always has a leading slash but not duplicate slashes
 	if path == "" {
 		path = "/"
 	} else if !strings.HasPrefix(path, "/") {
 		path = "/" + path
 	}
 
-	// Create the complete target URL with path
 	target, err := url.Parse(fmt.Sprintf("%s%s", targetURL, path))
 	if err != nil {
-		ctx.Error(common_errors.NewBadRequestError(fmt.Errorf("failed to parse target URL: %w", err)))
-		return nil, "", nil, fmt.Errorf("failed to parse target URL: %w", err)
+		return nil, "", nil, common_errors.NewBadRequestError(fmt.Errorf("failed to parse target URL: %w", err))
 	}
 
-	// Return the target URL, target host (extracted from the URL), and headers
 	return target, target.Host, map[string]string{
 		"X-Snapflow-Authorization": fmt.Sprintf("Bearer %s", executorInfo.ApiKey),
-		"X-Forwarded-Host":         ctx.Request.Host,
+		"X-Forwarded-Host":         c.Request().Host,
 	}, nil
 }
 
@@ -159,19 +147,15 @@ func (p *Proxy) getSandboxAuthKeyValid(ctx context.Context, sandboxId string, au
 }
 
 func (p *Proxy) parseHost(host string) (targetPort string, sandboxID string, err error) {
-	// Extract port and sandbox ID from the host header
-	// Expected format: 1234-some-id-uuid.proxy.domain
 	if host == "" {
 		return "", "", errors.New("host is required")
 	}
 
-	// Split the host to extract the port and sandbox ID
 	parts := strings.Split(host, ".")
 	if len(parts) == 0 {
 		return "", "", errors.New("invalid host format")
 	}
 
-	// Extract port from the first part (e.g., "1234-some-id-uuid")
 	hostPrefix := parts[0]
 	dashIndex := strings.Index(hostPrefix, "-")
 	if dashIndex == -1 {

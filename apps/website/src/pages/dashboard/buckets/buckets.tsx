@@ -200,7 +200,7 @@ export function Buckets() {
           <h1 className="font-bold text-2xl">Buckets</h1>
           {writePermitted && (
             <DialogTrigger asChild>
-              <Button variant="default" disabled={loadingBuckets}>
+              <Button disabled={loadingBuckets}>
                 <Plus className="h-4 w-4" />
                 Create Bucket
               </Button>

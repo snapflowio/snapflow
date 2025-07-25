@@ -4,14 +4,12 @@ import { SnapflowError } from "@/api/errors";
 export function handleApiError(
   error: unknown,
   message: string,
-  toastAction?: React.ReactNode | Action,
+  toastAction?: React.ReactNode | Action
 ) {
   const isSnapflowError = error instanceof SnapflowError;
 
   toast.error(message, {
-    description: isSnapflowError
-      ? error.message
-      : "Please try again or check the console for more details",
+    description: isSnapflowError ? error.message : "Something went wrong. Please try again later.",
     action: toastAction,
   });
 

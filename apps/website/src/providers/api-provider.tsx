@@ -6,7 +6,8 @@ import { ApiContext } from "@/context/api-context";
 import { Path } from "@/enums/paths";
 
 export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, isLoading, getIdTokenClaims, getIdToken, signIn } = useLogto();
+  const { isAuthenticated, isLoading, getIdTokenClaims, getIdToken, signIn, fetchUserInfo } =
+    useLogto();
 
   const [authState, setAuthState] = useState<{
     user?: IdTokenClaims;
@@ -17,7 +18,9 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   });
 
   useEffect(() => {
-    if (isLoading || authState.isInitialized) return;
+    if (isLoading) return;
+
+    if (authState.isInitialized) return;
 
     if (!isAuthenticated) {
       void signIn({ redirectUri: window.location.origin + Path.CALLBACK });
@@ -26,22 +29,26 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     const initialize = async () => {
       try {
+        await fetchUserInfo();
+
         const [token, user] = await Promise.all([getIdToken(), getIdTokenClaims()]);
 
-        if (token && user) {
-          setAuthState({
-            user,
-            apiClient: new ApiClient(token),
-            isInitialized: true,
-          });
-        }
+        if (!token || !user)
+          throw new Error("Token or user claims not available after successful validation.");
+
+        setAuthState({
+          user,
+          apiClient: new ApiClient(token),
+          isInitialized: true,
+        });
       } catch (error) {
-        console.error("Error during auth initialization:", error);
+        console.error("Failed to initialize API provider, redirecting to sign in:", error);
+        void signIn({ redirectUri: window.location.origin + Path.CALLBACK });
       }
     };
 
-    initialize();
-  }, [isLoading, isAuthenticated, authState.isInitialized, getIdToken, getIdTokenClaims, signIn]);
+    void initialize();
+  }, [isLoading, isAuthenticated, signIn, fetchUserInfo, getIdToken, getIdTokenClaims]);
 
   const contextValue = useMemo(() => {
     if (!authState.apiClient || !authState.user) {

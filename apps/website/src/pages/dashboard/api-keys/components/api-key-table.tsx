@@ -160,27 +160,6 @@ const getColumns = ({
     },
   },
   {
-    accessorKey: "createdAt",
-    header: "Created",
-    cell: ({ row }) => {
-      const created = row.original.createdAt;
-      const relative = getRelativeTimeString(created).relativeTimeString;
-      const full = new Date(created).toLocaleString();
-      return (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger>
-              <span className="cursor-default">{relative}</span>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{full}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-    },
-  },
-  {
     accessorKey: "lastUsedAt",
     header: "Last Used",
     cell: ({ row }) => {
