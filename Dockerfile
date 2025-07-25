@@ -2,7 +2,7 @@
 # STAGE 1: Builder
 # This stage installs Go, Node.js, and all dependencies, then builds the applications.
 # ======================================================================================
-FROM golang:1.24.4-bookworm as builder
+FROM golang:1.24.4-alpine as builder
 
 # Install Node.js (LTS version 20.x) and pnpm
 RUN apt-get update && apt-get install -y curl
@@ -33,7 +33,7 @@ RUN pnpm run build:production
 # This stage creates the final, lightweight production image by copying only the
 # necessary artifacts from the builder stage.
 # ======================================================================================
-FROM node:20-slim as runner
+FROM node:latest-slim as runner
 
 # Set the working directory for the running application
 WORKDIR /app
