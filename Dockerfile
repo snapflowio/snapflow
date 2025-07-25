@@ -33,7 +33,7 @@ RUN pnpm run build:production
 # This stage creates the final, lightweight production image by copying only the
 # necessary artifacts from the builder stage.
 # ======================================================================================
-FROM node:latest-slim as runner
+FROM node:24-slim as runner
 
 # Set the working directory for the running application
 WORKDIR /app
