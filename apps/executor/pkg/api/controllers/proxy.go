@@ -3,14 +3,14 @@ package controllers
 import (
 	"errors"
 	"fmt"
+	"net/http/httputil"
 	"net/url"
 	"regexp"
 	"strings"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 	"github.com/snapflow/executor/pkg/common"
 	"github.com/snapflow/executor/pkg/executor"
-	proxy "github.com/snapflow/go-common/pkg/proxy"
 )
 
 // ProxyRequest handles proxying requests to a sandbox's container
@@ -29,31 +29,57 @@ import (
 //	@Router			/sandboxes/{sandboxId}/toolbox/{path} [get]
 //	@Router			/sandboxes/{sandboxId}/toolbox/{path} [post]
 //	@Router			/sandboxes/{sandboxId}/toolbox/{path} [delete]
-func ProxyRequest(ctx *gin.Context) {
-	if regexp.MustCompile(`^/process/session/.+/command/.+/logs$`).MatchString(ctx.Param("path")) {
-		if ctx.Query("follow") == "true" {
-			ProxyCommandLogsStream(ctx)
-			return
+func ProxyRequest(c echo.Context) error {
+	path := c.Param("*")
+	if regexp.MustCompile(`^/process/session/.+/command/.+/logs$`).MatchString(path) {
+		if c.QueryParam("follow") == "true" {
+			return ProxyCommandLogsStream(c)
 		}
 	}
 
-	proxy.NewProxyRequestHandler(getProxyTarget)(ctx)
+	return proxyRequestHandler(c)
 }
 
-func getProxyTarget(ctx *gin.Context) (*url.URL, string, map[string]string, error) {
-	executor := executor.GetInstance(nil)
+func proxyRequestHandler(c echo.Context) error {
+	target, err := getProxyTarget(c)
+	if err != nil {
+		return err
+	}
 
-	sandboxId := ctx.Param("sandboxId")
+	proxy := httputil.NewSingleHostReverseProxy(target)
+
+	// Modify the request
+	req := c.Request()
+	req.URL.Scheme = target.Scheme
+	req.URL.Host = target.Host
+	req.Host = target.Host
+
+	// Get the wildcard path and normalize it
+	path := c.Param("*")
+	if path == "" {
+		path = "/"
+	} else if !strings.HasPrefix(path, "/") {
+		path = "/" + path
+	}
+	req.URL.Path = path
+
+	// Forward the request
+	proxy.ServeHTTP(c.Response().Writer, req)
+	return nil
+}
+
+func getProxyTarget(c echo.Context) (*url.URL, error) {
+	exec := executor.GetInstance(nil)
+
+	sandboxId := c.Param("sandboxId")
 	if sandboxId == "" {
-		ctx.Error(common.NewBadRequestError(errors.New("sandbox ID is required")))
-		return nil, "", nil, errors.New("sandbox ID is required")
+		return nil, common.NewBadRequestError(errors.New("sandbox ID is required"))
 	}
 
 	// Get container details
-	container, err := executor.Docker.ContainerInspect(ctx.Request.Context(), sandboxId)
+	container, err := exec.Docker.ContainerInspect(c.Request().Context(), sandboxId)
 	if err != nil {
-		ctx.Error(common.NewNotFoundError(fmt.Errorf("sandbox container not found: %w", err)))
-		return nil, "", nil, fmt.Errorf("sandbox container not found: %w", err)
+		return nil, common.NewNotFoundError(fmt.Errorf("sandbox container not found: %w", err))
 	}
 
 	var containerIP string
@@ -63,33 +89,15 @@ func getProxyTarget(ctx *gin.Context) (*url.URL, string, map[string]string, erro
 	}
 
 	if containerIP == "" {
-		ctx.Error(common.NewBadRequestError(errors.New("container has no IP address, it might not be running")))
-		return nil, "", nil, errors.New("container has no IP address, it might not be running")
+		return nil, common.NewBadRequestError(errors.New("container has no IP address, it might not be running"))
 	}
 
 	// Build the target URL
 	targetURL := fmt.Sprintf("http://%s:8082", containerIP)
 	target, err := url.Parse(targetURL)
 	if err != nil {
-		ctx.Error(common.NewBadRequestError(fmt.Errorf("failed to parse target URL: %w", err)))
-		return nil, "", nil, fmt.Errorf("failed to parse target URL: %w", err)
+		return nil, common.NewBadRequestError(fmt.Errorf("failed to parse target URL: %w", err))
 	}
 
-	// Get the wildcard path and normalize it
-	path := ctx.Param("path")
-
-	// Ensure path always has a leading slash but not duplicate slashes
-	if path == "" {
-		path = "/"
-	} else if !strings.HasPrefix(path, "/") {
-		path = "/" + path
-	}
-
-	// Create the complete target URL with path
-	fullTargetURL := fmt.Sprintf("%s%s", targetURL, path)
-	if ctx.Request.URL.RawQuery != "" {
-		fullTargetURL = fmt.Sprintf("%s?%s", fullTargetURL, ctx.Request.URL.RawQuery)
-	}
-
-	return target, fullTargetURL, nil, nil
+	return target, nil
 }

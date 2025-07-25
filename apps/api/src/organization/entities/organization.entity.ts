@@ -1,8 +1,3 @@
-/*
- * Copyright 2025 Snapflow Platforms Inc.
- * SPDX-License-Identifier: AGPL-3.0
- */
-
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { OrganizationInvitation } from "./organization-invitation.entity";
 import { OrganizationRole } from "./organization-role.entity";

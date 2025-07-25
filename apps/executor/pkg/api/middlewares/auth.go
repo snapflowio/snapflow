@@ -1,42 +1,37 @@
 package middlewares
 
 import (
-	"errors"
+	"net/http"
 	"os"
 	"strings"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 	"github.com/snapflow/executor/internal/constants"
-	"github.com/snapflow/executor/pkg/common"
 )
 
-func AuthMiddleware() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		authHeader := ctx.GetHeader(constants.SNAPFLOW_AUTHORIZATION_HEADER)
-		if authHeader == "" {
-			authHeader = ctx.GetHeader(constants.AUTHORIZATION_HEADER)
-		}
+func AuthMiddleware() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			authHeader := c.Request().Header.Get(constants.SNAPFLOW_AUTHORIZATION_HEADER)
+			if authHeader == "" {
+				authHeader = c.Request().Header.Get(constants.AUTHORIZATION_HEADER)
+			}
 
-		if authHeader == "" {
-			ctx.Error(common.NewUnauthorizedError(errors.New("authorization header required")))
-			ctx.Abort()
-			return
-		}
+			if authHeader == "" {
+				return echo.NewHTTPError(http.StatusUnauthorized, "authorization header required")
+			}
 
-		parts := strings.Split(authHeader, " ")
-		if len(parts) != 2 || parts[0] != constants.BEARER_AUTH_HEADER {
-			ctx.Error(common.NewUnauthorizedError(errors.New("invalid authorization header format")))
-			ctx.Abort()
-			return
-		}
+			parts := strings.Split(authHeader, " ")
+			if len(parts) != 2 || parts[0] != constants.BEARER_AUTH_HEADER {
+				return echo.NewHTTPError(http.StatusUnauthorized, "invalid authorization header format")
+			}
 
-		token := parts[1]
-		if token != os.Getenv("API_TOKEN") {
-			ctx.Error(common.NewUnauthorizedError(errors.New("invalid token")))
-			ctx.Abort()
-			return
-		}
+			token := parts[1]
+			if token != os.Getenv("API_TOKEN") {
+				return echo.NewHTTPError(http.StatusUnauthorized, "invalid token")
+			}
 
-		ctx.Next()
+			return next(c)
+		}
 	}
 }

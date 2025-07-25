@@ -97,6 +97,9 @@ func StartProxy(config *config.Config) error {
 	}
 
 	e := echo.New()
+	e.HideBanner = true
+	e.HidePort = true
+
 	e.Use(middleware.Recover())
 
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -194,5 +197,6 @@ func StartProxy(config *config.Config) error {
 	if config.EnableTLS {
 		return e.StartTLS(addr, config.TLSCertFile, config.TLSKeyFile)
 	}
+
 	return e.Start(addr)
 }

@@ -7,8 +7,7 @@
 //	@name						Authorization
 //	@description				Type "Bearer" followed by a space and an API token.
 
-//	@Security	Bearer
-
+// @Security	Bearer
 package api
 
 import (
@@ -18,18 +17,16 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/snapflow/executor/cmd/executor/config"
 	"github.com/snapflow/executor/pkg/api/controllers"
 	"github.com/snapflow/executor/pkg/api/docs"
 	"github.com/snapflow/executor/pkg/api/middlewares"
 
-	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	log "github.com/sirupsen/logrus"
-
-	swaggerfiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 type ApiServerConfig struct {
@@ -54,7 +51,36 @@ type ApiServer struct {
 	tlsKeyFile  string
 	enableTLS   bool
 	httpServer  *http.Server
-	router      *gin.Engine
+	echo        *echo.Echo
+}
+
+// Echo returns the underlying Echo instance
+func (a *ApiServer) Echo() *echo.Echo {
+	if a.echo == nil {
+		a.initializeEcho()
+	}
+	return a.echo
+}
+
+// SetHTTPServer allows setting a custom HTTP server
+func (a *ApiServer) SetHTTPServer(srv *http.Server) {
+	a.httpServer = srv
+}
+
+// StartServer starts with a provided HTTP server
+func (a *ApiServer) StartServer(srv *http.Server) error {
+	if a.enableTLS {
+		return srv.ListenAndServeTLS(a.tlsCertFile, a.tlsKeyFile)
+	}
+	return srv.ListenAndServe()
+}
+
+// Shutdown gracefully shuts down the server
+func (a *ApiServer) Shutdown(ctx context.Context) error {
+	if a.httpServer != nil {
+		return a.httpServer.Shutdown(ctx)
+	}
+	return nil
 }
 
 func (a *ApiServer) Start() error {
@@ -67,58 +93,11 @@ func (a *ApiServer) Start() error {
 		return fmt.Errorf("cannot start API server, port %d is already in use", a.apiPort)
 	}
 
-	binding.Validator = new(DefaultValidator)
-
-	a.router = gin.New()
-	a.router.Use(gin.Recovery())
-
-	gin.SetMode(gin.ReleaseMode)
-	if config.GetEnvironment() == "development" {
-		gin.SetMode(gin.DebugMode)
-	}
-
-	a.router.Use(middlewares.LoggingMiddleware())
-	a.router.Use(middlewares.ErrorMiddleware())
-
-	public := a.router.Group("/")
-	public.GET("", controllers.HealthCheck)
-	public.GET("/metrics", gin.WrapH(promhttp.Handler()))
-
-	if config.GetEnvironment() == "development" {
-		public.GET("/api/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-	}
-
-	protected := a.router.Group("/")
-	protected.Use(middlewares.AuthMiddleware())
-
-	sandboxController := protected.Group("/sandboxes")
-	{
-		sandboxController.POST("", controllers.Create)
-		sandboxController.GET("/:sandboxId", controllers.Info)
-		sandboxController.POST("/:sandboxId/destroy", controllers.Destroy)
-		sandboxController.POST("/:sandboxId/start", controllers.Start)
-		sandboxController.POST("/:sandboxId/stop", controllers.Stop)
-		sandboxController.POST("/:sandboxId/backup", controllers.CreateBackup)
-		sandboxController.POST("/:sandboxId/resize", controllers.Resize)
-		sandboxController.DELETE("/:sandboxId", controllers.RemoveDestroyed)
-
-		// Add proxy endpoint within the sandbox controller for toolbox
-		// Using Any() to handle all HTTP methods for the toolbox proxy
-		sandboxController.Any("/:sandboxId/toolbox/*path", controllers.ProxyRequest)
-	}
-
-	imageController := protected.Group("/images")
-	{
-		imageController.POST("/pull", controllers.PullImage)
-		imageController.POST("/build", controllers.BuildImage)
-		imageController.GET("/exists", controllers.ImageExists)
-		imageController.POST("/remove", controllers.RemoveImage)
-		imageController.GET("/logs", controllers.GetBuildLogs)
-	}
+	a.initializeEcho()
 
 	a.httpServer = &http.Server{
 		Addr:    fmt.Sprintf(":%d", a.apiPort),
-		Handler: a.router,
+		Handler: a.echo,
 	}
 
 	listener, err := net.Listen("tcp", a.httpServer.Addr)
@@ -126,16 +105,57 @@ func (a *ApiServer) Start() error {
 		return err
 	}
 
-	errChan := make(chan error)
-	go func() {
-		if a.enableTLS {
-			errChan <- a.httpServer.ServeTLS(listener, a.tlsCertFile, a.tlsKeyFile)
-		} else {
-			errChan <- a.httpServer.Serve(listener)
-		}
-	}()
+	if a.enableTLS {
+		return a.httpServer.ServeTLS(listener, a.tlsCertFile, a.tlsKeyFile)
+	}
+	return a.httpServer.Serve(listener)
+}
 
-	return <-errChan
+func (a *ApiServer) initializeEcho() {
+	a.echo = echo.New()
+	a.echo.HideBanner = true
+	a.echo.HidePort = true
+
+	// Set custom validator
+	a.echo.Validator = NewCustomValidator()
+
+	// Middleware
+	a.echo.Use(middleware.Recover())
+	a.echo.Use(middlewares.LoggingMiddleware())
+	a.echo.Use(middlewares.ErrorMiddleware())
+
+	// Public routes
+	public := a.echo.Group("")
+	public.GET("/", controllers.HealthCheck)
+	public.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
+
+	if config.GetEnvironment() == "development" {
+		public.GET("/api/*", echoSwagger.WrapHandler)
+	}
+
+	// Protected routes
+	protected := a.echo.Group("")
+	protected.Use(middlewares.AuthMiddleware())
+
+	// Sandbox routes
+	sandbox := protected.Group("/sandboxes")
+	sandbox.POST("", controllers.Create)
+	sandbox.GET("/:sandboxId", controllers.Info)
+	sandbox.POST("/:sandboxId/destroy", controllers.Destroy)
+	sandbox.POST("/:sandboxId/start", controllers.Start)
+	sandbox.POST("/:sandboxId/stop", controllers.Stop)
+	sandbox.POST("/:sandboxId/backup", controllers.CreateBackup)
+	sandbox.POST("/:sandboxId/resize", controllers.Resize)
+	sandbox.DELETE("/:sandboxId", controllers.RemoveDestroyed)
+	sandbox.Any("/:sandboxId/toolbox/*", controllers.ProxyRequest)
+
+	// Image routes
+	image := protected.Group("/images")
+	image.POST("/pull", controllers.PullImage)
+	image.POST("/build", controllers.BuildImage)
+	image.GET("/exists", controllers.ImageExists)
+	image.POST("/remove", controllers.RemoveImage)
+	image.GET("/logs", controllers.GetBuildLogs)
 }
 
 func (a *ApiServer) Stop() {

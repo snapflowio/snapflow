@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
 // HealthCheck 			godoc
@@ -15,8 +15,8 @@ import (
 //	@Router			/ [get]
 //
 //	@id				HealthCheck
-func HealthCheck(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{
+func HealthCheck(c echo.Context) error {
+	return c.JSON(http.StatusOK, map[string]string{
 		"status":  "ok",
 		"version": "0.0.1",
 	})

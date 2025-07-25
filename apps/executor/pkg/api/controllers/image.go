@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
 	"github.com/snapflow/executor/cmd/executor/config"
 	"github.com/snapflow/executor/pkg/api/dto"
@@ -34,23 +34,24 @@ import (
 //	@Router			/images/pull [post]
 //
 //	@id				PullImage
-func PullImage(ctx *gin.Context) {
+func PullImage(c echo.Context) error {
 	var request dto.PullImageRequestDTO
-	err := ctx.ShouldBindJSON(&request)
-	if err != nil {
-		ctx.Error(common.NewInvalidBodyRequestError(err))
-		return
+	if err := c.Bind(&request); err != nil {
+		return common.NewInvalidBodyRequestError(err)
 	}
 
-	executor := executor.GetInstance(nil)
-
-	err = executor.Docker.PullImage(ctx.Request.Context(), request.Image, request.Registry)
-	if err != nil {
-		ctx.Error(err)
-		return
+	if err := c.Validate(request); err != nil {
+		return common.NewInvalidBodyRequestError(err)
 	}
 
-	ctx.JSON(http.StatusOK, "Image pulled successfully")
+	exec := executor.GetInstance(nil)
+
+	err := exec.Docker.PullImage(c.Request().Context(), request.Image, request.Registry)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, "Image pulled successfully")
 }
 
 // BuildImage godoc
@@ -69,52 +70,49 @@ func PullImage(ctx *gin.Context) {
 //	@Router			/images/build [post]
 //
 //	@id				BuildImage
-func BuildImage(ctx *gin.Context) {
+func BuildImage(c echo.Context) error {
 	var request dto.BuildImageRequestDTO
-	err := ctx.ShouldBindJSON(&request)
-	if err != nil {
-		ctx.Error(common.NewInvalidBodyRequestError(err))
-		return
+	if err := c.Bind(&request); err != nil {
+		return common.NewInvalidBodyRequestError(err)
+	}
+
+	if err := c.Validate(request); err != nil {
+		return common.NewInvalidBodyRequestError(err)
 	}
 
 	if !strings.Contains(request.Image, ":") || strings.HasSuffix(request.Image, ":") {
-		ctx.Error(common.NewBadRequestError(errors.New("image name must include a valid tag")))
-		return
+		return common.NewBadRequestError(errors.New("image name must include a valid tag"))
 	}
 
-	executor := executor.GetInstance(nil)
+	exec := executor.GetInstance(nil)
 
-	err = executor.Docker.BuildImage(ctx.Request.Context(), request)
+	err := exec.Docker.BuildImage(c.Request().Context(), request)
 	if err != nil {
-		ctx.Error(err)
-		return
+		return err
 	}
 
 	tag := request.Image
 
 	if request.PushToInternalRegistry {
 		if request.Registry.Project == nil {
-			ctx.Error(common.NewBadRequestError(errors.New("project is required when pushing to internal registry")))
-			return
+			return common.NewBadRequestError(errors.New("project is required when pushing to internal registry"))
 		}
 		tag = fmt.Sprintf("%s/%s/%s", request.Registry.Url, *request.Registry.Project, request.Image)
 	}
 
-	err = executor.Docker.TagImage(ctx.Request.Context(), request.Image, tag)
+	err = exec.Docker.TagImage(c.Request().Context(), request.Image, tag)
 	if err != nil {
-		ctx.Error(err)
-		return
+		return err
 	}
 
 	if request.PushToInternalRegistry {
-		err = executor.Docker.PushImage(ctx.Request.Context(), tag, request.Registry)
+		err = exec.Docker.PushImage(c.Request().Context(), tag, request.Registry)
 		if err != nil {
-			ctx.Error(err)
-			return
+			return err
 		}
 	}
 
-	ctx.JSON(http.StatusOK, "Image built successfully")
+	return c.JSON(http.StatusOK, "Image built successfully")
 }
 
 // ImageExists godoc
@@ -133,22 +131,20 @@ func BuildImage(ctx *gin.Context) {
 //	@Router			/images/exists [get]
 //
 //	@id				ImageExists
-func ImageExists(ctx *gin.Context) {
-	image := ctx.Query("image")
+func ImageExists(c echo.Context) error {
+	image := c.QueryParam("image")
 	if image == "" {
-		ctx.Error(common.NewBadRequestError(errors.New("image parameter is required")))
-		return
+		return common.NewBadRequestError(errors.New("image parameter is required"))
 	}
 
-	executor := executor.GetInstance(nil)
+	exec := executor.GetInstance(nil)
 
-	exists, err := executor.Docker.ImageExists(ctx.Request.Context(), image, false)
+	exists, err := exec.Docker.ImageExists(c.Request().Context(), image, false)
 	if err != nil {
-		ctx.Error(err)
-		return
+		return err
 	}
 
-	ctx.JSON(http.StatusOK, ImageExistsResponse{
+	return c.JSON(http.StatusOK, ImageExistsResponse{
 		Exists: exists,
 	})
 }
@@ -169,22 +165,20 @@ func ImageExists(ctx *gin.Context) {
 //	@Router			/images/remove [post]
 //
 //	@id				RemoveImage
-func RemoveImage(ctx *gin.Context) {
-	image := ctx.Query("image")
+func RemoveImage(c echo.Context) error {
+	image := c.QueryParam("image")
 	if image == "" {
-		ctx.Error(common.NewBadRequestError(errors.New("image parameter is required")))
-		return
+		return common.NewBadRequestError(errors.New("image parameter is required"))
 	}
 
-	executor := executor.GetInstance(nil)
+	exec := executor.GetInstance(nil)
 
-	err := executor.Docker.RemoveImage(ctx.Request.Context(), image, true)
+	err := exec.Docker.RemoveImage(c.Request().Context(), image, true)
 	if err != nil {
-		ctx.Error(err)
-		return
+		return err
 	}
 
-	ctx.JSON(http.StatusOK, "Image removed successfully")
+	return c.JSON(http.StatusOK, "Image removed successfully")
 }
 
 type ImageExistsResponse struct {
@@ -207,46 +201,42 @@ type ImageExistsResponse struct {
 //	@Router			/images/logs [get]
 //
 //	@id				GetBuildLogs
-func GetBuildLogs(ctx *gin.Context) {
-	imageRef := ctx.Query("imageRef")
+func GetBuildLogs(c echo.Context) error {
+	imageRef := c.QueryParam("imageRef")
 	if imageRef == "" {
-		ctx.Error(common.NewBadRequestError(errors.New("imageRef parameter is required")))
-		return
+		return common.NewBadRequestError(errors.New("imageRef parameter is required"))
 	}
 
-	follow := ctx.Query("follow") == "true"
+	follow := c.QueryParam("follow") == "true"
 
 	logFilePath, err := config.GetBuildLogFilePath(imageRef)
 	if err != nil {
-		ctx.Error(common.NewCustomError(http.StatusInternalServerError, err.Error(), "INTERNAL_SERVER_ERROR"))
-		return
+		return common.NewCustomError(http.StatusInternalServerError, err.Error(), "INTERNAL_SERVER_ERROR")
 	}
 
 	if _, err := os.Stat(logFilePath); os.IsNotExist(err) {
-		ctx.Error(common.NewNotFoundError(fmt.Errorf("build logs not found for ref: %s", imageRef)))
-		return
+		return common.NewNotFoundError(fmt.Errorf("build logs not found for ref: %s", imageRef))
 	}
 
-	ctx.Header("Content-Type", "application/octet-stream")
+	c.Response().Header().Set("Content-Type", "application/octet-stream")
 
 	file, err := os.Open(logFilePath)
 	if err != nil {
-		ctx.Error(common.NewCustomError(http.StatusInternalServerError, err.Error(), "INTERNAL_SERVER_ERROR"))
-		return
+		return common.NewCustomError(http.StatusInternalServerError, err.Error(), "INTERNAL_SERVER_ERROR")
 	}
 	defer file.Close()
 
 	// If not following, just return the entire file content
 	if !follow {
-		_, err = io.Copy(ctx.Writer, file)
+		_, err = io.Copy(c.Response().Writer, file)
 		if err != nil {
-			ctx.Error(common.NewCustomError(http.StatusInternalServerError, err.Error(), "INTERNAL_SERVER_ERROR"))
+			return common.NewCustomError(http.StatusInternalServerError, err.Error(), "INTERNAL_SERVER_ERROR")
 		}
-		return
+		return nil
 	}
 
 	reader := bufio.NewReader(file)
-	executor := executor.GetInstance(nil)
+	exec := executor.GetInstance(nil)
 
 	checkImageRef := imageRef
 
@@ -255,10 +245,9 @@ func GetBuildLogs(ctx *gin.Context) {
 		checkImageRef = imageRef + ":snapflow"
 	}
 
-	flusher, ok := ctx.Writer.(http.Flusher)
+	flusher, ok := c.Response().Writer.(http.Flusher)
 	if !ok {
-		ctx.Error(common.NewCustomError(http.StatusInternalServerError, "Streaming not supported", "STREAMING_NOT_SUPPORTED"))
-		return
+		return common.NewCustomError(http.StatusInternalServerError, "Streaming not supported", "STREAMING_NOT_SUPPORTED")
 	}
 
 	go func() {
@@ -270,7 +259,7 @@ func GetBuildLogs(ctx *gin.Context) {
 			}
 
 			if len(line) > 0 {
-				_, writeErr := ctx.Writer.Write(line)
+				_, writeErr := c.Response().Writer.Write(line)
 				if writeErr != nil {
 					log.Errorf("Error writing to response: %v", writeErr)
 					break
@@ -281,7 +270,7 @@ func GetBuildLogs(ctx *gin.Context) {
 	}()
 
 	for {
-		exists, err := executor.Docker.ImageExists(ctx.Request.Context(), checkImageRef, false)
+		exists, err := exec.Docker.ImageExists(c.Request().Context(), checkImageRef, false)
 		if err != nil {
 			log.Errorf("Error checking build status: %v", err)
 			break
@@ -294,4 +283,6 @@ func GetBuildLogs(ctx *gin.Context) {
 
 		time.Sleep(250 * time.Millisecond)
 	}
+
+	return nil
 }
