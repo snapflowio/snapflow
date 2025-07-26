@@ -1,5 +1,7 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronRightIcon } from "lucide-react";
 import { Link } from "react-router";
+import { AnnouncementBanner } from "@/components/annoucement-banner";
+import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Particles } from "@/components/ui/particles";
 import { SITE_CONFIG } from "@/constants/site";
@@ -8,7 +10,7 @@ import { AnimatedCube } from "../components/animated-cube";
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen px-6 pt-25">
+    <section className="relative min-h-screen px-6">
       <Particles
         refresh={false}
         ease={80}
@@ -17,19 +19,25 @@ export function Hero() {
         className="pointer-events-none absolute inset-0 size-full opacity-40"
       />
       <div className="container relative mx-auto max-w-6xl">
-        <div className="mt-20 grid min-h-[80vh] items-start gap-12 lg:grid-cols-2">
-          <div className="text-left">
-            <h1 className="mb-8 font-bold text-7xl text-white leading-tight">
-              Powerful & scalable
-              <br />
-              <span className="text-primary">sandboxes</span>
+        <div className="grid min-h-[80vh] items-start lg:grid-cols-2">
+          <div className="flex h-full flex-col justify-center space-y-4 text-left">
+            <AnnouncementBanner
+              text="Snapflow.io v1 beta is here!"
+              href="/"
+              logo={<Logo size={24} />}
+            />
+            <h1 className="bg-gradient-to-b from-gray-100 to-gray-300 bg-clip-text font-bold text-7xl text-transparent leading-tight">
+              Powerful & scalable sandboxes
             </h1>
-            <div className="mb-8 flex flex-wrap gap-4">
-              <Button size="lg" className="bg-primary text-background">
-                Get Started
-              </Button>
-              <Button variant="outline" size="lg" asChild>
-                <Link to={Path.PRICING}>Pricing</Link>
+            <p className="mb-5 max-w-lg text-gray-300 text-lg leading-relaxed">
+              {SITE_CONFIG.DESCIPTION}
+            </p>
+            <div className="mt-2 flex flex-wrap gap-4">
+              <Button size="lg" className="bg-primary text-background" asChild>
+                <Link to={Path.DASHBOARD}>
+                  Get Started for Free
+                  <ChevronRightIcon />
+                </Link>
               </Button>
               <Button variant="ghost" size="lg">
                 Visit our blog
@@ -37,12 +45,9 @@ export function Hero() {
               </Button>
             </div>
           </div>
-          <div className="text-left lg:text-right">
-            <p className="max-w-lg text-gray-300 text-lg leading-relaxed lg:ml-auto">
-              {SITE_CONFIG.DESCIPTION}
-            </p>
-            <div className="mt-16 flex justify-center">
-              <div className="lg:translate-x-14">
+          <div className="flex h-full flex-col justify-end">
+            <div className="flex justify-center">
+              <div className="-translate-y-14 lg:translate-x-28">
                 <AnimatedCube />
               </div>
             </div>

@@ -147,7 +147,7 @@ export function ImageTable({
                   <TableRow
                     key={row.id}
                     data-state={isRowDisabled ? "disabled" : undefined}
-                    className="data-[state=disabled]:pointer-events-none data-[state=disabled]:opacity-60"
+                    className="data-[state=disabled]:pointer-events-none"
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id} className="px-4 py-3">
@@ -229,9 +229,9 @@ const getColumns = ({
         const image = row.original;
         return (
           <div className="flex flex-row items-center gap-2 text-background text-xs">
-            <div className="rounded-sm bg-blue-400/90 p-1 px-2">{image.disk} GB</div>
+            <div className="rounded-sm bg-[#479DEC] p-1 px-2">{image.disk} GB</div>
             <div className="rounded-sm bg-primary p-1 px-2">{image.mem} GB</div>
-            <div className="rounded-sm bg-purple-400 p-1 px-2">{image.cpu} vCPU</div>
+            <div className="rounded-sm bg-[#FA3ABF] p-1 px-2">{image.cpu} vCPU</div>
           </div>
         );
       },

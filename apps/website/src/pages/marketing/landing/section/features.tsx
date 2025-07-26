@@ -105,7 +105,7 @@ export default function Features() {
               {features.map((feature) => (
                 <div
                   key={feature}
-                  className="group inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-neutral-900 px-3 py-1.5 transition duration-500 hover:scale-105 md:px-5 md:py-2"
+                  className="group inline-flex items-center gap-3 rounded-2xl border border-card bg-background px-3 py-1.5 transition duration-500 hover:scale-105 md:px-5 md:py-2"
                 >
                   <span className="inline-flex size-5 items-center justify-center rounded-full bg-primary text-neutral-950 text-xl transition duration-500 group-hover:rotate-45">
                     <StarIcon fill="#000" className="size-4" />

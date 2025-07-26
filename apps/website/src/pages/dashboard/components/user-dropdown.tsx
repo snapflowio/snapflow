@@ -1,6 +1,5 @@
-import { useLogto } from "@logto/react";
 import { CreditCardIcon, LogOutIcon } from "lucide-react";
-import { redirect, useLocation, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +19,7 @@ export default function UserDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-auto p-0 hover:bg-transparent">
+        <Button variant="ghost" className="h-auto rounded-full p-0 hover:bg-transparent">
           <Avatar className="size-8">
             <AvatarImage width={32} height={32} alt="Profile avatar" />
             <AvatarFallback>{user?.username ? user.username[0].toUpperCase() : "!"}</AvatarFallback>

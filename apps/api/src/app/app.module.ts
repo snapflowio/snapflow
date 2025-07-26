@@ -9,6 +9,7 @@ import { RedisModule } from "@nestjs-modules/ioredis";
 import { McpModule, McpTransportType } from "@rekog/mcp-nest";
 import { ApiKeyModule } from "../api-key/api-key.module";
 import { AuthModule } from "../auth/auth.module";
+import { CombinedAuthGuard } from "../auth/guards/combined-auth.guard";
 import { MaintenanceMiddleware } from "../common/middleware/maintenance.middleware";
 import { VersionHeaderMiddleware } from "../common/middleware/version-header.middleware";
 import { CustomNamingStrategy } from "../common/utils/naming-strategy.util";
@@ -58,6 +59,7 @@ import { AppTool } from "./app.tool";
       name: "snapflow",
       version: "0.0.1",
       transport: McpTransportType.STREAMABLE_HTTP,
+      guards: [CombinedAuthGuard],
     }),
     ThrottlerModule.forRoot([
       {
@@ -95,7 +97,7 @@ import { AppTool } from "./app.tool";
     ScheduleModule.forRoot(),
   ],
   controllers: [],
-  providers: [AppService, AppTool],
+  providers: [CombinedAuthGuard, AppService, AppTool],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

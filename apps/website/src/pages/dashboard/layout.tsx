@@ -72,22 +72,19 @@ export function DashboardLayout() {
 
   return (
     <div className="min-h-screen">
-      <header className="mx-4 bg-background">
+      <header className=" bg-[#1A1B1F] px-4">
         <div className="border-[#1a1a1a]">
-          <div className="mt-3 flex h-10 items-center space-x-2 px-4">
+          <div className="flex h-10 items-center space-x-2 px-4 pt-3">
             <Logo size={22} />
             <div className="flex items-center gap-2">
               <OrganizationSwitcher />
             </div>
             <div className="ml-auto flex items-center gap-6 text-sm">
-              <div className="flex items-center gap-2 text-gray-400">
-                <span>Runtime remaining: 26 hours</span>
-              </div>
               <UserDropdown />
             </div>
           </div>
         </div>
-        <div className="border-[#1a1a1a] border-b">
+        <div className="mt-2 border-[#272A2E] border-b">
           <nav className="relative hidden h-12 items-center md:flex" ref={navRef}>
             <Section title="Dashboard" url={Path.DASHBOARD} />
             {!selectedOrganization?.personal && <Section title="Members" url={Path.MEMBERS} />}

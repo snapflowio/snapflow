@@ -7,7 +7,7 @@ import { Path } from "@/enums/paths";
 
 export function Header() {
   return (
-    <header className="fixed right-0 left-0 z-[9999] flex w-full justify-center">
+    <header className="fixed top-0 right-0 left-0 z-[9999] flex w-full justify-center">
       <div className="mx-auto w-full border-b bg-background px-16">
         <nav aria-label="Main navigation">
           <div className="flex h-14 items-center justify-between">
