@@ -7,7 +7,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 	"github.com/snapflow/executor/pkg/common"
 )
 
@@ -49,14 +49,14 @@ func ProxyCommandLogsStream(c echo.Context) error {
 		for {
 			_, msg, err := ws.ReadMessage()
 			if err != nil {
-				log.Errorf("Error reading message: %v", err)
+				log.Error().Err(err).Msg("Error reading message")
 				ws.Close()
 				return
 			}
 
 			_, err = c.Response().Writer.Write(msg)
 			if err != nil {
-				log.Errorf("Error writing message: %v", err)
+				log.Error().Err(err).Msg("Error writing message")
 				ws.Close()
 				return
 			}

@@ -9,11 +9,10 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/rs/zerolog/log"
 	"github.com/snapflow/executor/pkg/common"
 	"github.com/snapflow/executor/pkg/models/enums"
 	"github.com/snapflow/go-common/pkg/timer"
-
-	log "github.com/sirupsen/logrus"
 )
 
 func (d *DockerClient) Start(ctx context.Context, containerId string) error {
@@ -63,7 +62,7 @@ func (d *DockerClient) Start(ctx context.Context, containerId string) error {
 	processesCtx := context.Background()
 	go func() {
 		if err := d.startSnapflowNode(processesCtx, containerId); err != nil {
-			log.Errorf("Failed to start Snapflow node: %s\n", err.Error())
+			log.Error().Err(err).Msg("Failed to start Snapflow node")
 		}
 	}()
 

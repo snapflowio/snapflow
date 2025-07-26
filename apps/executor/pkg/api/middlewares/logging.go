@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 var ignoreLoggingPaths = map[string]bool{
@@ -30,29 +30,29 @@ func LoggingMiddleware() echo.MiddlewareFunc {
 			// Get response status
 			status := c.Response().Status
 
-			// Create log fields
-			fields := log.Fields{
-				"method":     method,
-				"path":       path,
-				"uri":        requestURI,
-				"status":     status,
-				"latency_ms": latency.Milliseconds(),
-				"latency":    latency.String(),
-				"ip":         c.RealIP(),
-			}
+			// Create log event
+			logEvent := log.With().
+				Str("method", method).
+				Str("path", path).
+				Str("uri", requestURI).
+				Int("status", status).
+				Int64("latency_ms", latency.Milliseconds()).
+				Str("latency", latency.String()).
+				Str("ip", c.RealIP()).
+				Logger()
 
 			if err != nil {
-				fields["error"] = err.Error()
+				logEvent = logEvent.With().Err(err).Logger()
 			}
 
 			if ignoreLoggingPaths[path] && status < 400 {
-				log.WithFields(fields).Debug("API Request")
+				logEvent.Debug().Msg("API Request")
 			} else if status >= 500 {
-				log.WithFields(fields).Error("API Request Failed")
+				logEvent.Error().Msg("API Request Failed")
 			} else if status >= 400 {
-				log.WithFields(fields).Warn("API Request Error")
+				logEvent.Warn().Msg("API Request Error")
 			} else {
-				log.WithFields(fields).Info("API Request")
+				logEvent.Info().Msg("API Request")
 			}
 
 			return err

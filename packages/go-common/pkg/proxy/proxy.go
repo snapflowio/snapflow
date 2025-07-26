@@ -12,9 +12,8 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog/log"
 	common_errors "github.com/snapflow/go-common/pkg/errors"
-
-	log "github.com/sirupsen/logrus"
 )
 
 var proxyTransport = &http.Transport{
@@ -159,7 +158,7 @@ func NewEchoProxyRequestHandler(getProxyTarget func(echo.Context) (*url.URL, str
 
 		// Copy response body
 		if _, err := io.Copy(c.Response(), resp.Body); err != nil {
-			log.Errorf("Error copying response body: %v", err)
+			log.Error().Err(err).Msg("Error copying response body")
 		}
 
 		return nil

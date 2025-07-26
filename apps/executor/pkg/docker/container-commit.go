@@ -5,27 +5,26 @@ import (
 	"fmt"
 
 	"github.com/docker/docker/api/types/container"
-
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 func (d *DockerClient) commitContainer(ctx context.Context, containerId, imageName string) error {
 	const maxRetries = 3
 
 	for attempt := 1; attempt <= maxRetries; attempt++ {
-		log.Infof("Committing container %s (attempt %d/%d)...", containerId, attempt, maxRetries)
+		log.Info().Msgf("Committing container %s (attempt %d/%d)...", containerId, attempt, maxRetries)
 
 		commitResp, err := d.apiClient.ContainerCommit(ctx, containerId, container.CommitOptions{
 			Reference: imageName,
 			Pause:     false,
 		})
 		if err == nil {
-			log.Infof("Container %s committed successfully with image ID: %s", containerId, commitResp.ID)
+			log.Info().Msgf("Container %s committed successfully with image ID: %s", containerId, commitResp.ID)
 			return nil
 		}
 
 		if attempt < maxRetries {
-			log.Warnf("Failed to commit container %s (attempt %d/%d): %v", containerId, attempt, maxRetries, err)
+			log.Warn().Err(err).Msgf("Failed to commit container %s (attempt %d/%d)", containerId, attempt, maxRetries)
 			continue
 		}
 

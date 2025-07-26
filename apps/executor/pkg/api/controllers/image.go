@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 	"github.com/snapflow/executor/cmd/executor/config"
 	"github.com/snapflow/executor/pkg/api/dto"
 	"github.com/snapflow/executor/pkg/common"
@@ -254,14 +254,14 @@ func GetBuildLogs(c echo.Context) error {
 		for {
 			line, err := reader.ReadBytes('\n')
 			if err != nil && err != io.EOF {
-				log.Errorf("Error reading log file: %v", err)
+				log.Error().Err(err).Msg("Error reading log file")
 				break
 			}
 
 			if len(line) > 0 {
 				_, writeErr := c.Response().Writer.Write(line)
 				if writeErr != nil {
-					log.Errorf("Error writing to response: %v", writeErr)
+					log.Error().Err(writeErr).Msg("Error writing to response")
 					break
 				}
 				flusher.Flush()
@@ -272,7 +272,7 @@ func GetBuildLogs(c echo.Context) error {
 	for {
 		exists, err := exec.Docker.ImageExists(c.Request().Context(), checkImageRef, false)
 		if err != nil {
-			log.Errorf("Error checking build status: %v", err)
+			log.Error().Err(err).Msg("Error checking build status")
 			break
 		}
 

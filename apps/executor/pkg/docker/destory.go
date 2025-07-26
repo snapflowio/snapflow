@@ -7,10 +7,9 @@ import (
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/errdefs"
+	"github.com/rs/zerolog/log"
 	"github.com/snapflow/executor/pkg/common"
 	"github.com/snapflow/executor/pkg/models/enums"
-
-	log "github.com/sirupsen/logrus"
 )
 
 func (d *DockerClient) Destroy(ctx context.Context, containerId string) error {
@@ -76,7 +75,7 @@ func (d *DockerClient) RemoveDestroyed(ctx context.Context, containerId string) 
 		return err
 	}
 
-	log.Infof("Destroyed container %s removed successfully", containerId)
+	log.Info().Msgf("Destroyed container %s removed successfully", containerId)
 
 	return nil
 }

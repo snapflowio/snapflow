@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 	"github.com/snapflow/executor/cmd/executor/config"
 	"github.com/snapflow/executor/internal/util"
 	"github.com/snapflow/executor/pkg/api/dto"
@@ -36,7 +36,7 @@ func (d *DockerClient) getBucketsMountPathBinds(ctx context.Context, buckets []d
 		defer bucketMutex.Unlock()
 
 		if d.isDirectoryMounted(executorBucketMountPath) {
-			log.Infof("bucket %s is already mounted to %s", bucketIdPrefixed, executorBucketMountPath)
+			log.Info().Msgf("bucket %s is already mounted to %s", bucketIdPrefixed, executorBucketMountPath)
 			bucketMountPathBinds = append(bucketMountPathBinds, fmt.Sprintf("%s/:%s/", executorBucketMountPath, vol.MountPath))
 			continue
 		}
@@ -46,7 +46,7 @@ func (d *DockerClient) getBucketsMountPathBinds(ctx context.Context, buckets []d
 			return nil, fmt.Errorf("failed to create mount directory %s: %s", executorBucketMountPath, err)
 		}
 
-		log.Infof("mounting S3 bucket %s to %s", bucketIdPrefixed, executorBucketMountPath)
+		log.Info().Msgf("mounting S3 bucket %s to %s", bucketIdPrefixed, executorBucketMountPath)
 
 		cmd := d.getMountCmd(ctx, bucketIdPrefixed, executorBucketMountPath)
 		err = cmd.Run()
@@ -54,7 +54,7 @@ func (d *DockerClient) getBucketsMountPathBinds(ctx context.Context, buckets []d
 			return nil, fmt.Errorf("failed to mount S3 bucket %s to %s: %s", bucketIdPrefixed, executorBucketMountPath, err)
 		}
 
-		log.Infof("mounted S3 bucket %s to %s", bucketIdPrefixed, executorBucketMountPath)
+		log.Info().Msgf("mounted S3 bucket %s to %s", bucketIdPrefixed, executorBucketMountPath)
 
 		bucketMountPathBinds = append(bucketMountPathBinds, fmt.Sprintf("%s/:%s/", executorBucketMountPath, vol.MountPath))
 	}

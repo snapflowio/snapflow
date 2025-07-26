@@ -5,8 +5,7 @@ import (
 	"strings"
 
 	"github.com/docker/docker/api/types/image"
-
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 func (d *DockerClient) ImageExists(ctx context.Context, imageName string, includeLatest bool) (bool, error) {
@@ -32,7 +31,7 @@ func (d *DockerClient) ImageExists(ctx context.Context, imageName string, includ
 	}
 
 	if found {
-		log.Infof("Image %s already pulled", imageName)
+		log.Info().Msgf("Image %s already pulled", imageName)
 	}
 
 	return found, nil

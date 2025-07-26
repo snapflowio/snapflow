@@ -7,13 +7,12 @@ import (
 	"time"
 
 	"github.com/docker/docker/errdefs"
+	"github.com/rs/zerolog/log"
 	"github.com/snapflow/executor/internal/constants"
 	"github.com/snapflow/executor/pkg/api/dto"
 	"github.com/snapflow/executor/pkg/common"
 	"github.com/snapflow/executor/pkg/models/enums"
 	"github.com/snapflow/go-common/pkg/timer"
-
-	log "github.com/sirupsen/logrus"
 )
 
 func (d *DockerClient) Create(ctx context.Context, sandboxDto dto.CreateSandboxDTO) (string, error) {
@@ -57,7 +56,7 @@ func (d *DockerClient) Create(ctx context.Context, sandboxDto dto.CreateSandboxD
 
 	err = d.validateImageArchitecture(ctx, sandboxDto.Image)
 	if err != nil {
-		log.Errorf("ERROR: %s.\n", err.Error())
+		log.Error().Err(err).Msg("ERROR")
 		return "", err
 	}
 

@@ -4,17 +4,15 @@ import (
 	"context"
 	"io"
 
-	"github.com/snapflow/executor/internal/util"
-	"github.com/snapflow/executor/pkg/api/dto"
-
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/pkg/jsonmessage"
-
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
+	"github.com/snapflow/executor/internal/util"
+	"github.com/snapflow/executor/pkg/api/dto"
 )
 
 func (d *DockerClient) PushImage(ctx context.Context, imageName string, reg *dto.RegistryDTO) error {
-	log.Infof("Pushing image %s...", imageName)
+	log.Info().Msgf("Pushing image %s...", imageName)
 
 	responseBody, err := d.apiClient.ImagePush(ctx, imageName, image.PushOptions{
 		RegistryAuth: getRegistryAuth(reg),
@@ -30,7 +28,7 @@ func (d *DockerClient) PushImage(ctx context.Context, imageName string, reg *dto
 		return err
 	}
 
-	log.Infof("Image %s pushed successfully", imageName)
+	log.Info().Msgf("Image %s pushed successfully", imageName)
 
 	return nil
 }

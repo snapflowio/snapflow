@@ -3,16 +3,15 @@ package docker
 import (
 	"context"
 
+	"github.com/rs/zerolog/log"
 	"github.com/snapflow/executor/pkg/api/dto"
 	"github.com/snapflow/executor/pkg/models/enums"
-
-	log "github.com/sirupsen/logrus"
 )
 
 func (d *DockerClient) CreateBackup(ctx context.Context, containerId string, backupDto dto.CreateBackupDTO) error {
 	d.cache.SetBackupState(ctx, containerId, enums.BackupStatePending)
 
-	log.Infof("Creating backup for container %s...", containerId)
+	log.Info().Msgf("Creating backup for container %s...", containerId)
 
 	d.cache.SetBackupState(ctx, containerId, enums.BackupStateInProgress)
 
@@ -28,11 +27,11 @@ func (d *DockerClient) CreateBackup(ctx context.Context, containerId string, bac
 
 	d.cache.SetBackupState(ctx, containerId, enums.BackupStateCompleted)
 
-	log.Infof("Backp (%s) for container %s created successfully", backupDto.Image, containerId)
+	log.Info().Msgf("Backp (%s) for container %s created successfully", backupDto.Image, containerId)
 
 	err = d.RemoveImage(ctx, backupDto.Image, true)
 	if err != nil {
-		log.Errorf("Error removing image %s: %v", backupDto.Image, err)
+		log.Error().Err(err).Msgf("Error removing image %s", backupDto.Image)
 	}
 
 	return nil

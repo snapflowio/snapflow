@@ -4,9 +4,8 @@ import (
 	"context"
 
 	"github.com/docker/docker/api/types/container"
+	"github.com/rs/zerolog/log"
 	"github.com/snapflow/go-common/pkg/timer"
-
-	log "github.com/sirupsen/logrus"
 )
 
 func (d *DockerClient) startSnapflowNode(ctx context.Context, containerId string) error {
@@ -25,12 +24,12 @@ func (d *DockerClient) startSnapflowNode(ctx context.Context, containerId string
 
 	result, err := d.execSync(ctx, containerId, execOptions, execStartOptions)
 	if err != nil {
-		log.Errorf("Error starting Snapflow node: %s", err.Error())
+		log.Error().Err(err).Msg("Error starting Snapflow node")
 		return nil
 	}
 
 	if result.ExitCode != 0 && result.StdErr != "" {
-		log.Errorf("Error starting Snapflow node: %s", string(result.StdErr))
+		log.Error().Msgf("Error starting Snapflow node: %s", string(result.StdErr))
 		return nil
 	}
 

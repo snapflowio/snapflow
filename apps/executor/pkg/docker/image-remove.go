@@ -5,8 +5,7 @@ import (
 
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/errdefs"
-
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 func (d *DockerClient) RemoveImage(ctx context.Context, imageName string, force bool) error {
@@ -17,14 +16,14 @@ func (d *DockerClient) RemoveImage(ctx context.Context, imageName string, force 
 
 	if err != nil {
 		if errdefs.IsNotFound(err) {
-			log.Infof("Image %s already removed and not found", imageName)
+			log.Info().Msgf("Image %s already removed and not found", imageName)
 			return nil
 		}
 
 		return err
 	}
 
-	log.Infof("Image %s deleted successfully", imageName)
+	log.Info().Msgf("Image %s deleted successfully", imageName)
 
 	return nil
 }

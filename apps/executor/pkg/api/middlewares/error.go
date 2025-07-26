@@ -8,7 +8,7 @@ import (
 
 	"github.com/docker/docker/errdefs"
 	"github.com/labstack/echo/v4"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 	"github.com/snapflow/executor/internal/util"
 	"github.com/snapflow/executor/pkg/common"
 )
@@ -96,17 +96,18 @@ func ErrorMiddleware() echo.MiddlewareFunc {
 			}
 
 			if errorResponse.StatusCode == http.StatusInternalServerError {
-				log.WithError(err).WithFields(log.Fields{
-					"path":   c.Request().URL.Path,
-					"method": c.Request().Method,
-				}).Error("Internal Server Error")
+				log.Error().
+					Err(err).
+					Str("path", c.Request().URL.Path).
+					Str("method", c.Request().Method).
+					Msg("Internal Server Error")
 			} else {
-				log.WithFields(log.Fields{
-					"method": c.Request().Method,
-					"URI":    c.Request().URL.Path,
-					"status": errorResponse.StatusCode,
-					"error":  errorResponse.Message,
-				}).Error("API ERROR")
+				log.Error().
+					Str("method", c.Request().Method).
+					Str("URI", c.Request().URL.Path).
+					Int("status", errorResponse.StatusCode).
+					Str("error", errorResponse.Message).
+					Msg("API ERROR")
 			}
 
 			return c.JSON(errorResponse.StatusCode, errorResponse)

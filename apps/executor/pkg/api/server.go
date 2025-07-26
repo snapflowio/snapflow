@@ -20,12 +20,12 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/rs/zerolog/log"
 	"github.com/snapflow/executor/cmd/executor/config"
 	"github.com/snapflow/executor/pkg/api/controllers"
 	"github.com/snapflow/executor/pkg/api/docs"
 	"github.com/snapflow/executor/pkg/api/middlewares"
 
-	log "github.com/sirupsen/logrus"
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
@@ -162,6 +162,6 @@ func (a *ApiServer) Stop() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := a.httpServer.Shutdown(ctx); err != nil {
-		log.Error(err)
+		log.Error().Err(err).Msg("Error shutting down server")
 	}
 }
