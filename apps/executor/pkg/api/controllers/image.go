@@ -12,10 +12,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
-	"github.com/snapflow/executor/cmd/executor/config"
-	"github.com/snapflow/executor/pkg/api/dto"
-	"github.com/snapflow/executor/pkg/common"
-	"github.com/snapflow/executor/pkg/executor"
+	"github.com/snapflowio/executor/cmd/executor/config"
+	"github.com/snapflowio/executor/pkg/api/dto"
+	"github.com/snapflowio/executor/pkg/common"
+	"github.com/snapflowio/executor/pkg/executor"
 )
 
 // PullImage godoc

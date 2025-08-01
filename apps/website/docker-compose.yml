@@ -1,0 +1,20 @@
+services:
+  website:
+    build:
+      context: ../../
+      dockerfile: apps/website/Dockerfile
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      NEXT_PUBLIC_POSTHOG_KEY: ${NEXT_PUBLIC_POSTHOG_KEY}
+      NEXT_PUBLIC_POSTHOG_HOST: ${NEXT_PUBLIC_POSTHOG_HOST}
+      NEXT_PUBLIC_WEBSITE_URL: ${NEXT_PUBLIC_WEBSITE_URL}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      NEXT_PUBLIC_OIDC_DOMAIN: ${NEXT_PUBLIC_OIDC_DOMAIN}
+      NEXT_PUBLIC_OIDC_CLIENT_ID: ${NEXT_PUBLIC_OIDC_CLIENT_ID}
+      NEXT_PUBLIC_OIDC_AUDIENCE: ${NEXT_PUBLIC_OIDC_AUDIENCE}
+      NEXT_PUBLIC_PROXY_TEMPLATE_URL: ${NEXT_PUBLIC_PROXY_TEMPLATE_URL}
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: ${PORT:-3000}
+      HOSTNAME: ${HOSTNAME:-0.0.0.0}
+    restart: unless-stopped

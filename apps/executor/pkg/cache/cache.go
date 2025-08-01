@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/snapflow/executor/pkg/models"
-	"github.com/snapflow/executor/pkg/models/enums"
+	"github.com/snapflowio/executor/pkg/models"
+	"github.com/snapflowio/executor/pkg/models/enums"
 )
 
 type IExecutorCache interface {

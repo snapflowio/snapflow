@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useEffect, useState } from "react";
 import { OrganizationRole } from "@snapflow/api-client";
 import { handleApiError } from "@/lib/errors";

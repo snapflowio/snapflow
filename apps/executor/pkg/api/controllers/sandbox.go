@@ -5,10 +5,10 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/snapflow/executor/pkg/api/dto"
-	"github.com/snapflow/executor/pkg/common"
-	"github.com/snapflow/executor/pkg/executor"
-	"github.com/snapflow/executor/pkg/models/enums"
+	"github.com/snapflowio/executor/pkg/api/dto"
+	"github.com/snapflowio/executor/pkg/common"
+	"github.com/snapflowio/executor/pkg/executor"
+	"github.com/snapflowio/executor/pkg/models/enums"
 )
 
 // Create 			godoc

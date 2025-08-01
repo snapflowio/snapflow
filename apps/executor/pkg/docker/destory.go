@@ -8,8 +8,8 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/errdefs"
 	"github.com/rs/zerolog/log"
-	"github.com/snapflow/executor/pkg/common"
-	"github.com/snapflow/executor/pkg/models/enums"
+	"github.com/snapflowio/executor/pkg/common"
+	"github.com/snapflowio/executor/pkg/models/enums"
 )
 
 func (d *DockerClient) Destroy(ctx context.Context, containerId string) error {

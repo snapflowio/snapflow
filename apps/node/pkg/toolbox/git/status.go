@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/snapflow/node/pkg/git"
+	"github.com/snapflowio/node/pkg/git"
 )
 
 func GetStatus(c echo.Context) error {

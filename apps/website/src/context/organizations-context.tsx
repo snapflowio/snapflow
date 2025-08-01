@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext } from "react";
 import { Organization } from "@snapflow/api-client";
 
@@ -6,6 +8,4 @@ export interface IOrganizationsContext {
   refreshOrganizations: () => Promise<Organization[]>;
 }
 
-export const OrganizationsContext = createContext<
-  IOrganizationsContext | undefined
->(undefined);
+export const OrganizationsContext = createContext<IOrganizationsContext | undefined>(undefined);

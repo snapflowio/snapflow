@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
-	"github.com/snapflow/executor/pkg/common"
+	"github.com/snapflowio/executor/pkg/common"
 )
 
 func ProxyCommandLogsStream(c echo.Context) error {

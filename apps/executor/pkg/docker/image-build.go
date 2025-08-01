@@ -9,9 +9,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/snapflow/executor/cmd/executor/config"
-	"github.com/snapflow/executor/pkg/api/dto"
-	"github.com/snapflow/executor/pkg/storage"
+	"github.com/snapflowio/executor/cmd/executor/config"
+	"github.com/snapflowio/executor/pkg/api/dto"
+	"github.com/snapflowio/executor/pkg/storage"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/pkg/jsonmessage"

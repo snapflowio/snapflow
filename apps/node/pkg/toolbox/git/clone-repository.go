@@ -6,8 +6,8 @@ import (
 
 	go_git_http "github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/labstack/echo/v4"
-	"github.com/snapflow/node/pkg/git"
-	"github.com/snapflow/node/pkg/provider"
+	"github.com/snapflowio/node/pkg/git"
+	"github.com/snapflowio/node/pkg/provider"
 )
 
 func CloneRepository(c echo.Context) error {

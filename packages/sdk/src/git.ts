@@ -2,7 +2,17 @@ import { ToolboxApi, ListBranchResponse, GitStatus } from '@snapflow/api-client'
 import { prefixRelativePath } from './utils/path'
 
 export interface GitCommitResponse {
-  sha: string
+  readonly sha: string
+}
+
+export interface GitCredentials {
+  readonly username?: string
+  readonly password?: string
+}
+
+export interface GitCloneOptions extends GitCredentials {
+  readonly branch?: string
+  readonly commitId?: string
 }
 
 export class Git {
@@ -32,7 +42,6 @@ export class Git {
       path: prefixRelativePath(await this.getRootDir(), path),
       name,
     })
-    return
   }
 
   public async deleteBranch(path: string, name: string): Promise<void> {
@@ -40,7 +49,6 @@ export class Git {
       path: prefixRelativePath(await this.getRootDir(), path),
       name,
     })
-    return
   }
 
   public async checkoutBranch(path: string, branch: string): Promise<void> {
@@ -48,24 +56,20 @@ export class Git {
       path: prefixRelativePath(await this.getRootDir(), path),
       branch,
     })
-    return
   }
 
   public async clone(
     url: string,
     path: string,
-    branch?: string,
-    commitId?: string,
-    username?: string,
-    password?: string,
+    options: GitCloneOptions = {},
   ): Promise<void> {
     await this.toolboxApi.gitCloneRepository(this.sandboxId, {
-      url: url,
-      branch: branch,
+      url,
+      branch: options.branch,
       path: prefixRelativePath(await this.getRootDir(), path),
-      username,
-      password,
-      commit_id: commitId,
+      username: options.username,
+      password: options.password,
+      commit_id: options.commitId,
     })
   }
 
@@ -81,19 +85,19 @@ export class Git {
     }
   }
 
-  public async push(path: string, username?: string, password?: string): Promise<void> {
+  public async push(path: string, credentials: GitCredentials = {}): Promise<void> {
     await this.toolboxApi.gitPushChanges(this.sandboxId, {
       path: prefixRelativePath(await this.getRootDir(), path),
-      username,
-      password,
+      username: credentials.username,
+      password: credentials.password,
     })
   }
 
-  public async pull(path: string, username?: string, password?: string): Promise<void> {
+  public async pull(path: string, credentials: GitCredentials = {}): Promise<void> {
     await this.toolboxApi.gitPullChanges(this.sandboxId, {
       path: prefixRelativePath(await this.getRootDir(), path),
-      username,
-      password,
+      username: credentials.username,
+      password: credentials.password,
     })
   }
 

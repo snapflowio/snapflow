@@ -1,4 +1,4 @@
-module github.com/snapflow/executor
+module github.com/snapflowio/executor
 
 go 1.24.4
 

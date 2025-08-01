@@ -13,7 +13,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
-	common_errors "github.com/snapflow/go-common/pkg/errors"
+	common_errors "github.com/snapflowio/go-common/pkg/errors"
 )
 
 var proxyTransport = &http.Transport{

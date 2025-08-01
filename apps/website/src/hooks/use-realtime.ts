@@ -1,3 +1,5 @@
+"use client";
+
 import { useContext } from "react";
 import { RealtimeContext } from "@/context/realtime-context";
 

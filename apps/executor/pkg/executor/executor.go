@@ -3,9 +3,9 @@ package executor
 import (
 	"log"
 
-	"github.com/snapflow/executor/pkg/cache"
-	"github.com/snapflow/executor/pkg/docker"
-	"github.com/snapflow/executor/pkg/services"
+	"github.com/snapflowio/executor/pkg/cache"
+	"github.com/snapflowio/executor/pkg/docker"
+	"github.com/snapflowio/executor/pkg/services"
 )
 
 type ExecutorInstanceConfig struct {

@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/rs/zerolog/log"
-	"github.com/snapflow/executor/pkg/api/dto"
-	"github.com/snapflow/executor/pkg/models/enums"
+	"github.com/snapflowio/executor/pkg/api/dto"
+	"github.com/snapflowio/executor/pkg/models/enums"
 )
 
 func (d *DockerClient) CreateBackup(ctx context.Context, containerId string, backupDto dto.CreateBackupDTO) error {

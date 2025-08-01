@@ -24,7 +24,7 @@ import {
 } from "@nestjs/swagger";
 import { InjectRedis } from "@nestjs-modules/ioredis";
 import Redis from "ioredis";
-import { CombinedAuthGuard } from "../../auth/guards/combined-auth.guard";
+import { CombinedAuthGuard } from "../../auth/guards/auth.guard";
 import { CustomHeaders } from "../../common/constants/header.constants";
 import { AuthContext } from "../../common/decorators/auth-context.decorator";
 import { ContentTypeInterceptor } from "../../common/interceptors/content-type.interceptors";
@@ -45,10 +45,7 @@ import { BucketService } from "../services/bucket.service";
 export class BucketController {
   private readonly logger = new Logger(BucketController.name);
 
-  constructor(
-    @InjectRedis() private readonly redis: Redis,
-    private readonly bucketService: BucketService
-  ) {}
+  constructor(private readonly bucketService: BucketService) {}
 
   @Get()
   @ApiOperation({
@@ -93,19 +90,6 @@ export class BucketController {
     @Body() createBucketDto: CreateBucketDto
   ): Promise<BucketDto> {
     const organization = authContext.organization;
-
-    const concurrentCreateKey = `bucket-concurrent-create-${organization.id}`;
-    let concurrentCreateCount = Number.parseInt(await this.redis.get(concurrentCreateKey)) || 0;
-    concurrentCreateCount++;
-    await this.redis.setex(concurrentCreateKey, 1, concurrentCreateCount);
-
-    const activeBucketCount = await this.bucketService.countActive(organization.id);
-
-    if (activeBucketCount + concurrentCreateCount > organization.bucketQuota) {
-      throw new ForbiddenException(
-        `Bucket quota exceeded. Maximum allowed: ${organization.bucketQuota}`
-      );
-    }
 
     const bucket = await this.bucketService.create(organization, createBucketDto);
     return BucketDto.fromBucket(bucket);

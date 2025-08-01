@@ -1,12 +1,19 @@
 import { Command, Session, SessionExecuteRequest, SessionExecuteResponse, ToolboxApi } from '@snapflow/api-client'
 import { SandboxCodeToolbox } from './sandbox'
-import { ExecuteResponse } from './types'
+import { ExecuteResponse, AsyncFunction, StreamHandler } from './types'
 import { processStreamingResponse } from './utils/stream'
 import { ArtifactParser } from './utils/parser'
+import { SnapflowError } from './error'
 
-export class CodeRunParams {
-  argv?: string[]
-  env?: Record<string, string>
+export interface CodeRunParams {
+  readonly argv?: string[]
+  readonly env?: Record<string, string>
+}
+
+export interface ProcessExecuteOptions {
+  readonly cwd?: string
+  readonly env?: Record<string, string>
+  readonly timeout?: number
 }
 
 export class Process {
@@ -19,44 +26,56 @@ export class Process {
 
   public async executeCommand(
     command: string,
-    cwd?: string,
-    env?: Record<string, string>,
-    timeout?: number,
+    options: ProcessExecuteOptions = {},
   ): Promise<ExecuteResponse> {
-    const base64UserCmd = Buffer.from(command).toString('base64')
-    command = `echo '${base64UserCmd}' | base64 -d | sh`
+    const { cwd, env, timeout } = options
+    const processedCommand = this.prepareCommand(command, env)
 
-    if (env && Object.keys(env).length > 0) {
-      const safeEnvExports =
-        Object.entries(env)
-          .map(([key, value]) => {
-            const encodedValue = Buffer.from(value).toString('base64')
-            return `export ${key}=$(echo '${encodedValue}' | base64 -d)`
-          })
-          .join(';') + ';'
-      command = `${safeEnvExports} ${command}`
-    }
+    try {
+      const response = await this.toolboxApi.executeCommand(this.sandboxId, {
+        command: processedCommand,
+        timeout,
+        cwd: cwd ?? (await this.getRootDir()),
+      })
 
-    command = `sh -c "${command}"`
+      const artifacts = ArtifactParser.parseArtifacts(response.data.result)
 
-    const response = await this.toolboxApi.executeCommand(this.sandboxId, {
-      command,
-      timeout,
-      cwd: cwd ?? (await this.getRootDir()),
-    })
-
-    const artifacts = ArtifactParser.parseArtifacts(response.data.result)
-
-    return {
-      ...response.data,
-      result: artifacts.stdout,
-      artifacts,
+      return {
+        ...response.data,
+        result: artifacts.stdout,
+        artifacts,
+      }
+    } catch (error) {
+      throw new SnapflowError(
+        `Failed to execute command: ${command}`,
+        error instanceof Error ? error : new Error(String(error))
+      )
     }
   }
 
   public async codeRun(code: string, params?: CodeRunParams, timeout?: number): Promise<ExecuteResponse> {
     const runCommand = this.codeToolbox.getRunCommand(code, params)
-    return this.executeCommand(runCommand, undefined, params?.env, timeout)
+    return this.executeCommand(runCommand, {
+      env: params?.env,
+      timeout,
+    })
+  }
+
+  private prepareCommand(command: string, env?: Record<string, string>): string {
+    const base64UserCmd = Buffer.from(command).toString('base64')
+    let processedCommand = `echo '${base64UserCmd}' | base64 -d | sh`
+
+    if (env && Object.keys(env).length > 0) {
+      const safeEnvExports = Object.entries(env)
+        .map(([key, value]) => {
+          const encodedValue = Buffer.from(value).toString('base64')
+          return `export ${key}=$(echo '${encodedValue}' | base64 -d)`
+        })
+        .join(';') + ';'
+      processedCommand = `${safeEnvExports} ${processedCommand}`
+    }
+
+    return `sh -c "${processedCommand}"`
   }
 
   public async createSession(sessionId: string): Promise<void> {
@@ -100,7 +119,7 @@ export class Process {
   public async getSessionCommandLogs(
     sessionId: string,
     commandId: string,
-    onLogs?: (chunk: string) => void,
+    onLogs?: StreamHandler,
   ): Promise<string | void> {
     if (!onLogs) {
       const response = await this.toolboxApi.getSessionCommandLogs(this.sandboxId, sessionId, commandId)

@@ -13,6 +13,7 @@ export const config = {
   oidc: {
     clientId: process.env.OIDC_CLIENT_ID,
     issuer: process.env.OIDC_ISSUER_BASE_URL,
+    audience: process.env.OIDC_AUDIENCE,
   },
   transientRegistry: {
     url: process.env.TRANSIENT_REGISTRY_URL,

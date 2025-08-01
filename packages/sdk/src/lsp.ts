@@ -7,9 +7,9 @@ export enum LspLanguageId {
   JAVASCRIPT = 'javascript',
 }
 
-export type Position = {
-  line: number
-  character: number
+export interface Position {
+  readonly line: number
+  readonly character: number
 }
 
 export class LspServer {
@@ -19,6 +19,10 @@ export class LspServer {
     private readonly toolboxApi: ToolboxApi,
     private readonly sandboxId: string,
   ) {
+    this.validateLanguageId()
+  }
+
+  private validateLanguageId(): void {
     if (!Object.values(LspLanguageId).includes(this.languageId)) {
       throw new Error(
         `Invalid languageId: ${this.languageId}. Supported values are: ${Object.values(LspLanguageId).join(', ')}`,
@@ -44,7 +48,7 @@ export class LspServer {
     await this.toolboxApi.lspDidOpen(this.sandboxId, {
       languageId: this.languageId,
       pathToProject: this.pathToProject,
-      uri: 'file://' + prefixRelativePath(this.pathToProject, path),
+      uri: this.createFileUri(path),
     })
   }
 
@@ -52,8 +56,12 @@ export class LspServer {
     await this.toolboxApi.lspDidClose(this.sandboxId, {
       languageId: this.languageId,
       pathToProject: this.pathToProject,
-      uri: 'file://' + prefixRelativePath(this.pathToProject, path),
+      uri: this.createFileUri(path),
     })
+  }
+
+  private createFileUri(path: string): string {
+    return 'file://' + prefixRelativePath(this.pathToProject, path)
   }
 
   public async documentSymbols(path: string): Promise<LspSymbol[]> {
@@ -61,13 +69,13 @@ export class LspServer {
       this.sandboxId,
       this.languageId,
       this.pathToProject,
-      'file://' + prefixRelativePath(this.pathToProject, path),
+      this.createFileUri(path),
     )
     return response.data
   }
 
   public async workspaceSymbols(query: string): Promise<LspSymbol[]> {
-    return await this.sandboxSymbols(query)
+    return this.sandboxSymbols(query)
   }
 
   public async sandboxSymbols(query: string): Promise<LspSymbol[]> {
@@ -84,7 +92,7 @@ export class LspServer {
     const response = await this.toolboxApi.lspCompletions(this.sandboxId, {
       languageId: this.languageId,
       pathToProject: this.pathToProject,
-      uri: 'file://' + prefixRelativePath(this.pathToProject, path),
+      uri: this.createFileUri(path),
       position,
     })
     return response.data

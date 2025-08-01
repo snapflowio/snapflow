@@ -4,15 +4,19 @@ import * as fs from 'fs'
 import { Readable } from 'stream'
 import FormData from 'form-data'
 
-export type FilePermissionsParams = {
-  group?: string
-  mode?: string
-  owner?: string
+export interface FilePermissionsParams {
+  readonly group?: string
+  readonly mode?: string
+  readonly owner?: string
 }
 
 export interface FileUpload {
-  source: string | Buffer
-  destination: string
+  readonly source: string | Buffer
+  readonly destination: string
+}
+
+export interface FileOperationOptions {
+  readonly timeout?: number
 }
 
 export class FileSystem {
@@ -36,16 +40,22 @@ export class FileSystem {
     return response.data
   }
 
-  public async downloadFile(remotePath: string, timeout?: number): Promise<Buffer>
-  public async downloadFile(remotePath: string, localPath: string, timeout?: number): Promise<void>
-  public async downloadFile(src: string, dst?: string | number, timeout: number = 30 * 60): Promise<Buffer | void> {
+  public async downloadFile(remotePath: string, options?: FileOperationOptions): Promise<Buffer>
+  public async downloadFile(remotePath: string, localPath: string, options?: FileOperationOptions): Promise<void>
+  public async downloadFile(
+    src: string, 
+    dstOrOptions?: string | FileOperationOptions, 
+    options: FileOperationOptions = {}
+  ): Promise<Buffer | void> {
+    const timeout = options.timeout ?? 30 * 60
     const remotePath = prefixRelativePath(await this.getRootDir(), src)
 
-    if (typeof dst !== 'string') {
-      timeout = dst as number
+    if (typeof dstOrOptions !== 'string') {
+      const actualOptions = dstOrOptions ?? {}
+      const actualTimeout = actualOptions.timeout ?? 30 * 60
       const { data } = await this.toolboxApi.downloadFile(this.sandboxId, remotePath, undefined, {
         responseType: 'arraybuffer',
-        timeout: timeout * 1000,
+        timeout: actualTimeout * 1000,
       })
 
       if (Buffer.isBuffer(data)) {
@@ -59,11 +69,12 @@ export class FileSystem {
       return Buffer.from(await data.arrayBuffer())
     }
 
+    const localPath = dstOrOptions as string
     const response = await this.toolboxApi.downloadFile(this.sandboxId, remotePath, undefined, {
       responseType: 'stream',
       timeout: timeout * 1000,
     })
-    const writer = fs.createWriteStream(dst)
+    const writer = fs.createWriteStream(localPath)
     ;(response.data as any).pipe(writer)
     await new Promise<void>((resolve, reject) => {
       writer.on('finish', () => resolve())
@@ -131,25 +142,30 @@ export class FileSystem {
   }
 
   public async setFilePermissions(path: string, permissions: FilePermissionsParams): Promise<void> {
+    if (!permissions.owner || !permissions.group || !permissions.mode) {
+      throw new Error('owner, group, and mode are required for setting file permissions')
+    }
+    
     const response = await this.toolboxApi.setFilePermissions(
       this.sandboxId,
       prefixRelativePath(await this.getRootDir(), path),
       undefined,
-      permissions.owner!,
-      permissions.group!,
-      permissions.mode!,
+      permissions.owner,
+      permissions.group,
+      permissions.mode,
     )
     return response.data
   }
 
 
-  public async uploadFile(file: Buffer, remotePath: string, timeout?: number): Promise<void>
-  public async uploadFile(localPath: string, remotePath: string, timeout?: number): Promise<void>
-  public async uploadFile(src: string | Buffer, dst: string, timeout: number = 30 * 60): Promise<void> {
-    await this.uploadFiles([{ source: src, destination: dst }], timeout)
+  public async uploadFile(file: Buffer, remotePath: string, options?: FileOperationOptions): Promise<void>
+  public async uploadFile(localPath: string, remotePath: string, options?: FileOperationOptions): Promise<void>
+  public async uploadFile(src: string | Buffer, dst: string, options: FileOperationOptions = {}): Promise<void> {
+    await this.uploadFiles([{ source: src, destination: dst }], options)
   }
 
-  public async uploadFiles(files: FileUpload[], timeout: number = 30 * 60): Promise<void> {
+  public async uploadFiles(files: FileUpload[], options: FileOperationOptions = {}): Promise<void> {
+    const timeout = options.timeout ?? 30 * 60
     const form = new FormData()
     const rootDir = await this.getRootDir()
 

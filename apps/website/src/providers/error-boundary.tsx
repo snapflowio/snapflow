@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect } from "react";
 import { FallbackProps } from "react-error-boundary";
 import { Button } from "@/components/ui/button";
@@ -9,10 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-export function ErrorBoundaryProvider({
-  error,
-  resetErrorBoundary,
-}: FallbackProps) {
+export function ErrorBoundaryProvider({ error, resetErrorBoundary }: FallbackProps) {
   useEffect(() => {
     console.error(error);
   });
@@ -23,9 +22,8 @@ export function ErrorBoundaryProvider({
         <DialogHeader>
           <DialogTitle className="mb-2">Oops! An error occurred</DialogTitle>
           <DialogDescription>
-            Sorry, we couldn't load the dashboard right now. This might be a
-            temporary issue. Please try again, and if the problem continues,
-            feel free to reach out to our support team.
+            Sorry, we couldn't load the dashboard right now. This might be a temporary issue. Please
+            try again, and if the problem continues, feel free to reach out to our support team.
           </DialogDescription>
         </DialogHeader>
 

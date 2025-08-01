@@ -36,6 +36,7 @@ import { ToolboxService } from "./services/toolbox.service";
 import { BucketSubscriber } from "./subscribers/bucket.subscriber";
 import { ImageSubscriber } from "./subscribers/image.subscriber";
 import { SandboxSubscriber } from "./subscribers/sandbox.subscriber";
+import { BucketTool } from "./tools/bucket.tool";
 
 @Module({
   imports: [
@@ -80,6 +81,7 @@ import { SandboxSubscriber } from "./subscribers/sandbox.subscriber";
     BucketManager,
     BucketSubscriber,
     ImageExecutorService,
+    BucketTool,
   ],
   exports: [
     SandboxService,

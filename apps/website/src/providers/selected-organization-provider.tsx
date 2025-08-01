@@ -1,4 +1,7 @@
+"use client";
+
 import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import {
   Organization,
   OrganizationRolePermissionsEnum,
@@ -11,7 +14,6 @@ import {
   ISelectedOrganizationContext,
   SelectedOrganizationContext,
 } from "@/context/selected-organization-context";
-import { LocalStorageKey } from "@/enums/local-storage-key";
 import { useApi } from "@/hooks/use-api";
 import { useOrganizations } from "@/hooks/use-organizations";
 
@@ -20,20 +22,21 @@ type Props = {
 };
 
 export function SelectedOrganizationProvider(props: Props) {
-  const { organizationsApi, user } = useApi();
+  const { user } = useAuth0();
+  const { organizationsApi } = useApi();
   const { organizations } = useOrganizations();
 
   const [selectedOrganizationId, setSelectedOrganizationId] = useState<string | null>(() => {
-    const storedId = localStorage.getItem(LocalStorageKey.selectedOrganization);
+    const storedId = localStorage.getItem("organization");
     if (storedId && organizations.find((org) => org.id === storedId)) return storedId;
 
     if (organizations.length > 0) {
       const defaultOrg = organizations.find((org) => org.personal) || organizations[0];
-      localStorage.setItem(LocalStorageKey.selectedOrganization, defaultOrg.id);
+      localStorage.setItem("organization", defaultOrg.id);
       return defaultOrg.id;
     }
 
-    localStorage.removeItem(LocalStorageKey.selectedOrganization);
+    localStorage.removeItem("organization");
     return null;
   });
 
@@ -45,7 +48,7 @@ export function SelectedOrganizationProvider(props: Props) {
       !organizations.some((org) => org.id === selectedOrganizationId)
     ) {
       const defaultOrg = organizations.find((org) => org.personal) || organizations[0];
-      localStorage.setItem(LocalStorageKey.selectedOrganization, defaultOrg.id);
+      localStorage.setItem("organization", defaultOrg.id);
       setSelectedOrganizationId(defaultOrg.id);
     }
   }, [organizations, selectedOrganizationId]);
@@ -114,7 +117,7 @@ export function SelectedOrganizationProvider(props: Props) {
       const organizationMembers = await refreshOrganizationMembers(organizationId);
 
       if (organizationMembers.some((member) => member.userId === user?.sub)) {
-        localStorage.setItem(LocalStorageKey.selectedOrganization, organizationId);
+        localStorage.setItem("organization", organizationId);
         setSelectedOrganizationId(organizationId);
         return true;
       }

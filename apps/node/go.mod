@@ -1,4 +1,4 @@
-module github.com/snapflow/node
+module github.com/snapflowio/node
 
 go 1.24.4
 
@@ -14,12 +14,15 @@ require (
 	github.com/labstack/echo/v4 v4.13.4
 	github.com/orcaman/concurrent-map/v2 v2.0.1
 	github.com/pkg/sftp v1.13.9
-	github.com/sirupsen/logrus v1.9.3
+	github.com/rs/zerolog v1.34.0
+	github.com/snapflowio/go-common v0.0.0-00010101000000-000000000000
 	github.com/sourcegraph/jsonrpc2 v0.2.1
 	golang.org/x/crypto v0.38.0
 	golang.org/x/sys v0.33.0
 	gopkg.in/ini.v1 v1.67.0
 )
+
+replace github.com/snapflowio/go-common => ../../packages/go-common
 
 require (
 	dario.cat/mergo v1.0.0 // indirect

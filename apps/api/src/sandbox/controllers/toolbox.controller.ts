@@ -34,7 +34,7 @@ import {
   Options,
   RequestHandler,
 } from "http-proxy-middleware";
-import { CombinedAuthGuard } from "../../auth/guards/combined-auth.guard";
+import { CombinedAuthGuard } from "../../auth/guards/auth.guard";
 import { CustomHeaders } from "../../common/constants/header.constants";
 import { ContentTypeInterceptor } from "../../common/interceptors/content-type.interceptors";
 import { RequiredOrganizationResourcePermissions } from "../../organization/decorators/required-organization-resource-permissions.decorator";
@@ -118,7 +118,7 @@ export class ToolboxController {
         return "http://target-error";
       },
       pathRewrite: (path) => {
-        const sandboxId = path.match(/^\/api\/toolbox\/([^\/]+)\/toolbox/)?.[1];
+        const sandboxId = path.match(/^\/api\/toolbox\/([^/]+)\/toolbox/)?.[1];
         const routePath = path.split(`/api/toolbox/${sandboxId}/toolbox`)[1];
         const newPath = `/sandboxes/${sandboxId}/toolbox${routePath}`;
 

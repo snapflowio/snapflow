@@ -20,7 +20,7 @@ import {
   ApiResponse,
   ApiTags,
 } from "@nestjs/swagger";
-import { CombinedAuthGuard } from "../../auth/guards/combined-auth.guard";
+import { CombinedAuthGuard } from "../../auth/guards/auth.guard";
 import { SystemActionGuard } from "../../auth/guards/system-action.guard";
 import { AuthContext } from "../../common/decorators/auth-context.decorator";
 import { RequiredSystemRole } from "../../common/decorators/required-role.decorator";

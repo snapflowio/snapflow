@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
-	"github.com/snapflow/executor/pkg/common"
-	"github.com/snapflow/executor/pkg/executor"
+	"github.com/snapflowio/executor/pkg/common"
+	"github.com/snapflowio/executor/pkg/executor"
 )
 
 // ProxyRequest handles proxying requests to a sandbox's container

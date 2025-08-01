@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	"github.com/snapflow/node/pkg/common"
+	"github.com/snapflowio/node/pkg/common"
 )
 
 func ErrorMiddleware() echo.MiddlewareFunc {

@@ -11,6 +11,7 @@ import { UserService } from "../../user/user.service";
 
 interface JwtStrategyConfig {
   jwksUri: string;
+  audience: string;
   issuer: string;
 }
 
@@ -31,8 +32,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         jwksUri: options.jwksUri,
       }),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      audience: options.audience,
       issuer: options.issuer,
-      algorithms: ["ES384"],
+      algorithms: ["RS256"],
       passReqToCallback: true,
     });
 
@@ -76,8 +78,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async verifyToken(token: string): Promise<JWTPayload> {
     const { payload } = await jwtVerify(token, this.JWKS, {
+      audience: this.options.audience,
       issuer: this.options.issuer,
-      algorithms: ["ES384"],
+      algorithms: ["RS256"],
     });
 
     return payload;

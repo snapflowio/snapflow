@@ -5,7 +5,7 @@ import (
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/rs/zerolog/log"
-	"github.com/snapflow/go-common/pkg/timer"
+	"github.com/snapflowio/go-common/pkg/timer"
 )
 
 func (d *DockerClient) startSnapflowNode(ctx context.Context, containerId string) error {

@@ -9,13 +9,13 @@ import (
 	"github.com/gorilla/securecookie"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	apiclient "github.com/snapflow/apiclient"
-	"github.com/snapflow/proxy/cmd/proxy/config"
-	"github.com/snapflow/proxy/pkg/cache"
+	apiclient "github.com/snapflowio/api-client-go"
+	"github.com/snapflowio/proxy/cmd/proxy/config"
+	"github.com/snapflowio/proxy/pkg/cache"
 
-	common_errors "github.com/snapflow/go-common/pkg/errors"
+	common_errors "github.com/snapflowio/go-common/pkg/errors"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 type RunnerInfo struct {
@@ -192,7 +192,7 @@ func StartProxy(config *config.Config) error {
 	})
 
 	addr := fmt.Sprintf(":%d", config.ProxyPort)
-	log.Infof("Proxy server is running on port %d", config.ProxyPort)
+	log.Info().Msgf("Proxy server is running on port %d", config.ProxyPort)
 
 	if config.EnableTLS {
 		return e.StartTLS(addr, config.TLSCertFile, config.TLSKeyFile)

@@ -1,9 +1,0 @@
-examples/
-assets/
-scripts/
-.vscode/
-.verdaccio/
-.nx/
-.husky/
-.github/
-README.md

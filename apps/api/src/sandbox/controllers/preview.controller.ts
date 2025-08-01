@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Logger,
-  NotFoundException,
-  Param,
-  Req,
-  UseGuards,
-} from "@nestjs/common";
+import { Controller, Get, Logger, NotFoundException, Param, Req, UseGuards } from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiOAuth2,
@@ -17,7 +9,7 @@ import {
 } from "@nestjs/swagger";
 import { InjectRedis } from "@nestjs-modules/ioredis";
 import Redis from "ioredis";
-import { CombinedAuthGuard } from "../../auth/guards/combined-auth.guard";
+import { CombinedAuthGuard } from "../../auth/guards/auth.guard";
 import { OrganizationService } from "../../organization/services/organization.service";
 import { SandboxService } from "../services/sandbox.service";
 
@@ -29,7 +21,7 @@ export class PreviewController {
   constructor(
     @InjectRedis() private readonly redis: Redis,
     private readonly sandboxService: SandboxService,
-    private readonly organizationService: OrganizationService,
+    private readonly organizationService: OrganizationService
   ) {}
 
   @Get(":sandboxId/public")
@@ -47,9 +39,7 @@ export class PreviewController {
     description: "Public status of the sandbox",
     type: Boolean,
   })
-  async isSandboxPublic(
-    @Param("sandboxId") sandboxId: string,
-  ): Promise<boolean> {
+  async isSandboxPublic(@Param("sandboxId") sandboxId: string): Promise<boolean> {
     const cached = await this.redis.get(`preview:public:${sandboxId}`);
     if (cached) {
       if (cached === "1") return true;
@@ -102,11 +92,9 @@ export class PreviewController {
   })
   async isValidAuthToken(
     @Param("sandboxId") sandboxId: string,
-    @Param("authToken") authToken: string,
+    @Param("authToken") authToken: string
   ): Promise<boolean> {
-    const cached = await this.redis.get(
-      `preview:token:${sandboxId}:${authToken}`,
-    );
+    const cached = await this.redis.get(`preview:token:${sandboxId}:${authToken}`);
     if (cached) {
       if (cached === "1") return true;
       throw new NotFoundException(`Sandbox with ID ${sandboxId} not found`);
@@ -137,14 +125,12 @@ export class PreviewController {
   @ApiBearerAuth()
   async hasSandboxAccess(
     @Req() req: Request,
-    @Param("sandboxId") sandboxId: string,
+    @Param("sandboxId") sandboxId: string
   ): Promise<boolean> {
     // @ts-ignore
     const userId = req.user?.userId;
 
-    const cached = await this.redis.get(
-      `preview:access:${sandboxId}:${userId}`,
-    );
+    const cached = await this.redis.get(`preview:access:${sandboxId}:${userId}`);
     if (cached) {
       if (cached === "1") return true;
       throw new NotFoundException(`Sandbox with ID ${sandboxId} not found`);
@@ -152,9 +138,7 @@ export class PreviewController {
 
     const organizations = await this.organizationService.findByUser(userId);
     const sandbox = await this.sandboxService.findOne(sandboxId);
-    const hasAccess = organizations.find(
-      (org) => org.id === sandbox.organizationId,
-    );
+    const hasAccess = organizations.find((org) => org.id === sandbox.organizationId);
 
     if (!hasAccess) {
       await this.redis.setex(`preview:token:${sandboxId}:${userId}`, 3, "0");

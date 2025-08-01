@@ -1,10 +1,17 @@
+import { AsyncFunction, StreamHandler } from '../types'
+
+export interface StreamProcessingOptions {
+  readonly chunkTimeout?: number
+  readonly requireConsecutiveTermination?: boolean
+}
+
 export async function processStreamingResponse(
-  getStream: () => Promise<any>,
-  onChunk: (chunk: string) => void,
-  shouldTerminate: () => Promise<boolean>,
-  chunkTimeout = 2000,
-  requireConsecutiveTermination = true,
+  getStream: AsyncFunction<any>,
+  onChunk: StreamHandler,
+  shouldTerminate: AsyncFunction<boolean>,
+  options: StreamProcessingOptions = {},
 ): Promise<void> {
+  const { chunkTimeout = 2000, requireConsecutiveTermination = true } = options
   const response = await getStream()
   const stream = response.data
 
@@ -13,7 +20,7 @@ export async function processStreamingResponse(
   let terminated = false
 
   const readNext = (): Promise<Buffer | null> => {
-    return new Promise((resolve) => {
+    return new Promise<Buffer | null>((resolve) => {
       const onData = (data: Buffer) => {
         cleanup()
         resolve(data)
@@ -27,22 +34,25 @@ export async function processStreamingResponse(
     })
   }
 
-  const terminationPromise = new Promise<void>((resolve, reject) => {
-    stream.on('end', () => {
-      terminated = true
-      resolve()
-    })
+  const createTerminationPromise = (): Promise<void> => {
+    return new Promise<void>((resolve, reject) => {
+      const handleTermination = () => {
+        terminated = true
+        resolve()
+      }
 
-    stream.on('close', () => {
-      terminated = true
-      resolve()
-    })
+      const handleError = (err: Error) => {
+        terminated = true
+        reject(err)
+      }
 
-    stream.on('error', (err: Error) => {
-      terminated = true
-      reject(err)
+      stream.on('end', handleTermination)
+      stream.on('close', handleTermination)
+      stream.on('error', handleError)
     })
-  })
+  }
+
+  const terminationPromise = createTerminationPromise()
 
   const processLoop = async () => {
     while (!terminated) {
@@ -59,14 +69,18 @@ export async function processStreamingResponse(
         const shouldEnd = await shouldTerminate()
         if (shouldEnd) {
           exitCheckStreak += 1
-          if (!requireConsecutiveTermination || exitCheckStreak > 1) break
+          if (!requireConsecutiveTermination || exitCheckStreak > 1) {
+            break
+          }
         } else {
           exitCheckStreak = 0
         }
       }
     }
-    stream.destroy()
-    stream.removeAllListeners()
+    if (!terminated) {
+      stream.destroy()
+      stream.removeAllListeners()
+    }
   }
 
   await Promise.race([processLoop(), terminationPromise])

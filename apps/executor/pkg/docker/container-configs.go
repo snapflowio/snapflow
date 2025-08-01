@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	"github.com/docker/docker/api/types/network"
-	"github.com/snapflow/executor/cmd/executor/config"
-	"github.com/snapflow/executor/pkg/api/dto"
+	"github.com/snapflowio/executor/cmd/executor/config"
+	"github.com/snapflowio/executor/pkg/api/dto"
 
 	"github.com/docker/docker/api/types/container"
 )

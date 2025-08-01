@@ -6,5 +6,10 @@
   "types": "./src/index.d.ts",
   "author": "Snapflow",
   "license": "Apache-2.0",
-  "keywords": []
+  "keywords": [],
+  "dependencies": {
+    "axios": "^1.11.0",
+    "dotenv": "^17.2.1",
+    "form-data": "^4.0.4"
+  }
 }

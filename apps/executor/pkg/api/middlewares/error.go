@@ -9,8 +9,8 @@ import (
 	"github.com/docker/docker/errdefs"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
-	"github.com/snapflow/executor/internal/util"
-	"github.com/snapflow/executor/pkg/common"
+	"github.com/snapflowio/executor/internal/util"
+	"github.com/snapflowio/executor/pkg/common"
 )
 
 func ErrorMiddleware() echo.MiddlewareFunc {

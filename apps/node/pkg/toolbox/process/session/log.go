@@ -10,9 +10,9 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
-	"github.com/snapflow/node/internal/util"
+	"github.com/snapflowio/node/internal/util"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 func (s *SessionController) GetSessionCommandLogs(c echo.Context) error {
@@ -50,7 +50,7 @@ func (s *SessionController) GetSessionCommandLogs(c echo.Context) error {
 				case <-session.ctx.Done():
 					err := conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""), time.Now().Add(time.Second))
 					if err != nil {
-						log.Error(err)
+						log.Error().Msg(err.Error())
 					}
 					conn.Close()
 					return
@@ -92,7 +92,7 @@ func ReadLog[T any](echoCtx echo.Context, logReader io.Reader, readFunc func(con
 
 	ws, err := upgrader.Upgrade(echoCtx.Response(), echoCtx.Request(), nil)
 	if err != nil {
-		log.Error(err)
+		log.Error().Msg(err.Error())
 		return err
 	}
 
@@ -103,7 +103,7 @@ func ReadLog[T any](echoCtx echo.Context, logReader io.Reader, readFunc func(con
 		}
 		err := ws.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(closeErr, ""), time.Now().Add(time.Second))
 		if err != nil {
-			log.Trace(err)
+			log.Trace().Msg(err.Error())
 		}
 		ws.Close()
 	}()
@@ -131,14 +131,14 @@ func ReadLog[T any](echoCtx echo.Context, logReader io.Reader, readFunc func(con
 		case err = <-errChannel:
 			if err != nil {
 				if !errors.Is(err, io.EOF) {
-					log.Error(err)
+					log.Error().Msg(err.Error())
 				}
 				cancel()
 				return nil
 			}
 		case err := <-readErr:
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseAbnormalClosure) {
-				log.Error(err)
+				log.Error().Msg(err.Error())
 			}
 			if err != nil {
 				return nil

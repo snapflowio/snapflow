@@ -3,7 +3,6 @@ import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import type { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app/app.module";
-import { NotFoundExceptionFilter } from "./common/middleware/frontend.middleware";
 import { TypedConfigService } from "./config/typed-config.service";
 import { AllExceptionsFilter } from "./filters/all-exceptions.filter";
 import { ExecutorRegion } from "./sandbox/enums/executor-region.enum";
@@ -30,7 +29,6 @@ async function bootstrap() {
   const configService = app.get(TypedConfigService);
   const httpAdapter = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
-  app.useGlobalFilters(new NotFoundExceptionFilter());
   app.useGlobalPipes(new ValidationPipe());
 
   const globalPrefix = "api";

@@ -45,6 +45,7 @@ import { OidcMetadata } from "./types/odic";
 
         return new JwtStrategy(
           {
+            audience: configService.get("oidc.audience"),
             issuer: metadata.issuer,
             jwksUri: metadata.jwks_uri,
           },

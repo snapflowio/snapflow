@@ -1,4 +1,4 @@
-module github.com/snapflow/go-common
+module github.com/snapflowio/go-common
 
 go 1.24.4
 

@@ -1,5 +1,9 @@
+"use client";
+
 import { Table } from "@tanstack/react-table";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { ForEach } from "@/components/bootstrap/components/for-each";
+import { Whenever } from "@/components/bootstrap/components/whenever";
 import { PAGE_SIZE_OPTIONS } from "@/constants/pagination";
 import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -19,12 +23,12 @@ export function Pagination<Data>({
 }: PaginationProps<Data>) {
   return (
     <div className={`flex w-full items-center justify-between px-2 ${className}`}>
-      {selectionEnabled ? (
+      <Whenever condition={selectionEnabled || false}>
         <div className="flex-1 text-muted-foreground text-sm">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-      ) : null}
+      </Whenever>
       <div className="flex w-full items-center justify-between">
         <div className="flex items-center space-x-2">
           <p className="font-medium text-sm">
@@ -40,11 +44,13 @@ export function Pagination<Data>({
               <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
-              {PAGE_SIZE_OPTIONS.map((pageSize) => (
-                <SelectItem key={pageSize} value={`${pageSize}`}>
-                  {pageSize}
-                </SelectItem>
-              ))}
+              <ForEach items={PAGE_SIZE_OPTIONS}>
+                {(pageSize) => (
+                  <SelectItem key={pageSize} value={`${pageSize}`}>
+                    {pageSize}
+                  </SelectItem>
+                )}
+              </ForEach>
             </SelectContent>
           </Select>
         </div>

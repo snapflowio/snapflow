@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import { OrganizationRole } from "@snapflow/api-client";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { ViewerCheckbox } from "@/pages/dashboard/organization-members/components/view-checkbox";
+import { ViewerCheckbox } from "@/app/dashboard/members/_components/view-checkbox";
 
 interface UpdateAssignedOrganizationRolesDialogProps {
   open: boolean;

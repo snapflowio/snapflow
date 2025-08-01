@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  OnModuleInit,
-  UnauthorizedException,
-} from "@nestjs/common";
+import { Injectable, Logger, OnModuleInit, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-http-bearer";
 import { ApiKeyService } from "../../api-key/api-key.service";
@@ -13,16 +8,13 @@ import { TypedConfigService } from "../../config/typed-config.service";
 import { UserService } from "../../user/user.service";
 
 @Injectable()
-export class ApiKeyStrategy
-  extends PassportStrategy(Strategy, "api-key")
-  implements OnModuleInit
-{
+export class ApiKeyStrategy extends PassportStrategy(Strategy, "api-key") implements OnModuleInit {
   private readonly logger = new Logger(ApiKeyStrategy.name);
 
   constructor(
     private readonly apiKeyService: ApiKeyService,
     private readonly userService: UserService,
-    private readonly configService: TypedConfigService,
+    private readonly configService: TypedConfigService
   ) {
     super();
     this.logger.log("ApiKeyStrategy constructor called");
@@ -41,19 +33,15 @@ export class ApiKeyStrategy
 
     try {
       const apiKey = await this.apiKeyService.getApiKeyByValue(token);
-      this.logger.debug(`API key found for userId: ${apiKey.userId}`);
 
       if (apiKey.expiresAt && apiKey.expiresAt < new Date())
         throw new UnauthorizedException("This API key has expired");
 
-      this.logger.debug(
-        `Updating last used timestamp for API key: ${token.substring(0, 8)}...`,
-      );
       await this.apiKeyService.updateLastUsedAt(
         apiKey.organizationId,
         apiKey.userId,
         apiKey.name,
-        new Date(),
+        new Date()
       );
 
       const user = await this.userService.findOne(apiKey.userId);

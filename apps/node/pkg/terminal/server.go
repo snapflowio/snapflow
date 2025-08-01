@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"log"
+	"github.com/rs/zerolog/log"
 	"net/http"
 
 	"github.com/gorilla/websocket"
-	"github.com/snapflow/node/pkg/common"
+	"github.com/snapflowio/node/pkg/common"
 )
 
 var upgrader = websocket.Upgrader{
@@ -33,14 +33,14 @@ func StartTerminalServer(port int) error {
 	http.HandleFunc("/ws", handleWebSocket)
 
 	addr := fmt.Sprintf(":%d", port)
-	log.Printf("Starting terminal server on http://localhost%s", addr)
+	log.Info().Msgf("Starting terminal server on http://localhost%s", addr)
 	return http.ListenAndServe(addr, nil)
 }
 
 func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Printf("Failed to upgrade connection: %v", err)
+		log.Error().Msgf("Failed to upgrade connection: %v", err)
 		return
 	}
 
@@ -81,14 +81,14 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			n, err := stdOutReader.Read(buf)
 			if err != nil {
 				if err != io.EOF {
-					log.Printf("Failed to read from pty: %v", err)
+					log.Error().Msgf("Failed to read from pty: %v", err)
 				}
 				return
 			}
 
 			err = conn.WriteMessage(websocket.TextMessage, buf[:n])
 			if err != nil {
-				log.Printf("Failed to write to websocket: %v", err)
+				log.Error().Msgf("Failed to write to websocket: %v", err)
 				return
 			}
 		}
@@ -103,7 +103,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		log.Printf("Failed to start pty: %v", err)
+		log.Error().Msgf("Failed to start pty: %v", err)
 		return
 	}
 }

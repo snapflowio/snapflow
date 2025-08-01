@@ -10,18 +10,18 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/snapflow/node/internal"
-	"github.com/snapflow/node/pkg/toolbox/config"
-	"github.com/snapflow/node/pkg/toolbox/fs"
-	"github.com/snapflow/node/pkg/toolbox/git"
-	"github.com/snapflow/node/pkg/toolbox/lsp"
-	"github.com/snapflow/node/pkg/toolbox/middlewares"
-	"github.com/snapflow/node/pkg/toolbox/port"
-	"github.com/snapflow/node/pkg/toolbox/process"
-	"github.com/snapflow/node/pkg/toolbox/process/session"
-	"github.com/snapflow/node/pkg/toolbox/proxy"
+	"github.com/snapflowio/node/internal"
+	"github.com/snapflowio/node/pkg/toolbox/config"
+	"github.com/snapflowio/node/pkg/toolbox/fs"
+	"github.com/snapflowio/node/pkg/toolbox/git"
+	"github.com/snapflowio/node/pkg/toolbox/lsp"
+	"github.com/snapflowio/node/pkg/toolbox/middlewares"
+	"github.com/snapflowio/node/pkg/toolbox/port"
+	"github.com/snapflowio/node/pkg/toolbox/process"
+	"github.com/snapflowio/node/pkg/toolbox/process/session"
+	"github.com/snapflowio/node/pkg/toolbox/proxy"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 type Server struct {
@@ -59,16 +59,16 @@ func (s *Server) Start() error {
 
 	dirname, err := os.UserHomeDir()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Msg(err.Error())
 	}
 
 	configDir := path.Join(dirname, ".snapflow")
 	err = os.MkdirAll(configDir, 0755)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Msg(err.Error())
 	}
 
-	log.Println("configDir", configDir)
+	log.Info().Str("configDir", configDir).Msg("Configuration directory")
 
 	fsController := e.Group("/files")
 	{

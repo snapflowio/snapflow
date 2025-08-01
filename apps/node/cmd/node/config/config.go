@@ -7,7 +7,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/kelseyhightower/envconfig"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 type Config struct {
@@ -28,7 +28,7 @@ func GetConfig() (*Config, error) {
 
 	err := envconfig.Process("", config)
 	if err != nil {
-		log.Error(err)
+		log.Error().Msg(err.Error())
 		os.Exit(2)
 	}
 

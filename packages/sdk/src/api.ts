@@ -340,7 +340,7 @@ export class Snapflow {
       labels ? JSON.stringify(labels) : undefined
     )
     
-    return response.data.map(sandbox => {
+    return response.data.map((sandbox: any) => {
       const language = sandbox.labels?.['code-toolbox-language'] as CodeLanguage
       return new Sandbox(sandbox, this.sandboxApi, this.toolboxApi, this.getCodeToolbox(language))
     })

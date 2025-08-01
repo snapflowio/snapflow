@@ -7,7 +7,7 @@ import {
   ApiResponse,
   ApiTags,
 } from "@nestjs/swagger";
-import { CombinedAuthGuard } from "../../auth/guards/combined-auth.guard";
+import { CombinedAuthGuard } from "../../auth/guards/auth.guard";
 import { ProxyGuard } from "../../auth/guards/proxy.guard";
 import { SystemActionGuard } from "../../auth/guards/system-action.guard";
 import { RequiredApiRole } from "../../common/decorators/required-role.decorator";

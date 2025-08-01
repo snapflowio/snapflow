@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/snapflow/executor/pkg/models/enums"
+	"github.com/snapflowio/executor/pkg/models/enums"
 )
 
 type CacheData struct {

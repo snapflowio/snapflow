@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 func Start(c echo.Context) error {
@@ -17,7 +17,7 @@ func Start(c echo.Context) error {
 	service := GetLSPService()
 	err := service.Start(req.LanguageId, req.PathToProject)
 	if err != nil {
-		log.Error(err)
+		log.Error().Msg(err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, "error starting LSP server")
 	}
 
@@ -33,7 +33,7 @@ func Stop(c echo.Context) error {
 	service := GetLSPService()
 	err := service.Shutdown(req.LanguageId, req.PathToProject)
 	if err != nil {
-		log.Error(err)
+		log.Error().Msg(err.Error())
 		return echo.NewHTTPError(http.StatusInternalServerError, "error stopping LSP server")
 	}
 

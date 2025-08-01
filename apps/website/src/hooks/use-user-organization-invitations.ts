@@ -1,3 +1,5 @@
+"use client";
+
 import { useContext } from "react";
 import { UserOrganizationInvitationsContext } from "@/context/user-organization-invitations-context";
 

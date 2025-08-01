@@ -10,6 +10,7 @@ import {
   UsersApi,
 } from "@snapflow/api-client";
 import axios, { AxiosError, AxiosInstance } from "axios";
+import { env } from "@/env";
 import { SnapflowError } from "./errors";
 
 export class ApiClient {
@@ -26,7 +27,7 @@ export class ApiClient {
 
   constructor(accessToken: string) {
     this.config = new Configuration({
-      basePath: import.meta.env.VITE_API_URL,
+      basePath: env.NEXT_PUBLIC_API_URL,
       accessToken,
     });
 

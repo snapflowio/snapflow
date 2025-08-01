@@ -8,11 +8,11 @@ import (
 
 	"github.com/gliderlabs/ssh"
 	"github.com/pkg/sftp"
-	"github.com/snapflow/node/pkg/common"
-	"github.com/snapflow/node/pkg/ssh/config"
+	"github.com/snapflowio/node/pkg/common"
+	"github.com/snapflowio/node/pkg/ssh/config"
 	"golang.org/x/sys/unix"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 type Server struct {
@@ -33,7 +33,7 @@ func (s *Server) Start() error {
 				s.sftpHandler(session)
 				return
 			default:
-				log.Errorf("Subsystem %s not supported\n", ss)
+				log.Error().Msgf("Subsystem %s not supported\n", ss)
 				session.Exit(1)
 				return
 			}
@@ -70,7 +70,7 @@ func (s *Server) Start() error {
 		},
 	}
 
-	log.Printf("Starting ssh server on port %d...\n", config.SSH_PORT)
+	log.Info().Msgf("Starting ssh server on port %d...\n", config.SSH_PORT)
 	return sshServer.ListenAndServe()
 }
 
@@ -86,7 +86,7 @@ func (s *Server) handlePty(session ssh.Session, ptyReq ssh.Pty, winCh <-chan ssh
 	if ssh.AgentRequested(session) {
 		l, err := ssh.NewAgentListener()
 		if err != nil {
-			log.Errorf("Failed to start agent listener: %v", err)
+			log.Error().Msgf("Failed to start agent listener: %v", err)
 			return
 		}
 		defer l.Close()
@@ -117,7 +117,7 @@ func (s *Server) handlePty(session ssh.Session, ptyReq ssh.Pty, winCh <-chan ssh
 	if err != nil {
 		// Debug log here because this gets called on each ssh "exit"
 		// TODO: Find a better way to handle this
-		log.Debugf("Failed to spawn tty: %v", err)
+		log.Debug().Msgf("Failed to spawn tty: %v", err)
 		return
 	}
 }
@@ -135,7 +135,7 @@ func (s *Server) handleNonPty(session ssh.Session) {
 	if ssh.AgentRequested(session) {
 		l, err := ssh.NewAgentListener()
 		if err != nil {
-			log.Errorf("Failed to start agent listener: %v", err)
+			log.Error().Msgf("Failed to start agent listener: %v", err)
 			return
 		}
 		defer l.Close()
@@ -152,13 +152,13 @@ func (s *Server) handleNonPty(session ssh.Session) {
 	cmd.Stderr = session.Stderr()
 	stdinPipe, err := cmd.StdinPipe()
 	if err != nil {
-		log.Errorf("Unable to setup stdin for session: %v", err)
+		log.Error().Msgf("Unable to setup stdin for session: %v", err)
 		return
 	}
 	go func() {
 		_, err := io.Copy(stdinPipe, session)
 		if err != nil {
-			log.Errorf("Unable to read from session: %v", err)
+			log.Error().Msgf("Unable to read from session: %v", err)
 			return
 		}
 		_ = stdinPipe.Close()
@@ -166,7 +166,7 @@ func (s *Server) handleNonPty(session ssh.Session) {
 
 	err = cmd.Start()
 	if err != nil {
-		log.Errorf("Unable to start command: %v", err)
+		log.Error().Msgf("Unable to start command: %v", err)
 		return
 	}
 	sigs := make(chan ssh.Signal, 1)
@@ -180,21 +180,21 @@ func (s *Server) handleNonPty(session ssh.Session) {
 			signal := s.osSignalFrom(sig)
 			err := cmd.Process.Signal(signal)
 			if err != nil {
-				log.Warnf("Unable to send signal to process: %v", err)
+				log.Warn().Msgf("Unable to send signal to process: %v", err)
 			}
 		}
 	}()
 	err = cmd.Wait()
 
 	if err != nil {
-		log.Println(session.RawCommand(), " ", err)
+		log.Error().Msgf("%s %v", session.RawCommand(), err)
 		session.Exit(127)
 		return
 	}
 
 	err = session.Exit(0)
 	if err != nil {
-		log.Warnf("Unable to exit session: %v", err)
+		log.Warn().Msgf("Unable to exit session: %v", err)
 	}
 }
 
@@ -243,12 +243,12 @@ func (s *Server) sftpHandler(session ssh.Session) {
 		serverOptions...,
 	)
 	if err != nil {
-		log.Errorf("sftp server init error: %s\n", err)
+		log.Error().Msgf("sftp server init error: %s\n", err)
 		return
 	}
 	if err := server.Serve(); err == io.EOF {
 		server.Close()
 	} else if err != nil {
-		log.Errorf("sftp server completed with error: %s\n", err)
+		log.Error().Msgf("sftp server completed with error: %s\n", err)
 	}
 }

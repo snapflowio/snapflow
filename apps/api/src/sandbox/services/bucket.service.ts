@@ -1,6 +1,8 @@
 import { ForbiddenException, Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { OnEvent } from "@nestjs/event-emitter";
 import { InjectRepository } from "@nestjs/typeorm";
+import { InjectRedis } from "@nestjs-modules/ioredis";
+import Redis from "ioredis";
 import { In, Not, Repository } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 import { BadRequestError } from "../../common/exceptions/bad-request.exception";
@@ -16,11 +18,18 @@ export class BucketService {
   private readonly logger = new Logger(BucketService.name);
 
   constructor(
+    @InjectRedis() private readonly redis: Redis,
     @InjectRepository(Bucket)
     private readonly bucketRepository: Repository<Bucket>
   ) {}
 
   async create(organization: Organization, createBucketDto: CreateBucketDto): Promise<Bucket> {
+    // Redis cache entry
+    const concurrentCreateKey = `bucket-concurrent-create-${organization.id}`;
+    let concurrentCreateCount = Number.parseInt(await this.redis.get(concurrentCreateKey)) || 0;
+    concurrentCreateCount++;
+    await this.redis.setex(concurrentCreateKey, 1, concurrentCreateCount);
+
     // Validate quota
     const activeBucketCount = await this.countActive(organization.id);
 
@@ -64,15 +73,12 @@ export class BucketService {
       },
     });
 
-    if (!bucket) {
-      throw new NotFoundException(`Bucket with ID ${bucketId} not found`);
-    }
+    if (!bucket) throw new NotFoundException(`Bucket with ID ${bucketId} not found`);
 
-    if (bucket.state !== BucketState.READY) {
+    if (bucket.state !== BucketState.READY)
       throw new BadRequestError(
         `Bucket must be in '${BucketState.READY}' state in order to be deleted`
       );
-    }
 
     // Update state to mark as deleting
     bucket.state = BucketState.PENDING_DELETE;

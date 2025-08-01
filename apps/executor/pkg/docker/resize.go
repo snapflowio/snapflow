@@ -3,8 +3,8 @@ package docker
 import (
 	"context"
 
-	"github.com/snapflow/executor/pkg/api/dto"
-	"github.com/snapflow/executor/pkg/models/enums"
+	"github.com/snapflowio/executor/pkg/api/dto"
+	"github.com/snapflowio/executor/pkg/models/enums"
 
 	"github.com/docker/docker/api/types/container"
 )

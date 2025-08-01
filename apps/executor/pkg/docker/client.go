@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/docker/docker/client"
-	"github.com/snapflow/executor/pkg/cache"
+	"github.com/snapflowio/executor/pkg/cache"
 )
 
 type DockerClientConfig struct {

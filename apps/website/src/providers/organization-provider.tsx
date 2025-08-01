@@ -1,11 +1,10 @@
+"use client";
+
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import { Organization } from "@snapflow/api-client";
 import { suspend } from "suspend-react";
 import { handleApiError } from "@/lib/errors";
-import {
-  IOrganizationsContext,
-  OrganizationsContext,
-} from "@/context/organizations-context";
+import { IOrganizationsContext, OrganizationsContext } from "@/context/organizations-context";
 import { useApi } from "@/hooks/use-api";
 
 type Props = {
@@ -25,7 +24,7 @@ export function OrganizationsProvider(props: Props) {
   }, [organizationsApi]);
 
   const [organizations, setOrganizations] = useState<Organization[]>(
-    suspend(getOrganizations, [organizationsApi, "organizations"]),
+    suspend(getOrganizations, [organizationsApi, "organizations"])
   );
 
   const refreshOrganizations = useCallback(async () => {

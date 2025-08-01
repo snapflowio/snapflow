@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	common_errors "github.com/snapflow/go-common/pkg/errors"
+	common_errors "github.com/snapflowio/go-common/pkg/errors"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 func (p *Proxy) GetProxyTarget(c echo.Context) (*url.URL, string, map[string]string, error) {
@@ -92,7 +92,7 @@ func (p *Proxy) getExecutorInfo(ctx context.Context, sandboxId string) (*RunnerI
 
 	err = p.executorCache.Set(ctx, sandboxId, info, 1*time.Hour)
 	if err != nil {
-		log.Errorf("Failed to set executor info in cache: %v", err)
+		log.Error().Err(err).Msg("Failed to set executor info in cache")
 	}
 
 	return &info, nil
@@ -116,7 +116,7 @@ func (p *Proxy) getSandboxPublic(ctx context.Context, sandboxId string) (*bool, 
 
 	err = p.sandboxPublicCache.Set(ctx, sandboxId, isPublic, 2*time.Minute)
 	if err != nil {
-		log.Errorf("Failed to set sandbox public in cache: %v", err)
+		log.Error().Err(err).Msg("Failed to set sandbox public in cache")
 	}
 
 	return &isPublic, nil
@@ -140,7 +140,7 @@ func (p *Proxy) getSandboxAuthKeyValid(ctx context.Context, sandboxId string, au
 
 	err = p.sandboxAuthKeyValidCache.Set(ctx, authKey, isValid, 2*time.Minute)
 	if err != nil {
-		log.Errorf("Failed to set sandbox auth key valid in cache: %v", err)
+		log.Error().Err(err).Msg("Failed to set sandbox auth key valid in cache")
 	}
 
 	return &isValid, nil

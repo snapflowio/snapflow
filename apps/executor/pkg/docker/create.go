@@ -8,11 +8,11 @@ import (
 
 	"github.com/docker/docker/errdefs"
 	"github.com/rs/zerolog/log"
-	"github.com/snapflow/executor/internal/constants"
-	"github.com/snapflow/executor/pkg/api/dto"
-	"github.com/snapflow/executor/pkg/common"
-	"github.com/snapflow/executor/pkg/models/enums"
-	"github.com/snapflow/go-common/pkg/timer"
+	"github.com/snapflowio/executor/internal/constants"
+	"github.com/snapflowio/executor/pkg/api/dto"
+	"github.com/snapflowio/executor/pkg/common"
+	"github.com/snapflowio/executor/pkg/models/enums"
+	"github.com/snapflowio/go-common/pkg/timer"
 )
 
 func (d *DockerClient) Create(ctx context.Context, sandboxDto dto.CreateSandboxDTO) (string, error) {

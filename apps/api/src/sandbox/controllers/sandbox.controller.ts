@@ -34,7 +34,7 @@ import { Throttle } from "@nestjs/throttler";
 import { InjectRedis } from "@nestjs-modules/ioredis";
 import { NextFunction } from "http-proxy-middleware/dist/types";
 import Redis from "ioredis";
-import { CombinedAuthGuard } from "../../auth/guards/combined-auth.guard";
+import { CombinedAuthGuard } from "../../auth/guards/auth.guard";
 import { CustomHeaders } from "../../common/constants/header.constants";
 import { AuthContext } from "../../common/decorators/auth-context.decorator";
 import { BadRequestError } from "../../common/exceptions/bad-request.exception";
@@ -147,8 +147,6 @@ export class SandboxController {
     const organization = authContext.organization;
     let sandbox: SandboxDto;
 
-    console.log("CREATING SANDBOX", createSandboxDto.buildInfo);
-
     if (createSandboxDto.buildInfo) {
       if (createSandboxDto.image) {
         throw new BadRequestError("Cannot specify a image when using a build info entry");
@@ -202,11 +200,7 @@ export class SandboxController {
     type: SandboxDto,
   })
   @UseGuards(SandboxAccessGuard)
-  async getSandbox(
-    @Sandbox() sandbox: SandboxEntity,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @Query("verbose") verbose?: boolean
-  ): Promise<SandboxDto> {
+  async getSandbox(@Sandbox() sandbox: SandboxEntity): Promise<SandboxDto> {
     let executor: Executor;
     if (sandbox.executorId) {
       executor = await this.executorService.findOne(sandbox.executorId);
@@ -232,11 +226,7 @@ export class SandboxController {
   @Throttle({ default: { limit: 100 } })
   @RequiredOrganizationResourcePermissions([OrganizationResourcePermission.DELETE_SANDBOXES])
   @UseGuards(SandboxAccessGuard)
-  async removeSandbox(
-    @Param("sandboxId") sandboxId: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @Query("force") force?: boolean
-  ): Promise<void> {
+  async removeSandbox(@Param("sandboxId") sandboxId: string): Promise<void> {
     return this.sandboxService.destroy(sandboxId);
   }
 

@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/snapflow/node/pkg/provider"
+	"github.com/snapflowio/node/pkg/provider"
 	"gopkg.in/ini.v1"
 )
 

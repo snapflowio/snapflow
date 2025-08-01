@@ -21,10 +21,10 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog/log"
-	"github.com/snapflow/executor/cmd/executor/config"
-	"github.com/snapflow/executor/pkg/api/controllers"
-	"github.com/snapflow/executor/pkg/api/docs"
-	"github.com/snapflow/executor/pkg/api/middlewares"
+	"github.com/snapflowio/executor/cmd/executor/config"
+	"github.com/snapflowio/executor/pkg/api/controllers"
+	"github.com/snapflowio/executor/pkg/api/docs"
+	"github.com/snapflowio/executor/pkg/api/middlewares"
 
 	echoSwagger "github.com/swaggo/echo-swagger"
 )

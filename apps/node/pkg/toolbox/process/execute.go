@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 func ExecuteCommand(c echo.Context) error {
@@ -39,7 +39,7 @@ func ExecuteCommand(c echo.Context) error {
 			// kill the process group
 			err := cmd.Process.Kill()
 			if err != nil {
-				log.Error(err)
+				log.Error().Msg(err.Error())
 				return
 			}
 		}

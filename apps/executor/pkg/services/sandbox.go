@@ -3,10 +3,10 @@ package services
 import (
 	"context"
 
-	"github.com/snapflow/executor/pkg/cache"
-	"github.com/snapflow/executor/pkg/docker"
-	"github.com/snapflow/executor/pkg/models"
-	"github.com/snapflow/executor/pkg/models/enums"
+	"github.com/snapflowio/executor/pkg/cache"
+	"github.com/snapflowio/executor/pkg/docker"
+	"github.com/snapflowio/executor/pkg/models"
+	"github.com/snapflowio/executor/pkg/models/enums"
 )
 
 type SandboxService struct {

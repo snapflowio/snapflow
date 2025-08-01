@@ -8,7 +8,7 @@ import (
 	go_git "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/labstack/echo/v4"
-	"github.com/snapflow/node/pkg/git"
+	"github.com/snapflowio/node/pkg/git"
 )
 
 func CommitChanges(c echo.Context) error {

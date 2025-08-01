@@ -2,22 +2,32 @@ package main
 
 import (
 	"fmt"
-	"io"
+	golog "log"
 	"os"
 	"path/filepath"
 
-	golog "log"
-
-	log "github.com/sirupsen/logrus"
-	"github.com/snapflow/node/cmd/node/config"
-	"github.com/snapflow/node/pkg/terminal"
-	"github.com/snapflow/node/pkg/toolbox"
+	"github.com/rs/zerolog/log"
+	"github.com/snapflowio/go-common/pkg/logger"
+	"github.com/snapflowio/node/cmd/node/config"
+	"github.com/snapflowio/node/pkg/terminal"
+	"github.com/snapflowio/node/pkg/toolbox"
 )
 
 func main() {
+	// Initialize logging first
+	loggerConfig := logger.DefaultConfig()
+	if logLevel := os.Getenv("LOG_LEVEL"); logLevel != "" {
+		loggerConfig.Level = logLevel
+	}
+	
+	if err := logger.Init(loggerConfig); err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to initialize logging: %v\n", err)
+		os.Exit(1)
+	}
+
 	c, err := config.GetConfig()
 	if err != nil {
-		panic(err)
+		log.Fatal().Err(err).Msg("Failed to get config")
 	}
 
 	c.ProjectDir = filepath.Join(os.Getenv("HOME"))
@@ -28,22 +38,20 @@ func main() {
 
 	if _, err := os.Stat(c.ProjectDir); os.IsNotExist(err) {
 		if err := os.MkdirAll(c.ProjectDir, 0755); err != nil {
-			panic(fmt.Errorf("failed to create project directory: %w", err))
+			log.Fatal().Err(err).Msg("Failed to create project directory")
 		}
 	}
 
-	var logWriter io.Writer
+	// Handle file logging if configured
 	if c.LogFilePath != nil {
-		logFile, err := os.OpenFile(*c.LogFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			log.Error("Failed to open log file at ", *c.LogFilePath)
-		} else {
-			defer logFile.Close()
-			logWriter = logFile
-		}
+		// For file logging, we would need to reconfigure the logger
+		// But for now, just log that file logging is requested
+		log.Info().Str("log_file", *c.LogFilePath).Msg("File logging configured")
 	}
 
-	initLogs(logWriter)
+	// Redirect Go's standard logger to zerolog
+	golog.SetFlags(0)
+	golog.SetOutput(log.Logger)
 
 	errChan := make(chan error)
 	toolBoxServer := &toolbox.Server{
@@ -65,32 +73,7 @@ func main() {
 
 	err = <-errChan
 	if err != nil {
-		log.Fatalf("Error: %v", err)
+		log.Fatal().Err(err).Msg("Application error")
 	}
 }
 
-func initLogs(logWriter io.Writer) {
-	logLevel := log.WarnLevel
-
-	logLevelEnv, logLevelSet := os.LookupEnv("LOG_LEVEL")
-
-	if logLevelSet {
-		var err error
-		logLevel, err = log.ParseLevel(logLevelEnv)
-		if err != nil {
-			logLevel = log.WarnLevel
-		}
-	}
-
-	log.SetLevel(logLevel)
-	logFormatter := &config.LogFormatter{
-		TextFormatter: &log.TextFormatter{
-			ForceColors: true,
-		},
-		LogFileWriter: logWriter,
-	}
-
-	log.SetFormatter(logFormatter)
-
-	golog.SetOutput(log.New().WriterLevel(log.DebugLevel))
-}

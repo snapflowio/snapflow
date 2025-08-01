@@ -7,8 +7,8 @@ import (
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/rs/zerolog/log"
-	"github.com/snapflow/executor/internal/util"
-	"github.com/snapflow/executor/pkg/api/dto"
+	"github.com/snapflowio/executor/internal/util"
+	"github.com/snapflowio/executor/pkg/api/dto"
 )
 
 func (d *DockerClient) PushImage(ctx context.Context, imageName string, reg *dto.RegistryDTO) error {

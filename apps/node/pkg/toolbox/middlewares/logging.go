@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 var ignoreLoggingPaths = map[string]bool{}
@@ -21,29 +21,29 @@ func LoggingMiddleware() echo.MiddlewareFunc {
 			statusCode := c.Response().Status
 
 			if err != nil {
-				log.WithFields(log.Fields{
-					"method":  reqMethod,
-					"URI":     reqUri,
-					"status":  statusCode,
-					"latency": latencyTime,
-					"error":   err.Error(),
-				}).Error("API ERROR")
+				log.Error().
+					Str("method", reqMethod).
+					Str("URI", reqUri).
+					Int("status", statusCode).
+					Dur("latency", latencyTime).
+					Err(err).
+					Msg("API ERROR")
 			} else {
 				fullPath := c.Path()
 				if ignoreLoggingPaths[fullPath] {
-					log.WithFields(log.Fields{
-						"method":  reqMethod,
-						"URI":     reqUri,
-						"status":  statusCode,
-						"latency": latencyTime,
-					}).Debug("API REQUEST")
+					log.Debug().
+						Str("method", reqMethod).
+						Str("URI", reqUri).
+						Int("status", statusCode).
+						Dur("latency", latencyTime).
+						Msg("API REQUEST")
 				} else {
-					log.WithFields(log.Fields{
-						"method":  reqMethod,
-						"URI":     reqUri,
-						"status":  statusCode,
-						"latency": latencyTime,
-					}).Info("API REQUEST")
+					log.Info().
+						Str("method", reqMethod).
+						Str("URI", reqUri).
+						Int("status", statusCode).
+						Dur("latency", latencyTime).
+						Msg("API REQUEST")
 				}
 			}
 			return err

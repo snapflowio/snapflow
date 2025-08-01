@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
-	"github.com/snapflow/node/pkg/common"
+	"github.com/snapflowio/node/pkg/common"
 )
 
 var sessions = map[string]*session{}

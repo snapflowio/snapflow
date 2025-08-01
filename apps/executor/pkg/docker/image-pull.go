@@ -11,11 +11,11 @@ import (
 	"github.com/docker/docker/api/types/registry"
 	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/rs/zerolog/log"
-	"github.com/snapflow/executor/internal/constants"
-	"github.com/snapflow/executor/internal/util"
-	"github.com/snapflow/executor/pkg/api/dto"
-	"github.com/snapflow/executor/pkg/models/enums"
-	"github.com/snapflow/go-common/pkg/timer"
+	"github.com/snapflowio/executor/internal/constants"
+	"github.com/snapflowio/executor/internal/util"
+	"github.com/snapflowio/executor/pkg/api/dto"
+	"github.com/snapflowio/executor/pkg/models/enums"
+	"github.com/snapflowio/go-common/pkg/timer"
 )
 
 func (d *DockerClient) PullImage(ctx context.Context, imageName string, reg *dto.RegistryDTO) error {

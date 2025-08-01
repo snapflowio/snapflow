@@ -17,10 +17,8 @@
     "baseUrl": ".",
     "paths": {
       "@snapflow/api-client": ["packages/api-client/src/index.ts"],
-      "@snapflow/executor-api-client": [
-        "packages/executor-api-client/src/index.ts"
-      ],
-      "@snapflow/sdk": ["packages/typescript-sdk/src/index.ts"]
+      "@snapflow/executor-api-client": ["packages/executor-api-client/src/index.ts"],
+      "@snapflow/sdk": ["packages/sdk/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

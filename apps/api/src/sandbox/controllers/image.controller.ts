@@ -30,7 +30,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { NextFunction } from "express";
-import { CombinedAuthGuard } from "../../auth/guards/combined-auth.guard";
+import { CombinedAuthGuard } from "../../auth/guards/auth.guard";
 import { SystemActionGuard } from "../../auth/guards/system-action.guard";
 import { CustomHeaders } from "../../common/constants/header.constants";
 import { AuthContext } from "../../common/decorators/auth-context.decorator";

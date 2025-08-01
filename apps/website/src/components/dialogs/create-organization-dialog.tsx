@@ -1,6 +1,6 @@
+"use client";
 import { useState } from "react";
 import { Organization } from "@snapflow/api-client";
-import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Path } from "@/enums/paths";
 
 interface CreateOrganizationDialogProps {
   open: boolean;
@@ -64,25 +63,6 @@ export function CreateOrganizationDialog({
           <div className="space-y-6">
             <div className="rounded-md bg-blue-100 p-3 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
               <p className="font-medium">Your organization is created.</p>
-              <p className="mt-1 text-sm">
-                {import.meta.env.VITE_BILLING_API_URL ? (
-                  <>
-                    To get started, add a payment method on the{" "}
-                    <Link
-                      to={Path.BILLING}
-                      className="text-blue-500 hover:underline"
-                      onClick={(e) => {
-                        onOpenChange(false);
-                      }}
-                    >
-                      billing page
-                    </Link>
-                    .
-                  </>
-                ) : (
-                  <></>
-                )}
-              </p>
             </div>
           </div>
         ) : (

@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
-	"github.com/snapflow/executor/internal/constants"
+	"github.com/snapflowio/executor/internal/constants"
 )
 
 func AuthMiddleware() echo.MiddlewareFunc {

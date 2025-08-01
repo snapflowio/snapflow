@@ -1,3 +1,5 @@
+"use client";
+
 import { ComponentPropsWithoutRef, CSSProperties, useEffect, useRef } from "react";
 import { cn } from "@/lib/util";
 

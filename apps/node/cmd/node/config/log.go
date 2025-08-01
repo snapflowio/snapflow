@@ -2,27 +2,21 @@ package config
 
 import (
 	"io"
-
-	log "github.com/sirupsen/logrus"
 )
 
 type LogFormatter struct {
-	TextFormatter *log.TextFormatter
 	LogFileWriter io.Writer
 }
 
-func (f *LogFormatter) Format(entry *log.Entry) ([]byte, error) {
-	formatted, err := f.TextFormatter.Format(entry)
-	if err != nil {
-		return nil, err
-	}
+// LogFormatter is no longer needed with zerolog as it handles formatting internally
+// This struct is kept for backward compatibility but should be refactored
+type LogWriter struct {
+	LogFileWriter io.Writer
+}
 
-	if f.LogFileWriter != nil {
-		_, err = f.LogFileWriter.Write(formatted)
-		if err != nil {
-			return nil, err
-		}
+func (w *LogWriter) Write(p []byte) (n int, err error) {
+	if w.LogFileWriter != nil {
+		return w.LogFileWriter.Write(p)
 	}
-
-	return []byte(formatted), nil
+	return len(p), nil
 }

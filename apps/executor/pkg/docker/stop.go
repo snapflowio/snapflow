@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types/container"
-	"github.com/snapflow/executor/pkg/models/enums"
+	"github.com/snapflowio/executor/pkg/models/enums"
 )
 
 func (d *DockerClient) Stop(ctx context.Context, containerId string) error {

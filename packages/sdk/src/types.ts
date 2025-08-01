@@ -1,11 +1,14 @@
 import { ExecuteResponse as ClientExecuteResponse } from '@snapflow/api-client'
 
 export interface ExecutionArtifacts {
-  stdout: string
+  readonly stdout: string
 }
 
 export interface ExecuteResponse extends ClientExecuteResponse {
-  exitCode: number
-  result: string
-  artifacts?: ExecutionArtifacts
+  readonly exitCode: number
+  readonly result: string
+  readonly artifacts?: ExecutionArtifacts
 }
+
+export type AsyncFunction<T = void> = () => Promise<T>
+export type StreamHandler = (chunk: string) => void

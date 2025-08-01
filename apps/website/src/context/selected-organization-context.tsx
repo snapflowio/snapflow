@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext } from "react";
 import {
   Organization,
@@ -10,12 +12,10 @@ export interface ISelectedOrganizationContext {
   organizationMembers: OrganizationUser[];
   refreshOrganizationMembers: () => Promise<OrganizationUser[]>;
   authenticatedUserOrganizationMember: OrganizationUser | null;
-  authenticatedUserHasPermission: (
-    permission: OrganizationRolePermissionsEnum,
-  ) => boolean;
+  authenticatedUserHasPermission: (permission: OrganizationRolePermissionsEnum) => boolean;
   onSelectOrganization: (organizationId: string) => Promise<boolean>;
 }
 
-export const SelectedOrganizationContext = createContext<
-  ISelectedOrganizationContext | undefined
->(undefined);
+export const SelectedOrganizationContext = createContext<ISelectedOrganizationContext | undefined>(
+  undefined
+);

@@ -1,3 +1,4 @@
+"use client";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { ApiKeyResponse, CreateApiKeyPermissionsEnum } from "@snapflow/api-client";
 import { Check, Copy, Plus, XIcon } from "lucide-react";
@@ -18,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { getMaskedApiKey } from "@/lib/util";
 import { CREATE_API_KEY_PERMISSIONS_GROUPS } from "@/constants/api-key-permissions";
 import { CreateApiKeyPermissionGroup } from "@/constants/api-key-permissions-group";
+import { env } from "@/env";
 
 interface CreateApiKeyDialogProps {
   availablePermissions: CreateApiKeyPermissionsEnum[];
@@ -180,11 +182,13 @@ export function CreateApiKeyDialog({
                     <div className="space-y-3">
                       <Label htmlFor="api-url">API URL</Label>
                       <div className="flex items-center justify-between rounded-md bg-muted p-3">
-                        {import.meta.env.VITE_API_URL}
+                        {env.NEXT_PUBLIC_API_URL}
                         {(copied === "API URL" && <Check className="h-4 w-4" />) || (
                           <Copy
                             className="h-4 w-4 cursor-pointer"
-                            onClick={() => copyToClipboard(import.meta.env.VITE_API_URL, "API URL")}
+                            onClick={() =>
+                              copyToClipboard(env.NEXT_PUBLIC_API_URL || "", "API URL")
+                            }
                           />
                         )}
                       </div>

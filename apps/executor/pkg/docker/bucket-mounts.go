@@ -10,9 +10,9 @@ import (
 	"sync"
 
 	"github.com/rs/zerolog/log"
-	"github.com/snapflow/executor/cmd/executor/config"
-	"github.com/snapflow/executor/internal/util"
-	"github.com/snapflow/executor/pkg/api/dto"
+	"github.com/snapflowio/executor/cmd/executor/config"
+	"github.com/snapflowio/executor/internal/util"
+	"github.com/snapflowio/executor/pkg/api/dto"
 )
 
 func (d *DockerClient) getBucketsMountPathBinds(ctx context.Context, buckets []dto.BucketDTO) ([]string, error) {

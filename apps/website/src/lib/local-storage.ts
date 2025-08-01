@@ -1,3 +1,5 @@
+"use client";
+
 export function getLocalStorageItem(key: string): string | null {
   try {
     return localStorage.getItem(key);

@@ -7,7 +7,7 @@ import (
 	go_git "github.com/go-git/go-git/v5"
 	go_git_http "github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/labstack/echo/v4"
-	"github.com/snapflow/node/pkg/git"
+	"github.com/snapflowio/node/pkg/git"
 )
 
 func PullChanges(c echo.Context) error {

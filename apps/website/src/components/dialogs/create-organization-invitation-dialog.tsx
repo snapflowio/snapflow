@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import { CreateOrganizationInvitationRoleEnum, OrganizationRole } from "@snapflow/api-client";
 import { Plus } from "lucide-react";
@@ -16,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ViewerCheckbox } from "@/pages/dashboard/organization-members/components/view-checkbox";
+import { ViewerCheckbox } from "@/app/dashboard/members/_components/view-checkbox";
 
 interface CreateOrganizationInvitationDialogProps {
   availableRoles: OrganizationRole[];

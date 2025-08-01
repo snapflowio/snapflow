@@ -1,25 +1,25 @@
 import { ExecutionArtifacts } from '../types'
 
 export class ArtifactParser {
+  private static readonly ARTIFACT_PREFIX = 'dtn_artifact_k39fd2:'
+
   public static parseArtifacts(output: string): ExecutionArtifacts {
-    let stdout = output
-
     const lines = output.split('\n')
-    const artifactLines: string[] = []
+    const artifactLines = this.extractArtifactLines(lines)
+    const stdout = this.removeArtifactLines(output, artifactLines)
 
-    for (const line of lines) {
-      if (line.startsWith('dtn_artifact_k39fd2:')) {
-        artifactLines.push(line)
-      }
-    }
+    return { stdout }
+  }
 
-    for (const line of artifactLines) {
-      stdout = stdout.replace(line + '\n', '')
-      stdout = stdout.replace(line, '')
-    }
+  private static extractArtifactLines(lines: string[]): string[] {
+    return lines.filter(line => line.startsWith(this.ARTIFACT_PREFIX))
+  }
 
-    return {
-      stdout
-    }
+  private static removeArtifactLines(output: string, artifactLines: string[]): string {
+    return artifactLines.reduce((result, line) => {
+      return result
+        .replace(line + '\n', '')
+        .replace(line, '')
+    }, output)
   }
 }

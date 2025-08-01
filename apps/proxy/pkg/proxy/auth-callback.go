@@ -14,8 +14,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
 
-	apiclient "github.com/snapflow/apiclient"
-	common_errors "github.com/snapflow/go-common/pkg/errors"
+	apiclient "github.com/snapflowio/api-client-go"
+	common_errors "github.com/snapflowio/go-common/pkg/errors"
 )
 
 func (p *Proxy) AuthCallback(c echo.Context) error {
