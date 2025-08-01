@@ -23,4 +23,5 @@ export const env = createEnv({
     NEXT_PUBLIC_OIDC_AUDIENCE: process.env.NEXT_PUBLIC_OIDC_AUDIENCE,
     NEXT_PUBLIC_PROXY_TEMPLATE_URL: process.env.NEXT_PUBLIC_PROXY_TEMPLATE_URL,
   },
+  skipValidation: true,
 });
