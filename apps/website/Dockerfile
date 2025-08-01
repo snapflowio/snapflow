@@ -34,14 +34,21 @@ RUN adduser --system --uid 1001 nextjs
 # Set working directory
 WORKDIR /app
 
+# Copy package.json from website dist and install production dependencies
+COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/website/package.json ./package.json
+RUN corepack enable pnpm && pnpm install --prod
+
 # Copy the entire standalone application structure
-COPY --from=builder --chown=nextjs:nodejs /app/apps/website/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/website/standalone ./
 
 # Copy static files to the correct location within standalone structure  
-COPY --from=builder --chown=nextjs:nodejs /app/apps/website/.next/static ./apps/website/.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/website/static ./apps/website/.next/static
 
 # Copy public assets to standalone structure
-COPY --from=builder --chown=nextjs:nodejs /app/apps/website/public ./apps/website/public
+COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/website/public ./apps/website/public
+
+# Copy next.config from dist folder
+COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/website/next.config.ts ./next.config.ts
 
 # Switch to non-root user
 USER nextjs

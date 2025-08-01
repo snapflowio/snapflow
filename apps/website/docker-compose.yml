@@ -1,7 +1,7 @@
 services:
   website:
     build:
-      context: .
+      context: ../../
       dockerfile: apps/website/Dockerfile
     ports:
       - "${PORT:-3000}:3000"
