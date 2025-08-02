@@ -1,63 +1,55 @@
-# Build stage
-FROM node:20-alpine AS builder
+FROM node:20-alpine AS base
 
-# Install pnpm
-RUN corepack enable pnpm
-
-# Set working directory
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy package files
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# Copy monorepo package files and app package files
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc* ./
 COPY nx.json tsconfig.base.json ./
+COPY apps/website/package.json ./apps/website/
+COPY packages/ ./packages/
 
-# Copy all source code for monorepo build
-COPY apps/ apps/
-COPY packages/ packages/
+# Install all dependencies including workspace dependencies
+RUN corepack enable pnpm && pnpm i --frozen-lockfile
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
 
-# Build just the website
-RUN pnpm nx run website:build:production
+# Build the website using Nx
+RUN corepack enable pnpm && pnpm nx run website:build:production
 
-# Production stage
-FROM node:20-alpine AS runner
-
-# Install dumb-init and create non-root user
-RUN apk add --no-cache dumb-init && \
-    addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
-
-# Set working directory
+# Production image, copy all the files and run next
+FROM base AS runner
 WORKDIR /app
 
-# Enable pnpm and copy package.json from website dist and install production dependencies
-RUN corepack enable pnpm
-COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/website/package.json ./package.json
-RUN pnpm install --prod
-
-# Copy the entire standalone application structure
-COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/website/standalone ./
-
-# Copy static files to the correct location within standalone structure  
-COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/website/static ./.next/static
-
-# Copy public assets to standalone structure
-COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/website/public ./public
-
-# Copy next.config from dist folder
-COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/website/next.config.ts ./next.config.ts
-
-# Switch to non-root user
-USER nextjs
-
-# Expose port
-EXPOSE 3000
-
-# Set environment variables
 ENV NODE_ENV=production
 
-# Start the application with proper signal handling
-ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "apps/website/server.js"]
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy the standalone directory structure
+COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/website/standalone ./
+
+# Copy only the essential build files (no duplication)
+COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/website/static ./dist/apps/website/static
+COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/website/public ./apps/website/public
+COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/website/*.json ./dist/apps/website/
+COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/website/BUILD_ID ./dist/apps/website/BUILD_ID
+
+USER nextjs
+
+# Change to the directory where server.js is located
+WORKDIR /app/apps/website
+
+EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+ENV NODE_ENV=production
+
+CMD ["node", "server.js"]
