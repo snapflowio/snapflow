@@ -3,11 +3,11 @@
   "compilerOptions": {
     "rootDir": ".",
     "sourceMap": true,
-    "declaration": false,
     "moduleResolution": "node10",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
+	"allowJs": true,
     "target": "ES2023",
     "module": "commonjs",
     "lib": ["es2023", "dom"],
@@ -16,8 +16,12 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@snapflow/ai": ["packages/ai/src/index.ts"],
       "@snapflow/api-client": ["packages/api-client/src/index.ts"],
-      "@snapflow/executor-api-client": ["packages/executor-api-client/src/index.ts"],
+      "@snapflow/common": ["packages/common/src/index.ts"],
+      "@snapflow/executor-api-client": [
+        "packages/executor-api-client/src/index.ts"
+      ],
       "@snapflow/sdk": ["packages/sdk/src/index.ts"]
     }
   },

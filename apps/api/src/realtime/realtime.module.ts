@@ -18,6 +18,6 @@ import { RealtimeService } from "./realtime.service";
 @Module({
   imports: [OrganizationModule, SandboxModule, RedisModule, AuthModule],
   providers: [RealtimeService, RealtimeGateway],
-  exports: [RealtimeService],
+  exports: [RealtimeService, RealtimeGateway],
 })
 export class RealtimeModule {}

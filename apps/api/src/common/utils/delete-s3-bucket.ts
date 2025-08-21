@@ -34,9 +34,15 @@ export async function deleteS3Bucket(s3: S3Client, bucket: string): Promise<void
 
     // Collect all versions and delete markers from the current page.
     const versions =
-      listResponse.Versions?.map((v) => ({ Key: v.Key, VersionId: v.VersionId })) || [];
+      listResponse.Versions?.map((v) => ({
+        Key: v.Key,
+        VersionId: v.VersionId,
+      })) || [];
     const deleteMarkers =
-      listResponse.DeleteMarkers?.map((d) => ({ Key: d.Key, VersionId: d.VersionId })) || [];
+      listResponse.DeleteMarkers?.map((d) => ({
+        Key: d.Key,
+        VersionId: d.VersionId,
+      })) || [];
     const itemsToDelete = [...versions, ...deleteMarkers];
 
     // If there are items on the page, batch-delete them.

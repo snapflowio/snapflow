@@ -2,11 +2,13 @@
 dist
 tmp
 out-tsc
+*.tsbuildinfo
 
 # environment
 .env
 .env.production
 .env.local
+.turbo
 
 # dependencies
 node_modules

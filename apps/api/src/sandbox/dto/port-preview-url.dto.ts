@@ -13,9 +13,10 @@ export class PortPreviewUrlDto {
   @ApiProperty({
     description: "Access token",
     example: "ul67qtv-jl6wb9z5o3eii-ljqt9qed6l",
+    required: false,
   })
   @IsString()
-  token: string;
+  token?: string;
 
   @ApiProperty({
     description: "Legacy preview url using executor domain",

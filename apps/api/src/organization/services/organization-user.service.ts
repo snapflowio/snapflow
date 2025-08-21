@@ -24,7 +24,7 @@ export class OrganizationUserService {
     @InjectRepository(OrganizationUser)
     private readonly organizationUserRepository: Repository<OrganizationUser>,
     private readonly organizationRoleService: OrganizationRoleService,
-    private readonly userService: UserService,
+    private readonly userService: UserService
   ) {}
 
   async findAll(organizationId: string): Promise<OrganizationUserDto[]> {
@@ -48,10 +48,7 @@ export class OrganizationUserService {
     return dtos;
   }
 
-  async findOne(
-    organizationId: string,
-    userId: string,
-  ): Promise<OrganizationUser | null> {
+  async findOne(organizationId: string, userId: string): Promise<OrganizationUser | null> {
     return this.organizationUserRepository.findOne({
       where: { organizationId, userId },
       relations: {
@@ -63,7 +60,7 @@ export class OrganizationUserService {
   async updateRole(
     organizationId: string,
     userId: string,
-    role: OrganizationMemberRole,
+    role: OrganizationMemberRole
   ): Promise<OrganizationUserDto> {
     let organizationUser = await this.organizationUserRepository.findOne({
       where: {
@@ -77,7 +74,7 @@ export class OrganizationUserService {
 
     if (!organizationUser)
       throw new NotFoundException(
-        `User with ID ${userId} not found in organization with ID ${organizationId}`,
+        `User with ID ${userId} not found in organization with ID ${organizationId}`
       );
 
     if (
@@ -92,14 +89,11 @@ export class OrganizationUserService {
       });
 
       if (ownersCount === 1)
-        throw new ForbiddenException(
-          "The organization must have at least one owner",
-        );
+        throw new ForbiddenException("The organization must have at least one owner");
     }
 
     organizationUser.role = role;
-    organizationUser =
-      await this.organizationUserRepository.save(organizationUser);
+    organizationUser = await this.organizationUserRepository.save(organizationUser);
 
     const user = await this.userService.findOne(userId);
 
@@ -109,7 +103,7 @@ export class OrganizationUserService {
   async updateAssignedRoles(
     organizationId: string,
     userId: string,
-    roleIds: string[],
+    roleIds: string[]
   ): Promise<OrganizationUserDto> {
     let organizationUser = await this.organizationUserRepository.findOne({
       where: {
@@ -123,7 +117,7 @@ export class OrganizationUserService {
 
     if (!organizationUser)
       throw new NotFoundException(
-        `User with ID ${userId} not found in organization with ID ${organizationId}`,
+        `User with ID ${userId} not found in organization with ID ${organizationId}`
       );
 
     const roles = await this.organizationRoleService.findByIds(roleIds);
@@ -132,8 +126,7 @@ export class OrganizationUserService {
       throw new BadRequestException("One or more role IDs are invalid");
 
     organizationUser.assignedRoles = roles;
-    organizationUser =
-      await this.organizationUserRepository.save(organizationUser);
+    organizationUser = await this.organizationUserRepository.save(organizationUser);
 
     const user = await this.userService.findOne(userId);
 
@@ -143,7 +136,7 @@ export class OrganizationUserService {
   async assignRoles(
     organizationId: string,
     userId: string,
-    roleIds: string[],
+    roleIds: string[]
   ): Promise<OrganizationUserDto> {
     let organizationUser = await this.organizationUserRepository.findOne({
       where: {
@@ -157,7 +150,7 @@ export class OrganizationUserService {
 
     if (!organizationUser)
       throw new NotFoundException(
-        `User with ID ${userId} not found in organization with ID ${organizationId}`,
+        `User with ID ${userId} not found in organization with ID ${organizationId}`
       );
 
     const newRoles = await this.organizationRoleService.findByIds(roleIds);
@@ -169,13 +162,10 @@ export class OrganizationUserService {
       ...organizationUser.assignedRoles,
       ...newRoles.filter(
         (newRole) =>
-          !organizationUser.assignedRoles.some(
-            (existingRole) => existingRole.id === newRole.id,
-          ),
+          !organizationUser.assignedRoles.some((existingRole) => existingRole.id === newRole.id)
       ),
     ];
-    organizationUser =
-      await this.organizationUserRepository.save(organizationUser);
+    organizationUser = await this.organizationUserRepository.save(organizationUser);
 
     const user = await this.userService.findOne(userId);
 
@@ -185,7 +175,7 @@ export class OrganizationUserService {
   async unassignRoles(
     organizationId: string,
     userId: string,
-    roleIds: string[],
+    roleIds: string[]
   ): Promise<OrganizationUserDto> {
     let organizationUser = await this.organizationUserRepository.findOne({
       where: {
@@ -199,7 +189,7 @@ export class OrganizationUserService {
 
     if (!organizationUser)
       throw new NotFoundException(
-        `User with ID ${userId} not found in organization with ID ${organizationId}`,
+        `User with ID ${userId} not found in organization with ID ${organizationId}`
       );
 
     const removedRoles = await this.organizationRoleService.findByIds(roleIds);
@@ -208,10 +198,9 @@ export class OrganizationUserService {
       throw new BadRequestException("One or more role IDs are invalid");
 
     organizationUser.assignedRoles = organizationUser.assignedRoles.filter(
-      (existingRole) => !roleIds.includes(existingRole.id),
+      (existingRole) => !roleIds.includes(existingRole.id)
     );
-    organizationUser =
-      await this.organizationUserRepository.save(organizationUser);
+    organizationUser = await this.organizationUserRepository.save(organizationUser);
 
     const user = await this.userService.findOne(userId);
 
@@ -228,19 +217,16 @@ export class OrganizationUserService {
 
     if (!organizationUser)
       throw new NotFoundException(
-        `User with ID ${userId} not found in organization with ID ${organizationId}`,
+        `User with ID ${userId} not found in organization with ID ${organizationId}`
       );
 
-    await this.removeWithEntityManager(
-      this.organizationUserRepository.manager,
-      organizationUser,
-    );
+    await this.removeWithEntityManager(this.organizationUserRepository.manager, organizationUser);
   }
 
   private async removeWithEntityManager(
     entityManager: EntityManager,
     organizationUser: OrganizationUser,
-    force = false,
+    force = false
   ): Promise<void> {
     if (!force) {
       if (organizationUser.role === OrganizationMemberRole.OWNER) {
@@ -253,7 +239,7 @@ export class OrganizationUserService {
 
         if (ownersCount === 1)
           throw new ForbiddenException(
-            `Organization with ID ${organizationUser.organizationId} must have at least one owner`,
+            `Organization with ID ${organizationUser.organizationId} must have at least one owner`
           );
       }
     }
@@ -266,7 +252,7 @@ export class OrganizationUserService {
     organizationId: string,
     userId: string,
     role: OrganizationMemberRole,
-    assignedRoles: OrganizationRole[],
+    assignedRoles: OrganizationRole[]
   ): Promise<OrganizationUser> {
     const organizationUser = new OrganizationUser();
     organizationUser.organizationId = organizationId;
@@ -280,14 +266,14 @@ export class OrganizationUserService {
     event: OrganizationEvents.INVITATION_ACCEPTED,
   })
   async handleOrganizationInvitationAcceptedEvent(
-    payload: OrganizationInvitationAcceptedEvent,
+    payload: OrganizationInvitationAcceptedEvent
   ): Promise<OrganizationUser> {
     return this.createWithEntityManager(
       payload.entityManager,
       payload.organizationId,
       payload.userId,
       payload.role,
-      payload.assignedRoles,
+      payload.assignedRoles
     );
   }
 
@@ -309,8 +295,8 @@ export class OrganizationUserService {
 
     await Promise.all(
       memberships.map((membership) =>
-        this.removeWithEntityManager(payload.entityManager, membership),
-      ),
+        this.removeWithEntityManager(payload.entityManager, membership)
+      )
     );
   }
 }

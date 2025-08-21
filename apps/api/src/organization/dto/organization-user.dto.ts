@@ -50,13 +50,11 @@ export class OrganizationUserDto {
 
   static fromEntities(
     organizationUser: OrganizationUser,
-    user: User | null | undefined,
+    user: User | null | undefined
   ): OrganizationUserDto {
     return {
       ...organizationUser,
-      assignedRoles: organizationUser.assignedRoles.map(
-        OrganizationRoleDto.fromOrganizationRole,
-      ),
+      assignedRoles: organizationUser.assignedRoles.map(OrganizationRoleDto.fromOrganizationRole),
       name: user ? user.name : "",
       email: user ? user.email : "",
     };

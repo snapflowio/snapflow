@@ -1,28 +1,27 @@
 import { Injectable, Logger, NotFoundException } from "@nestjs/common";
-import { Cron, CronExpression } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
-import { InjectRedis } from "@nestjs-modules/ioredis";
-import { Redis } from "ioredis";
-import { In, IsNull, LessThan, Not, Or, Repository } from "typeorm";
-import { v4 as uuidv4 } from "uuid";
-import { fromAxiosError } from "../../common/utils/axios-error";
-import { OrganizationService } from "../../organization/services/organization.service";
-import { Registry } from "../../registry/entities/registry.entity";
-import { RegistryType } from "../../registry/enums/registry-type.enum";
+import { Cron, CronExpression } from "@nestjs/schedule";
+import { In, LessThan, Not, Raw, Repository } from "typeorm";
 import { RegistryService } from "../../registry/registry.service";
-import { RedisLockProvider } from "../common/redis-lock.provider";
-import { DockerProvider } from "../docker/docker-provider";
-import { BuildInfo } from "../entities/build-info.entity";
-import { Executor } from "../entities/executor.entity";
 import { Image } from "../entities/image.entity";
+import { ImageState } from "../enums/image-state.enum";
+import { DockerProvider } from "../docker/docker-provider";
 import { ImageExecutor } from "../entities/image-executor.entity";
+import { Executor } from "../entities/executor.entity";
 import { ExecutorState } from "../enums/executor-state.enum";
 import { ImageExecutorState } from "../enums/image-executor-state.enum";
-import { ImageState } from "../enums/image-state.enum";
+import { v4 as uuidv4 } from "uuid";
 import { ExecutorNotReadyError } from "../errors/executor-not-ready.error";
-import { ExecutorApiFactory } from "../executor-api/executor-api";
+import { RegistryType } from "../../registry/enums/registry-type.enum";
+import { RedisLockProvider } from "../common/redis-lock.provider";
+import { OrganizationService } from "../../organization/services/organization.service";
+import { Registry } from "../../registry/entities/registry.entity";
+import { BuildInfo } from "../entities/build-info.entity";
+import { fromAxiosError } from "../../common/utils/axios-error";
+import { InjectRedis } from "@nestjs-modules/ioredis";
+import { Redis } from "ioredis";
 import { ExecutorService } from "../services/executor.service";
-
+import { ExecutorAdapterFactory } from "../adapter/adapter";
 @Injectable()
 export class ImageManager {
   private readonly logger = new Logger(ImageManager.name);
@@ -41,9 +40,9 @@ export class ImageManager {
     @InjectRepository(BuildInfo)
     private readonly buildInfoRepository: Repository<BuildInfo>,
     private readonly executorService: ExecutorService,
-    private readonly registryService: RegistryService,
+    private readonly dockerRegistryService: RegistryService,
     private readonly dockerProvider: DockerProvider,
-    private readonly executorApiFactory: ExecutorApiFactory,
+    private readonly executorAdapterFactory: ExecutorAdapterFactory,
     private readonly redisLockProvider: RedisLockProvider,
     private readonly organizationService: OrganizationService
   ) {}
@@ -57,19 +56,10 @@ export class ImageManager {
 
     const skip = (await this.redis.get("sync-executor-images-skip")) || 0;
 
-    const totalExecutors = await this.executorRepository.count({
-      where: {
-        state: ExecutorState.READY,
-        unschedulable: false,
-      },
-    });
-
     const images = await this.imageRepository
       .createQueryBuilder("image")
       .innerJoin("organization", "org", "org.id = image.organizationId")
-      .where("image.state = :imageState", {
-        imageState: ImageState.ACTIVE,
-      })
+      .where("image.state = :imageState", { imageState: ImageState.ACTIVE })
       .andWhere("org.suspended = false")
       .orderBy("image.createdAt", "ASC")
       .take(100)
@@ -82,17 +72,6 @@ export class ImageManager {
     }
 
     await this.redis.set("sync-executor-images-skip", Number(skip) + images.length);
-
-    const imageExecutors = await this.imageExecutorRepository.count({
-      where: {
-        imageRef: In(images.map((image) => image.internalName)),
-        state: ImageExecutorState.READY,
-      },
-    });
-
-    if (imageExecutors === totalExecutors) {
-      return;
-    }
 
     await Promise.all(
       images.map((image) => {
@@ -275,29 +254,23 @@ export class ImageManager {
   }
 
   async propagateImageToExecutor(internalImageName: string, executor: Executor) {
-    let registry = await this.registryService.findOneByImageImageName(internalImageName);
+    let dockerRegistry =
+      await this.dockerRegistryService.findOneByImageImageName(internalImageName);
 
     // If no registry found by image name, use the default internal registry
-    if (!registry) {
-      registry = await this.registryService.getDefaultInternalRegistry();
-      if (!registry) {
+    if (!dockerRegistry) {
+      dockerRegistry = await this.dockerRegistryService.getDefaultInternalRegistry();
+      if (!dockerRegistry) {
         throw new Error("No registry found for image and no default internal registry configured");
       }
     }
 
-    const imageApi = this.executorApiFactory.createImageApi(executor);
+    const executorAdapter = await this.executorAdapterFactory.create(executor);
 
     let retries = 0;
     while (retries < 10) {
       try {
-        await imageApi.pullImage({
-          image: internalImageName,
-          registry: {
-            url: registry.url,
-            username: registry.username,
-            password: registry.password,
-          },
-        });
+        await executorAdapter.pullImage(internalImageName, dockerRegistry);
       } catch (err) {
         if (err.code !== "ECONNRESET") {
           throw err;
@@ -315,9 +288,9 @@ export class ImageManager {
       },
     });
 
-    const imageApi = this.executorApiFactory.createImageApi(executor);
-    const response = (await imageApi.imageExists(imageExecutor.imageRef)).data;
-    if (response.exists) {
+    const executorAdapter = await this.executorAdapterFactory.create(executor);
+    const exists = await executorAdapter.imageExists(imageExecutor.imageRef);
+    if (exists) {
       imageExecutor.state = ImageExecutorState.READY;
       await this.imageExecutorRepository.save(imageExecutor);
       return;
@@ -347,9 +320,9 @@ export class ImageManager {
       },
     });
 
-    const executorSandboxApi = this.executorApiFactory.createImageApi(executor);
-    const response = (await executorSandboxApi.imageExists(imageExecutor.imageRef)).data;
-    if (response?.exists) {
+    const executorAdapter = await this.executorAdapterFactory.create(executor);
+    const exists = await executorAdapter.imageExists(imageExecutor.imageRef);
+    if (exists) {
       imageExecutor.state = ImageExecutorState.READY;
       await this.imageExecutorRepository.save(imageExecutor);
       return;
@@ -372,14 +345,24 @@ export class ImageManager {
 
     await Promise.all(
       images.map(async (image) => {
-        await this.imageExecutorRepository.update(
-          {
-            imageRef: image.internalName,
+        const countActiveImages = await this.imageRepository.count({
+          where: {
+            state: ImageState.ACTIVE,
+            internalName: image.internalName,
           },
-          {
-            state: ImageExecutorState.REMOVING,
-          }
-        );
+        });
+
+        // Only remove image executors if no other images depend on them
+        if (countActiveImages === 0) {
+          await this.imageExecutorRepository.update(
+            {
+              imageRef: image.internalName,
+            },
+            {
+              state: ImageExecutorState.REMOVING,
+            }
+          );
+        }
 
         await this.imageRepository.remove(image);
       })
@@ -476,10 +459,10 @@ export class ImageManager {
       return;
     }
 
-    const imageApi = this.executorApiFactory.createImageApi(executor);
-    const imageExists = (await imageApi.imageExists(imageExecutor.imageRef)).data;
-    if (imageExists.exists) {
-      await imageApi.removeImage(imageExecutor.imageRef);
+    const executorAdapter = await this.executorAdapterFactory.create(executor);
+    const exists = await executorAdapter.imageExists(imageExecutor.imageRef);
+    if (exists) {
+      await executorAdapter.removeImage(imageExecutor.imageRef);
     }
 
     imageExecutor.state = ImageExecutorState.REMOVING;
@@ -513,13 +496,13 @@ export class ImageManager {
       return;
     }
 
-    const imageApi = this.executorApiFactory.createImageApi(executor);
-    const response = await imageApi.imageExists(imageExecutor.imageRef);
-    if (response.data && !response.data.exists) {
+    const executorAdapter = await this.executorAdapterFactory.create(executor);
+    const exists = await executorAdapter.imageExists(imageExecutor.imageRef);
+    if (!exists) {
       await this.imageExecutorRepository.delete(imageExecutor.id);
     } else {
       //  just in case the image is still there
-      imageApi.removeImage(imageExecutor.imageRef).catch((err) => {
+      executorAdapter.removeImage(imageExecutor.imageRef).catch((err) => {
         //  this should not happen, and is not critical
         //  if the executor can not remote the image, just delete the executor record
         this.imageExecutorRepository.delete(imageExecutor.id).catch((err) => {
@@ -587,23 +570,11 @@ export class ImageManager {
       image.buildExecutorId = executor.id;
       await this.imageRepository.save(image);
 
-      const registry = await this.registryService.getDefaultInternalRegistry();
+      const registry = await this.dockerRegistryService.getDefaultInternalRegistry();
 
-      const executorImageApi = this.executorApiFactory.createImageApi(executor);
+      const executorAdapter = await this.executorAdapterFactory.create(executor);
 
-      await executorImageApi.buildImage({
-        image: image.buildInfo.imageRef, // Name doesn't matter for executor, it uses the image ID when pushing to internal registry
-        registry: {
-          url: registry.url,
-          project: registry.project,
-          username: registry.username,
-          password: registry.password,
-        },
-        organizationId: image.organizationId,
-        dockerfile: image.buildInfo.dockerfileContent,
-        context: image.buildInfo.contextHashes,
-        pushToInternalRegistry: true,
-      });
+      await executorAdapter.buildImage(image.buildInfo, image.organizationId, registry, true);
 
       // save imageExecutor
 
@@ -629,27 +600,31 @@ export class ImageManager {
   }
 
   async handleImageStatePending(image: Image) {
-    let registry: Registry;
+    let dockerRegistry: Registry;
 
     await this.updateImageState(image.id, ImageState.PULLING);
 
     let localImageName = image.imageName;
 
     if (image.buildInfo) {
-      registry = await this.registryService.getDefaultInternalRegistry();
+      //  get the default internal registry
+      dockerRegistry = await this.dockerRegistryService.getDefaultInternalRegistry();
       localImageName = image.internalName;
     } else {
-      registry = await this.registryService.findOneByImageImageName(
+      //  find docker registry based on image name and organization id
+      dockerRegistry = await this.dockerRegistryService.findOneByImageImageName(
         image.imageName,
         image.organizationId
       );
     }
 
-    await this.dockerProvider.pullImage(localImageName, registry);
+    // Use the dockerRegistry for pulling the image
+    await this.dockerProvider.pullImage(localImageName, dockerRegistry);
   }
 
   async handleImageStatePulling(image: Image) {
     const localImageName = image.buildInfo ? image.internalName : image.imageName;
+    // Check timeout first
     const timeoutMinutes = 15;
     const timeoutMs = timeoutMinutes * 60 * 1000;
     if (Date.now() - image.createdAt.getTime() > timeoutMs) {
@@ -657,8 +632,11 @@ export class ImageManager {
       return;
     }
 
-    const imageExists = await this.dockerProvider.imageExists(localImageName);
-    if (!imageExists) return;
+    const exists = await this.dockerProvider.imageExists(localImageName);
+    if (!exists) {
+      //  retry until the image exists (or eventually timeout)
+      return;
+    }
 
     //  sleep for 30 seconds
     //  workaround for docker image not being ready, but exists
@@ -710,19 +688,30 @@ export class ImageManager {
 
       if (!image.buildInfo) {
         // Images that have gone through the build process are already in the internal registry
-        await this.pushImageToInternalRegistry(image.id);
+        const internalImageName = await this.pushImageToInternalRegistry(image.id);
+        image.internalName = internalImageName;
       }
-      await this.propagateImageToExecutors(image.internalName);
+      const executor = await this.executorRepository.findOne({
+        where: {
+          state: ExecutorState.READY,
+          unschedulable: Not(true),
+          used: Raw((alias) => `${alias} < capacity`),
+        },
+      });
+      // Propagate image to one executor so it can be used immediately
+      if (executor) {
+        await this.propagateImageToExecutor(image.internalName, executor);
+      }
       await this.updateImageState(image.id, ImageState.ACTIVE);
 
       // Best effort removal of old image from transient registry
-      const registry = await this.registryService.findOneByImageImageName(
+      const registry = await this.dockerRegistryService.findOneByImageImageName(
         image.imageName,
         image.organizationId
       );
       if (registry && registry.registryType === RegistryType.TRANSIENT) {
         try {
-          await this.registryService.removeImage(image.imageName, registry.id);
+          await this.dockerRegistryService.removeImage(image.imageName, registry.id);
         } catch (error) {
           if (error.statusCode === 404) {
             //  image not found, just return
@@ -791,21 +780,21 @@ export class ImageManager {
     }
   }
 
-  async pushImageToInternalRegistry(imageId: string) {
+  async pushImageToInternalRegistry(imageId: string): Promise<string> {
     const image = await this.imageRepository.findOneOrFail({
       where: {
         id: imageId,
       },
     });
 
-    const registry = await this.registryService.getDefaultInternalRegistry();
+    const registry = await this.dockerRegistryService.getDefaultInternalRegistry();
     if (!registry) {
       throw new Error("No default internal registry configured");
     }
 
     //  get tag from image name
     const tag = image.imageName.split(":")[1];
-    const internalImageName = `${registry.url}/${registry.project}/${image.id}:${tag}`;
+    const internalImageName = `${registry.url.replace(/^(https?:\/\/)/, "")}/${registry.project}/${image.id}:${tag}`;
 
     image.internalName = internalImageName;
     await this.imageRepository.save(image);
@@ -815,6 +804,8 @@ export class ImageManager {
 
     // Push the newly tagged image
     await this.dockerProvider.pushImage(internalImageName, registry);
+
+    return internalImageName;
   }
 
   async retryImageExecutorPull(imageExecutor: ImageExecutor) {
@@ -824,19 +815,12 @@ export class ImageManager {
       },
     });
 
-    const imageApi = this.executorApiFactory.createImageApi(executor);
+    const executorAdapter = await this.executorAdapterFactory.create(executor);
 
-    const registry = await this.registryService.getDefaultInternalRegistry();
+    const dockerRegistry = await this.dockerRegistryService.getDefaultInternalRegistry();
     //  await this.redis.setex(lockKey, 360, this.instanceId)
 
-    await imageApi.pullImage({
-      image: imageExecutor.imageRef,
-      registry: {
-        url: registry.url,
-        username: registry.username,
-        password: registry.password,
-      },
-    });
+    await executorAdapter.pullImage(imageExecutor.imageRef, dockerRegistry);
   }
 
   private async updateImageState(imageId: string, state: ImageState, errorReason?: string) {
@@ -905,18 +889,32 @@ export class ImageManager {
     try {
       const twoWeeksAgo = new Date(Date.now() - 14 * 1000 * 60 * 60 * 24);
 
-      // Find all active images that haven't been used in over 14 days or have null lastUsedAt
-      const oldImages = await this.imageRepository.find({
-        where: [
-          {
-            general: false,
-            state: ImageState.ACTIVE,
-            lastUsedAt: Or(IsNull(), LessThan(twoWeeksAgo)),
-            createdAt: LessThan(twoWeeksAgo),
+      const oldImages = await this.imageRepository
+        .createQueryBuilder("image")
+        .where("image.general = false")
+        .andWhere("image.state = :imageState", { imageState: ImageState.ACTIVE })
+        .andWhere('(image."lastUsedAt" IS NULL OR image."lastUsedAt" < :twoWeeksAgo)', {
+          twoWeeksAgo,
+        })
+        .andWhere('image."createdAt" < :twoWeeksAgo', { twoWeeksAgo })
+        .andWhere(
+          () => {
+            const query = this.imageRepository
+              .createQueryBuilder("s")
+              .select("1")
+              .where('s."internalName" = image."internalName"')
+              .andWhere("s.state = :activeState")
+              .andWhere('(s."lastUsedAt" >= :twoWeeksAgo OR s."createdAt" >= :twoWeeksAgo)');
+
+            return `NOT EXISTS (${query.getQuery()})`;
           },
-        ],
-        take: 100,
-      });
+          {
+            activeState: ImageState.ACTIVE,
+            twoWeeksAgo,
+          }
+        )
+        .take(100)
+        .getMany();
 
       if (oldImages.length === 0) {
         return;
@@ -942,6 +940,65 @@ export class ImageManager {
       }
     } catch (error) {
       this.logger.error(`Failed to deactivate old images: ${fromAxiosError(error)}`);
+    } finally {
+      await this.redisLockProvider.unlock(lockKey);
+    }
+  }
+
+  @Cron(CronExpression.EVERY_10_MINUTES)
+  async cleanupInactiveImagesFromExecutors() {
+    const lockKey = "cleanup-inactive-images-from-executors-lock";
+    if (!(await this.redisLockProvider.lock(lockKey, 300))) {
+      return;
+    }
+
+    try {
+      // Only fetch inactive images that have associated image executor entries
+      const queryResult = await this.imageRepository
+        .createQueryBuilder("image")
+        .select('image."internalName"')
+        .where("image.state = :imageState", { imageState: ImageState.INACTIVE })
+        .andWhere('image."internalName" IS NOT NULL')
+        .andWhereExists(
+          this.imageExecutorRepository
+            .createQueryBuilder("image_executor")
+            .select("1")
+            .where('image_executor."imageRef" = image."internalName"')
+            .andWhere("image_executor.state != :imageExecutorState", {
+              imageExecutorState: ImageExecutorState.REMOVING,
+            })
+        )
+        .andWhere(
+          () => {
+            const query = this.imageRepository
+              .createQueryBuilder("s")
+              .select("1")
+              .where('s."internalName" = image."internalName"')
+              .andWhere("s.state = :imageState");
+            return `NOT EXISTS (${query.getQuery()})`;
+          },
+          {
+            imageState: ImageState.ACTIVE,
+          }
+        )
+        .take(100)
+        .getRawMany();
+
+      const inactiveImageInternalNames = queryResult.map((result) => result.internalName);
+
+      if (inactiveImageInternalNames.length > 0) {
+        // Set associated ImageExecutor records to REMOVING state
+        const result = await this.imageExecutorRepository.update(
+          { imageRef: In(inactiveImageInternalNames) },
+          { state: ImageExecutorState.REMOVING }
+        );
+
+        this.logger.debug(`Marked ${result.affected} ImageExecutors for removal`);
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to cleanup inactive images from executors: ${fromAxiosError(error)}`
+      );
     } finally {
       await this.redisLockProvider.unlock(lockKey);
     }

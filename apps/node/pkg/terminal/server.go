@@ -3,9 +3,9 @@ package terminal
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"io"
 	"io/fs"
-	"github.com/rs/zerolog/log"
 	"net/http"
 
 	"github.com/gorilla/websocket"

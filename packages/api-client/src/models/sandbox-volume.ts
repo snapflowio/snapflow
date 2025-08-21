@@ -12,25 +12,22 @@
  * Do not edit the class manually.
  */
 
-
-
 /**
- * 
+ *
  * @export
  * @interface SandboxBucket
  */
 export interface SandboxBucket {
-    /**
-     * The ID of the bucket
-     * @type {string}
-     * @memberof SandboxBucket
-     */
-    'bucketId': string;
-    /**
-     * The mount path for the bucket
-     * @type {string}
-     * @memberof SandboxBucket
-     */
-    'mountPath': string;
+  /**
+   * The ID of the bucket
+   * @type {string}
+   * @memberof SandboxBucket
+   */
+  bucketId: string;
+  /**
+   * The mount path for the bucket
+   * @type {string}
+   * @memberof SandboxBucket
+   */
+  mountPath: string;
 }
-

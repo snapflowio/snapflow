@@ -7,10 +7,7 @@ export class RawRequestMiddleware implements NestMiddleware {
   private logger = new Logger("RawRequest");
 
   async use(req: Request, res: Response, next: NextFunction) {
-    if (
-      req.method === "POST" &&
-      req.headers["content-type"] !== "application/json"
-    ) {
+    if (req.method === "POST" && req.headers["content-type"] !== "application/json") {
       const rawBody = await getRawBody(req);
       const bodyStr = rawBody.toString();
 

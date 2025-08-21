@@ -20,11 +20,11 @@ import {
   ApiResponse,
   ApiTags,
 } from "@nestjs/swagger";
-import { CombinedAuthGuard } from "../../auth/guards/auth.guard";
-import { SystemActionGuard } from "../../auth/guards/system-action.guard";
 import { AuthContext } from "../../common/decorators/auth-context.decorator";
 import { RequiredSystemRole } from "../../common/decorators/required-role.decorator";
 import { AuthContext as IAuthContext } from "../../common/interfaces/auth-context.interface";
+import { CombinedAuthGuard } from "../../auth/guards/auth.guard";
+import { SystemActionGuard } from "../../auth/guards/system-action.guard";
 import { SystemRole } from "../../user/enums/system-role.enum";
 import { UserService } from "../../user/user.service";
 import { RequiredOrganizationMemberRole } from "../decorators/required-organization-member-role.decorator";

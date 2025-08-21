@@ -1,9 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  Logger,
-} from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable, Logger } from "@nestjs/common";
 import { isProxyContext } from "../../common/interfaces/proxy-content.interface";
 import { getAuthContext } from "../context/get-auth-context";
 

@@ -332,7 +332,9 @@ export class OrganizationService implements OnModuleInit {
     return organization;
   }
 
-  @Cron(CronExpression.EVERY_10_MINUTES, { name: "stop-suspended-organization-sandboxes" })
+  @Cron(CronExpression.EVERY_10_MINUTES, {
+    name: "stop-suspended-organization-sandboxes",
+  })
   async stopSuspendedOrganizationSandboxes(): Promise<void> {
     //  lock the sync to only run one instance at a time
     const lockKey = "stop-suspended-organization-sandboxes";
@@ -373,7 +375,9 @@ export class OrganizationService implements OnModuleInit {
     await this.redis.del(lockKey);
   }
 
-  @Cron(CronExpression.EVERY_10_MINUTES, { name: "remove-suspended-organization-image-executors" })
+  @Cron(CronExpression.EVERY_10_MINUTES, {
+    name: "remove-suspended-organization-image-executors",
+  })
   async removeSuspendedOrganizationImageExecutors(): Promise<void> {
     //  lock the sync to only run one instance at a time
     const lockKey = "remove-suspended-organization-image-executors";
@@ -447,6 +451,27 @@ export class OrganizationService implements OnModuleInit {
     );
 
     await this.removeWithEntityManager(payload.entityManager, organization, true);
+  }
+
+  async updateWalletCredit(
+    organizationId: string,
+    creditAmountInCents: number
+  ): Promise<Organization> {
+    const organization = await this.organizationRepository.findOne({
+      where: { id: organizationId },
+    });
+
+    if (!organization) {
+      throw new NotFoundException(`Organization with ID ${organizationId} not found`);
+    }
+
+    const currentBalance = Number.parseFloat(organization.wallet) || 0.0;
+    const creditAmountInDollars = creditAmountInCents / 100;
+    const newBalance = currentBalance + creditAmountInDollars;
+
+    organization.wallet = newBalance.toFixed(2);
+
+    return this.organizationRepository.save(organization);
   }
 
   assertOrganizationIsNotSuspended(organization: Organization): void {

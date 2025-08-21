@@ -5,6 +5,6 @@ export class SandboxStateUpdatedEvent {
   constructor(
     public readonly sandbox: Sandbox,
     public readonly oldState: SandboxState,
-    public readonly newState: SandboxState,
+    public readonly newState: SandboxState
   ) {}
 }

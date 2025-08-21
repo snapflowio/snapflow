@@ -1,81 +1,82 @@
-import { IncomingMessage, ServerResponse } from "http";
 import {
-  Body,
   Controller,
-  Delete,
   Get,
-  HttpCode,
-  Next,
-  Param,
   Post,
-  RawBodyRequest,
+  Delete,
+  Body,
+  Param,
   Request,
-  Res,
+  Logger,
   UseGuards,
+  HttpCode,
   UseInterceptors,
+  RawBodyRequest,
+  Res,
+  Next,
 } from "@nestjs/common";
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiConsumes,
-  ApiHeader,
-  ApiOAuth2,
-  ApiOperation,
-  ApiParam,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from "@nestjs/swagger";
-import { NextFunction } from "express";
-import followRedirects from "follow-redirects";
-import {
-  createProxyMiddleware,
-  fixRequestBody,
-  Options,
-  RequestHandler,
-} from "http-proxy-middleware";
 import { CombinedAuthGuard } from "../../auth/guards/auth.guard";
-import { CustomHeaders } from "../../common/constants/header.constants";
+import {
+  ApiOAuth2,
+  ApiResponse,
+  ApiQuery,
+  ApiOperation,
+  ApiConsumes,
+  ApiBody,
+  ApiTags,
+  ApiParam,
+  ApiHeader,
+  ApiBearerAuth,
+} from "@nestjs/swagger";
+import {
+  FileInfoDto,
+  MatchDto,
+  SearchFilesResponseDto,
+  ReplaceRequestDto,
+  ReplaceResultDto,
+  GitAddRequestDto,
+  GitBranchRequestDto,
+  GitDeleteBranchRequestDto,
+  GitCloneRequestDto,
+  GitCommitRequestDto,
+  GitCommitResponseDto,
+  GitRepoRequestDto,
+  GitStatusDto,
+  ListBranchResponseDto,
+  GitCommitInfoDto,
+  GitCheckoutRequestDto,
+  ExecuteRequestDto,
+  ExecuteResponseDto,
+  ProjectDirResponseDto,
+  CreateSessionRequestDto,
+  SessionExecuteRequestDto,
+  SessionExecuteResponseDto,
+  SessionDto,
+  CommandDto,
+} from "../dto/toolbox.dto";
+import { ToolboxService } from "../services/toolbox.service";
 import { ContentTypeInterceptor } from "../../common/interceptors/content-type.interceptors";
-import { RequiredOrganizationResourcePermissions } from "../../organization/decorators/required-organization-resource-permissions.decorator";
-import { OrganizationResourcePermission } from "../../organization/enums/organization-resource-permission.enum";
-import { OrganizationResourceActionGuard } from "../../organization/guards/organization-resource-action.guard";
 import {
   CompletionListDto,
   LspCompletionParamsDto,
   LspDocumentRequestDto,
-  LspServerRequestDto,
   LspSymbolDto,
+  LspServerRequestDto,
 } from "../dto/lsp.dto";
 import {
-  CommandDto,
-  CreateSessionRequestDto,
-  ExecuteRequestDto,
-  ExecuteResponseDto,
-  FileInfoDto,
-  GitAddRequestDto,
-  GitBranchRequestDto,
-  GitCheckoutRequestDto,
-  GitCloneRequestDto,
-  GitCommitInfoDto,
-  GitCommitRequestDto,
-  GitCommitResponseDto,
-  GitDeleteBranchRequestDto,
-  GitRepoRequestDto,
-  GitStatusDto,
-  ListBranchResponseDto,
-  MatchDto,
-  ProjectDirResponseDto,
-  ReplaceRequestDto,
-  ReplaceResultDto,
-  SearchFilesResponseDto,
-  SessionDto,
-  SessionExecuteRequestDto,
-  SessionExecuteResponseDto,
-} from "../dto/toolbox.dto";
-import { UploadFileDto } from "../dto/upload-file.dto";
+  createProxyMiddleware,
+  RequestHandler,
+  fixRequestBody,
+  Options,
+} from "http-proxy-middleware";
+import { IncomingMessage, ServerResponse } from "http";
+import { NextFunction } from "express";
 import { SandboxAccessGuard } from "../guards/sandbox-access.guard";
-import { ToolboxService } from "../services/toolbox.service";
+import { CustomHeaders } from "../../common/constants/header.constants";
+import { OrganizationResourceActionGuard } from "../../organization/guards/organization-resource-action.guard";
+import { RequiredOrganizationResourcePermissions } from "../../organization/decorators/required-organization-resource-permissions.decorator";
+import { OrganizationResourcePermission } from "../../organization/enums/organization-resource-permission.enum";
+import followRedirects from "follow-redirects";
+import { UploadFileDto } from "../dto/upload-file.dto";
 
 followRedirects.maxRedirects = 10;
 followRedirects.maxBodyLength = 50 * 1024 * 1024;
@@ -88,6 +89,7 @@ followRedirects.maxBodyLength = 50 * 1024 * 1024;
 @ApiOAuth2(["openid", "profile", "email"])
 @ApiBearerAuth()
 export class ToolboxController {
+  private readonly logger = new Logger(ToolboxController.name);
   private readonly toolboxProxy: RequestHandler<
     RawBodyRequest<IncomingMessage>,
     ServerResponse,
@@ -102,25 +104,36 @@ export class ToolboxController {
   constructor(private readonly toolboxService: ToolboxService) {
     const commonProxyOptions: Options = {
       router: async (req: RawBodyRequest<IncomingMessage>) => {
-        // biome-ignore lint/complexity/noUselessEscapeInRegex: need escape
+        // eslint-disable-next-line no-useless-escape
         const sandboxId = req.url.match(/^\/api\/toolbox\/([^\/]+)\/toolbox/)?.[1];
         try {
           const executor = await this.toolboxService.getExecutor(sandboxId);
           // @ts-expect-error - used later to set request headers
           req._executorApiKey = executor.apiKey;
 
-          return executor.apiUrl;
+          return executor.proxyUrl;
         } catch (err) {
           // @ts-expect-error - used later to throw error
           req._err = err;
         }
 
+        // Must return a valid url
         return "http://target-error";
       },
       pathRewrite: (path) => {
-        const sandboxId = path.match(/^\/api\/toolbox\/([^/]+)\/toolbox/)?.[1];
+        // eslint-disable-next-line no-useless-escape
+        const sandboxId = path.match(/^\/api\/toolbox\/([^\/]+)\/toolbox/)?.[1];
         const routePath = path.split(`/api/toolbox/${sandboxId}/toolbox`)[1];
         const newPath = `/sandboxes/${sandboxId}/toolbox${routePath}`;
+
+        // Handle files path which is served on /files/ in the node
+        // TODO: Circle back to this after node versioning
+        // We can then switch /files/ to /files and only perform this for older node versions
+        const url = new URL(`http://executor${newPath}`);
+        if (url.pathname.endsWith("/files")) {
+          url.pathname = url.pathname + "/";
+          return url.toString().replace("http://executor", "");
+        }
 
         return newPath;
       },
@@ -140,8 +153,16 @@ export class ToolboxController {
           // @ts-expect-error - set when routing
           const executorApiKey = req._executorApiKey;
 
-          proxyReq.setHeader("Authorization", `Bearer ${executorApiKey}`);
+          try {
+            proxyReq.setHeader("Authorization", `Bearer ${executorApiKey}`);
+          } catch {
+            // Ignore error - headers are already set
+            return;
+          }
           fixRequestBody(proxyReq, req);
+        },
+        proxyRes: (proxyRes, req, res) => {
+          // console.log('proxyRes', proxyRes)
         },
       },
     };
@@ -399,6 +420,40 @@ export class ToolboxController {
     @Next() next: NextFunction
   ): Promise<void> {
     return await this.toolboxProxy(req, res, next);
+  }
+
+  @HttpCode(200)
+  @Post(":sandboxId/toolbox/files/upload")
+  @ApiOperation({
+    summary: "Upload file",
+    description: "Upload file inside sandbox",
+    operationId: "uploadFile",
+    deprecated: true,
+  })
+  @ApiResponse({
+    status: 200,
+    description: "File uploaded successfully",
+  })
+  @ApiConsumes("multipart/form-data")
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: {
+        file: {
+          type: "string",
+          format: "binary",
+        },
+      },
+    },
+  })
+  @ApiQuery({ name: "path", type: String, required: true })
+  @ApiParam({ name: "sandboxId", type: String, required: true })
+  async uploadFile(
+    @Request() req: RawBodyRequest<IncomingMessage>,
+    @Res() res: ServerResponse,
+    @Next() next: NextFunction
+  ): Promise<void> {
+    return this.toolboxProxy(req, res, next);
   }
 
   @HttpCode(200)

@@ -8,7 +8,6 @@ import {
   OrganizationUserRoleEnum,
 } from "@snapflow/api-client";
 import { toast } from "sonner";
-import { CreateApiKeyDialog } from "@/components/dialogs/create-api-key-dialog";
 import { handleApiError } from "@/lib/errors";
 import { useApi } from "@/hooks/use-api";
 import { useSelectedOrganization } from "@/hooks/use-selected-organization";
@@ -86,20 +85,14 @@ export default function ApiKeysPage() {
   };
 
   return (
-    <div className="px-2">
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="font-bold text-2xl">API Keys</h1>
-        <CreateApiKeyDialog
-          availablePermissions={availablePermissions}
-          onCreateApiKey={handleCreateKey}
-        />
-      </div>
-
+    <div className="flex h-full flex-col">
       <ApiKeyTable
         data={keys}
         loading={loading}
         loadingKeys={loadingKeys}
         onRevoke={handleRevoke}
+        availablePermissions={availablePermissions}
+        onCreateApiKey={handleCreateKey}
       />
     </div>
   );

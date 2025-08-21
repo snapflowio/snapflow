@@ -77,9 +77,11 @@ export class RealtimeGateway implements OnGatewayInit, OnModuleInit {
     oldDesiredState: SandboxDesiredState,
     newDesiredState: SandboxDesiredState
   ) {
-    this.server
-      .to(sandbox.organizationId)
-      .emit(SandboxEvents.DESIRED_STATE_UPDATED, { sandbox, oldDesiredState, newDesiredState });
+    this.server.to(sandbox.organizationId).emit(SandboxEvents.DESIRED_STATE_UPDATED, {
+      sandbox,
+      oldDesiredState,
+      newDesiredState,
+    });
   }
 
   emitImageCreated(image: ImageDto) {

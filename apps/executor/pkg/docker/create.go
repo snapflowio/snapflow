@@ -7,12 +7,13 @@ import (
 	"time"
 
 	"github.com/docker/docker/errdefs"
-	"github.com/rs/zerolog/log"
 	"github.com/snapflowio/executor/internal/constants"
 	"github.com/snapflowio/executor/pkg/api/dto"
 	"github.com/snapflowio/executor/pkg/common"
 	"github.com/snapflowio/executor/pkg/models/enums"
 	"github.com/snapflowio/go-common/pkg/timer"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func (d *DockerClient) Create(ctx context.Context, sandboxDto dto.CreateSandboxDTO) (string, error) {
@@ -56,19 +57,19 @@ func (d *DockerClient) Create(ctx context.Context, sandboxDto dto.CreateSandboxD
 
 	err = d.validateImageArchitecture(ctx, sandboxDto.Image)
 	if err != nil {
-		log.Error().Err(err).Msg("ERROR")
+		log.Errorf("ERROR: %s.\n", err.Error())
 		return "", err
 	}
 
-	bucketMountPathBinds := make([]string, 0)
+	volumeMountPathBinds := make([]string, 0)
 	if sandboxDto.Buckets != nil {
-		bucketMountPathBinds, err = d.getBucketsMountPathBinds(ctx, sandboxDto.Buckets)
+		volumeMountPathBinds, err = d.getBucketsMountPathBinds(ctx, sandboxDto.Buckets)
 		if err != nil {
 			return "", err
 		}
 	}
 
-	containerConfig, hostConfig, networkingConfig, err := d.getContainerConfigs(ctx, sandboxDto, bucketMountPathBinds)
+	containerConfig, hostConfig, networkingConfig, err := d.getContainerConfigs(ctx, sandboxDto, volumeMountPathBinds)
 	if err != nil {
 		return "", err
 	}

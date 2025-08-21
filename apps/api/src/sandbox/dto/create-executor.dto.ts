@@ -15,6 +15,10 @@ export class CreateExecutorDto {
 
   @IsString()
   @ApiProperty()
+  proxyUrl: string;
+
+  @IsString()
+  @ApiProperty()
   apiKey: string;
 
   @IsNumber()
@@ -54,4 +58,8 @@ export class CreateExecutorDto {
     example: Object.values(ExecutorRegion)[0],
   })
   region: ExecutorRegion;
+
+  @IsString()
+  @ApiProperty()
+  version: string;
 }

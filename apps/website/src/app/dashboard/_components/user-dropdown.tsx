@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Path } from "@/constants/paths";
 
-export default function UserDropdown() {
+export function UserDropdown() {
   const { user } = useAuth0();
   const router = useRouter();
 
@@ -24,7 +24,7 @@ export default function UserDropdown() {
         <Button variant="ghost" className="h-auto rounded-full p-0 hover:bg-transparent">
           <Avatar className="size-8">
             <AvatarImage width={32} height={32} alt="Profile avatar" />
-            <AvatarFallback>{user?.username ? user.username[0].toUpperCase() : "!"}</AvatarFallback>
+            <AvatarFallback>{user?.name ? user.name[0].toUpperCase() : "!"}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

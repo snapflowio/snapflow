@@ -103,6 +103,28 @@ definitions:
     - statusCode
     - timestamp
     type: object
+  ExecutorInfoResponseDTO:
+    properties:
+      metrics:
+        $ref: '#/definitions/ExecutorMetrics'
+    type: object
+  ExecutorMetrics:
+    properties:
+      currentAllocatedCpu:
+        type: integer
+      currentAllocatedDiskGiB:
+        type: integer
+      currentAllocatedMemoryGiB:
+        type: integer
+      currentCpuUsagePercentage:
+        type: number
+      currentDiskUsagePercentage:
+        type: number
+      currentMemoryUsagePercentage:
+        type: number
+      currentSnapshotCount:
+        type: integer
+    type: object
   ImageExistsResponse:
     properties:
       exists:
@@ -417,6 +439,18 @@ paths:
       summary: Remove a image
       tags:
       - images
+  /info:
+    get:
+      description: Executor info with system metrics
+      operationId: ExecutorInfo
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ExecutorInfoResponseDTO'
+      summary: Executor info
   /sandboxes:
     post:
       description: Create a sandbox

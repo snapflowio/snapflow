@@ -1,6 +1,6 @@
 export const BLOG_CATEGORIES: {
   title: string;
-  slug: "news" | "education";
+  slug: "news";
   description: string;
 }[] = [
   {
@@ -8,23 +8,18 @@ export const BLOG_CATEGORIES: {
     slug: "news",
     description: "Updates and announcements from Next SaaS Starter.",
   },
-  {
-    title: "Education",
-    slug: "education",
-    description: "Educational content about SaaS management.",
-  },
 ];
 
 export const BLOG_AUTHORS = {
-  mickasmt: {
-    name: "mickasmt",
+  bryanlawless: {
+    name: "Bryan Lawless",
     image: "/avatars/avatar1.jpg",
-    twitter: "miickasmt",
+    twitter: "bryanlawless_",
   },
-  shadcn: {
-    name: "shadcn",
-    image: "/avatars/avatar2.jpg",
-    twitter: "shadcn",
+  jackhouchin: {
+    name: "Jack Houchin",
+    image: "/avatars/jack.jpg",
+    twitter: "RealJackHouchin",
   },
 } as const;
 

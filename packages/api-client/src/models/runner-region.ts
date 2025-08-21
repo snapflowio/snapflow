@@ -12,8 +12,6 @@
  * Do not edit the class manually.
  */
 
-
-
 /**
  * The region of the executor
  * @export
@@ -21,12 +19,9 @@
  */
 
 export const ExecutorRegion = {
-    EU: 'eu',
-    US: 'us',
-    ASIA: 'asia'
+  EU: "eu",
+  US: "us",
+  ASIA: "asia",
 } as const;
 
-export type ExecutorRegion = typeof ExecutorRegion[keyof typeof ExecutorRegion];
-
-
-
+export type ExecutorRegion = (typeof ExecutorRegion)[keyof typeof ExecutorRegion];

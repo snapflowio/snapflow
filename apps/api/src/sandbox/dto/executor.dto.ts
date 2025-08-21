@@ -26,6 +26,12 @@ export class ExecutorDto {
   apiUrl: string;
 
   @ApiProperty({
+    description: "The proxy URL of the runner",
+    example: "https://proxy.runner1.example.com",
+  })
+  proxyUrl: string;
+
+  @ApiProperty({
     description: "The API key for the executor",
     example: "api-key-123",
   })
@@ -125,12 +131,19 @@ export class ExecutorDto {
   })
   updatedAt: string;
 
+  @ApiProperty({
+    description: "The version of the runner",
+    example: "0",
+  })
+  version: string;
+
   static fromExecutor(executor: Executor): ExecutorDto {
     return {
       id: executor.id,
       domain: executor.domain,
       apiUrl: executor.apiUrl,
       apiKey: executor.apiKey,
+      proxyUrl: executor.proxyUrl,
       cpu: executor.cpu,
       memory: executor.memory,
       disk: executor.disk,
@@ -145,6 +158,7 @@ export class ExecutorDto {
       unschedulable: executor.unschedulable,
       createdAt: executor.createdAt.toISOString(),
       updatedAt: executor.updatedAt.toISOString(),
+      version: executor.version,
     };
   }
 }

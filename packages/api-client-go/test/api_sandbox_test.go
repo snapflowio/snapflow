@@ -11,10 +11,10 @@ package apiclient
 
 import (
 	"context"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
 )
 
 func Test_apiclient_SandboxAPIService(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_apiclient_SandboxAPIService(t *testing.T) {
 
 	t.Run("Test SandboxAPIService ArchiveSandbox", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -37,7 +37,7 @@ func Test_apiclient_SandboxAPIService(t *testing.T) {
 
 	t.Run("Test SandboxAPIService CreateBackup", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -51,7 +51,7 @@ func Test_apiclient_SandboxAPIService(t *testing.T) {
 
 	t.Run("Test SandboxAPIService CreateSandbox", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.SandboxAPI.CreateSandbox(context.Background()).Execute()
 
@@ -63,7 +63,7 @@ func Test_apiclient_SandboxAPIService(t *testing.T) {
 
 	t.Run("Test SandboxAPIService DeleteSandbox", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -76,7 +76,7 @@ func Test_apiclient_SandboxAPIService(t *testing.T) {
 
 	t.Run("Test SandboxAPIService GetBuildLogs", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -89,7 +89,7 @@ func Test_apiclient_SandboxAPIService(t *testing.T) {
 
 	t.Run("Test SandboxAPIService GetPortPreviewUrl", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 		var port float32
@@ -104,7 +104,7 @@ func Test_apiclient_SandboxAPIService(t *testing.T) {
 
 	t.Run("Test SandboxAPIService GetSandbox", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -118,7 +118,7 @@ func Test_apiclient_SandboxAPIService(t *testing.T) {
 
 	t.Run("Test SandboxAPIService ListSandboxes", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.SandboxAPI.ListSandboxes(context.Background()).Execute()
 
@@ -130,7 +130,7 @@ func Test_apiclient_SandboxAPIService(t *testing.T) {
 
 	t.Run("Test SandboxAPIService ReplaceLabels", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -144,7 +144,7 @@ func Test_apiclient_SandboxAPIService(t *testing.T) {
 
 	t.Run("Test SandboxAPIService SetAutoArchiveInterval", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 		var interval float32
@@ -158,7 +158,7 @@ func Test_apiclient_SandboxAPIService(t *testing.T) {
 
 	t.Run("Test SandboxAPIService SetAutostopInterval", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 		var interval float32
@@ -172,7 +172,7 @@ func Test_apiclient_SandboxAPIService(t *testing.T) {
 
 	t.Run("Test SandboxAPIService StartSandbox", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -186,7 +186,7 @@ func Test_apiclient_SandboxAPIService(t *testing.T) {
 
 	t.Run("Test SandboxAPIService StopSandbox", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -199,7 +199,7 @@ func Test_apiclient_SandboxAPIService(t *testing.T) {
 
 	t.Run("Test SandboxAPIService UpdatePublicStatus", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 		var isPublic bool

@@ -1,0 +1,104 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "src/**/*.ts",
+        "src/**/*.js",
+        "src/**/*.json",
+        "src/**/*.html",
+        "cmd/**/*.go",
+        "pkg/**/*.go",
+        "internal/**/*.go",
+        "**/*.go",
+        ".swcrc",
+        "nest-cli.json",
+        "tsconfig*.json",
+        "go.mod",
+        "go.sum",
+        ".env"
+      ],
+      "outputs": ["../../dist/apps/**", "../../dist/packages/**", "dist/**", ".next/**", "build/**"]
+    },
+    "build:development": {
+      "dependsOn": ["^build:development"],
+      "inputs": [
+        "src/**/*.ts",
+        "src/**/*.js",
+        "src/**/*.json",
+        "src/**/*.html",
+        ".env"
+      ],
+      "outputs": ["dist/**", ".next/**", "build/**"]
+    },
+    "build:production": {
+      "dependsOn": ["^build:production"],
+      "outputs": ["dist/**", ".next/**", "build/**"]
+    },
+    "serve": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "inputs": [".env"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"]
+    },
+    "lint": {
+      "outputs": []
+    },
+    "format": {
+      "outputs": []
+    },
+    "openapi": {
+      "outputs": ["dist/**/openapi.json", "pkg/api/docs/**"]
+    },
+    "generate:api-client": {
+      "dependsOn": ["openapi"],
+      "outputs": ["src/**", "*.go", "docs/**"]
+    },
+    "build-amd64": {
+      "inputs": [
+        "cmd/**/*.go",
+        "pkg/**/*.go",
+        "internal/**/*.go",
+        "**/*.go",
+        "go.mod",
+        "go.sum"
+      ],
+      "outputs": ["../../dist/apps/*-amd64"]
+    },
+    "copy-node-bin": {
+      "dependsOn": ["^build", "^build-amd64"],
+      "outputs": ["pkg/node/static/**"]
+    },
+    "migration:generate": {
+      "outputs": ["src/migrations/**"]
+    },
+    "db:generate": {
+      "outputs": ["apps/api/src/migrations/**"]
+    },
+    "db:push": {
+      "cache": false
+    },
+    "db:generate-production": {
+      "outputs": ["apps/api/src/migrations/**"]
+    },
+    "db:push-production": {
+      "cache": false
+    }
+  },
+  "globalDependencies": [
+    "go.work",
+    "go.mod",
+    "go.sum",
+    "pnpm-workspace.yaml",
+    "tsconfig.base.json"
+  ]
+}

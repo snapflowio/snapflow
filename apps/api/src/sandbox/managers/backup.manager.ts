@@ -1,27 +1,27 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { OnEvent } from "@nestjs/event-emitter";
-import { Cron, CronExpression } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Cron, CronExpression } from "@nestjs/schedule";
+import { In, Not, Repository } from "typeorm";
+import { Sandbox } from "../entities/sandbox.entity";
+import { SandboxState } from "../enums/sandbox-state.enum";
+import { ExecutorService } from "../services/executor.service";
+import { ExecutorState } from "../enums/executor-state.enum";
+import { ResourceNotFoundError } from "../../common/exceptions/not-found.exception";
+import { BadRequestError } from "../../common/exceptions/bad-request.exception";
+import { RegistryService } from "../../registry/registry.service";
+import { BackupState } from "../enums/backup-state.enum";
 import { InjectRedis } from "@nestjs-modules/ioredis";
 import { Redis } from "ioredis";
-import { In, Not, Repository } from "typeorm";
-import { BadRequestError } from "../../common/exceptions/bad-request.exception";
-import { ResourceNotFoundError } from "../../common/exceptions/not-found.exception";
-import { fromAxiosError } from "../../common/utils/axios-error";
-import { RegistryService } from "../../registry/registry.service";
-import { RedisLockProvider } from "../common/redis-lock.provider";
 import { SANDBOX_WARM_POOL_UNASSIGNED_ORGANIZATION } from "../constants/sandbox.constants";
-import { SandboxEvents } from "../constants/sandbox-events.constants";
 import { DockerProvider } from "../docker/docker-provider";
-import { Sandbox } from "../entities/sandbox.entity";
-import { BackupState } from "../enums/backup-state.enum";
-import { ExecutorState } from "../enums/executor-state.enum";
-import { SandboxState } from "../enums/sandbox-state.enum";
-import { SandboxArchivedEvent } from "../events/sandbox-archived.event";
-import { SandboxBackupCreatedEvent } from "../events/sandbox-backup-created.event";
+import { fromAxiosError } from "../../common/utils/axios-error";
+import { RedisLockProvider } from "../common/redis-lock.provider";
+import { OnEvent } from "@nestjs/event-emitter";
+import { SandboxEvents } from "../constants/sandbox-events.constants";
 import { SandboxDestroyedEvent } from "../events/sandbox-destroyed.event";
-import { ExecutorApiFactory } from "../executor-api/executor-api";
-import { ExecutorService } from "../services/executor.service";
+import { SandboxBackupCreatedEvent } from "../events/sandbox-backup-created.event";
+import { SandboxArchivedEvent } from "../events/sandbox-archived.event";
+import { ExecutorAdapterFactory } from "../adapter/adapter";
 
 @Injectable()
 export class BackupManager {
@@ -31,8 +31,8 @@ export class BackupManager {
     @InjectRepository(Sandbox)
     private readonly sandboxRepository: Repository<Sandbox>,
     private readonly executorService: ExecutorService,
-    private readonly executorApiFactory: ExecutorApiFactory,
-    private readonly registryService: RegistryService,
+    private readonly executorAdapterFactory: ExecutorAdapterFactory,
+    private readonly dockerRegistryService: RegistryService,
     @InjectRedis() private readonly redis: Redis,
     private readonly dockerProvider: DockerProvider,
     private readonly redisLockProvider: RedisLockProvider
@@ -210,7 +210,7 @@ export class BackupManager {
     }
 
     // Get default registry
-    const registry = await this.registryService.getDefaultInternalRegistry();
+    const registry = await this.dockerRegistryService.getDefaultInternalRegistry();
     if (!registry) {
       throw new BadRequestError("No default registry configured");
     }
@@ -249,12 +249,12 @@ export class BackupManager {
   private async checkBackupProgress(sandbox: Sandbox): Promise<void> {
     try {
       const executor = await this.executorService.findOne(sandbox.executorId);
-      const executorSandboxApi = this.executorApiFactory.createSandboxApi(executor);
+      const executorAdapter = await this.executorAdapterFactory.create(executor);
 
       // Get sandbox info from executor
-      const sandboxInfo = await executorSandboxApi.info(sandbox.id);
+      const sandboxInfo = await executorAdapter.sandboxInfo(sandbox.id);
 
-      switch (sandboxInfo.data.backupState?.toUpperCase()) {
+      switch (sandboxInfo.backupState?.toUpperCase()) {
         case "COMPLETED": {
           sandbox.backupState = BackupState.COMPLETED;
           sandbox.lastBackupAt = new Date();
@@ -281,7 +281,7 @@ export class BackupManager {
   }
 
   private async deleteSandboxBackupRepositoryFromRegistry(sandbox: Sandbox): Promise<void> {
-    const registry = await this.registryService.findOne(sandbox.backupRegistryId);
+    const registry = await this.dockerRegistryService.findOne(sandbox.backupRegistryId);
 
     try {
       await this.dockerProvider.deleteSandboxRepository(sandbox.id, registry);
@@ -295,30 +295,22 @@ export class BackupManager {
 
   private async handlePendingBackup(sandbox: Sandbox): Promise<void> {
     try {
-      const registry = await this.registryService.findOne(sandbox.backupRegistryId);
+      const registry = await this.dockerRegistryService.findOne(sandbox.backupRegistryId);
       if (!registry) {
         throw new Error("Registry not found");
       }
 
       const executor = await this.executorService.findOne(sandbox.executorId);
-      const executorSandboxApi = this.executorApiFactory.createSandboxApi(executor);
+      const executorAdapter = await this.executorAdapterFactory.create(executor);
 
       //  check if backup is already in progress on the executor
-      const executorSandboxResponse = await executorSandboxApi.info(sandbox.id);
-      const executorSandbox = executorSandboxResponse.data;
+      const executorSandbox = await executorAdapter.sandboxInfo(sandbox.id);
       if (executorSandbox.backupState?.toUpperCase() === "IN_PROGRESS") {
         return;
       }
 
       // Initiate backup on executor
-      await executorSandboxApi.createBackup(sandbox.id, {
-        registry: {
-          url: registry.url,
-          username: registry.username,
-          password: registry.password,
-        },
-        image: sandbox.backupImage,
-      });
+      await executorAdapter.createBackup(sandbox, sandbox.backupImage, registry);
 
       await this.updateWorkspacBackupState(sandbox.id, BackupState.IN_PROGRESS);
     } catch (error) {
@@ -334,9 +326,7 @@ export class BackupManager {
     }
   }
 
-  @Cron(CronExpression.EVERY_30_SECONDS, {
-    name: "sync-stop-state-create-backups",
-  }) // Run every 30 seconds
+  @Cron(CronExpression.EVERY_30_SECONDS, { name: "sync-stop-state-create-backups" }) // Run every 30 seconds
   async syncStopStateCreateBackups(): Promise<void> {
     const lockKey = "sync-stop-state-create-backups";
     const hasLock = await this.redisLockProvider.lock(lockKey, 30);

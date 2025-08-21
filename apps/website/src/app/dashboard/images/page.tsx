@@ -1,13 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  ImageDto,
-  ImageState,
-  OrganizationRolePermissionsEnum,
-  PaginatedImagesDto,
-} from "@snapflow/api-client";
-import { Plus, XIcon } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { ImageDto, ImageState, PaginatedImagesDto } from "@snapflow/api-client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,18 +12,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { handleApiError } from "@/lib/errors";
 import { DEFAULT_PAGE_SIZE } from "@/constants/pagination";
 import { useApi } from "@/hooks/use-api";
 import { useRealtime } from "@/hooks/use-realtime";
 import { useSelectedOrganization } from "@/hooks/use-selected-organization";
 import { ImageTable } from "./_components/images-table";
-
-const IMAGE_NAME_REGEX = /^[a-zA-Z0-9.\-:]+(\/[a-zA-Z0-9.\-:]+)*$/;
 
 export default function ImagesPage() {
   const { realtimeSocket } = useRealtime();
@@ -42,21 +31,13 @@ export default function ImagesPage() {
     totalPages: 0,
   });
 
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [loadingImages, setLoadingImages] = useState<Record<string, boolean>>({});
   const [loadingTable, setLoadingTable] = useState(true);
   const [imageToDelete, setImageToDelete] = useState<ImageDto | null>(null);
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [newImageName, setNewImageName] = useState("");
-  const [newRegistryImageName, setNewRegistryImageName] = useState("");
-  const [newEntrypoint, setNewEntrypoint] = useState("");
   const [loadingCreate, setLoadingCreate] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [cpu, setCpu] = useState<number | undefined>(undefined);
-  const [memory, setMemory] = useState<number | undefined>(undefined);
-  const [disk, setDisk] = useState<number | undefined>(undefined);
 
-  const { selectedOrganization, authenticatedUserHasPermission } = useSelectedOrganization();
+  const { selectedOrganization } = useSelectedOrganization();
 
   const [paginationParams, setPaginationParams] = useState({
     pageIndex: 0,
@@ -180,67 +161,28 @@ export default function ImagesPage() {
     }
   }, [imagesData.items.length, paginationParams.pageIndex]);
 
-  const validateImageName = (name: string): string | null => {
-    if (name.includes(" ")) return "Spaces are not allowed in image names";
-
-    if (!IMAGE_NAME_REGEX.test(name)) {
-      return "Invalid image name format. May contain letters, digits, dots, colons, slashes and dashes";
-    }
-
-    return null;
-  };
-
-  const validateRegistryImageName = (name: string): string | null => {
-    if (name.includes(" ")) {
-      return "Spaces are not allowed in image names";
-    }
-
-    if (!name.includes(":") || name.endsWith(":") || /:\s*$/.test(name)) {
-      return "Image name must include a tag (e.g., ubuntu:22.04)";
-    }
-
-    if (name.endsWith(":latest")) {
-      return 'Images with tag ":latest" are not allowed';
-    }
-
-    if (!IMAGE_NAME_REGEX.test(name)) {
-      return "Invalid image name format. Must be lowercase, may contain digits, dots, dashes, and single slashes between components";
-    }
-
-    return null;
-  };
-
-  const handleCreate = async () => {
-    const nameValidationError = validateImageName(newImageName);
-    if (nameValidationError) {
-      toast.warning(nameValidationError);
-      return;
-    }
-
-    const imageValidationError = validateRegistryImageName(newRegistryImageName);
-    if (imageValidationError) {
-      toast.warning(imageValidationError);
-      return;
-    }
-
+  const handleCreateImage = async (data: {
+    name: string;
+    imageName: string;
+    entrypoint?: string[];
+    cpu?: number;
+    memory?: number;
+    disk?: number;
+  }) => {
     setLoadingCreate(true);
     try {
       await imageApi.createImage(
         {
-          name: newImageName,
-          imageName: newRegistryImageName,
-          entrypoint: newEntrypoint.trim() ? newEntrypoint.trim().split(" ") : undefined,
-          cpu,
-          memory,
-          disk,
+          name: data.name,
+          imageName: data.imageName,
+          entrypoint: data.entrypoint,
+          cpu: data.cpu,
+          memory: data.memory,
+          disk: data.disk,
         },
         selectedOrganization?.id
       );
-      setShowCreateDialog(false);
-      setNewImageName("");
-      setNewRegistryImageName("");
-      setNewEntrypoint("");
-      toast.success(`Creating image ${newImageName}`);
+      toast.success(`Creating image ${data.name}`);
 
       if (paginationParams.pageIndex !== 0) {
         setPaginationParams((prev) => ({
@@ -329,221 +271,27 @@ export default function ImagesPage() {
     }
   };
 
-  const writePermitted = useMemo(
-    () => authenticatedUserHasPermission(OrganizationRolePermissionsEnum.WRITE_IMAGES),
-    [authenticatedUserHasPermission]
-  );
-
   return (
-    <div className="px-2">
-      <Dialog
-        open={showCreateDialog}
-        onOpenChange={(isOpen) => {
-          setShowCreateDialog(isOpen);
-          if (isOpen) return;
-          setNewImageName("");
-          setNewRegistryImageName("");
-          setNewEntrypoint("");
-          setCpu(undefined);
-          setMemory(undefined);
-          setDisk(undefined);
+    <div className="flex h-full flex-col">
+      <ImageTable
+        data={imagesData.items}
+        loading={loadingTable}
+        loadingImages={loadingImages}
+        onDelete={(image) => {
+          setImageToDelete(image);
+          setShowDeleteDialog(true);
         }}
-      >
-        <div className="mb-6 flex items-center justify-between">
-          {writePermitted && (
-            <DialogTrigger asChild>
-              <Button
-                size="icon"
-                disabled={loadingTable}
-                className="w-auto px-4"
-                title="Create Image"
-              >
-                <Plus className="h-4 w-4" />
-                Create Image
-              </Button>
-            </DialogTrigger>
-          )}
-          <DialogContent
-            className="flex h-[74vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-[600px]"
-            hideCloseButton
-          >
-            <DialogHeader className="flex-shrink-0 border-b px-6 py-4">
-              <div className="flex items-center justify-between">
-                <DialogTitle className="font-medium text-lg">Create New Image</DialogTitle>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 p-0"
-                  onClick={() => setShowCreateDialog(false)}
-                >
-                  <XIcon className="h-4 w-4" />
-                  <span className="sr-only">Close</span>
-                </Button>
-              </div>
-              <DialogDescription>
-                Register a new image to be used for spinning up sandboxes in your organization.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex flex-1 flex-col overflow-hidden">
-              <div className="flex h-full flex-col">
-                <div
-                  ref={scrollContainerRef}
-                  className="scrollbar-thin scrollbar-thumb-muted-foreground/20 hover:scrollbar-thumb-muted-foreground/25 scrollbar-track-transparent min-h-0 flex-1 overflow-y-auto px-6"
-                >
-                  <div className="flex min-h-full flex-col py-4">
-                    <form
-                      id="create-image-form"
-                      className="space-y-6 overflow-y-auto px-1 pb-1"
-                      onSubmit={async (e) => {
-                        e.preventDefault();
-                        await handleCreate();
-                      }}
-                    >
-                      <div className="space-y-3">
-                        <Label htmlFor="name">Image Name</Label>
-                        <Input
-                          id="name"
-                          value={newImageName}
-                          onChange={(e) => setNewImageName(e.target.value)}
-                          placeholder="ubuntu-4vcpu-8ram-100gb"
-                        />
-                        <p className="mt-1 pl-1 text-muted-foreground text-sm">
-                          The name you will use in your client app (SDK, CLI) to reference the
-                          image.
-                        </p>
-                      </div>
-                      <div className="space-y-3">
-                        <Label htmlFor="name">Image</Label>
-                        <Input
-                          id="name"
-                          value={newRegistryImageName}
-                          onChange={(e) => setNewRegistryImageName(e.target.value)}
-                          placeholder="ubuntu:22.04"
-                        />
-                        <p className="mt-1 pl-1 text-muted-foreground text-sm">
-                          Must include a tag (e.g., ubuntu:22.04). The tag "latest" is not allowed.
-                        </p>
-                      </div>
-                      <div className="space-y-3">
-                        <Label htmlFor="entrypoint">Entrypoint (optional)</Label>
-                        <Input
-                          id="entrypoint"
-                          value={newEntrypoint}
-                          onChange={(e) => setNewEntrypoint(e.target.value)}
-                          placeholder="sleep infinity"
-                        />
-                        <p className="mt-1 pl-1 text-muted-foreground text-sm">
-                          Ensure that the entrypoint is a long running command. If not provided, or
-                          if the image does not have an entrypoint, 'sleep infinity' will be used as
-                          the default.
-                        </p>
-                      </div>
-                      <div className="space-y-4">
-                        <h3 className="font-medium text-sm">Resources</h3>
-                        <div className="space-y-4 px-4 py-2">
-                          <div className="flex items-center gap-4">
-                            <Label htmlFor="cpu" className="w-32 flex-shrink-0">
-                              Compute (vCPU):
-                            </Label>
-                            <Input
-                              id="cpu"
-                              type="number"
-                              className="w-full"
-                              min="1"
-                              placeholder="1"
-                              onChange={(e) => setCpu(Number.parseInt(e.target.value) || undefined)}
-                            />
-                          </div>
-                          <div className="flex items-center gap-4">
-                            <Label htmlFor="memory" className="w-32 flex-shrink-0">
-                              Memory (GB):
-                            </Label>
-                            <Input
-                              id="memory"
-                              type="number"
-                              className="w-full"
-                              min="1"
-                              placeholder="1"
-                              onChange={(e) =>
-                                setMemory(Number.parseInt(e.target.value) || undefined)
-                              }
-                            />
-                          </div>
-                          <div className="flex items-center gap-4">
-                            <Label htmlFor="disk" className="w-32 flex-shrink-0">
-                              Storage (GB):
-                            </Label>
-                            <Input
-                              id="disk"
-                              type="number"
-                              className="w-full"
-                              min="1"
-                              placeholder="3"
-                              onChange={(e) =>
-                                setDisk(Number.parseInt(e.target.value) || undefined)
-                              }
-                            />
-                          </div>
-                        </div>
-                        <p className="mt-1 pl-1 text-muted-foreground text-sm">
-                          If not specified, default values will be used (1 vCPU, 1 GB memory, 3 GB
-                          storage).
-                        </p>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="mt-auto border-t px-6 pt-4 pb-6">
-              <div className="flex justify-between">
-                <DialogClose asChild>
-                  <Button type="button" variant="secondary">
-                    Cancel
-                  </Button>
-                </DialogClose>
-                {loadingCreate ? (
-                  <Button type="button" variant="default" disabled>
-                    Creating...
-                  </Button>
-                ) : (
-                  <Button
-                    type="submit"
-                    form="create-image-form"
-                    variant="default"
-                    disabled={
-                      !newImageName.trim() ||
-                      !newRegistryImageName.trim() ||
-                      validateImageName(newImageName) !== null ||
-                      validateImageName(newRegistryImageName) !== null
-                    }
-                  >
-                    Create
-                  </Button>
-                )}
-              </div>
-            </div>
-          </DialogContent>
-        </div>
-
-        <ImageTable
-          data={imagesData.items}
-          loading={loadingTable}
-          loadingImages={loadingImages}
-          onDelete={(image) => {
-            setImageToDelete(image);
-            setShowDeleteDialog(true);
-          }}
-          onToggleEnabled={handleToggleEnabled}
-          onActivate={handleActivate}
-          pageCount={imagesData.totalPages}
-          onPaginationChange={handlePaginationChange}
-          pagination={{
-            pageIndex: paginationParams.pageIndex,
-            pageSize: paginationParams.pageSize,
-          }}
-        />
-      </Dialog>
+        onToggleEnabled={handleToggleEnabled}
+        onActivate={handleActivate}
+        pageCount={imagesData.totalPages}
+        onPaginationChange={handlePaginationChange}
+        pagination={{
+          pageIndex: paginationParams.pageIndex,
+          pageSize: paginationParams.pageSize,
+        }}
+        onCreateImage={handleCreateImage}
+        loadingCreate={loadingCreate}
+      />
 
       {imageToDelete && (
         <Dialog

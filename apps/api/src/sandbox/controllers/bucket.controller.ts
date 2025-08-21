@@ -24,11 +24,11 @@ import {
 } from "@nestjs/swagger";
 import { InjectRedis } from "@nestjs-modules/ioredis";
 import Redis from "ioredis";
-import { CombinedAuthGuard } from "../../auth/guards/auth.guard";
 import { CustomHeaders } from "../../common/constants/header.constants";
 import { AuthContext } from "../../common/decorators/auth-context.decorator";
 import { ContentTypeInterceptor } from "../../common/interceptors/content-type.interceptors";
 import { OrganizationAuthContext } from "../../common/interfaces/auth-context.interface";
+import { CombinedAuthGuard } from "../../auth/guards/auth.guard";
 import { RequiredOrganizationResourcePermissions } from "../../organization/decorators/required-organization-resource-permissions.decorator";
 import { OrganizationResourcePermission } from "../../organization/enums/organization-resource-permission.enum";
 import { OrganizationResourceActionGuard } from "../../organization/guards/organization-resource-action.guard";

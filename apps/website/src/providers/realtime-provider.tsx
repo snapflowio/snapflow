@@ -12,7 +12,7 @@ type Props = {
 
 export function RealtimeProvider(props: Props) {
   const { user, getAccessTokenSilently } = useAuth0();
-  const RealtimeSocketRef = useRef(
+  const realtimeSocket = useRef(
     io(env.NEXT_PUBLIC_API_URL.replace("/api", ""), {
       path: "/api/realtime/",
       autoConnect: false,
@@ -22,7 +22,7 @@ export function RealtimeProvider(props: Props) {
 
   useEffect(() => {
     const connectToSocket = async () => {
-      const socket = RealtimeSocketRef.current;
+      const socket = realtimeSocket.current;
       if (user) {
         const token = await getAccessTokenSilently();
         socket.auth = { token };
@@ -38,7 +38,7 @@ export function RealtimeProvider(props: Props) {
   }, [user]);
 
   return (
-    <RealtimeContext.Provider value={{ realtimeSocket: RealtimeSocketRef.current }}>
+    <RealtimeContext.Provider value={{ realtimeSocket: realtimeSocket.current }}>
       {props.children}
     </RealtimeContext.Provider>
   );

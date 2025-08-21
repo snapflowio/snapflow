@@ -6,6 +6,7 @@ import {
   Entity,
   OneToMany,
   PrimaryColumn,
+  Relation,
   UpdateDateColumn,
 } from "typeorm";
 import { Image } from "./image.entity";
@@ -36,13 +37,13 @@ export class BuildInfo {
     () => Image,
     (image) => image.buildInfo
   )
-  images: Image[];
+  images: Relation<Image[]>;
 
   @OneToMany(
     () => Sandbox,
     (sandbox) => sandbox.buildInfo
   )
-  sandboxes: Sandbox[];
+  sandboxes: Relation<Sandbox[]>;
 
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   lastUsedAt: Date;

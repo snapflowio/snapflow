@@ -227,7 +227,7 @@ Name | Type | Description  | Notes
 
 ## DeleteSandbox
 
-> DeleteSandbox(ctx, sandboxId).Force(force).XSnapflowOrganizationID(xSnapflowOrganizationID).Execute()
+> DeleteSandbox(ctx, sandboxId).XSnapflowOrganizationID(xSnapflowOrganizationID).Execute()
 
 Delete sandbox
 
@@ -245,12 +245,11 @@ import (
 
 func main() {
 	sandboxId := "sandboxId_example" // string | ID of the sandbox
-	force := true // bool | 
 	xSnapflowOrganizationID := "xSnapflowOrganizationID_example" // string | Use with JWT to specify the organization ID (optional)
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	r, err := apiClient.SandboxAPI.DeleteSandbox(context.Background(), sandboxId).Force(force).XSnapflowOrganizationID(xSnapflowOrganizationID).Execute()
+	r, err := apiClient.SandboxAPI.DeleteSandbox(context.Background(), sandboxId).XSnapflowOrganizationID(xSnapflowOrganizationID).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `SandboxAPI.DeleteSandbox``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -274,7 +273,6 @@ Other parameters are passed through a pointer to a apiDeleteSandboxRequest struc
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **force** | **bool** |  | 
  **xSnapflowOrganizationID** | **string** | Use with JWT to specify the organization ID | 
 
 ### Return type

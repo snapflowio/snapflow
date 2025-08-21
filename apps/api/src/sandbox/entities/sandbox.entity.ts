@@ -1,4 +1,3 @@
-import { nanoid } from "nanoid";
 import {
   BeforeUpdate,
   Column,
@@ -8,6 +7,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryColumn,
+  Relation,
   UpdateDateColumn,
 } from "typeorm";
 import { SandboxBucket } from "../dto/sandbox.dto";
@@ -151,9 +151,6 @@ export class Sandbox {
   @Column({ default: false })
   pending?: boolean;
 
-  @Column({ default: () => "MD5(random()::text)" })
-  authToken: string;
-
   @ManyToOne(
     () => BuildInfo,
     (buildInfo) => buildInfo.sandboxes,
@@ -163,17 +160,10 @@ export class Sandbox {
     }
   )
   @JoinColumn()
-  buildInfo?: BuildInfo;
+  buildInfo?: Relation<BuildInfo>;
 
   @Column({ nullable: true })
   nodeVersion?: string;
-
-  @BeforeUpdate()
-  updateAccessToken() {
-    if (this.state === SandboxState.STARTED) {
-      this.authToken = nanoid(32).toLocaleLowerCase();
-    }
-  }
 
   @BeforeUpdate()
   updateLastActivityAt() {

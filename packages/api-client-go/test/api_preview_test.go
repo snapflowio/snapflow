@@ -11,10 +11,10 @@ package apiclient
 
 import (
 	"context"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
 )
 
 func Test_apiclient_PreviewAPIService(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_apiclient_PreviewAPIService(t *testing.T) {
 
 	t.Run("Test PreviewAPIService HasSandboxAccess", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -37,7 +37,7 @@ func Test_apiclient_PreviewAPIService(t *testing.T) {
 
 	t.Run("Test PreviewAPIService IsSandboxPublic", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -51,7 +51,7 @@ func Test_apiclient_PreviewAPIService(t *testing.T) {
 
 	t.Run("Test PreviewAPIService IsValidAuthToken", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 		var authToken string

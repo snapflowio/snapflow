@@ -123,13 +123,13 @@ export function CreateApiKeyDialog({
   return (
     <Dialog open={open} onOpenChange={handleDialogOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="default" size="icon" className="w-auto px-4" title="Create Key">
+        <Button variant="default" size="sm" className="w-auto px-4" title="Create Key">
           <Plus className="h-4 w-4" />
-          Create Key
+          Create API Key
         </Button>
       </DialogTrigger>
       <DialogContent
-        className="flex h-[74vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-[600px]"
+        className="flex max-h-[74vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-[600px]"
         hideCloseButton
       >
         <DialogHeader className="flex-shrink-0 border-b px-6 py-4">
@@ -149,11 +149,11 @@ export function CreateApiKeyDialog({
             Choose which actions this API key will be authorized to perform.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <div className="flex h-full flex-col">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <div className="flex min-h-0 flex-1 flex-col">
             <div
               ref={scrollContainerRef}
-              className="scrollbar-thin scrollbar-thumb-muted-foreground/20 hover:scrollbar-thumb-muted-foreground/25 scrollbar-track-transparent min-h-0 flex-1 overflow-y-auto px-6"
+              className="scrollbar-thin scrollbar-thumb-muted-foreground/20 hover:scrollbar-thumb-muted-foreground/25 scrollbar-track-transparent flex-1 overflow-y-auto px-6"
             >
               <div className="flex min-h-full flex-col py-4">
                 {createdKey ? (

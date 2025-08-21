@@ -29,7 +29,7 @@ Name | Type | Description | Notes
 **CreatedAt** | Pointer to **string** | The creation timestamp of the sandbox | [optional] 
 **UpdatedAt** | Pointer to **string** | The last update timestamp of the sandbox | [optional] 
 **Class** | Pointer to **string** | The class of the sandbox | [optional] 
-**DaemonVersion** | Pointer to **string** | The version of the node running in the sandbox | [optional] 
+**NodeVersion** | Pointer to **string** | The version of the node running in the sandbox | [optional] 
 
 ## Methods
 
@@ -620,30 +620,30 @@ SetClass sets Class field to given value.
 
 HasClass returns a boolean if a field has been set.
 
-### GetDaemonVersion
+### GetNodeVersion
 
-`func (o *Sandbox) GetDaemonVersion() string`
+`func (o *Sandbox) GetNodeVersion() string`
 
-GetDaemonVersion returns the DaemonVersion field if non-nil, zero value otherwise.
+GetNodeVersion returns the NodeVersion field if non-nil, zero value otherwise.
 
-### GetDaemonVersionOk
+### GetNodeVersionOk
 
-`func (o *Sandbox) GetDaemonVersionOk() (*string, bool)`
+`func (o *Sandbox) GetNodeVersionOk() (*string, bool)`
 
-GetDaemonVersionOk returns a tuple with the DaemonVersion field if it's non-nil, zero value otherwise
+GetNodeVersionOk returns a tuple with the NodeVersion field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetDaemonVersion
+### SetNodeVersion
 
-`func (o *Sandbox) SetDaemonVersion(v string)`
+`func (o *Sandbox) SetNodeVersion(v string)`
 
-SetDaemonVersion sets DaemonVersion field to given value.
+SetNodeVersion sets NodeVersion field to given value.
 
-### HasDaemonVersion
+### HasNodeVersion
 
-`func (o *Sandbox) HasDaemonVersion() bool`
+`func (o *Sandbox) HasNodeVersion() bool`
 
-HasDaemonVersion returns a boolean if a field has been set.
+HasNodeVersion returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

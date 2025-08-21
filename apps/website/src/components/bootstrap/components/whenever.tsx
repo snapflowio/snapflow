@@ -40,7 +40,5 @@ type WheneverProps = Readonly<{
 export function Whenever({ condition, children, not }: WheneverProps) {
   const evaluated = typeof condition === "function" ? condition() : condition;
 
-  return (not ? !evaluated : evaluated) ? (
-    <Fragment>{children}</Fragment>
-  ) : null;
+  return (not ? !evaluated : evaluated) ? <Fragment>{children}</Fragment> : null;
 }

@@ -11,8 +11,6 @@
     "noPropertyAccessFromIndexSignature": true,
     "esModuleInterop": true
   },
-  "files": [],
-  "include": [],
   "references": [
     {
       "path": "./tsconfig.lib.json"

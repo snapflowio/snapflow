@@ -1,8 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BucketDto, BucketState, OrganizationRolePermissionsEnum } from "@snapflow/api-client";
-import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,10 +12,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { OrganizationPageWrapper } from "@/components/wrappers/organization-page-wrapper";
 import { handleApiError } from "@/lib/errors";
 import { useApi } from "@/hooks/use-api";
@@ -31,15 +27,13 @@ export default function BucketsPage() {
   const [buckets, setBuckets] = useState<BucketDto[]>([]);
   const [loadingBuckets, setLoadingBuckets] = useState(true);
 
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [newBucketName, setNewBucketName] = useState("");
   const [loadingCreate, setLoadingCreate] = useState(false);
 
   const [bucketToDelete, setBucketToDelete] = useState<BucketDto | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [processingBucketAction, setProcessingBucketAction] = useState<Record<string, boolean>>({});
 
-  const { selectedOrganization, authenticatedUserHasPermission } = useSelectedOrganization();
+  const { selectedOrganization } = useSelectedOrganization();
 
   const fetchBuckets = useCallback(
     async (showTableLoadingState = true) => {
@@ -105,18 +99,16 @@ export default function BucketsPage() {
     };
   }, [realtimeSocket, buckets]);
 
-  const handleCreate = async () => {
+  const handleCreateBucket = async (name: string) => {
     setLoadingCreate(true);
     try {
       await bucketApi.createBucket(
         {
-          name: newBucketName,
+          name,
         },
         selectedOrganization?.id
       );
-      setShowCreateDialog(false);
-      setNewBucketName("");
-      toast.success(`Creating bucket ${newBucketName}`);
+      toast.success(`Creating bucket ${name}`);
     } catch (error) {
       handleApiError(error, "Failed to create bucket");
     } finally {
@@ -127,7 +119,7 @@ export default function BucketsPage() {
   const handleDelete = async (bucket: BucketDto) => {
     setProcessingBucketAction((prev) => ({ ...prev, [bucket.id]: true }));
 
-    // Optimistically update the bucket state
+    // Optimistically updae the bucket state
     setBuckets((prev) =>
       prev.map((v) => (v.id === bucket.id ? { ...v, state: BucketState.PENDING_DELETE } : v))
     );
@@ -148,93 +140,20 @@ export default function BucketsPage() {
     }
   };
 
-  const writePermitted = useMemo(
-    () => authenticatedUserHasPermission(OrganizationRolePermissionsEnum.WRITE_BUCKETS),
-    [authenticatedUserHasPermission]
-  );
-
   return (
     <OrganizationPageWrapper requiredPermissions={[OrganizationRolePermissionsEnum.READ_BUCKETS]}>
-      <div className="px-2">
-        <Dialog
-          open={showCreateDialog}
-          onOpenChange={(isOpen) => {
-            setShowCreateDialog(isOpen);
-            if (isOpen) {
-              return;
-            }
-            setNewBucketName("");
+      <div className="flex h-full flex-col">
+        <BucketTable
+          data={buckets}
+          loading={loadingBuckets}
+          processingBucketAction={processingBucketAction}
+          onDelete={(bucket) => {
+            setBucketToDelete(bucket);
+            setShowDeleteDialog(true);
           }}
-        >
-          <div className="mb-2 flex h-12 items-center justify-between">
-            {writePermitted && (
-              <DialogTrigger asChild>
-                <Button disabled={loadingBuckets}>
-                  <Plus className="h-4 w-4" />
-                  Create Bucket
-                </Button>
-              </DialogTrigger>
-            )}
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create New Bucket</DialogTitle>
-                <DialogDescription>
-                  Instantly Access Shared Files with Bucket Mounts
-                </DialogDescription>
-              </DialogHeader>
-              <form
-                id="create-bucket-form"
-                className="space-y-6 overflow-y-auto px-1 pb-1"
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  await handleCreate();
-                }}
-              >
-                <div className="space-y-3">
-                  <Label htmlFor="name">Bucket Name</Label>
-                  <Input
-                    id="name"
-                    value={newBucketName}
-                    onChange={(e) => setNewBucketName(e.target.value)}
-                    placeholder="my-bucket"
-                  />
-                </div>
-              </form>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button type="button" size="sm" variant="secondary">
-                    Cancel
-                  </Button>
-                </DialogClose>
-                {loadingCreate ? (
-                  <Button type="button" size="sm" variant="default" disabled>
-                    Creating...
-                  </Button>
-                ) : (
-                  <Button
-                    type="submit"
-                    size="sm"
-                    form="create-bucket-form"
-                    variant="default"
-                    disabled={!newBucketName.trim()}
-                  >
-                    Create
-                  </Button>
-                )}
-              </DialogFooter>
-            </DialogContent>
-          </div>
-
-          <BucketTable
-            data={buckets}
-            loading={loadingBuckets}
-            processingBucketAction={processingBucketAction}
-            onDelete={(bucket) => {
-              setBucketToDelete(bucket);
-              setShowDeleteDialog(true);
-            }}
-          />
-        </Dialog>
+          onCreateBucket={handleCreateBucket}
+          loadingCreate={loadingCreate}
+        />
 
         {bucketToDelete && (
           <Dialog

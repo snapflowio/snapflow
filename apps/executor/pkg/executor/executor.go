@@ -12,12 +12,14 @@ type ExecutorInstanceConfig struct {
 	Cache          cache.IExecutorCache
 	Docker         *docker.DockerClient
 	SandboxService *services.SandboxService
+	MetricsService *services.MetricsService
 }
 
 type Executor struct {
 	Cache          cache.IExecutorCache
 	Docker         *docker.DockerClient
 	SandboxService *services.SandboxService
+	MetricsService *services.MetricsService
 }
 
 var executor *Executor

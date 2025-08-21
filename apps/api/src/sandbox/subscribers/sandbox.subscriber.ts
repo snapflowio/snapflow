@@ -29,10 +29,7 @@ export class SandboxSubscriber implements EntitySubscriberInterface<Sandbox> {
   }
 
   afterInsert(event: InsertEvent<Sandbox>) {
-    this.eventEmitter.emit(
-      SandboxEvents.CREATED,
-      new SandboxCreatedEvent(event.entity as Sandbox),
-    );
+    this.eventEmitter.emit(SandboxEvents.CREATED, new SandboxCreatedEvent(event.entity as Sandbox));
   }
 
   afterUpdate(event: UpdateEvent<Sandbox>) {
@@ -46,8 +43,8 @@ export class SandboxSubscriber implements EntitySubscriberInterface<Sandbox> {
             new SandboxOrganizationUpdatedEvent(
               event.entity as Sandbox,
               event.databaseEntity[column],
-              event.entity[column],
-            ),
+              event.entity[column]
+            )
           );
           break;
         case "public":
@@ -56,8 +53,8 @@ export class SandboxSubscriber implements EntitySubscriberInterface<Sandbox> {
             new SandboxPublicStatusUpdatedEvent(
               event.entity as Sandbox,
               event.databaseEntity[column],
-              event.entity[column],
-            ),
+              event.entity[column]
+            )
           );
           break;
         case "desiredState":
@@ -66,8 +63,8 @@ export class SandboxSubscriber implements EntitySubscriberInterface<Sandbox> {
             new SandboxDesiredStateUpdatedEvent(
               event.entity as Sandbox,
               event.databaseEntity[column],
-              event.entity[column],
-            ),
+              event.entity[column]
+            )
           );
           break;
         case "state":
@@ -76,8 +73,8 @@ export class SandboxSubscriber implements EntitySubscriberInterface<Sandbox> {
             new SandboxStateUpdatedEvent(
               event.entity as Sandbox,
               event.databaseEntity[column],
-              event.entity[column],
-            ),
+              event.entity[column]
+            )
           );
           break;
         default:

@@ -1,0 +1,26 @@
+{
+  "title": "Initial release of Snapflow",
+  "description": "Snapflow is now available for everyone to try out.",
+  "date": "2025-08-15T00:00:00.000Z",
+  "version": "1.0.0",
+  "tags": [
+    "Launch"
+  ],
+  "published": true,
+  "body": {
+    "raw": "\nWe're thrilled to introduce Snapflow, a powerful new tool providing isolated sandbox environments for AI agents, automations, code execution, and more.",
+    "code": "var Component=(()=>{var p=Object.create;var r=Object.defineProperty;var f=Object.getOwnPropertyDescriptor;var m=Object.getOwnPropertyNames;var x=Object.getPrototypeOf,w=Object.prototype.hasOwnProperty;var h=(e,t)=>()=>(t||e((t={exports:{}}).exports,t),t.exports),v=(e,t)=>{for(var n in t)r(e,n,{get:t[n],enumerable:!0})},s=(e,t,n,i)=>{if(t&&typeof t==\"object\"||typeof t==\"function\")for(let o of m(t))!w.call(e,o)&&o!==n&&r(e,o,{get:()=>t[o],enumerable:!(i=f(t,o))||i.enumerable});return e};var _=(e,t,n)=>(n=e!=null?p(x(e)):{},s(t||!e||!e.__esModule?r(n,\"default\",{value:e,enumerable:!0}):n,e)),b=e=>s(r({},\"__esModule\",{value:!0}),e);var c=h((M,l)=>{l.exports=_jsx_runtime});var j={};v(j,{default:()=>d,frontmatter:()=>g});var a=_(c()),g={title:\"Initial release of Snapflow\",description:\"Snapflow is now available for everyone to try out.\",date:\"2025-08-15\",version:\"1.0.0\",tags:[\"Launch\"],published:!0};function u(e){let t={p:\"p\",...e.components};return(0,a.jsx)(t.p,{children:\"We're thrilled to introduce Snapflow, a powerful new tool providing isolated sandbox environments for AI agents, automations, code execution, and more.\"})}function d(e={}){let{wrapper:t}=e.components||{};return t?(0,a.jsx)(t,{...e,children:(0,a.jsx)(u,{...e})}):u(e)}return b(j);})();\n;return Component;"
+  },
+  "_id": "changelog/2025-08-15.mdx",
+  "_raw": {
+    "sourceFilePath": "changelog/2025-08-15.mdx",
+    "sourceFileName": "2025-08-15.mdx",
+    "sourceFileDir": "changelog",
+    "contentType": "mdx",
+    "flattenedPath": "changelog/2025-08-15"
+  },
+  "type": "Changelog",
+  "slug": "/changelog/2025-08-15",
+  "slugAsParams": "2025-08-15",
+  "images": []
+}

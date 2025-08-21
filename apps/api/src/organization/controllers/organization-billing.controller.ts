@@ -1,8 +1,6 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { ApiBearerAuth, ApiOAuth2, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { AuthContext } from "../../common/decorators/auth-context.decorator";
-import { AuthContext as IAuthContext } from "../../common/interfaces/auth-context.interface";
 import { RequiredOrganizationMemberRole } from "../decorators/required-organization-member-role.decorator";
 import { CreateOrganizationCheckoutDto } from "../dto/create-organization-checkout.dto";
 import { OrganizationMemberRole } from "../enums/organization-member-role.enum";
@@ -17,7 +15,7 @@ import { OrganizationBillingService } from "../services/organization-billing.ser
 export class OrganizationBillingController {
   constructor(private readonly organizationBillingService: OrganizationBillingService) {}
 
-  @Post("/checkout")
+  @Get("/checkout")
   @ApiOperation({
     summary: "Get payment checkout link",
     operationId: "createCheckoutLink",
@@ -27,7 +25,7 @@ export class OrganizationBillingController {
     @Param("organizationId") organizationId: string,
     @Body() createOrganizationCheckoutDto: CreateOrganizationCheckoutDto
   ) {
-    await this.organizationBillingService.getCheckoutLink(
+    return await this.organizationBillingService.getCheckoutLink(
       organizationId,
       createOrganizationCheckoutDto
     );

@@ -7,8 +7,8 @@ import {
   ManyToMany,
   ManyToOne,
   PrimaryColumn,
+  Relation,
 } from "typeorm";
-
 import { OrganizationMemberRole } from "../enums/organization-member-role.enum";
 import { Organization } from "./organization.entity";
 import { OrganizationRole } from "./organization-role.entity";
@@ -28,16 +28,24 @@ export class OrganizationUser {
   })
   role: OrganizationMemberRole;
 
-  @ManyToOne(() => Organization, (organization) => organization.users, {
-    onDelete: "CASCADE",
-  })
+  @ManyToOne(
+    () => Organization,
+    (organization) => organization.users,
+    {
+      onDelete: "CASCADE",
+    }
+  )
   @JoinColumn({ name: "organizationId" })
-  organization: Organization;
+  organization: Relation<Organization>;
 
-  @ManyToMany(() => OrganizationRole, (role) => role.users, {
-    cascade: true,
-    onDelete: "CASCADE",
-  })
+  @ManyToMany(
+    () => OrganizationRole,
+    (role) => role.users,
+    {
+      cascade: true,
+      onDelete: "CASCADE",
+    }
+  )
   @JoinTable({
     name: "organization_role_assignment",
     joinColumns: [
@@ -46,7 +54,7 @@ export class OrganizationUser {
     ],
     inverseJoinColumns: [{ name: "roleId", referencedColumnName: "id" }],
   })
-  assignedRoles: OrganizationRole[];
+  assignedRoles: Relation<OrganizationRole[]>;
 
   @CreateDateColumn()
   createdAt: Date;

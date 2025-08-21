@@ -5,8 +5,7 @@ import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 export class CreateBuildInfoDto {
   @ApiProperty({
     description: "The Dockerfile content used for the build",
-    example:
-      'FROM node:14\nWORKDIR /app\nCOPY . .\nRUN npm install\nCMD ["npm", "start"]',
+    example: 'FROM node:14\nWORKDIR /app\nCOPY . .\nRUN npm install\nCMD ["npm", "start"]',
   })
   @IsString()
   @IsNotEmpty()

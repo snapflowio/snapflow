@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-  UseGuards,
-} from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import {
   ApiBearerAuth,
@@ -32,9 +23,7 @@ import { OrganizationRoleService } from "../services/organization-role.service";
 @ApiOAuth2(["openid", "profile", "email"])
 @ApiBearerAuth()
 export class OrganizationRoleController {
-  constructor(
-    private readonly organizationRoleService: OrganizationRoleService,
-  ) {}
+  constructor(private readonly organizationRoleService: OrganizationRoleService) {}
 
   @Post()
   @ApiOperation({
@@ -53,11 +42,11 @@ export class OrganizationRoleController {
   })
   async create(
     @Param("organizationId") organizationId: string,
-    @Body() createOrganizationRoleDto: CreateOrganizationRoleDto,
+    @Body() createOrganizationRoleDto: CreateOrganizationRoleDto
   ): Promise<OrganizationRoleDto> {
     const role = await this.organizationRoleService.create(
       organizationId,
-      createOrganizationRoleDto,
+      createOrganizationRoleDto
     );
     return OrganizationRoleDto.fromOrganizationRole(role);
   }
@@ -77,9 +66,7 @@ export class OrganizationRoleController {
     description: "Organization ID",
     type: "string",
   })
-  async findAll(
-    @Param("organizationId") organizationId: string,
-  ): Promise<OrganizationRoleDto[]> {
+  async findAll(@Param("organizationId") organizationId: string): Promise<OrganizationRoleDto[]> {
     const roles = await this.organizationRoleService.findAll(organizationId);
     return roles.map(OrganizationRoleDto.fromOrganizationRole);
   }
@@ -107,11 +94,11 @@ export class OrganizationRoleController {
   async updateRole(
     @Param("organizationId") organizationId: string,
     @Param("roleId") roleId: string,
-    @Body() updateOrganizationRoleDto: UpdateOrganizationRoleDto,
+    @Body() updateOrganizationRoleDto: UpdateOrganizationRoleDto
   ): Promise<OrganizationRoleDto> {
     const updatedRole = await this.organizationRoleService.update(
       roleId,
-      updateOrganizationRoleDto,
+      updateOrganizationRoleDto
     );
     return OrganizationRoleDto.fromOrganizationRole(updatedRole);
   }
@@ -137,7 +124,7 @@ export class OrganizationRoleController {
   })
   async delete(
     @Param("organizationId") organizationId: string,
-    @Param("roleId") roleId: string,
+    @Param("roleId") roleId: string
   ): Promise<void> {
     return this.organizationRoleService.delete(roleId);
   }

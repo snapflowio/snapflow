@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { OrganizationRole, OrganizationUser, OrganizationUserRoleEnum } from "@snapflow/api-client";
+import {
+  CreateOrganizationInvitationRoleEnum,
+  OrganizationRole,
+  OrganizationUser,
+  OrganizationUserRoleEnum,
+} from "@snapflow/api-client";
 import {
   ColumnDef,
   flexRender,
@@ -11,13 +16,21 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+import { ChevronDownIcon, ChevronsUpDownIcon, ChevronUpIcon, MoreHorizontal } from "lucide-react";
+import { CreateOrganizationInvitationDialog } from "@/components/dialogs/create-organization-invitation-dialog";
 import { RemoveOrganizationMemberDialog } from "@/components/dialogs/remove-organization-member-dialog";
 import { UpdateAssignedOrganizationRolesDialog } from "@/components/dialogs/update-assigned-organization-roles-dialog";
 import { UpdateOrganizationMemberRoleDialog } from "@/components/dialogs/update-organization-member-roles-dialog";
 import { Pagination } from "@/components/pagination";
-import { TableEmptyState } from "@/components/table/table-empty";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,6 +58,11 @@ interface DataTableProps {
   onRemoveMember: (userId: string) => Promise<boolean>;
   loadingMemberAction: Record<string, boolean>;
   ownerMode: boolean;
+  onCreateInvitation?: (
+    email: string,
+    role: CreateOrganizationInvitationRoleEnum,
+    assignedRoleIds: string[]
+  ) => Promise<boolean>;
 }
 
 export function OrganizationMemberTable({
@@ -57,6 +75,7 @@ export function OrganizationMemberTable({
   onRemoveMember,
   loadingMemberAction,
   ownerMode,
+  onCreateInvitation,
 }: DataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [memberToUpdate, setMemberToUpdate] = useState<OrganizationUser | null>(null);
@@ -136,53 +155,81 @@ export function OrganizationMemberTable({
 
   return (
     <>
-      <div>
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(header.column.columnDef.header, header.getContext())}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {loadingData ? (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    Loading...
-                  </TableCell>
-                </TableRow>
-              ) : table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className={`h-14 ${loadingMemberAction[row.original.userId] ? "pointer-events-none opacity-50" : ""}`}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
+      <Card className="flex h-full flex-col">
+        <CardHeader className="flex flex-shrink-0 flex-row items-center justify-between">
+          <div>
+            <CardTitle>Members</CardTitle>
+            <CardDescription>Manage organization members and their roles</CardDescription>
+          </div>
+          {ownerMode && onCreateInvitation && (
+            <CreateOrganizationInvitationDialog
+              availableRoles={availableOrganizationRoles}
+              loadingAvailableRoles={loadingAvailableOrganizationRoles}
+              onCreateInvitation={onCreateInvitation}
+            />
+          )}
+        </CardHeader>
+        <CardContent className="min-h-0 flex-1">
+          <div className="flex h-full flex-col rounded-md border">
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id} className="select-none py-1">
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(header.column.columnDef.header, header.getContext())}
+                        </TableHead>
+                      );
+                    })}
                   </TableRow>
-                ))
-              ) : (
-                <TableEmptyState colSpan={columns.length} message="No Members found." />
-              )}
-            </TableBody>
-          </Table>
-        </div>
-        <Pagination table={table} className="mt-4" entityName="Members" />
-      </div>
+                ))}
+              </TableHeader>
+              <TableBody className="relative">
+                {loadingData ? (
+                  <TableRow>
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                      Loading members...
+                    </TableCell>
+                  </TableRow>
+                ) : table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      className={`${loadingMemberAction[row.original.userId] ? "pointer-events-none opacity-50" : ""}`}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id} className="py-3">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={columns.length} className="relative h-[400px] p-0">
+                      <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4">
+                        <div className="text-center">
+                          <h3 className="font-medium text-lg">No members</h3>
+                          <p className="mt-2 text-muted-foreground text-sm">
+                            No organization members found.
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+        <CardFooter className="flex-shrink-0">
+          <Pagination table={table} entityName="Members" />
+        </CardFooter>
+      </Card>
 
       {memberToUpdate && (
         <UpdateOrganizationMemberRoleDialog
@@ -247,24 +294,57 @@ const getColumns = ({
   const columns: ColumnDef<OrganizationUser>[] = [
     {
       accessorKey: "email",
-      header: "Email",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="px-2 hover:bg-muted/50"
+          >
+            Email
+            {column.getIsSorted() === "asc" ? (
+              <ChevronUpIcon className="ml-2 h-4 w-4" />
+            ) : column.getIsSorted() === "desc" ? (
+              <ChevronDownIcon className="ml-2 h-4 w-4" />
+            ) : (
+              <ChevronsUpDownIcon className="ml-2 h-4 w-4" />
+            )}
+          </Button>
+        );
+      },
+      cell: ({ row }) => <div className="px-2 font-medium">{row.original.email}</div>,
     },
     {
       accessorKey: "role",
-      header: () => {
-        return <div className="w-24 px-3">Role</div>;
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="w-24 px-2 hover:bg-muted/50"
+          >
+            Role
+            {column.getIsSorted() === "asc" ? (
+              <ChevronUpIcon className="ml-2 h-4 w-4" />
+            ) : column.getIsSorted() === "desc" ? (
+              <ChevronDownIcon className="ml-2 h-4 w-4" />
+            ) : (
+              <ChevronsUpDownIcon className="ml-2 h-4 w-4" />
+            )}
+          </Button>
+        );
       },
       cell: ({ row }) => {
         const role = capitalize(row.original.role);
 
         if (!ownerMode) {
-          return <div className="px-3 text-sm">{role}</div>;
+          return <div className="px-2 text-sm">{role}</div>;
         }
 
         return (
           <Button
             variant="ghost"
-            className="w-auto px-3"
+            className="w-auto px-2"
             onClick={() => onUpdateMemberRole(row.original)}
           >
             {role}
@@ -279,11 +359,15 @@ const getColumns = ({
       {
         accessorKey: "assignedRoles",
         header: () => {
-          return <div className="w-32 px-3">Assignments</div>;
+          return (
+            <Button variant="ghost" className="w-32 px-2 cursor-default">
+              Assignments
+            </Button>
+          );
         },
         cell: ({ row }) => {
           if (row.original.role === OrganizationUserRoleEnum.OWNER) {
-            return <div className="px-3 text-muted-foreground text-sm">Full Access</div>;
+            return <div className="px-2 text-muted-foreground text-sm">Full Access</div>;
           }
 
           const roleCount = row.original.assignedRoles?.length || 0;
@@ -292,7 +376,7 @@ const getColumns = ({
           return (
             <Button
               variant="ghost"
-              className="w-auto px-3"
+              className="w-auto px-2"
               onClick={() => onUpdateAssignedRoles(row.original)}
             >
               {roleText}
@@ -302,9 +386,10 @@ const getColumns = ({
       },
       {
         id: "actions",
+        header: "Actions",
         cell: ({ row }) => {
           return (
-            <div className="text-right">
+            <div className="flex justify-end">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="h-8 w-8 p-0">

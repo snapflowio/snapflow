@@ -331,6 +331,24 @@ const docTemplate = `{
                 }
             }
         },
+        "/info": {
+            "get": {
+                "description": "Executor info with system metrics",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Executor info",
+                "operationId": "ExecutorInfo",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ExecutorInfoResponseDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/sandboxes": {
             "post": {
                 "description": "Create a sandbox",
@@ -1154,6 +1172,40 @@ const docTemplate = `{
                 "timestamp": {
                     "type": "string",
                     "example": "2023-01-01T12:00:00Z"
+                }
+            }
+        },
+        "ExecutorInfoResponseDTO": {
+            "type": "object",
+            "properties": {
+                "metrics": {
+                    "$ref": "#/definitions/ExecutorMetrics"
+                }
+            }
+        },
+        "ExecutorMetrics": {
+            "type": "object",
+            "properties": {
+                "currentAllocatedCpu": {
+                    "type": "integer"
+                },
+                "currentAllocatedDiskGiB": {
+                    "type": "integer"
+                },
+                "currentAllocatedMemoryGiB": {
+                    "type": "integer"
+                },
+                "currentCpuUsagePercentage": {
+                    "type": "number"
+                },
+                "currentDiskUsagePercentage": {
+                    "type": "number"
+                },
+                "currentMemoryUsagePercentage": {
+                    "type": "number"
+                },
+                "currentSnapshotCount": {
+                    "type": "integer"
                 }
             }
         },

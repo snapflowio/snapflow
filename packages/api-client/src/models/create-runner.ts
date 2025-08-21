@@ -12,95 +12,93 @@
  * Do not edit the class manually.
  */
 
-
-
 /**
- * 
+ *
  * @export
  * @interface CreateExecutor
  */
 export interface CreateExecutor {
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateExecutor
-     */
-    'domain': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateExecutor
-     */
-    'apiUrl': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateExecutor
-     */
-    'apiKey': string;
-    /**
-     * 
-     * @type {number}
-     * @memberof CreateExecutor
-     */
-    'cpu': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof CreateExecutor
-     */
-    'memory': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof CreateExecutor
-     */
-    'disk': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof CreateExecutor
-     */
-    'gpu': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateExecutor
-     */
-    'gpuType': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateExecutor
-     */
-    'class': CreateExecutorClassEnum;
-    /**
-     * 
-     * @type {number}
-     * @memberof CreateExecutor
-     */
-    'capacity': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateExecutor
-     */
-    'region': CreateExecutorRegionEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof CreateExecutor
+   */
+  domain: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CreateExecutor
+   */
+  apiUrl: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CreateExecutor
+   */
+  apiKey: string;
+  /**
+   *
+   * @type {number}
+   * @memberof CreateExecutor
+   */
+  cpu: number;
+  /**
+   *
+   * @type {number}
+   * @memberof CreateExecutor
+   */
+  memory: number;
+  /**
+   *
+   * @type {number}
+   * @memberof CreateExecutor
+   */
+  disk: number;
+  /**
+   *
+   * @type {number}
+   * @memberof CreateExecutor
+   */
+  gpu: number;
+  /**
+   *
+   * @type {string}
+   * @memberof CreateExecutor
+   */
+  gpuType: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CreateExecutor
+   */
+  class: CreateExecutorClassEnum;
+  /**
+   *
+   * @type {number}
+   * @memberof CreateExecutor
+   */
+  capacity: number;
+  /**
+   *
+   * @type {string}
+   * @memberof CreateExecutor
+   */
+  region: CreateExecutorRegionEnum;
 }
 
 export const CreateExecutorClassEnum = {
-    SMALL: 'small',
-    MEDIUM: 'medium',
-    LARGE: 'large'
+  SMALL: "small",
+  MEDIUM: "medium",
+  LARGE: "large",
 } as const;
 
-export type CreateExecutorClassEnum = typeof CreateExecutorClassEnum[keyof typeof CreateExecutorClassEnum];
+export type CreateExecutorClassEnum =
+  (typeof CreateExecutorClassEnum)[keyof typeof CreateExecutorClassEnum];
 export const CreateExecutorRegionEnum = {
-    EU: 'eu',
-    US: 'us',
-    ASIA: 'asia'
+  EU: "eu",
+  US: "us",
+  ASIA: "asia",
 } as const;
 
-export type CreateExecutorRegionEnum = typeof CreateExecutorRegionEnum[keyof typeof CreateExecutorRegionEnum];
-
-
+export type CreateExecutorRegionEnum =
+  (typeof CreateExecutorRegionEnum)[keyof typeof CreateExecutorRegionEnum];

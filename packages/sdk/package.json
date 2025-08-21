@@ -7,6 +7,12 @@
   "author": "Snapflow",
   "license": "Apache-2.0",
   "keywords": [],
+  "scripts": {
+    "build": "tsc -b tsconfig.json",
+    "format": "biome format src --write || true",
+    "lint": "biome check .",
+    "lint:fix": "biome check . --write"
+  },
   "dependencies": {
     "axios": "^1.11.0",
     "dotenv": "^17.2.1",

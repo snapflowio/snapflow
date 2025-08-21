@@ -11,10 +11,10 @@ package apiclient
 
 import (
 	"context"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
 )
 
 func Test_apiclient_StreamableHttpAPIService(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_apiclient_StreamableHttpAPIService(t *testing.T) {
 
 	t.Run("Test StreamableHttpAPIService StreamableHttpControllerHandleDeleteRequest", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		httpRes, err := apiClient.StreamableHttpAPI.StreamableHttpControllerHandleDeleteRequest(context.Background()).Execute()
 
@@ -35,7 +35,7 @@ func Test_apiclient_StreamableHttpAPIService(t *testing.T) {
 
 	t.Run("Test StreamableHttpAPIService StreamableHttpControllerHandleGetRequest", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		httpRes, err := apiClient.StreamableHttpAPI.StreamableHttpControllerHandleGetRequest(context.Background()).Execute()
 
@@ -46,7 +46,7 @@ func Test_apiclient_StreamableHttpAPIService(t *testing.T) {
 
 	t.Run("Test StreamableHttpAPIService StreamableHttpControllerHandlePostRequest", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		httpRes, err := apiClient.StreamableHttpAPI.StreamableHttpControllerHandlePostRequest(context.Background()).Execute()
 

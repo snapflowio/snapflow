@@ -8,12 +8,12 @@ ignoredBuiltDependencies:
   - ssh2
   - unrs-resolver
 onlyBuiltDependencies:
-  - '@nestjs/core'
-  - '@openapitools/openapi-generator-cli'
-  - '@parcel/watcher'
-  - '@scarf/scarf'
-  - '@swc/core'
-  - '@tailwindcss/oxide'
+  - "@nestjs/core"
+  - "@openapitools/openapi-generator-cli"
+  - "@parcel/watcher"
+  - "@scarf/scarf"
+  - "@swc/core"
+  - "@tailwindcss/oxide"
   - argon2
   - contentlayer2
   - core-js

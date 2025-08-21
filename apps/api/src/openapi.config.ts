@@ -1,15 +1,10 @@
 import { DocumentBuilder } from "@nestjs/swagger";
 
-const getOpenApiConfig = () =>
-  new DocumentBuilder()
+export function getOpenApiConfig() {
+  return new DocumentBuilder()
     .setTitle("Snapflow")
     .addServer("http://localhost:3000")
     .setDescription("Snapflow AI platform API Docs")
-    .setContact(
-      "Snapflow Platforms Inc.",
-      "https://www.snapflow.io",
-      "support@snapflow.com",
-    )
     .setVersion("1.0")
     .addBearerAuth({
       type: "http",
@@ -17,5 +12,4 @@ const getOpenApiConfig = () =>
       description: "API Key access",
     })
     .build();
-
-export { getOpenApiConfig };
+}

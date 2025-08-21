@@ -2,11 +2,7 @@
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": [
-      "ES2020",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "esModuleInterop": true,
@@ -24,15 +20,9 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "@snapflow/*": [
-        "../../packages/*"
-      ],
-      "contentlayer/generated": [
-        "./.contentlayer/generated"
-      ]
+      "@/*": ["src/*"],
+      "@snapflow/*": ["../../packages/*"],
+      "contentlayer/generated": ["./.contentlayer/generated"]
     },
     "allowImportingTsExtensions": true,
     "plugins": [
@@ -49,9 +39,5 @@
     "src",
     ".next/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.*",
-    "**/*.test.*"
-  ]
+  "exclude": ["node_modules", "**/*.spec.*", "**/*.test.*"]
 }

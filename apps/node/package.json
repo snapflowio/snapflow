@@ -1,0 +1,15 @@
+{
+  "name": "@snapflow/node",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "go build -o ../../dist/apps/node ./cmd/node/main.go",
+    "build:development": "go build -o ../../dist/apps/node ./cmd/node/main.go",
+    "build:production": "go build -o ../../dist/apps/node ./cmd/node/main.go",
+    "build-amd64": "GOOS=linux GOARCH=amd64 go build -o ../../dist/apps/node-amd64 ./cmd/node/main.go",
+    "serve": "gow run ./cmd/node/main.go",
+    "format": "go fmt ./...",
+    "lint": "golangci-lint run || echo 'golangci-lint not installed, skipping Go lint'",
+    "test": "go test ./..."
+  }
+}

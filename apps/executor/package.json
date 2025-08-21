@@ -1,0 +1,19 @@
+{
+  "name": "@snapflow/executor",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "go build -o ../../dist/apps/executor ./cmd/executor/main.go",
+    "build:development": "go build -o ../../dist/apps/executor ./cmd/executor/main.go",
+    "build:production": "go build -o ../../dist/apps/executor ./cmd/executor/main.go",
+    "serve": "gow run ./cmd/executor/main.go",
+    "format": "go fmt ./...",
+    "lint": "golangci-lint run || echo 'golangci-lint not installed, skipping Go lint'",
+    "test": "go test ./...",
+    "copy-node-bin": "cp ../../dist/apps/node-amd64 pkg/node/static",
+    "openapi": "cd pkg/api && swag fmt && swag init --parseDependency --parseInternal --parseDepth 1 -o docs -g server.go"
+  },
+  "dependencies": {
+    "@snapflow/node": "workspace:*"
+  }
+}

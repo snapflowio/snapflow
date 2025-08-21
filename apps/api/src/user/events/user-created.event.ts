@@ -7,6 +7,6 @@ export class UserCreatedEvent {
     public readonly userId: string,
     public readonly email?: string,
     public readonly emailVerified?: boolean,
-    public readonly personalOrganizationQuota?: CreateOrganizationQuotaDto,
+    public readonly personalOrganizationQuota?: CreateOrganizationQuotaDto
   ) {}
 }

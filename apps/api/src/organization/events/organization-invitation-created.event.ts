@@ -4,6 +4,6 @@ export class OrganizationInvitationCreatedEvent {
     public readonly invitedBy: string,
     public readonly inviteEmail: string,
     public readonly invitationId: string,
-    public readonly expiresAt: Date,
+    public readonly expiresAt: Date
   ) {}
 }

@@ -10,21 +10,11 @@ export function Header() {
     <header className="fixed top-0 right-0 left-0 z-[9999] flex w-full justify-center">
       <div className="mx-auto w-full border-b bg-background px-16">
         <nav aria-label="Main navigation">
-          <div className="flex h-14 items-center justify-between">
-            <div className="flex items-center space-x-10">
-              <div className="flex items-center space-x-4">
-                <Logo size={24} />
-                <span className="font-black text-xl">
-                  <span className="bg-gradient-to-t from-primary to-primary/90 bg-clip-text text-transparent">
-                    Snapflow
-                  </span>
-                  <span className="bg-gradient-to-t from-[#7D5AF3] to-[#ae62fc]/90 bg-clip-text text-transparent">
-                    .io
-                  </span>
-                </span>
-              </div>
+          <div className="grid h-16 grid-cols-3 items-center">
+            {/* Left - Navigation Links */}
+            <div className="flex items-center justify-start">
               <NavigationMenu className="hidden items-center md:flex" aria-label="Main menu">
-                <NavigationMenuList className="mt-0.5 flex items-center space-x-4 text-slate-200">
+                <NavigationMenuList className="flex items-center space-x-6 text-slate-200">
                   <Link
                     href={Path.PRICING}
                     className="flex items-center font-bold text-sm hover:text-primary"
@@ -53,8 +43,15 @@ export function Header() {
                 </NavigationMenuList>
               </NavigationMenu>
             </div>
-            <div className="flex items-center">
-              <Button className="flex items-center rounded-lg" size={"sm"} asChild>
+
+            {/* Center - Logo */}
+            <div className="flex items-center justify-center">
+              <Logo size={26} />
+            </div>
+
+            {/* Right - Open App Button */}
+            <div className="flex items-center justify-end">
+              <Button className="flex items-center rounded-lg" asChild>
                 <Link href={Path.DASHBOARD} className="flex items-center">
                   Open App
                   <ArrowRightIcon />

@@ -64,9 +64,7 @@ export class OrganizationInvitationDto {
   })
   updatedAt: Date;
 
-  static fromOrganizationInvitation(
-    invitation: OrganizationInvitation,
-  ): OrganizationInvitationDto {
+  static fromOrganizationInvitation(invitation: OrganizationInvitation): OrganizationInvitationDto {
     const dto: OrganizationInvitationDto = {
       id: invitation.id,
       email: invitation.email,
@@ -76,9 +74,7 @@ export class OrganizationInvitationDto {
       expiresAt: invitation.expiresAt,
       status: invitation.status,
       role: invitation.role,
-      assignedRoles: invitation.assignedRoles.map(
-        OrganizationRoleDto.fromOrganizationRole,
-      ),
+      assignedRoles: invitation.assignedRoles.map(OrganizationRoleDto.fromOrganizationRole),
       createdAt: invitation.createdAt,
       updatedAt: invitation.updatedAt,
     };

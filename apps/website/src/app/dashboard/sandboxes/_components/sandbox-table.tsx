@@ -37,10 +37,16 @@ import { Switch } from "@/components/bootstrap/components/switch-case";
 import { Whenever } from "@/components/bootstrap/components/whenever";
 import { Pagination } from "@/components/pagination";
 import { DebouncedInput } from "@/components/table/debounce-input";
-import { TableEmptyState } from "@/components/table/table-empty";
 import { DataTableFacetedFilter, FacetedFilterOption } from "@/components/table/table-filter";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -150,100 +156,110 @@ export function SandboxTable({
   });
 
   return (
-    <Card className="gap-4">
-      <CardHeader>
-        <CardTitle>Sandboxes</CardTitle>
-        <CardDescription>Manage & create your sandboxes</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="mb-4 flex items-center">
-          <DebouncedInput
-            value={(table.getColumn("id")?.getFilterValue() as string) ?? ""}
-            onChange={(value) => table.getColumn("id")?.setFilterValue(value)}
-            placeholder="Search..."
-            className="mr-4 max-w-sm"
-          />
-          {table.getColumn("state") && (
-            <DataTableFacetedFilter
-              column={table.getColumn("state")}
-              title="State"
-              options={statuses}
-            />
-          )}
-          {table.getColumn("labels") && (
-            <DataTableFacetedFilter
-              className="ml-4"
-              column={table.getColumn("labels")}
-              title="Labels"
-              options={labelOptions}
-            />
-          )}
+    <Card className="flex h-full flex-col">
+      <CardHeader className="flex flex-shrink-0 flex-row items-center justify-between">
+        <div>
+          <CardTitle>Sandboxes</CardTitle>
+          <CardDescription>Manage & create your sandboxes</CardDescription>
         </div>
-        <Table>
-          <TableHeader>
-            <ForEach items={table.getHeaderGroups()}>
-              {(headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  <ForEach items={headerGroup.headers}>
-                    {(header) => (
-                      <TableHead className="select-none" key={header.id}>
-                        <Whenever condition={!header.isPlaceholder}>
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                        </Whenever>
-                      </TableHead>
-                    )}
-                  </ForEach>
-                </TableRow>
-              )}
-            </ForEach>
-          </TableHeader>
-          <TableBody>
-            <Check>
-              <Check.When condition={loading}>
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    Loading...
-                  </TableCell>
-                </TableRow>
-              </Check.When>
-              <Check.When condition={table.getRowModel().rows?.length > 0}>
-                <ForEach items={table.getRowModel().rows}>
-                  {(row) => (
-                    <TableRow
-                      key={row.id}
-                      className={`${loadingSandboxes[row.original.id] || row.original.state === SandboxState.DESTROYING ? "pointer-events-none opacity-50" : ""}`}
-                    >
-                      <ForEach items={row.getVisibleCells()}>
-                        {(cell) => (
-                          <TableCell key={cell.id}>
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </TableCell>
+      </CardHeader>
+      <CardContent className="min-h-0 flex-1">
+        <div className="flex h-full flex-col space-y-4">
+          <div className="flex items-center">
+            <DebouncedInput
+              value={(table.getColumn("id")?.getFilterValue() as string) ?? ""}
+              onChange={(value) => table.getColumn("id")?.setFilterValue(value)}
+              placeholder="Search..."
+              className="mr-4 max-w-sm"
+            />
+            {table.getColumn("state") && (
+              <DataTableFacetedFilter
+                column={table.getColumn("state")}
+                title="State"
+                options={statuses}
+              />
+            )}
+            {table.getColumn("labels") && (
+              <DataTableFacetedFilter
+                className="ml-4"
+                column={table.getColumn("labels")}
+                title="Labels"
+                options={labelOptions}
+              />
+            )}
+          </div>
+
+          <div className="min-h-0 flex-1 rounded-md border">
+            <Table>
+              <TableHeader>
+                <ForEach items={table.getHeaderGroups()}>
+                  {(headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      <ForEach items={headerGroup.headers}>
+                        {(header) => (
+                          <TableHead className="select-none py-1" key={header.id}>
+                            <Whenever condition={!header.isPlaceholder}>
+                              {flexRender(header.column.columnDef.header, header.getContext())}
+                            </Whenever>
+                          </TableHead>
                         )}
                       </ForEach>
                     </TableRow>
                   )}
                 </ForEach>
-              </Check.When>
-              <Check.Else>
-                <TableEmptyState
-                  colSpan={columns.length}
-                  message="No sandboxes"
-                  icon={<BoxIcon className="h-8 w-8" />}
-                  description={
-                    <div className="space-y-2">
-                      <p>Sandboxes are used to run code in a safe environment</p>
-                      <p>Manually create one to experiment or use our SDK to create one.</p>
-                    </div>
-                  }
-                />
-              </Check.Else>
-            </Check>
-          </TableBody>
-        </Table>
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <Pagination table={table} entityName="Sandboxes" />
+              </TableHeader>
+              <TableBody className="relative">
+                <Check>
+                  <Check.When condition={loading}>
+                    <TableRow>
+                      <TableCell colSpan={columns.length} className="h-24 text-center">
+                        Loading...
+                      </TableCell>
+                    </TableRow>
+                  </Check.When>
+                  <Check.When condition={table.getRowModel().rows?.length > 0}>
+                    <ForEach items={table.getRowModel().rows}>
+                      {(row) => (
+                        <TableRow
+                          key={row.id}
+                          className={`${loadingSandboxes[row.original.id] || row.original.state === SandboxState.DESTROYING ? "pointer-events-none opacity-50" : ""}`}
+                        >
+                          <ForEach items={row.getVisibleCells()}>
+                            {(cell) => (
+                              <TableCell key={cell.id}>
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                              </TableCell>
+                            )}
+                          </ForEach>
+                        </TableRow>
+                      )}
+                    </ForEach>
+                  </Check.When>
+                  <Check.Else>
+                    <TableRow>
+                      <TableCell colSpan={columns.length} className="relative h-[400px] p-0">
+                        <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4">
+                          <BoxIcon className="h-8 w-8 text-muted-foreground" />
+                          <div className="text-center">
+                            <h3 className="font-medium text-lg">No sandboxes</h3>
+                            <div className="mt-2 space-y-2 text-muted-foreground text-sm">
+                              <p>Sandboxes are used to run code in a safe environment</p>
+                              <p>Manually create one to experiment or use our SDK to create one.</p>
+                            </div>
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  </Check.Else>
+                </Check>
+              </TableBody>
+            </Table>
+          </div>
         </div>
       </CardContent>
+      <CardFooter className="flex-shrink-0">
+        <Pagination table={table} entityName="Sandboxes" />
+      </CardFooter>
     </Card>
   );
 }
@@ -307,19 +323,51 @@ const getStateLabel = (state?: SandboxState) => {
 };
 
 const statuses: FacetedFilterOption[] = [
-  { label: getStateLabel(SandboxState.STARTED), value: SandboxState.STARTED, icon: CheckCircle },
-  { label: getStateLabel(SandboxState.STOPPED), value: SandboxState.STOPPED, icon: Circle },
-  { label: getStateLabel(SandboxState.ERROR), value: SandboxState.ERROR, icon: AlertTriangle },
+  {
+    label: getStateLabel(SandboxState.STARTED),
+    value: SandboxState.STARTED,
+    icon: CheckCircle,
+  },
+  {
+    label: getStateLabel(SandboxState.STOPPED),
+    value: SandboxState.STOPPED,
+    icon: Circle,
+  },
+  {
+    label: getStateLabel(SandboxState.ERROR),
+    value: SandboxState.ERROR,
+    icon: AlertTriangle,
+  },
   {
     label: getStateLabel(SandboxState.BUILD_FAILED),
     value: SandboxState.BUILD_FAILED,
     icon: AlertTriangle,
   },
-  { label: getStateLabel(SandboxState.STARTING), value: SandboxState.STARTING, icon: Timer },
-  { label: getStateLabel(SandboxState.STOPPING), value: SandboxState.STOPPING, icon: Timer },
-  { label: getStateLabel(SandboxState.DESTROYING), value: SandboxState.DESTROYING, icon: Timer },
-  { label: getStateLabel(SandboxState.ARCHIVING), value: SandboxState.ARCHIVING, icon: Timer },
-  { label: getStateLabel(SandboxState.ARCHIVED), value: SandboxState.ARCHIVED, icon: Archive },
+  {
+    label: getStateLabel(SandboxState.STARTING),
+    value: SandboxState.STARTING,
+    icon: Timer,
+  },
+  {
+    label: getStateLabel(SandboxState.STOPPING),
+    value: SandboxState.STOPPING,
+    icon: Timer,
+  },
+  {
+    label: getStateLabel(SandboxState.DESTROYING),
+    value: SandboxState.DESTROYING,
+    icon: Timer,
+  },
+  {
+    label: getStateLabel(SandboxState.ARCHIVING),
+    value: SandboxState.ARCHIVING,
+    icon: Timer,
+  },
+  {
+    label: getStateLabel(SandboxState.ARCHIVED),
+    value: SandboxState.ARCHIVED,
+    icon: Archive,
+  },
 ];
 
 const getColumns = ({
@@ -479,7 +527,11 @@ const getColumns = ({
     {
       id: "labels",
       header: () => {
-        return <span className="px-2">Labels</span>;
+        return (
+          <Button variant="ghost" className="cursor-default px-2">
+            Labels
+          </Button>
+        );
       },
       cell: ({ row }) => {
         const labels = Object.entries(row.original.labels ?? {})

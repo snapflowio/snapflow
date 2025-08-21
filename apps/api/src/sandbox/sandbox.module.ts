@@ -4,6 +4,7 @@ import { AuthModule } from "../auth/auth.module";
 import { OrganizationModule } from "../organization/organization.module";
 import { Registry } from "../registry/entities/registry.entity";
 import { DockerRegistryModule } from "../registry/registry.module";
+import { UsageModule } from "../usage/usage.module";
 import { UserModule } from "../user/user.module";
 import { RedisLockProvider } from "./common/redis-lock.provider";
 import { BucketController } from "./controllers/bucket.controller";
@@ -20,7 +21,6 @@ import { Image } from "./entities/image.entity";
 import { ImageExecutor } from "./entities/image-executor.entity";
 import { Sandbox } from "./entities/sandbox.entity";
 import { WarmPool } from "./entities/warm-pool.entity";
-import { ExecutorApiFactory } from "./executor-api/executor-api";
 import { BackupManager } from "./managers/backup.manager";
 import { BucketManager } from "./managers/bucket.manager";
 import { ImageManager } from "./managers/image.manager";
@@ -36,6 +36,11 @@ import { ToolboxService } from "./services/toolbox.service";
 import { BucketSubscriber } from "./subscribers/bucket.subscriber";
 import { ImageSubscriber } from "./subscribers/image.subscriber";
 import { SandboxSubscriber } from "./subscribers/sandbox.subscriber";
+import { ExecutorAdapterFactory } from "./adapter/adapter";
+import { SandboxStartAction } from "./managers/actions/sandbox-start.action";
+import { SandboxStopAction } from "./managers/actions/sandbox-stop.action";
+import { SandboxDestroyAction } from "./managers/actions/sandbox-destroy.action";
+import { SandboxArchiveAction } from "./managers/actions/sandbox-archive.action";
 import { BucketTool } from "./tools/bucket.tool";
 
 @Module({
@@ -44,6 +49,7 @@ import { BucketTool } from "./tools/bucket.tool";
     AuthModule,
     DockerRegistryModule,
     OrganizationModule,
+    UsageModule,
     TypeOrmModule.forFeature([
       Sandbox,
       Executor,
@@ -69,7 +75,6 @@ import { BucketTool } from "./tools/bucket.tool";
     BackupManager,
     SandboxWarmPoolService,
     ExecutorService,
-    ExecutorApiFactory,
     ToolboxService,
     ImageService,
     ImageManager,
@@ -81,6 +86,11 @@ import { BucketTool } from "./tools/bucket.tool";
     BucketManager,
     BucketSubscriber,
     ImageExecutorService,
+    ExecutorAdapterFactory,
+    SandboxStartAction,
+    SandboxStopAction,
+    SandboxDestroyAction,
+    SandboxArchiveAction,
     BucketTool,
   ],
   exports: [

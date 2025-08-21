@@ -1,6 +1,5 @@
 import { ExecutionContext, Injectable, Logger } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-
 import { OrganizationAuthContext } from "../../common/interfaces/auth-context.interface";
 import { SystemRole } from "../../user/enums/system-role.enum";
 import { RequiredOrganizationMemberRole } from "../decorators/required-organization-member-role.decorator";
@@ -16,7 +15,7 @@ export class OrganizationActionGuard extends OrganizationAccessGuard {
   constructor(
     organizationService: OrganizationService,
     organizationUserService: OrganizationUserService,
-    private readonly reflector: Reflector,
+    private readonly reflector: Reflector
   ) {
     super(organizationService, organizationUserService);
   }
@@ -27,13 +26,12 @@ export class OrganizationActionGuard extends OrganizationAccessGuard {
     const request = context.switchToHttp().getRequest();
     const authContext: OrganizationAuthContext = request.user;
 
+    console.log(authContext);
+
     if (authContext.role === SystemRole.ADMIN) return true;
     if (!authContext.organizationUser) return false;
 
-    const requiredRole = this.reflector.get(
-      RequiredOrganizationMemberRole,
-      context.getHandler(),
-    );
+    const requiredRole = this.reflector.get(RequiredOrganizationMemberRole, context.getHandler());
     if (!requiredRole) return true;
     if (requiredRole === OrganizationMemberRole.OWNER)
       return authContext.organizationUser.role === OrganizationMemberRole.OWNER;

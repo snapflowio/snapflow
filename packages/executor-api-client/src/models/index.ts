@@ -5,6 +5,8 @@ export * from './dto-bucket-dto';
 export * from './enums-backup-state';
 export * from './enums-sandbox-state';
 export * from './error-response';
+export * from './executor-info-response-dto';
+export * from './executor-metrics';
 export * from './image-exists-response';
 export * from './pull-image-request-dto';
 export * from './registry-dto';

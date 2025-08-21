@@ -1,9 +1,20 @@
-import { ForbiddenException, Injectable, Logger, NotFoundException } from "@nestjs/common";
+import {
+  ForbiddenException,
+  forwardRef,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
 import { EventEmitter2, OnEvent } from "@nestjs/event-emitter";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import { FindOptionsWhere, In, JsonContains, LessThan, Not, Repository } from "typeorm";
 import { validate as uuidValidate } from "uuid";
+import {
+  CPU_CORE_PER_SECOND_PRICE,
+  MEMORY_GIG_PER_SECOND_PRICE,
+} from "../../common/constants/prices.constants";
 import { BadRequestError } from "../../common/exceptions/bad-request.exception";
 import { SandboxError } from "../../common/exceptions/sandbox-error.exception";
 import { TypedConfigService } from "../../config/typed-config.service";
@@ -11,6 +22,8 @@ import { OrganizationEvents } from "../../organization/constants/organization-ev
 import { Organization } from "../../organization/entities/organization.entity";
 import { OrganizationSuspendedSandboxStoppedEvent } from "../../organization/events/organization-suspended-sandbox-stopped.event";
 import { OrganizationService } from "../../organization/services/organization.service";
+import { WrapperType } from "../../common/types/wrapper.type";
+import { BillingService } from "../../usage/services/billing.service";
 import { SANDBOX_WARM_POOL_UNASSIGNED_ORGANIZATION } from "../constants/sandbox.constants";
 import { SandboxEvents } from "../constants/sandbox-events.constants";
 import { WarmPoolEvents } from "../constants/warmpool-events.constants";
@@ -64,7 +77,9 @@ export class SandboxService {
     private readonly configService: TypedConfigService,
     private readonly warmPoolService: SandboxWarmPoolService,
     private readonly eventEmitter: EventEmitter2,
-    private readonly organizationService: OrganizationService
+    private readonly organizationService: OrganizationService,
+    @Inject(forwardRef(() => BillingService))
+    private readonly billingService: WrapperType<BillingService>
   ) {}
 
   private async validateOrganizationQuotas(
@@ -75,6 +90,16 @@ export class SandboxService {
     excludeSandboxId?: string
   ): Promise<void> {
     this.organizationService.assertOrganizationIsNotSuspended(organization);
+
+    // Check organization wallet balance before allowing sandbox creation
+    const estimatedHourlyUsage =
+      cpu * 3600 * CPU_CORE_PER_SECOND_PRICE + memory * 3600 * MEMORY_GIG_PER_SECOND_PRICE;
+
+    if (await this.billingService.hasInsufficientBalance(organization.id, estimatedHourlyUsage)) {
+      throw new ForbiddenException(
+        "Insufficient wallet balance to create sandbox. Please add credits to your account."
+      );
+    }
 
     // Check per-sandbox resource limits
     if (cpu > organization.maxCpuPerSandbox) {
@@ -567,11 +592,11 @@ export class SandboxService {
 
     return {
       url: `https://${port}-${sandbox.id}.${executor.domain}`,
-      token: sandbox.authToken,
     };
   }
 
   async destroy(sandboxId: string): Promise<void> {
+    console.log(sandboxId);
     const sandbox = await this.sandboxRepository.findOne({
       where: {
         id: sandboxId,
@@ -669,6 +694,29 @@ export class SandboxService {
     await this.sandboxRepository.save(sandbox);
 
     this.eventEmitter.emit(SandboxEvents.STOPPED, new SandboxStoppedEvent(sandbox));
+  }
+
+  async stopAllRunningSandboxes(organizationId: string): Promise<void> {
+    const runningSandboxes = await this.sandboxRepository.find({
+      where: {
+        organizationId,
+        state: SandboxState.STARTED,
+        pending: false,
+      },
+    });
+
+    this.logger.log(
+      `Stopping ${runningSandboxes.length} running sandboxes for organization ${organizationId}`
+    );
+
+    for (const sandbox of runningSandboxes) {
+      try {
+        await this.stop(sandbox.id);
+        this.logger.log(`Successfully initiated stop for sandbox ${sandbox.id}`);
+      } catch (error) {
+        this.logger.error(`Failed to stop sandbox ${sandbox.id}`, error);
+      }
+    }
   }
 
   async updatePublicStatus(sandboxId: string, isPublic: boolean): Promise<void> {

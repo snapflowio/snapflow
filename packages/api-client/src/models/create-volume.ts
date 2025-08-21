@@ -12,19 +12,16 @@
  * Do not edit the class manually.
  */
 
-
-
 /**
- * 
+ *
  * @export
  * @interface CreateBucket
  */
 export interface CreateBucket {
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateBucket
-     */
-    'name': string;
+  /**
+   *
+   * @type {string}
+   * @memberof CreateBucket
+   */
+  name: string;
 }
-

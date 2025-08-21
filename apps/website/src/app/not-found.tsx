@@ -15,7 +15,7 @@ export default function NotFound() {
         x={-1}
         y={-1}
         className={cn(
-          "opacity-20 [mask-image:radial-gradient(ellipse_50%_30%_at_50%_50%,white,transparent)]"
+          "opacity-60 [mask-image:radial-gradient(ellipse_60%_40%_at_50%_50%,white,transparent)]"
         )}
       />
       <div className="container relative z-10 mx-auto px-4 py-16 text-center">

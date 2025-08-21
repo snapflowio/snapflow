@@ -1,6 +1,4 @@
-"use client";
-
-import type * as React from "react";
+import * as React from "react";
 import { cn } from "@/lib/util";
 
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {

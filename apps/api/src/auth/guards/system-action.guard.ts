@@ -1,18 +1,10 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  Logger,
-} from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable, Logger } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import {
   RequiredApiRole,
   RequiredSystemRole,
 } from "../../common/decorators/required-role.decorator";
-import {
-  ApiRole,
-  AuthContext,
-} from "../../common/interfaces/auth-context.interface";
+import { ApiRole, AuthContext } from "../../common/interfaces/auth-context.interface";
 import { SystemRole } from "../../user/enums/system-role.enum";
 
 @Injectable()

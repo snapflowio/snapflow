@@ -8,6 +8,6 @@ export class OrganizationInvitationAcceptedEvent {
     public readonly organizationId: string,
     public readonly userId: string,
     public readonly role: OrganizationMemberRole,
-    public readonly assignedRoles: OrganizationRole[],
+    public readonly assignedRoles: OrganizationRole[]
   ) {}
 }

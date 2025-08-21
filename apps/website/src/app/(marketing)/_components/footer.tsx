@@ -20,7 +20,7 @@ export function Footer() {
           />
           <div className="flex max-w-48 flex-col items-start">
             <div className="flex items-center gap-2">
-              <Logo size={24} />
+              <Logo size={20} />
               <span className="font-bold text-xl">{SITE_CONFIG.NAME}</span>
             </div>
             <p className="max-w mt-4 text-base">Intelligent, scalable sandboxes.</p>

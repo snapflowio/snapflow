@@ -1,123 +1,66 @@
-import { StarIcon } from "lucide-react";
-import Image from "next/image";
-import Avatar from "./avatar";
-import FeatureCard from "./feature-card";
-import Key from "./key";
-import { SectionBadge } from "./section-badge";
+"use client";
 
-const features = [
-  "Run code",
-  "Fully isolated",
-  "Quick startup time",
-  "MCP Access",
-  "Deploy Docker images",
-  "Remote access",
-  "Sandbox automation",
-];
+import { BotIcon, BoxIcon, BrainIcon, PencilIcon, RocketIcon, TerminalIcon } from "lucide-react";
 
-export default function Features() {
+export function Features() {
   return (
-    <div className="flex w-full flex-col items-center justify-center">
-      <div className="h-full w-full">
-        <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
-          <SectionBadge title="Features" />
+    <section>
+      <div className="mx-auto max-w-5xl space-y-8 px-6 md:space-y-16">
+        <div className="mx-auto mb-12 flex max-w-2xl flex-col items-center text-center">
           <h2 className="!leading-snug mt-4 font-bold font-heading text-2xl md:text-4xl lg:text-5xl">
             Built to do anything
           </h2>
           <p className="mt-4 text-center text-accent-foreground/80 text-base md:text-lg">
-            Create one or more sandboxes to run Docker images, run code, automate tasks, scrape data
-            and more; easily and quickly.
+            Secure, isolated sandbox environments for AI agents, automations, code execution, and
+            more.
           </p>
         </div>
-      </div>
-      <div className="mt-16 w-full">
-        <div className="flex w-full flex-col items-center gap-5 lg:gap-5">
-          <div className="h-full w-full">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-3">
-              <FeatureCard
-                title="Workspaces"
-                description="Share sandboxes, resources, and collaborate with members in your organization."
-                className="group md:col-span-2 lg:col-span-1"
-              >
-                <div className="flex aspect-video items-center justify-center">
-                  <Avatar className="z-40 border-blue-400">
-                    <Image
-                      width={100}
-                      height={100}
-                      src={"/avatars/avatar1.jpg"}
-                      alt="Avatar 1"
-                      className="rounded-full"
-                    />
-                  </Avatar>
-                  <Avatar className="-ml-6 z-30 border-primary">
-                    <Image
-                      width={100}
-                      height={100}
-                      src={"/avatars/avatar2.jpg"}
-                      alt="Avatar 2"
-                      className="rounded-full "
-                    />
-                  </Avatar>
-                  <Avatar className="-ml-6 z-20 border-purple-400">
-                    <Image
-                      width={100}
-                      height={100}
-                      src={"/avatars/avatar3.jpg"}
-                      alt="Avatar 3"
-                      className="rounded-full"
-                    />
-                  </Avatar>
-                </div>
-              </FeatureCard>
-              <FeatureCard
-                title="Build with AI"
-                description="Use our CLI tool to create sandboxes using natural language. Just say what you want us to do."
-                className="group md:col-span-2 lg:col-span-1"
-              >
-                <div className="flex aspect-video items-center justify-center">
-                  <p className="text-left font-extrabold text-4xl text-white/20 transition duration-500 group-hover:text-white/10">
-                    Create a{" "}
-                    <span className="relative text-primary">
-                      <span>sandbox</span>
-                    </span>{" "}
-                    that...
-                  </p>
-                </div>
-              </FeatureCard>
-              <FeatureCard
-                title="Remote Access"
-                description="Access all of your sandboxes securely using SSH and remote desktop, wherever you are."
-                className="group md:col-span-2 md:col-start-2 lg:col-span-1 lg:col-start-auto"
-              >
-                <div className="flex aspect-video items-center justify-center gap-4">
-                  <Key className="w-28 outline-2 outline-tranparent outline-offset-4 transition-all duration-500 group-hover:translate-y-1 group-hover:outline-primary">
-                    shift
-                  </Key>
-                  <Key className=" outline-2 outline-transparent outline-offset-4 transition-all delay-150 duration-500 group-hover:translate-y-1 group-hover:outline-primary">
-                    alt
-                  </Key>
-                  <Key className="outline-2 outline-transparent outline-offset-4 transition-all delay-300 duration-500 group-hover:translate-y-1 group-hover:outline-primary">
-                    C
-                  </Key>
-                </div>
-              </FeatureCard>
+
+        <div className="relative mx-auto grid max-w-4xl divide-x divide-y border *:p-12 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <BotIcon className="size-4" />
+              <h3 className="font-medium text-sm">AI Agents</h3>
             </div>
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
-              {features.map((feature) => (
-                <div
-                  key={feature}
-                  className="group inline-flex items-center gap-3 rounded-2xl border bg-background px-3 py-1.5 transition duration-500 hover:scale-105 md:px-5 md:py-2"
-                >
-                  <span className="inline-flex size-5 items-center justify-center rounded-full bg-primary text-neutral-950 text-xl transition duration-500 group-hover:rotate-45">
-                    <StarIcon fill="#000" className="size-4" />
-                  </span>
-                  <span className="font-medium md:text-lg">{feature}</span>
-                </div>
-              ))}
+            <p className="text-sm">Give your AI agents and LLM's access to an entire computer.</p>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <RocketIcon className="size-4" />
+              <h3 className="font-medium text-sm">Vibe Coding</h3>
             </div>
+            <p className="text-sm">Run vibe coded apps in a safe, isolated environment.</p>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <TerminalIcon className="size-4" />
+              <h3 className="font-medium text-sm">Remote Access</h3>
+            </div>
+            <p className="text-sm">Access all of your sandboxes using SSH and VNC.</p>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <PencilIcon className="size-4" />
+              <h3 className="font-medium text-sm">Automations</h3>
+            </div>
+            <p className="text-sm">Preform automated tasks with your sandboxes.</p>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <BoxIcon className="size-4" />
+              <h3 className="font-medium text-sm">Computer Use</h3>
+            </div>
+            <p className="text-sm">Use the internet, file system, commands, and more.</p>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <BrainIcon className="size-4" />
+              <h3 className="font-medium text-sm">Build with AI</h3>
+            </div>
+            <p className="text-sm">Create sandboxes and automations with any LLM.</p>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

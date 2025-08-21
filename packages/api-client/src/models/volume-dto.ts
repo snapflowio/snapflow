@@ -12,66 +12,62 @@
  * Do not edit the class manually.
  */
 
-
 // May contain unused imports in some cases
 // @ts-ignore
-import type { BucketState } from './bucket-state';
+import type { BucketState } from "./bucket-state";
 
 /**
- * 
+ *
  * @export
  * @interface BucketDto
  */
 export interface BucketDto {
-    /**
-     * Bucket ID
-     * @type {string}
-     * @memberof BucketDto
-     */
-    'id': string;
-    /**
-     * Bucket name
-     * @type {string}
-     * @memberof BucketDto
-     */
-    'name': string;
-    /**
-     * Organization ID
-     * @type {string}
-     * @memberof BucketDto
-     */
-    'organizationId': string;
-    /**
-     * Bucket state
-     * @type {BucketState}
-     * @memberof BucketDto
-     */
-    'state': BucketState;
-    /**
-     * Creation timestamp
-     * @type {string}
-     * @memberof BucketDto
-     */
-    'createdAt': string;
-    /**
-     * Last update timestamp
-     * @type {string}
-     * @memberof BucketDto
-     */
-    'updatedAt': string;
-    /**
-     * Last used timestamp
-     * @type {string}
-     * @memberof BucketDto
-     */
-    'lastUsedAt'?: string | null;
-    /**
-     * The error reason of the bucket
-     * @type {string}
-     * @memberof BucketDto
-     */
-    'errorReason': string | null;
+  /**
+   * Bucket ID
+   * @type {string}
+   * @memberof BucketDto
+   */
+  id: string;
+  /**
+   * Bucket name
+   * @type {string}
+   * @memberof BucketDto
+   */
+  name: string;
+  /**
+   * Organization ID
+   * @type {string}
+   * @memberof BucketDto
+   */
+  organizationId: string;
+  /**
+   * Bucket state
+   * @type {BucketState}
+   * @memberof BucketDto
+   */
+  state: BucketState;
+  /**
+   * Creation timestamp
+   * @type {string}
+   * @memberof BucketDto
+   */
+  createdAt: string;
+  /**
+   * Last update timestamp
+   * @type {string}
+   * @memberof BucketDto
+   */
+  updatedAt: string;
+  /**
+   * Last used timestamp
+   * @type {string}
+   * @memberof BucketDto
+   */
+  lastUsedAt?: string | null;
+  /**
+   * The error reason of the bucket
+   * @type {string}
+   * @memberof BucketDto
+   */
+  errorReason: string | null;
 }
-
-
-

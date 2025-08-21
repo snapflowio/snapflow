@@ -1,12 +1,14 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Particles } from "@/components/ui/particles";
+import { RainbowButton } from "@/components/ui/rainbow-button";
+import { RetroGrid } from "@/components/ui/retro-grid";
+import { Path } from "@/constants/paths";
 
 export function CallToAction() {
   return (
-    <div className="relative flex w-full flex-col items-center justify-center py-12 md:py-16 lg:py-24">
+    <div className="relative flex w-full flex-col items-center justify-center">
       <div className="h-full w-full">
-        <div className="relative mx-auto flex h-[500px] w-full flex-col items-center justify-center overflow-hidden rounded-3xl border bg-gradient-to-bl from-[#271D3E] via-[#5A424D] to-[rgba(5,223,114,0.3)] px-4 text-center md:px-0">
+        <div className="relative mx-auto flex h-[500px] w-full flex-col items-center justify-center overflow-hidden rounded-3xl border px-4 text-center md:px-0">
           <div className="pointer-events-none absolute inset-0" />
 
           <div className="z-20 flex w-full flex-col items-center justify-center">
@@ -14,27 +16,26 @@ export function CallToAction() {
               Spin up your own <br className="hidden md:block" /> sandboxes now
             </h2>
             <p className="mx-auto mt-6 max-w-md text-center text-base text-zinc-200 md:text-lg">
-              Ready to get started? Create your own sandboxes, for free. No credit card required.
+              Ready to get started? Create your own sandboxes, for free. Get $10 of free credit when
+              you sign up.
             </p>
             <div className="mt-6 flex w-full flex-col items-center justify-center gap-6 md:flex-row">
-              <Button asChild size="lg" className="w-full transition-all duration-500 md:w-max">
-                <Link href="">Get Started</Link>
-              </Button>
+              <RainbowButton
+                asChild
+                size="lg"
+                className="w-full transition-all duration-500 md:w-max"
+              >
+                <Link href={Path.DASHBOARD}>Get Started</Link>
+              </RainbowButton>
             </div>
           </div>
+          <RetroGrid />
           <Particles
             refresh
             ease={80}
             color="#fff"
             quantity={100}
-            className="pointer-events-none absolute inset-0 size-full opacity-40"
-          />
-          <Particles
-            refresh={false}
-            ease={80}
-            color="#fff"
-            quantity={100}
-            className="pointer-events-none absolute inset-0 size-full opacity-30"
+            className="pointer-events-none absolute inset-0 size-full opacity-60"
           />
         </div>
       </div>

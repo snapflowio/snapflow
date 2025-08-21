@@ -11,10 +11,10 @@ package apiclient
 
 import (
 	"context"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
 )
 
 func Test_apiclient_UsersAPIService(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_apiclient_UsersAPIService(t *testing.T) {
 
 	t.Run("Test UsersAPIService CreateUser", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.UsersAPI.CreateUser(context.Background()).Execute()
 
@@ -36,7 +36,7 @@ func Test_apiclient_UsersAPIService(t *testing.T) {
 
 	t.Run("Test UsersAPIService GetAuthenticatedUser", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.UsersAPI.GetAuthenticatedUser(context.Background()).Execute()
 
@@ -48,7 +48,7 @@ func Test_apiclient_UsersAPIService(t *testing.T) {
 
 	t.Run("Test UsersAPIService GetUser", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var id string
 
@@ -62,7 +62,7 @@ func Test_apiclient_UsersAPIService(t *testing.T) {
 
 	t.Run("Test UsersAPIService ListUsers", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.UsersAPI.ListUsers(context.Background()).Execute()
 

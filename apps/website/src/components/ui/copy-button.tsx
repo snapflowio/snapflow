@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { useEffect, useState } from "react";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/util";
@@ -10,9 +10,9 @@ interface CopyButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
 }
 
 export function CopyButton({ value, className, ...props }: CopyButtonProps) {
-  const [hasCopied, setHasCopied] = React.useState(false);
+  const [hasCopied, setHasCopied] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setTimeout(() => {
       setHasCopied(false);
     }, 2000);

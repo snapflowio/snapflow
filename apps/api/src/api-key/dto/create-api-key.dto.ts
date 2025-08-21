@@ -23,8 +23,7 @@ export class CreateApiKeyDto {
   name: string;
 
   @ApiProperty({
-    description:
-      "The list of organization resource permissions assigned to the API key",
+    description: "The list of organization resource permissions assigned to the API key",
     enum: OrganizationResourcePermission,
     isArray: true,
     required: true,

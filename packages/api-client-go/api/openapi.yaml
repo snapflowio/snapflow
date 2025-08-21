@@ -1,9 +1,6 @@
 openapi: 3.0.0
 info:
-  contact:
-    email: support@snapflow.com
-    name: Snapflow Platforms Inc.
-    url: https://www.snapflow.io
+  contact: {}
   description: Snapflow AI platform API Docs
   title: Snapflow
   version: "1.0"
@@ -980,18 +977,18 @@ paths:
     put:
       operationId: updateOrganizationInvitation
       parameters:
-      - description: Organization ID
-        explode: false
-        in: path
-        name: organizationId
-        required: true
-        schema:
-          type: string
-        style: simple
       - description: Invitation ID
         explode: false
         in: path
         name: invitationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
         required: true
         schema:
           type: string
@@ -1022,18 +1019,18 @@ paths:
     post:
       operationId: cancelOrganizationInvitation
       parameters:
-      - description: Organization ID
-        explode: false
-        in: path
-        name: organizationId
-        required: true
-        schema:
-          type: string
-        style: simple
       - description: Invitation ID
         explode: false
         in: path
         name: invitationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Organization ID
+        explode: false
+        in: path
+        name: organizationId
         required: true
         schema:
           type: string
@@ -1048,6 +1045,35 @@ paths:
         - profile
         - email
       summary: Cancel organization invitation
+      tags:
+      - organizations
+  /organizations/{organizationId}/billing/checkout:
+    get:
+      operationId: createCheckoutLink
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrganizationCheckout'
+        required: true
+      responses:
+        "200":
+          description: ""
+      security:
+      - bearer: []
+      - oauth2:
+        - openid
+        - profile
+        - email
+      summary: Get payment checkout link
       tags:
       - organizations
   /registry:
@@ -1393,13 +1419,6 @@ paths:
         schema:
           type: string
         style: simple
-      - explode: true
-        in: query
-        name: force
-        required: true
-        schema:
-          type: boolean
-        style: form
       responses:
         "200":
           description: Sandbox has been deleted
@@ -4171,6 +4190,20 @@ paths:
       summary: Get bucket details by name
       tags:
       - buckets
+  /webhooks/billing:
+    post:
+      operationId: WebhookController_billingWebhook
+      parameters: []
+      responses:
+        "200":
+          description: Webhook processed successfully
+        "400":
+          description: Invalid webhook payload
+        "403":
+          description: Webhook verification failed
+      summary: Handle Polar billing webhooks
+      tags:
+      - webhooks
 components:
   schemas:
     User:
@@ -4953,6 +4986,17 @@ components:
       - assignedRoleIds
       - role
       type: object
+    CreateOrganizationCheckout:
+      example:
+        productId: d13c586c-ce41-4673-8917-0043c0a22867
+      properties:
+        productId:
+          description: The product ID of the subscription that is being purchased
+          example: d13c586c-ce41-4673-8917-0043c0a22867
+          type: string
+      required:
+      - productId
+      type: object
     CreateDockerRegistry:
       example:
         registryType: internal
@@ -5218,10 +5262,10 @@ components:
         - mountPath: /data
           bucketId: bucket123
         cpu: 2
+        nodeVersion: 1.0.0
         env:
           NODE_ENV: production
         gpu: 0
-        nodeVersion: 1.0.0
         backupCreatedAt: 2024-10-01T12:00:00Z
         labels:
           snapflow.io/public: "true"

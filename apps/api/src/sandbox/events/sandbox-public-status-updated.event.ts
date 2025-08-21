@@ -4,6 +4,6 @@ export class SandboxPublicStatusUpdatedEvent {
   constructor(
     public readonly sandbox: Sandbox,
     public readonly oldStatus: boolean,
-    public readonly newStatus: boolean,
+    public readonly newStatus: boolean
   ) {}
 }

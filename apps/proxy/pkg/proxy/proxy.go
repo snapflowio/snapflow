@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gorilla/securecookie"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	apiclient "github.com/snapflowio/api-client-go"
@@ -23,18 +22,11 @@ type RunnerInfo struct {
 	ApiKey string `json:"apiKey"`
 }
 
-const SNAPFLOW_SANDBOX_AUTH_KEY_HEADER = "X-Snapflow-Preview-Token"
-const SNAPFLOW_SANDBOX_AUTH_KEY_QUERY_PARAM = "SNAPFLOW_SANDBOX_AUTH_KEY"
-const SNAPFLOW_SANDBOX_AUTH_COOKIE_NAME = "snapflow-sandbox-auth-"
-
 type Proxy struct {
-	config       *config.Config
-	secureCookie *securecookie.SecureCookie
+	config *config.Config
 
-	apiclient                *apiclient.APIClient
-	executorCache            cache.ICache[RunnerInfo]
-	sandboxPublicCache       cache.ICache[bool]
-	sandboxAuthKeyValidCache cache.ICache[bool]
+	apiclient     *apiclient.APIClient
+	executorCache cache.ICache[RunnerInfo]
 }
 
 func getErrorCode(statusCode int) string {
@@ -59,8 +51,6 @@ func StartProxy(config *config.Config) error {
 		config: config,
 	}
 
-	proxy.secureCookie = securecookie.New([]byte(config.ProxyApiKey), nil)
-
 	clientConfig := apiclient.NewConfiguration()
 	clientConfig.Servers = apiclient.ServerConfigurations{
 		{
@@ -82,18 +72,8 @@ func StartProxy(config *config.Config) error {
 		if err != nil {
 			return err
 		}
-		proxy.sandboxPublicCache, err = cache.NewRedisCache[bool](config.Redis, "proxy:sandbox-public:")
-		if err != nil {
-			return err
-		}
-		proxy.sandboxAuthKeyValidCache, err = cache.NewRedisCache[bool](config.Redis, "proxy:sandbox-auth-key-valid:")
-		if err != nil {
-			return err
-		}
 	} else {
 		proxy.executorCache = cache.NewMapCache[RunnerInfo]()
-		proxy.sandboxPublicCache = cache.NewMapCache[bool]()
-		proxy.sandboxAuthKeyValidCache = cache.NewMapCache[bool]()
 	}
 
 	e := echo.New()
@@ -178,8 +158,6 @@ func StartProxy(config *config.Config) error {
 			switch c.Request().Method {
 			case "GET":
 				switch c.Request().URL.Path {
-				case "/callback":
-					return proxy.AuthCallback(c)
 				case "/health":
 					return c.JSON(http.StatusOK, echo.Map{"status": "ok"})
 				}

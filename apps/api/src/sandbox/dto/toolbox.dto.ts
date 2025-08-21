@@ -289,8 +289,7 @@ export class SessionExecuteRequestDto {
   runAsync?: boolean;
 
   @ApiPropertyOptional({
-    description:
-      "Deprecated: Use runAsync instead. Whether to execute the command asynchronously",
+    description: "Deprecated: Use runAsync instead. Whether to execute the command asynchronously",
     example: false,
     deprecated: true,
   })

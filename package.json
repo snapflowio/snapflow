@@ -1,39 +1,26 @@
 {
   "name": "snapflow",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "license": "MIT",
   "private": true,
   "packageManager": "pnpm@10.11.0",
   "scripts": {
-    "format": "biome format .",
-    "lint": "biome check .",
-    "lint:fix": "biome check . --write",
-    "run": "node --env-file=apps/api/.env ./apps/api/dist/main.js",
-    "preview": "nx run-many --target=serve --all --exclude=node --configuration=development",
-    "build:development": "nx run-many --target=build --all --configuration=development",
-    "build:production": "nx run-many --target=build --all --configuration=production",
-    "db:generate": "cd apps/api && dotenv -e .env -- pnpx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:generate -d ./src/data-source.ts ./src/migrations/migration",
-    "db:push": "cd apps/api && dotenv -e .env -- pnpx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:run -d ./src/data-source.ts",
-    "db:generate-production": "cd apps/api && dotenv -e .env.production -- pnpx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:generate -d ./src/data-source.ts ./src/migrations/migration",
-    "db:push-production": "cd apps/api && dotenv -e .env.production -- pnpx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:run -d ./src/data-source.ts",
-    "openapi:generate": "nx run-many --target=openapi --all",
-    "generate:api-client": "pnpm run openapi:generate && nx run-many --target=generate:api-client --all"
-  },
-  "dependencies": {
-    "@types/node": "^12.20.42"
+    "format": "turbo format",
+    "lint": "turbo lint",
+    "lint:fix": "turbo lint:fix",
+    "db:generate": "turbo db:generate",
+    "db:push": "turbo db:push",
+    "db:generate-production": "turbo db:generate-production",
+    "db:push-production": "turbo db:push-production",
+    "openapi:generate": "turbo openapi",
+    "generate:api-client": "turbo generate:api-client",
+    "build:executor": "turbo build --filter=@snapflow/executor",
+    "serve:executor": "turbo serve --filter=@snapflow/executor",
+    "test:executor": "turbo test --filter=@snapflow/executor",
+    "openapi:executor": "turbo openapi --filter=@snapflow/executor"
   },
   "devDependencies": {
     "@biomejs/biome": "2.0.6",
-    "@nx-go/nx-go": "^3.3.1",
-    "@nx/jest": "^21.2.2",
-    "@nx/js": "^21.2.2",
-    "@nx/nest": "^21.2.2",
-    "@nx/next": "^21.3.8",
-    "@nx/node": "^21.2.2",
-    "@nx/react": "^21.2.2",
-    "@nx/web": "^21.2.2",
-    "@nx/webpack": "^21.2.2",
-    "@nx/workspace": "^21.2.2",
     "@openapitools/openapi-generator-cli": "^2.21.0",
     "@swc-node/register": "^1.10.10",
     "@swc/cli": "^0.7.7",
@@ -44,10 +31,15 @@
     "jiti": "^2.4.2",
     "lint-staged": "^16.1.2",
     "markdownlint-cli2": "^0.18.1",
-    "nx": "^21.3.0",
     "prettier": "^3.6.2",
+    "swc-loader": "^0.2.6",
     "tslib": "^2.8.1",
+    "turbo": "^2.5.6",
     "verdaccio": "^6.1.5",
-    "webpack-cli": "^6.0.1"
+    "webpack-cli": "^6.0.1",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "dependencies": {
+    "openapi": "^1.0.1"
   }
 }

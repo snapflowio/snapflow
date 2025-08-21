@@ -49,7 +49,7 @@ export class ToolboxService {
           headers,
           maxBodyLength: 209715200, // 200MB in bytes
           maxContentLength: 209715200, // 200MB in bytes
-          timeout: 360000, // 360 seconds
+          timeout: 360000,
         };
 
         if (data !== undefined && data !== "") requestConfig.data = data;

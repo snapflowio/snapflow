@@ -6,8 +6,8 @@ import {
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Relation,
 } from "typeorm";
-
 import { OrganizationResourcePermission } from "../enums/organization-resource-permission.enum";
 import { Organization } from "./organization.entity";
 import { OrganizationInvitation } from "./organization-invitation.entity";
@@ -41,16 +41,19 @@ export class OrganizationRole {
 
   @ManyToOne(() => Organization, { onDelete: "CASCADE" })
   @JoinColumn({ name: "organizationId" })
-  organization: Organization;
+  organization: Relation<Organization>;
 
-  @ManyToMany(() => OrganizationUser, (user) => user.assignedRoles)
-  users: OrganizationUser[];
+  @ManyToMany(
+    () => OrganizationUser,
+    (user) => user.assignedRoles
+  )
+  users: Relation<OrganizationUser[]>;
 
   @ManyToMany(
     () => OrganizationInvitation,
-    (invitation) => invitation.assignedRoles,
+    (invitation) => invitation.assignedRoles
   )
-  invitations: OrganizationInvitation[];
+  invitations: Relation<OrganizationInvitation[]>;
 
   @CreateDateColumn()
   createdAt: Date;

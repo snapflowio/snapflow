@@ -17,14 +17,7 @@ type Config struct {
 	TLSKeyFile     string       `envconfig:"TLS_KEY_FILE"`
 	EnableTLS      bool         `envconfig:"ENABLE_TLS"`
 	SnapflowApiUrl string       `envconfig:"SNAPFLOW_API_URL" validate:"required"`
-	Oidc           OidcConfig   `envconfig:"OIDC"`
 	Redis          *RedisConfig `envconfig:"REDIS"`
-}
-
-type OidcConfig struct {
-	ClientId     string `envconfig:"CLIENT_ID" validate:"required"`
-	ClientSecret string `envconfig:"CLIENT_SECRET"`
-	Domain       string `envconfig:"DOMAIN" validate:"required"`
 }
 
 type RedisConfig struct {
@@ -44,7 +37,7 @@ func GetConfig() (*Config, error) {
 
 	config = &Config{}
 
-	err := godotenv.Load()
+	err := godotenv.Load(".env")
 	if err != nil {
 		log.Println("Warning: Error loading .env file:", err)
 	}

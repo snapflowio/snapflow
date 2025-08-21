@@ -42,7 +42,10 @@ export const config = {
   },
   defaultImage: process.env.DEFAULT_IMAGE,
   dashboardUrl: process.env.DASHBOARD_URL,
-  polarAccessKey: process.env.POLAR_ACCESS_KEY,
+  polar: {
+    accessToken: process.env.POLAR_ACCESS_TOKEN,
+    webhookSecret: process.env.POLAR_WEBHOOK_SECRET,
+  },
   s3: {
     endpoint: process.env.S3_ENDPOINT,
     region: process.env.S3_REGION,

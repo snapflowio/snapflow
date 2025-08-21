@@ -1,12 +1,13 @@
 package node
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 )
 
-func WriteNodeBinary() (string, error) {
-	nodeBinary, err := static.ReadFile("static/node-amd64")
+func WriteBinary(name string) (string, error) {
+	nodeBinary, err := static.ReadFile(fmt.Sprintf("static/%s", name))
 	if err != nil {
 		return "", err
 	}
@@ -22,7 +23,7 @@ func WriteNodeBinary() (string, error) {
 		return "", err
 	}
 
-	nodePath := filepath.Join(tmpBinariesDir, "node-amd64")
+	nodePath := filepath.Join(tmpBinariesDir, name)
 	_, err = os.Stat(nodePath)
 	if err != nil && !os.IsNotExist(err) {
 		return "", err

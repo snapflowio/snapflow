@@ -9,7 +9,6 @@ import {
   UpdateOrganizationInvitationRoleEnum,
 } from "@snapflow/api-client";
 import { toast } from "sonner";
-import { CreateOrganizationInvitationDialog } from "@/components/dialogs/create-organization-invitation-dialog";
 import { NotPersonalOrganizationPageWrapper } from "@/components/wrappers/not-personal-organization-wrapper";
 import { handleApiError } from "@/lib/errors";
 import { useApi } from "@/hooks/use-api";
@@ -174,7 +173,10 @@ export default function MembersPage() {
       handleApiError(error, "Failed to update invitation");
       return false;
     } finally {
-      setLoadingInvitationAction((prev) => ({ ...prev, [invitationId]: false }));
+      setLoadingInvitationAction((prev) => ({
+        ...prev,
+        [invitationId]: false,
+      }));
     }
   };
 
@@ -191,7 +193,10 @@ export default function MembersPage() {
       handleApiError(error, "Failed to cancel invitation");
       return false;
     } finally {
-      setLoadingInvitationAction((prev) => ({ ...prev, [invitationId]: false }));
+      setLoadingInvitationAction((prev) => ({
+        ...prev,
+        [invitationId]: false,
+      }));
     }
   };
 
@@ -202,16 +207,19 @@ export default function MembersPage() {
   return (
     <NotPersonalOrganizationPageWrapper>
       <div className="px-6 py-2">
-        <div className="mb-2 flex h-12 items-center justify-between">
-          <h1 className="font-medium text-2xl">Members</h1>
-          {authenticatedUserIsOwner && (
-            <CreateOrganizationInvitationDialog
+        {authenticatedUserIsOwner && (
+          <div className="mb-6">
+            <OrganizationInvitationTable
+              data={invitations}
+              loadingData={loadingInvitations}
               availableRoles={roles}
               loadingAvailableRoles={loadingRoles}
-              onCreateInvitation={handleCreateInvitation}
+              onCancelInvitation={handleCancelInvitation}
+              onUpdateInvitation={handleUpdateInvitation}
+              loadingInvitationAction={loadingInvitationAction}
             />
-          )}
-        </div>
+          </div>
+        )}
 
         <OrganizationMemberTable
           data={organizationMembers}
@@ -223,25 +231,8 @@ export default function MembersPage() {
           onRemoveMember={handleRemoveMember}
           loadingMemberAction={loadingMemberAction}
           ownerMode={authenticatedUserIsOwner}
+          onCreateInvitation={handleCreateInvitation}
         />
-
-        {authenticatedUserIsOwner && (
-          <>
-            <div className="mt-12 mb-2 flex h-12 items-center justify-between">
-              <h1 className="font-medium text-2xl">Invitations</h1>
-            </div>
-
-            <OrganizationInvitationTable
-              data={invitations}
-              loadingData={loadingInvitations}
-              availableRoles={roles}
-              loadingAvailableRoles={loadingRoles}
-              onCancelInvitation={handleCancelInvitation}
-              onUpdateInvitation={handleUpdateInvitation}
-              loadingInvitationAction={loadingInvitationAction}
-            />
-          </>
-        )}
       </div>
     </NotPersonalOrganizationPageWrapper>
   );

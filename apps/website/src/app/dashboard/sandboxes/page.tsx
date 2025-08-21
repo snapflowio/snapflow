@@ -186,7 +186,7 @@ export default function SandboxesPage() {
   };
 
   return (
-    <div>
+    <div className="flex h-full flex-col">
       <SandboxTable
         loadingSandboxes={loadingSandboxes}
         handleStart={handleStart}

@@ -1,10 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  Logger,
-} from "@nestjs/common";
-
+import { CanActivate, ExecutionContext, Injectable, Logger } from "@nestjs/common";
 import {
   AuthContext,
   OrganizationAuthContext,
@@ -19,7 +13,7 @@ export class OrganizationAccessGuard implements CanActivate {
 
   constructor(
     private readonly organizationService: OrganizationService,
-    private readonly organizationUserService: OrganizationUserService,
+    private readonly organizationUserService: OrganizationUserService
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -27,15 +21,12 @@ export class OrganizationAccessGuard implements CanActivate {
     const authContext: AuthContext = request.user;
 
     if (!authContext) {
-      this.logger.warn(
-        "User object is undefined. Authentication may not be set up correctly.",
-      );
+      this.logger.warn("User object is undefined. Authentication may not be set up correctly.");
       return false;
     }
 
     // note: semantic parameter names must be used (avoid :id)
-    const organizationIdParam =
-      request.params.organizationId || request.params.orgId;
+    const organizationIdParam = request.params.organizationId || request.params.orgId;
 
     if (!organizationIdParam && !authContext.organizationId) {
       this.logger.warn("Organization ID missing from the request context.");
@@ -55,9 +46,7 @@ export class OrganizationAccessGuard implements CanActivate {
 
     const organization = await this.organizationService.findOne(organizationId);
     if (!organization) {
-      this.logger.warn(
-        `Organization not found. Organization ID: ${organizationId}`,
-      );
+      this.logger.warn(`Organization not found. Organization ID: ${organizationId}`);
       return false;
     }
 
@@ -72,12 +61,12 @@ export class OrganizationAccessGuard implements CanActivate {
 
     const organizationUser = await this.organizationUserService.findOne(
       organizationId,
-      authContext.userId,
+      authContext.userId
     );
 
     if (!organizationUser) {
       this.logger.warn(
-        `Organization user not found. User ID: ${authContext.userId}, Organization ID: ${organizationId}`,
+        `Organization user not found. User ID: ${authContext.userId}, Organization ID: ${organizationId}`
       );
       return false;
     }

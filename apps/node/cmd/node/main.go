@@ -19,7 +19,7 @@ func main() {
 	if logLevel := os.Getenv("LOG_LEVEL"); logLevel != "" {
 		loggerConfig.Level = logLevel
 	}
-	
+
 	if err := logger.Init(loggerConfig); err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to initialize logging: %v\n", err)
 		os.Exit(1)
@@ -76,4 +76,3 @@ func main() {
 		log.Fatal().Err(err).Msg("Application error")
 	}
 }
-

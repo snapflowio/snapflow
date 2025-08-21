@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Relation } from "typeorm";
 import { OrganizationInvitation } from "./organization-invitation.entity";
 import { OrganizationRole } from "./organization-role.entity";
 import { OrganizationUser } from "./organization-user.entity";
@@ -18,6 +18,15 @@ export class Organization {
     default: false,
   })
   personal: boolean;
+
+  @Column({
+    type: "decimal",
+    default: "0.000000",
+    precision: 12,
+    scale: 6,
+    name: "wallet",
+  })
+  wallet: string;
 
   @Column({
     default: true,
@@ -95,7 +104,7 @@ export class Organization {
       onDelete: "CASCADE",
     }
   )
-  roles: OrganizationRole[];
+  roles: Relation<OrganizationRole[]>;
 
   @OneToMany(
     () => OrganizationUser,
@@ -105,7 +114,7 @@ export class Organization {
       onDelete: "CASCADE",
     }
   )
-  users: OrganizationUser[];
+  users: Relation<OrganizationUser[]>;
 
   @OneToMany(
     () => OrganizationInvitation,
@@ -115,7 +124,7 @@ export class Organization {
       onDelete: "CASCADE",
     }
   )
-  invitations: OrganizationInvitation[];
+  invitations: Relation<OrganizationInvitation[]>;
 
   @Column({
     default: false,

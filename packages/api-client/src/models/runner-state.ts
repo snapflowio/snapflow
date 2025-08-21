@@ -12,8 +12,6 @@
  * Do not edit the class manually.
  */
 
-
-
 /**
  * The state of the executor
  * @export
@@ -21,14 +19,11 @@
  */
 
 export const ExecutorState = {
-    INITIALIZING: 'initializing',
-    READY: 'ready',
-    DISABLED: 'disabled',
-    DECOMMISSIONED: 'decommissioned',
-    UNRESPONSIVE: 'unresponsive'
+  INITIALIZING: "initializing",
+  READY: "ready",
+  DISABLED: "disabled",
+  DECOMMISSIONED: "decommissioned",
+  UNRESPONSIVE: "unresponsive",
 } as const;
 
-export type ExecutorState = typeof ExecutorState[keyof typeof ExecutorState];
-
-
-
+export type ExecutorState = (typeof ExecutorState)[keyof typeof ExecutorState];

@@ -15,12 +15,19 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+import { ChevronDownIcon, ChevronsUpDownIcon, ChevronUpIcon, MoreHorizontal } from "lucide-react";
 import { CancelOrganizationInvitationDialog } from "@/components/dialogs/cancel-organization-invitation-dialog";
 import { UpdateOrganizationInvitationDialog } from "@/components/dialogs/update-organization-invitation-dialog";
 import { Pagination } from "@/components/pagination";
-import { TableEmptyState } from "@/components/table/table-empty";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -103,7 +110,10 @@ export function OrganizationInvitationTable({
     return false;
   };
 
-  const columns = getColumns({ onCancel: handleCancel, onUpdate: handleUpdate });
+  const columns = getColumns({
+    onCancel: handleCancel,
+    onUpdate: handleUpdate,
+  });
 
   const table = useReactTable({
     data,
@@ -124,53 +134,74 @@ export function OrganizationInvitationTable({
 
   return (
     <>
-      <div>
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(header.column.columnDef.header, header.getContext())}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {loadingData ? (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    Loading...
-                  </TableCell>
-                </TableRow>
-              ) : table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className={`h-14 ${loadingInvitationAction[row.original.id] ? "pointer-events-none opacity-50" : ""}`}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
+      <Card className="flex h-full flex-col">
+        <CardHeader className="flex flex-shrink-0 flex-row items-center justify-between">
+          <div>
+            <CardTitle>Invitations</CardTitle>
+            <CardDescription>Manage pending organization invitations</CardDescription>
+          </div>
+        </CardHeader>
+        <CardContent className="min-h-0 flex-1">
+          <div className="flex h-full flex-col rounded-md border">
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id} className="select-none py-1">
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(header.column.columnDef.header, header.getContext())}
+                        </TableHead>
+                      );
+                    })}
                   </TableRow>
-                ))
-              ) : (
-                <TableEmptyState colSpan={columns.length} message="No Invitations found." />
-              )}
-            </TableBody>
-          </Table>
-        </div>
-        <Pagination table={table} className="mt-4" entityName="Invitations" />
-      </div>
+                ))}
+              </TableHeader>
+              <TableBody className="relative">
+                {loadingData ? (
+                  <TableRow>
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                      Loading invitations...
+                    </TableCell>
+                  </TableRow>
+                ) : table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      className={`${loadingInvitationAction[row.original.id] ? "pointer-events-none opacity-50" : ""}`}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id} className="py-3">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={columns.length} className="relative h-[400px] p-0">
+                      <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4">
+                        <div className="text-center">
+                          <h3 className="font-medium text-lg">No invitations</h3>
+                          <p className="mt-2 text-muted-foreground text-sm">
+                            No pending invitations found.
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+        <CardFooter className="flex-shrink-0">
+          <Pagination table={table} entityName="Invitations" />
+        </CardFooter>
+      </Card>
 
       {invitationToUpdate && (
         <UpdateOrganizationInvitationDialog
@@ -215,40 +246,117 @@ const getColumns = ({
   const columns: ColumnDef<OrganizationInvitation>[] = [
     {
       accessorKey: "email",
-      header: "Email",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="px-2 hover:bg-muted/50"
+          >
+            Email
+            {column.getIsSorted() === "asc" ? (
+              <ChevronUpIcon className="ml-2 h-4 w-4" />
+            ) : column.getIsSorted() === "desc" ? (
+              <ChevronDownIcon className="ml-2 h-4 w-4" />
+            ) : (
+              <ChevronsUpDownIcon className="ml-2 h-4 w-4" />
+            )}
+          </Button>
+        );
+      },
+      cell: ({ row }) => <div className="px-2 font-medium">{row.original.email}</div>,
     },
     {
       accessorKey: "invitedBy",
-      header: "Invited by",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="px-2 hover:bg-muted/50"
+          >
+            Invited by
+            {column.getIsSorted() === "asc" ? (
+              <ChevronUpIcon className="ml-2 h-4 w-4" />
+            ) : column.getIsSorted() === "desc" ? (
+              <ChevronDownIcon className="ml-2 h-4 w-4" />
+            ) : (
+              <ChevronsUpDownIcon className="ml-2 h-4 w-4" />
+            )}
+          </Button>
+        );
+      },
+      cell: ({ row }) => <span className="px-2">{row.original.invitedBy}</span>,
     },
     {
       accessorKey: "expiresAt",
-      header: "Expires",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="px-2 hover:bg-muted/50"
+          >
+            Expires
+            {column.getIsSorted() === "asc" ? (
+              <ChevronUpIcon className="ml-2 h-4 w-4" />
+            ) : column.getIsSorted() === "desc" ? (
+              <ChevronDownIcon className="ml-2 h-4 w-4" />
+            ) : (
+              <ChevronsUpDownIcon className="ml-2 h-4 w-4" />
+            )}
+          </Button>
+        );
+      },
       cell: ({ row }) => {
-        return new Date(row.original.expiresAt).toLocaleDateString();
+        return (
+          <span className="px-2">{new Date(row.original.expiresAt).toLocaleDateString()}</span>
+        );
       },
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="px-2 hover:bg-muted/50"
+          >
+            Status
+            {column.getIsSorted() === "asc" ? (
+              <ChevronUpIcon className="ml-2 h-4 w-4" />
+            ) : column.getIsSorted() === "desc" ? (
+              <ChevronDownIcon className="ml-2 h-4 w-4" />
+            ) : (
+              <ChevronsUpDownIcon className="ml-2 h-4 w-4" />
+            )}
+          </Button>
+        );
+      },
       cell: ({ row }) => {
         const isExpired = new Date(row.original.expiresAt) < new Date();
-        return isExpired ? (
-          <span className="text-red-600 dark:text-red-400">Expired</span>
-        ) : (
-          "Pending"
+        return (
+          <span className="px-2">
+            {isExpired ? (
+              <span className="text-red-600 dark:text-red-400">Expired</span>
+            ) : (
+              "Pending"
+            )}
+          </span>
         );
       },
     },
     {
       id: "actions",
+      header: "Actions",
       cell: ({ row }) => {
         const isExpired = new Date(row.original.expiresAt) < new Date();
         if (isExpired) {
           return null;
         }
         return (
-          <div className="text-right">
+          <div className="flex justify-end">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">

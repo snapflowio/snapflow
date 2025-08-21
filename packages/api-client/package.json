@@ -4,6 +4,12 @@
   "license": "MIT",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
+  "scripts": {
+    "generate:api-client": "openapi-generator-cli generate -i ../../dist/apps/api/openapi.json -g typescript-axios -o . --additional-properties=useSingleRequestParameter=true,withSeparateModelsAndApi=true",
+    "format": "biome format src --write || true",
+    "lint": "biome check .",
+    "lint:fix": "biome check . --write"
+  },
   "dependencies": {
     "axios": "^1.6.1"
   },

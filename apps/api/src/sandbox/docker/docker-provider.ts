@@ -3,7 +3,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import { Inject, Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import axios from "axios";
+import axios, { type AxiosResponse } from "axios";
 import Docker from "dockerode";
 import { Registry } from "../../registry/entities/registry.entity";
 import { RegistryService } from "../../registry/registry.service";
@@ -77,7 +77,7 @@ export class DockerProvider implements OnModuleInit {
 
       this.logger.log(`Downloading terminal binary from ${this.terminalBinaryUrl}`);
 
-      let response: axios.AxiosResponse<any, any>;
+      let response: AxiosResponse<any, any>;
       try {
         response = await axios({
           method: "GET",
@@ -427,6 +427,9 @@ export class DockerProvider implements OnModuleInit {
         },
         validateStatus: (status) => status < 500,
         timeout: 30000,
+        httpsAgent: new (require("https").Agent)({
+          rejectUnauthorized: false,
+        }),
       });
 
       if (manifestResponse.status >= 300) {
@@ -453,6 +456,9 @@ export class DockerProvider implements OnModuleInit {
         },
         validateStatus: (status) => status < 500,
         timeout: 30000,
+        httpsAgent: new (require("https").Agent)({
+          rejectUnauthorized: false,
+        }),
       });
 
       if (deleteResponse.status < 300) {
@@ -591,6 +597,9 @@ export class DockerProvider implements OnModuleInit {
         },
         validateStatus: (status) => status < 500,
         timeout: 30000,
+        httpsAgent: new (require("https").Agent)({
+          rejectUnauthorized: false,
+        }),
       });
 
       if (response.status === 200) {

@@ -1,4 +1,5 @@
 import { ConsoleLogger, Logger, type LogLevel, ValidationPipe } from "@nestjs/common";
+// Testing cache-optimized hot reload
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import type { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
@@ -14,6 +15,8 @@ if (process.env.LOG_LEVEL) logLevels.push(process.env.LOG_LEVEL as LogLevel);
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    rawBody: true,
+    bodyParser: false,
     logger: new ConsoleLogger({
       prefix: "API",
       logLevels,
@@ -72,6 +75,7 @@ async function bootstrap() {
       await executorService.create({
         apiUrl: "http://localhost:8083",
         apiKey: "secret_api_token",
+        proxyUrl: "http://localhost:4000",
         cpu: 4,
         memory: 8192,
         disk: 50,
@@ -81,6 +85,7 @@ async function bootstrap() {
         region: ExecutorRegion.US,
         class: SandboxClass.SMALL,
         domain: "localhost:8083",
+        version: "0",
       });
     }
   }
@@ -89,7 +94,28 @@ async function bootstrap() {
   const port = configService.get("port");
   await app.listen(port, host);
 
-  Logger.log(`🚀 Snapflow API is running on: http://${host}:${port}/${globalPrefix}`);
+  Logger.log(`🚀 Snapflow API is running on: ${host}:${port}/${globalPrefix}`);
+
+  // Graceful shutdown handling
+  const gracefulShutdown = async (signal: string) => {
+    Logger.log(`Received ${signal}. Starting graceful shutdown...`);
+    try {
+      await app.close();
+      Logger.log("Application closed gracefully");
+      process.exit(0);
+    } catch (error) {
+      Logger.error("Error during shutdown:", error);
+      process.exit(1);
+    }
+  };
+
+  process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+  process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+
+  return app;
 }
 
-bootstrap();
+bootstrap().catch((error) => {
+  Logger.error("Failed to start application:", error);
+  process.exit(1);
+});

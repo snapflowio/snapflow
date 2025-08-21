@@ -1,0 +1,505 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model
+model User {
+  id            String     @id
+  name          String
+  email         String     @default("")
+  emailVerified Boolean    @default(false)
+  role          SystemRole @default(USER)
+
+  // Relations
+  organizationUsers OrganizationUser[]
+  apiKeys           ApiKey[]
+
+  @@map("user")
+}
+
+// Organization model
+model Organization {
+  id                  String    @id @default(uuid())
+  name                String
+  createdBy           String
+  personal            Boolean   @default(false)
+  wallet              Decimal   @default(0.000000) @db.Decimal(12, 6)
+  telemetryEnabled    Boolean   @default(true)
+  totalCpuQuota       Int       @default(10) @map("total_cpu_quota")
+  totalMemoryQuota    Int       @default(10) @map("total_memory_quota")
+  totalDiskQuota      Int       @default(30) @map("total_disk_quota")
+  maxCpuPerSandbox    Int       @default(4) @map("max_cpu_per_sandbox")
+  maxMemoryPerSandbox Int       @default(8) @map("max_memory_per_sandbox")
+  maxDiskPerSandbox   Int       @default(10) @map("max_disk_per_sandbox")
+  maxImageSize        Int       @default(20) @map("max_image_size")
+  imageQuota          Int       @default(100) @map("image_quota")
+  bucketQuota         Int       @default(100) @map("bucket_quota")
+  suspended           Boolean   @default(false)
+  suspendedAt         DateTime? @db.Timestamp
+  suspensionReason    String?
+  suspendedUntil      DateTime? @db.Timestamp
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  // Relations
+  roles        OrganizationRole[]
+  users        OrganizationUser[]
+  invitations  OrganizationInvitation[]
+  sandboxes    Sandbox[]
+  images       Image[]
+  buckets      Bucket[]
+  registries   Registry[]
+  apiKeys      ApiKey[]
+  usagePeriods SandboxUsagePeriod[]
+
+  @@map("organization")
+}
+
+// Organization User (many-to-many with additional fields)
+model OrganizationUser {
+  organizationId String
+  userId         String
+  role           OrganizationMemberRole @default(MEMBER)
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+
+  // Relations
+  user          User                         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization  Organization                 @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  assignedRoles OrganizationRoleAssignment[]
+
+  @@id([organizationId, userId])
+  @@map("organization_user")
+}
+
+// Organization Role
+model OrganizationRole {
+  id             String                           @id @default(uuid())
+  name           String
+  description    String
+  permissions    OrganizationResourcePermission[]
+  isGlobal       Boolean                          @default(false)
+  organizationId String?
+  createdAt      DateTime                         @default(now())
+  updatedAt      DateTime                         @updatedAt
+
+  // Relations
+  organization Organization?                          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  users        OrganizationRoleAssignment[]
+  invitations  OrganizationRoleAssignmentInvitation[]
+
+  @@map("organization_role")
+}
+
+// Organization Role Assignment (join table for OrganizationUser and OrganizationRole)
+model OrganizationRoleAssignment {
+  organizationId String
+  userId         String
+  roleId         String
+
+  // Relations
+  organizationUser OrganizationUser @relation(fields: [organizationId, userId], references: [organizationId, userId], onDelete: Cascade)
+  role             OrganizationRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([organizationId, userId, roleId])
+  @@map("organization_role_assignment")
+}
+
+// Organization Invitation
+model OrganizationInvitation {
+  id             String                       @id @default(uuid())
+  organizationId String
+  email          String
+  invitedBy      String                       @default("")
+  role           OrganizationMemberRole       @default(MEMBER)
+  expiresAt      DateTime
+  status         OrganizationInvitationStatus @default(PENDING)
+  createdAt      DateTime                     @default(now())
+  updatedAt      DateTime                     @updatedAt
+
+  // Relations
+  organization  Organization                           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  assignedRoles OrganizationRoleAssignmentInvitation[]
+
+  @@map("organization_invitation")
+}
+
+// Organization Role Assignment Invitation (join table for OrganizationInvitation and OrganizationRole)
+model OrganizationRoleAssignmentInvitation {
+  invitationId String
+  roleId       String
+
+  // Relations
+  invitation OrganizationInvitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  role       OrganizationRole       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([invitationId, roleId])
+  @@map("organization_role_assignment_invitation")
+}
+
+// Sandbox model
+model Sandbox {
+  id                   String              @id @default(uuid())
+  organizationId       String              @db.Uuid
+  region               ExecutorRegion      @default(EU)
+  executorId           String?             @db.Uuid
+  prevExecutorId       String?             @db.Uuid
+  class                SandboxClass        @default(SMALL)
+  state                SandboxState        @default(UNKNOWN)
+  desiredState         SandboxDesiredState @default(STARTED)
+  image                String?
+  osUser               String
+  errorReason          String?
+  env                  Json                @default("{}")
+  public               Boolean             @default(false)
+  labels               Json?
+  backupRegistryId     String?
+  backupImage          String?
+  lastBackupAt         DateTime?
+  backupState          BackupState         @default(NONE)
+  existingBackupImages Json                @default("[]")
+  cpu                  Int                 @default(2)
+  gpu                  Int                 @default(0)
+  mem                  Int                 @default(4)
+  disk                 Int                 @default(10)
+  buckets              Json                @default("[]")
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  lastActivityAt       DateTime?           @db.Timestamp
+  autoStopInterval     Int?                @default(15)
+  autoArchiveInterval  Int?                @default(10080) // 7 * 24 * 60
+  pending              Boolean?            @default(false)
+  buildInfoImageRef    String?
+  nodeVersion          String?
+
+  // Relations
+  organization Organization         @relation(fields: [organizationId], references: [id])
+  buildInfo    BuildInfo?           @relation(fields: [buildInfoImageRef], references: [imageRef])
+  usagePeriods SandboxUsagePeriod[]
+
+  @@map("sandbox")
+}
+
+// Executor model
+model Executor {
+  id            String         @id @default(uuid())
+  domain        String         @unique
+  apiUrl        String
+  proxyUrl      String
+  apiKey        String
+  cpu           Int
+  memory        Int
+  disk          Int
+  gpu           Int
+  gpuType       String
+  class         SandboxClass   @default(SMALL)
+  used          Int            @default(0)
+  capacity      Int
+  region        ExecutorRegion
+  state         ExecutorState  @default(INITIALIZING)
+  lastChecked   DateTime?
+  unschedulable Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  version       String         @default("0")
+
+  @@map("executor")
+}
+
+// Image model
+model Image {
+  id                String     @id @default(uuid())
+  organizationId    String?    @db.Uuid
+  general           Boolean    @default(false)
+  name              String
+  imageName         String
+  internalName      String?
+  enabled           Boolean    @default(true)
+  state             ImageState @default(PENDING)
+  errorReason       String?
+  size              Float?
+  cpu               Int        @default(1)
+  gpu               Int        @default(0)
+  mem               Int        @default(1)
+  disk              Int        @default(3)
+  hideFromUsers     Boolean    @default(false)
+  entrypoint        String[]   @default([])
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  lastUsedAt        DateTime?
+  buildInfoImageRef String?
+  buildExecutorId   String?
+
+  // Relations
+  organization Organization?   @relation(fields: [organizationId], references: [id])
+  executors    ImageExecutor[]
+  buildInfo    BuildInfo?      @relation(fields: [buildInfoImageRef], references: [imageRef])
+
+  @@unique([organizationId, name])
+  @@map("image")
+}
+
+// Image Executor model
+model ImageExecutor {
+  id          String             @id @default(uuid())
+  state       ImageExecutorState @default(PULLING_IMAGE)
+  errorReason String?
+  imageRef    String             @default("")
+  executorId  String
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  // Relations
+  image Image @relation(fields: [imageRef], references: [id])
+
+  @@map("image_executor")
+}
+
+// Build Info model
+model BuildInfo {
+  imageRef          String   @id
+  dockerfileContent String?  @db.Text
+  contextHashes     String[] @default([])
+  lastUsedAt        DateTime @default(now()) @db.Timestamp
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  images    Image[]
+  sandboxes Sandbox[]
+
+  @@map("build_info")
+}
+
+// Bucket model
+model Bucket {
+  id             String      @id @default(uuid())
+  organizationId String?     @db.Uuid
+  name           String
+  state          BucketState @default(PENDING_CREATE)
+  errorReason    String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  lastUsedAt     DateTime?
+
+  // Relations
+  organization Organization? @relation(fields: [organizationId], references: [id])
+
+  @@unique([organizationId, name])
+  @@map("bucket")
+}
+
+// Warm Pool model
+model WarmPool {
+  id          String         @id @default(uuid())
+  pool        Int
+  image       String
+  target      ExecutorRegion @default(EU)
+  cpu         Int
+  mem         Int
+  disk        Int
+  gpu         Int
+  gpuType     String
+  class       SandboxClass   @default(SMALL)
+  osUser      String
+  errorReason String?
+  env         Json           @default("{}")
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@map("warm_pool")
+}
+
+// API Key model
+model ApiKey {
+  organizationId String
+  userId         String
+  name           String
+  keyHash        String                           @unique
+  keyPrefix      String
+  keySuffix      String
+  permissions    OrganizationResourcePermission[]
+  createdAt      DateTime
+  lastUsedAt     DateTime?
+  expiresAt      DateTime?
+
+  // Relations
+  user         User         @relation(fields: [userId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@id([organizationId, userId, name])
+  @@map("api_key")
+}
+
+// Registry model
+model Registry {
+  id             String       @id @default(uuid())
+  name           String
+  url            String
+  username       String
+  password       String
+  isDefault      Boolean      @default(false)
+  project        String
+  organizationId String?      @db.Uuid
+  registryType   RegistryType @default(INTERNAL)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  // Relations
+  organization Organization? @relation(fields: [organizationId], references: [id])
+
+  @@map("registry")
+}
+
+// Sandbox Usage Period model
+model SandboxUsagePeriod {
+  id             String    @id @default(uuid())
+  sandboxId      String
+  organizationId String
+  startAt        DateTime  @db.Timestamp
+  endAt          DateTime? @db.Timestamp
+  cpu            Float
+  gpu            Float
+  mem            Float
+  disk           Float
+  region         String
+  billed         Boolean   @default(false)
+
+  // Relations
+  sandbox      Sandbox      @relation(fields: [sandboxId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@map("sandbox_usage_periods")
+}
+
+// Enums
+enum SystemRole {
+  ADMIN @map("admin")
+  USER  @map("user")
+}
+
+enum OrganizationMemberRole {
+  OWNER  @map("owner")
+  MEMBER @map("member")
+}
+
+enum OrganizationResourcePermission {
+  WRITE_REGISTRIES  @map("write:registries")
+  DELETE_REGISTRIES @map("delete:registries")
+  WRITE_IMAGES      @map("write:images")
+  DELETE_IMAGES     @map("delete:images")
+  WRITE_SANDBOXES   @map("write:sandboxes")
+  DELETE_SANDBOXES  @map("delete:sandboxes")
+  READ_BUCKETS      @map("read:buckets")
+  WRITE_BUCKETS     @map("write:buckets")
+  DELETE_BUCKETS    @map("delete:buckets")
+}
+
+enum OrganizationInvitationStatus {
+  PENDING   @map("pending")
+  ACCEPTED  @map("accepted")
+  DECLINED  @map("declined")
+  CANCELLED @map("cancelled")
+}
+
+enum ExecutorRegion {
+  EU   @map("eu")
+  US   @map("us")
+  ASIA @map("asia")
+}
+
+enum SandboxClass {
+  SMALL  @map("small")
+  MEDIUM @map("medium")
+  LARGE  @map("large")
+}
+
+enum SandboxState {
+  CREATING       @map("creating")
+  RESTORING      @map("restoring")
+  DESTROYED      @map("destroyed")
+  DESTROYING     @map("destroying")
+  STARTED        @map("started")
+  STOPPED        @map("stopped")
+  STARTING       @map("starting")
+  STOPPING       @map("stopping")
+  ERROR          @map("error")
+  BUILD_FAILED   @map("build_failed")
+  PENDING_BUILD  @map("pending_build")
+  BUILDING_IMAGE @map("building_image")
+  UNKNOWN        @map("unknown")
+  PULLING_IMAGE  @map("pulling_image")
+  ARCHIVING      @map("archiving")
+  ARCHIVED       @map("archived")
+}
+
+enum SandboxDesiredState {
+  DESTROYED @map("destroyed")
+  STARTED   @map("started")
+  STOPPED   @map("stopped")
+  RESIZED   @map("resized")
+  ARCHIVED  @map("archived")
+}
+
+enum BackupState {
+  NONE        @map("None")
+  PENDING     @map("Pending")
+  IN_PROGRESS @map("InProgress")
+  COMPLETED   @map("Completed")
+  ERROR       @map("Error")
+}
+
+enum ExecutorState {
+  INITIALIZING   @map("initializing")
+  READY          @map("ready")
+  DISABLED       @map("disabled")
+  DECOMMISSIONED @map("decommissioned")
+  UNRESPONSIVE   @map("unresponsive")
+}
+
+enum ImageState {
+  BUILD_PENDING      @map("build_pending")
+  BUILDING           @map("building")
+  PENDING            @map("pending")
+  PULLING            @map("pulling")
+  PENDING_VALIDATION @map("pending_validation")
+  VALIDATING         @map("validating")
+  ACTIVE             @map("active")
+  INACTIVE           @map("inactive")
+  ERROR              @map("error")
+  BUILD_FAILED       @map("build_failed")
+  REMOVING           @map("removing")
+}
+
+enum ImageExecutorState {
+  PULLING_IMAGE  @map("pulling_image")
+  BUILDING_IMAGE @map("building_image")
+  READY          @map("ready")
+  ERROR          @map("error")
+  REMOVING       @map("removing")
+}
+
+enum BucketState {
+  CREATING       @map("creating")
+  READY          @map("ready")
+  PENDING_CREATE @map("pending_create")
+  PENDING_DELETE @map("pending_delete")
+  DELETING       @map("deleting")
+  DELETED        @map("deleted")
+  ERROR          @map("error")
+}
+
+enum RegistryType {
+  INTERNAL     @map("internal")
+  ORGANIZATION @map("organization")
+  PUBLIC       @map("public")
+  TRANSIENT    @map("transient")
+}

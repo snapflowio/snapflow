@@ -11,10 +11,10 @@ package apiclient
 
 import (
 	"context"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
 )
 
 func Test_apiclient_OrganizationsAPIService(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService AcceptOrganizationInvitation", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var invitationId string
 
@@ -37,7 +37,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService CancelOrganizationInvitation", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var organizationId string
 		var invitationId string
@@ -51,7 +51,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService CreateOrganization", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.OrganizationsAPI.CreateOrganization(context.Background()).Execute()
 
@@ -63,7 +63,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService CreateOrganizationInvitation", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var organizationId string
 
@@ -77,7 +77,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService CreateOrganizationRole", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var organizationId string
 
@@ -91,7 +91,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService DeclineOrganizationInvitation", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var invitationId string
 
@@ -104,7 +104,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService DeleteOrganization", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var organizationId string
 
@@ -117,7 +117,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService DeleteOrganizationMember", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var organizationId string
 		var userId string
@@ -131,7 +131,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService DeleteOrganizationRole", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var organizationId string
 		var roleId string
@@ -145,7 +145,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService GetOrganization", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var organizationId string
 
@@ -159,7 +159,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService GetOrganizationInvitationsCountForAuthenticatedUser", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.OrganizationsAPI.GetOrganizationInvitationsCountForAuthenticatedUser(context.Background()).Execute()
 
@@ -171,7 +171,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService GetOrganizationUsageOverview", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var organizationId string
 
@@ -185,7 +185,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService LeaveOrganization", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var organizationId string
 
@@ -198,7 +198,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService ListOrganizationInvitations", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var organizationId string
 
@@ -212,7 +212,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService ListOrganizationInvitationsForAuthenticatedUser", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.OrganizationsAPI.ListOrganizationInvitationsForAuthenticatedUser(context.Background()).Execute()
 
@@ -224,7 +224,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService ListOrganizationMembers", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var organizationId string
 
@@ -238,7 +238,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService ListOrganizationRoles", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var organizationId string
 
@@ -252,7 +252,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService ListOrganizations", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.OrganizationsAPI.ListOrganizations(context.Background()).Execute()
 
@@ -264,7 +264,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService SuspendOrganization", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var organizationId string
 
@@ -277,7 +277,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService UnsuspendOrganization", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var organizationId string
 
@@ -290,7 +290,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService UpdateAssignedOrganizationRoles", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var organizationId string
 		var userId string
@@ -305,7 +305,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService UpdateOrganizationInvitation", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var organizationId string
 		var invitationId string
@@ -320,7 +320,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService UpdateOrganizationQuota", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var organizationId string
 
@@ -334,7 +334,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService UpdateOrganizationRole", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var organizationId string
 		var roleId string
@@ -349,7 +349,7 @@ func Test_apiclient_OrganizationsAPIService(t *testing.T) {
 
 	t.Run("Test OrganizationsAPIService UpdateRoleForOrganizationMember", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var organizationId string
 		var userId string

@@ -1,0 +1,14 @@
+{
+  "name": "@snapflow/proxy",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "go build -o ../../dist/apps/proxy ./cmd/proxy/main.go",
+    "build:development": "go build -o ../../dist/apps/proxy ./cmd/proxy/main.go",
+    "build:production": "go build -o ../../dist/apps/proxy ./cmd/proxy/main.go",
+    "serve": "gow run ./cmd/proxy/main.go",
+    "format": "go fmt ./...",
+    "lint": "golangci-lint run || echo 'golangci-lint not installed, skipping Go lint'",
+    "test": "go test ./..."
+  }
+}

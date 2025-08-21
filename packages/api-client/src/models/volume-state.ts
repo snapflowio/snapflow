@@ -12,8 +12,6 @@
  * Do not edit the class manually.
  */
 
-
-
 /**
  * Bucket state
  * @export
@@ -21,16 +19,13 @@
  */
 
 export const BucketState = {
-    CREATING: 'creating',
-    READY: 'ready',
-    PENDING_CREATE: 'pending_create',
-    PENDING_DELETE: 'pending_delete',
-    DELETING: 'deleting',
-    DELETED: 'deleted',
-    ERROR: 'error'
+  CREATING: "creating",
+  READY: "ready",
+  PENDING_CREATE: "pending_create",
+  PENDING_DELETE: "pending_delete",
+  DELETING: "deleting",
+  DELETED: "deleted",
+  ERROR: "error",
 } as const;
 
-export type BucketState = typeof BucketState[keyof typeof BucketState];
-
-
-
+export type BucketState = (typeof BucketState)[keyof typeof BucketState];

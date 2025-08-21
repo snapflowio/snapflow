@@ -27,7 +27,7 @@ func ExecuteCommand(c echo.Context) error {
 	}
 
 	// set maximum execution time
-	timeout := 360 * time.Second
+	timeout := 120 * time.Second // 2 minutes default
 	if request.Timeout != nil && *request.Timeout > 0 {
 		timeout = time.Duration(*request.Timeout) * time.Second
 	}

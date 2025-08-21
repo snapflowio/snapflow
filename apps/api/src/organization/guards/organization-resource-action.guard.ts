@@ -1,6 +1,5 @@
 import { ExecutionContext, Injectable, Logger } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-
 import { OrganizationAuthContext } from "../../common/interfaces/auth-context.interface";
 import { SystemRole } from "../../user/enums/system-role.enum";
 import { RequiredOrganizationResourcePermissions } from "../decorators/required-organization-resource-permissions.decorator";
@@ -16,7 +15,7 @@ export class OrganizationResourceActionGuard extends OrganizationAccessGuard {
   constructor(
     organizationService: OrganizationService,
     organizationUserService: OrganizationUserService,
-    private readonly reflector: Reflector,
+    private readonly reflector: Reflector
   ) {
     super(organizationService, organizationUserService);
   }
@@ -29,34 +28,19 @@ export class OrganizationResourceActionGuard extends OrganizationAccessGuard {
     if (authContext.role === SystemRole.ADMIN) return true;
     if (!canActivate) return false;
     if (!authContext.organizationUser) return false;
-    if (
-      authContext.organizationUser.role === OrganizationMemberRole.OWNER &&
-      !authContext.apiKey
-    )
+    if (authContext.organizationUser.role === OrganizationMemberRole.OWNER && !authContext.apiKey)
       return true;
 
     const requiredPermissions =
-      this.reflector.get(
-        RequiredOrganizationResourcePermissions,
-        context.getHandler(),
-      ) ||
-      this.reflector.get(
-        RequiredOrganizationResourcePermissions,
-        context.getClass(),
-      );
+      this.reflector.get(RequiredOrganizationResourcePermissions, context.getHandler()) ||
+      this.reflector.get(RequiredOrganizationResourcePermissions, context.getClass());
 
     if (!requiredPermissions) return true;
 
     const assignedPermissions = authContext.apiKey
       ? new Set(authContext.apiKey.permissions)
-      : new Set(
-          authContext.organizationUser.assignedRoles.flatMap(
-            (role) => role.permissions,
-          ),
-        );
+      : new Set(authContext.organizationUser.assignedRoles.flatMap((role) => role.permissions));
 
-    return requiredPermissions.every((permission) =>
-      assignedPermissions.has(permission),
-    );
+    return requiredPermissions.every((permission) => assignedPermissions.has(permission));
   }
 }

@@ -1,15 +1,15 @@
-import { CompletionList, LspSymbol, ToolboxApi } from '@snapflow/api-client'
-import { prefixRelativePath } from './utils/path'
+import { CompletionList, LspSymbol, ToolboxApi } from "@snapflow/api-client";
+import { prefixRelativePath } from "./utils/path";
 
 export enum LspLanguageId {
-  PYTHON = 'python',
-  TYPESCRIPT = 'typescript',
-  JAVASCRIPT = 'javascript',
+  PYTHON = "python",
+  TYPESCRIPT = "typescript",
+  JAVASCRIPT = "javascript",
 }
 
 export interface Position {
-  readonly line: number
-  readonly character: number
+  readonly line: number;
+  readonly character: number;
 }
 
 export class LspServer {
@@ -17,16 +17,16 @@ export class LspServer {
     private readonly languageId: LspLanguageId,
     private readonly pathToProject: string,
     private readonly toolboxApi: ToolboxApi,
-    private readonly sandboxId: string,
+    private readonly sandboxId: string
   ) {
-    this.validateLanguageId()
+    this.validateLanguageId();
   }
 
   private validateLanguageId(): void {
     if (!Object.values(LspLanguageId).includes(this.languageId)) {
       throw new Error(
-        `Invalid languageId: ${this.languageId}. Supported values are: ${Object.values(LspLanguageId).join(', ')}`,
-      )
+        `Invalid languageId: ${this.languageId}. Supported values are: ${Object.values(LspLanguageId).join(", ")}`
+      );
     }
   }
 
@@ -34,14 +34,14 @@ export class LspServer {
     await this.toolboxApi.lspStart(this.sandboxId, {
       languageId: this.languageId,
       pathToProject: this.pathToProject,
-    })
+    });
   }
 
   public async stop(): Promise<void> {
     await this.toolboxApi.lspStop(this.sandboxId, {
       languageId: this.languageId,
       pathToProject: this.pathToProject,
-    })
+    });
   }
 
   public async didOpen(path: string): Promise<void> {
@@ -49,7 +49,7 @@ export class LspServer {
       languageId: this.languageId,
       pathToProject: this.pathToProject,
       uri: this.createFileUri(path),
-    })
+    });
   }
 
   public async didClose(path: string): Promise<void> {
@@ -57,11 +57,11 @@ export class LspServer {
       languageId: this.languageId,
       pathToProject: this.pathToProject,
       uri: this.createFileUri(path),
-    })
+    });
   }
 
   private createFileUri(path: string): string {
-    return 'file://' + prefixRelativePath(this.pathToProject, path)
+    return "file://" + prefixRelativePath(this.pathToProject, path);
   }
 
   public async documentSymbols(path: string): Promise<LspSymbol[]> {
@@ -69,13 +69,13 @@ export class LspServer {
       this.sandboxId,
       this.languageId,
       this.pathToProject,
-      this.createFileUri(path),
-    )
-    return response.data
+      this.createFileUri(path)
+    );
+    return response.data;
   }
 
   public async workspaceSymbols(query: string): Promise<LspSymbol[]> {
-    return this.sandboxSymbols(query)
+    return this.sandboxSymbols(query);
   }
 
   public async sandboxSymbols(query: string): Promise<LspSymbol[]> {
@@ -83,9 +83,9 @@ export class LspServer {
       this.sandboxId,
       this.languageId,
       this.pathToProject,
-      query,
-    )
-    return response.data
+      query
+    );
+    return response.data;
   }
 
   public async completions(path: string, position: Position): Promise<CompletionList> {
@@ -94,7 +94,7 @@ export class LspServer {
       pathToProject: this.pathToProject,
       uri: this.createFileUri(path),
       position,
-    })
-    return response.data
+    });
+    return response.data;
   }
 }

@@ -5,8 +5,12 @@
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
   "scripts": {
-    "build": "tsc && tsc -p tsconfig.json",
-    "prepare": "npm run build"
+    "build": "tsc -b tsconfig.lib.json",
+    "prepare": "npm run build",
+    "format": "biome format src --write || true",
+    "lint": "biome check .",
+    "lint:fix": "biome check . --write",
+    "generate:api-client": "pnpm openapi-generator-cli generate -i ../../apps/executor/pkg/api/docs/swagger.json -g typescript-axios --additional-properties=supportsES6=true,typescriptThreePlus=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=models,useTags=true,enumPropertyNaming=UPPERCASE --type-mappings=DateTime=Date -o src"
   },
   "dependencies": {
     "axios": "^1.6.1"

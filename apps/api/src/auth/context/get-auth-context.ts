@@ -3,7 +3,7 @@ import { BaseAuthContext } from "../../common/interfaces/auth-context.interface"
 
 export function getAuthContext<T extends BaseAuthContext>(
   context: ExecutionContext,
-  isFunction: (user: BaseAuthContext) => user is T,
+  isFunction: (user: BaseAuthContext) => user is T
 ): T {
   const request = context.switchToHttp().getRequest();
 

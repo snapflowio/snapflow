@@ -15,7 +15,7 @@ import { RealtimeProvider } from "@/providers/realtime-provider";
 import { SelectedOrganizationProvider } from "@/providers/selected-organization-provider";
 import { ToastProvider } from "@/providers/toast-provider";
 import { OrganizationSwitcher } from "./_components/organization-switcher";
-import UserDropdown from "./_components/user-dropdown";
+import { UserDropdown } from "./_components/user-dropdown";
 
 type SectionProps = {
   title: string;
@@ -74,8 +74,8 @@ function DashboardNavigation({ children }: { children: React.ReactNode }) {
   }, [currentPathname]);
 
   return (
-    <div className="min-h-screen">
-      <header className="bg-background">
+    <div className="flex h-screen flex-col">
+      <header className="flex-shrink-0 bg-background">
         <div className="flex h-10 items-center space-x-2 px-4 pt-4">
           <Logo size={22} />
           <div className="flex items-center gap-2">
@@ -103,8 +103,8 @@ function DashboardNavigation({ children }: { children: React.ReactNode }) {
           </nav>
         </div>
       </header>
-      <main className="flex-1">
-        <div className="w-full p-8">{children}</div>
+      <main className="min-h-0 flex-1">
+        <div className="h-full w-full p-8">{children}</div>
       </main>
     </div>
   );

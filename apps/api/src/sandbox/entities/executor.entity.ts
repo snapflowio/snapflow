@@ -21,6 +21,9 @@ export class Executor {
   apiUrl: string;
 
   @Column()
+  proxyUrl: string;
+
+  @Column()
   apiKey: string;
 
   @Column()
@@ -81,4 +84,9 @@ export class Executor {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Column({
+    default: "0",
+  })
+  version: string;
 }

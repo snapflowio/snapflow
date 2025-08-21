@@ -12,19 +12,16 @@
  * Do not edit the class manually.
  */
 
-
-
 /**
- * 
+ *
  * @export
  * @interface SetImageGeneralStatusDto
  */
 export interface SetImageGeneralStatusDto {
-    /**
-     * Whether the image is general
-     * @type {boolean}
-     * @memberof SetImageGeneralStatusDto
-     */
-    'general': boolean;
+  /**
+   * Whether the image is general
+   * @type {boolean}
+   * @memberof SetImageGeneralStatusDto
+   */
+  general: boolean;
 }
-

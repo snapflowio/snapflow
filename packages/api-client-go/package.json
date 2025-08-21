@@ -1,0 +1,13 @@
+{
+  "name": "@snapflow/api-client-go",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "go build ./...",
+    "format": "go fmt ./...",
+    "lint": "golangci-lint run || echo 'golangci-lint not installed, skipping Go lint'",
+    "test": "go test ./...",
+    "tidy": "go mod tidy",
+    "generate:api-client": "openapi-generator-cli generate -i ../../dist/apps/api/openapi.json -g go --additional-properties=packageName=apiclient,moduleVersion=0.0.1,generateInterfaces=true,enumClassPrefix=true,structPrefix=true -o ."
+  }
+}

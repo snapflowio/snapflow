@@ -3,9 +3,7 @@ module github.com/snapflowio/proxy
 go 1.24.4
 
 require (
-	github.com/coreos/go-oidc/v3 v3.14.1
 	github.com/go-playground/validator/v10 v10.26.0
-	github.com/gorilla/securecookie v1.1.2
 	github.com/gorilla/websocket v1.5.3
 	github.com/joho/godotenv v1.5.1
 	github.com/kelseyhightower/envconfig v1.4.0
@@ -15,7 +13,6 @@ require (
 	github.com/rs/zerolog v1.34.0
 	github.com/snapflowio/api-client-go v0.0.0-00010101000000-000000000000
 	github.com/snapflowio/go-common v0.0.0-00010101000000-000000000000
-	golang.org/x/oauth2 v0.28.0
 )
 
 replace github.com/snapflowio/go-common => ../../packages/go-common
@@ -32,7 +29,6 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.9 // indirect
 	github.com/gin-contrib/sse v1.1.0 // indirect
 	github.com/gin-gonic/gin v1.10.1 // indirect
-	github.com/go-jose/go-jose/v4 v4.0.5 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect

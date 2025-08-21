@@ -236,6 +236,8 @@ export class RegistryService {
 
   getRegistryUrl(registry: Registry): string {
     if (registry.url === "registry:5000") return "http://registry:5000";
+    if (registry.url === "localhost:5000") return "http://localhost:5000";
+    if (registry.url.includes("localhost:")) return `http://${registry.url}`;
 
     return registry.url.startsWith("http") ? registry.url : `https://${registry.url}`;
   }

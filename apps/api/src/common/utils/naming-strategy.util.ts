@@ -1,5 +1,5 @@
 import { DefaultNamingStrategy, type NamingStrategyInterface, Table } from "typeorm";
-import { snakeCase } from "typeorm/util/StringUtils";
+import { snakeCase } from "typeorm/util/StringUtils.js";
 
 /**
  * A custom TypeORM naming strategy to generate more descriptive names for keys,

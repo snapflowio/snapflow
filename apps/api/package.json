@@ -3,7 +3,25 @@
   "version": "0.0.1",
   "private": true,
   "packageManager": "pnpm@10.11.0",
+  "scripts": {
+    "build": "nest build",
+    "build:development": "nest build",
+    "build:production": "nest build",
+    "dev": "dotenv -e .env -- nest start --watch",
+    "start": "node --env-file=.env ../../dist/apps/api/main.js",
+    "serve": "pnpm build && node --env-file=.env ../../dist/apps/api/main.js",
+    "format": "biome format src --write",
+    "lint": "biome check .",
+    "lint:fix": "biome check . --write",
+    "openapi": "SKIP_CONNECTIONS=true TS_NODE_PROJECT=tsconfig.app.json NODE_OPTIONS='--require tsconfig-paths/register' pnpm ts-node src/generate-openapi.ts -o ../../dist/apps/api/openapi.json",
+    "migration:generate": "pnpx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:generate -d ./src/data-source.ts ./src/migrations/migration",
+    "db:generate": "dotenv -e .env -- pnpx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:generate -d ./src/data-source.ts ./src/migrations/migration",
+    "db:push": "dotenv -e .env -- pnpx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:run -d ./src/data-source.ts",
+    "db:generate-production": "dotenv -e .env.production -- pnpx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:generate -d ./src/data-source.ts ./src/migrations/migration",
+    "db:push-production": "dotenv -e .env.production -- pnpx ts-node -P ./tsconfig.json -r tsconfig-paths/register ../../node_modules/typeorm/cli.js migration:run -d ./src/data-source.ts"
+  },
   "devDependencies": {
+    "@nestjs/cli": "^11.0.10",
     "@nestjs/schematics": "^11.0.5",
     "@nestjs/testing": "^11.1.3",
     "@types/dockerode": "^3.3.42",
@@ -26,6 +44,7 @@
     "@aws-sdk/client-sts": "^3.840.0",
     "@aws-sdk/lib-storage": "^3.844.0",
     "@esm2cjs/cacheable-lookup": "^7.0.0",
+    "@hedystia/better-auth-typeorm": "^0.2.1",
     "@modelcontextprotocol/sdk": "^1.15.1",
     "@nestjs-modules/ioredis": "^2.0.2",
     "@nestjs/axios": "^4.0.0",
@@ -46,9 +65,12 @@
     "@polar-sh/sdk": "^0.34.6",
     "@rekog/mcp-nest": "^1.6.3",
     "@socket.io/redis-adapter": "^8.3.0",
+    "ai": "^5.0.10",
     "argon2": "^0.43.0",
     "axios": "^1.10.0",
     "axios-debug-log": "^1.0.0",
+    "axios-retry": "^4.5.0",
+    "better-auth": "^1.3.7",
     "cache-manager": "^7.0.1",
     "cache-manager-memcached-store": "^6.0.1",
     "cacheable-lookup": "^7.0.0",
@@ -80,6 +102,6 @@
     "typeorm": "^0.3.25",
     "uuid": "^11.1.0",
     "xml2js": "^0.6.2",
-    "zod": "^3.0.5"
+    "zod": "^3.25.76"
   }
 }

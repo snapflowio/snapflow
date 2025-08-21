@@ -68,6 +68,13 @@ export class SandboxUsagePeriod {
   region: string;
 
   /**
+   * Tracks whether this usage period has been billed.
+   * Prevents double billing of the same period.
+   */
+  @Column({ type: "boolean", default: false })
+  billed: boolean;
+
+  /**
    * A factory method to create a new SandboxUsagePeriod instance from an existing one.
    * This is useful for creating a subsequent usage period record from a closed one.
    * @param usagePeriod - The source usage period to copy properties from.

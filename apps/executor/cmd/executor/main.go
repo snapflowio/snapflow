@@ -1,18 +1,22 @@
+// Copyright 2025 Daytona Platforms Inc.
+// SPDX-License-Identifier: AGPL-3.0
+
 package main
 
 import (
 	"context"
-	"fmt"
-	"net/http"
+	"io"
 	"os"
 	"os/signal"
-	"syscall"
+	"path/filepath"
 	"time"
 
-	"github.com/docker/docker/client"
-	"github.com/rs/zerolog/log"
+	golog "log"
 
+	"github.com/docker/docker/client"
+	"github.com/joho/godotenv"
 	"github.com/snapflowio/executor/cmd/executor/config"
+	"github.com/snapflowio/executor/internal/util"
 	"github.com/snapflowio/executor/pkg/api"
 	"github.com/snapflowio/executor/pkg/cache"
 	"github.com/snapflowio/executor/pkg/docker"
@@ -20,63 +24,46 @@ import (
 	"github.com/snapflowio/executor/pkg/models"
 	"github.com/snapflowio/executor/pkg/node"
 	"github.com/snapflowio/executor/pkg/services"
-	"github.com/snapflowio/go-common/pkg/logger"
+
+	"github.com/rs/zerolog"
+	zlog "github.com/rs/zerolog/log"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
-	if err := logger.Init(logger.DefaultConfig()); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to initialize logging: %v\n", err)
-		os.Exit(1)
-	}
-
 	cfg, err := config.GetConfig()
 	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to load configuration")
+		log.Error(err)
+		return
 	}
 
-	// Create context for graceful shutdown
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	apiServer := api.NewApiServer(api.ApiServerConfig{
+		ApiPort: cfg.ApiPort,
+	})
 
-	// Initialize components
-	components, err := initializeComponents(cfg, ctx)
-	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to initialize components")
-	}
-
-	// Start the API server
-	if err := runServer(cfg, components.apiServer, ctx); err != nil {
-		log.Fatal().Err(err).Msg("Server error")
-	}
-}
-
-type appComponents struct {
-	apiServer      *api.ApiServer
-	executorCache  cache.IExecutorCache
-	dockerClient   *docker.DockerClient
-	sandboxService *services.SandboxService
-}
-
-func initializeComponents(cfg *config.Config, ctx context.Context) (*appComponents, error) {
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		return nil, fmt.Errorf("failed to create Docker client: %w", err)
+		log.Error(err)
+		return
 	}
 
-	// Initialize cache
-	executorCache := cache.NewInMemoryExecutorCache(cache.InMemoryExecutorCacheConfig{
+	executorCache := cache.NewInMemoryRunnerCache(cache.InMemoryRunnerCacheConfig{
 		Cache:         make(map[string]*models.CacheData),
 		RetentionDays: cfg.CacheRetentionDays,
 	})
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	executorCache.Cleanup(ctx)
 
-	// Write node binary
-	nodePath, err := node.WriteNodeBinary()
+	nodePath, err := node.WriteBinary("node-amd64")
 	if err != nil {
-		return nil, fmt.Errorf("failed to write node binary: %w", err)
+		log.Error(err)
+		return
 	}
 
-	// Initialize Docker client wrapper
 	dockerClient := docker.NewDockerClient(docker.DockerClientConfig{
 		ApiClient:          cli,
 		Cache:              executorCache,
@@ -85,94 +72,91 @@ func initializeComponents(cfg *config.Config, ctx context.Context) (*appComponen
 		AWSEndpointUrl:     cfg.AWSEndpointUrl,
 		AWSAccessKeyId:     cfg.AWSAccessKeyId,
 		AWSSecretAccessKey: cfg.AWSSecretAccessKey,
-		DaemonPath:         nodePath,
+		NodePath:           nodePath,
 	})
 
-	// Initialize services
 	sandboxService := services.NewSandboxService(executorCache, dockerClient)
 
-	// Initialize executor singleton
+	metricsService := services.NewMetricsService(dockerClient, executorCache)
+	metricsService.StartMetricsCollection(ctx)
+
 	_ = executor.GetInstance(&executor.ExecutorInstanceConfig{
 		Cache:          executorCache,
 		Docker:         dockerClient,
 		SandboxService: sandboxService,
+		MetricsService: metricsService,
 	})
 
-	// Create API server
-	apiServer := api.NewApiServer(api.ApiServerConfig{
-		ApiPort: cfg.ApiPort,
-	})
-
-	return &appComponents{
-		apiServer:      apiServer,
-		executorCache:  executorCache,
-		dockerClient:   dockerClient,
-		sandboxService: sandboxService,
-	}, nil
-}
-
-func runServer(cfg *config.Config, apiServer *api.ApiServer, ctx context.Context) error {
-	serverErrors := make(chan error, 1)
-	serverStarted := make(chan bool, 1)
+	apiServerErrChan := make(chan error)
 
 	go func() {
-		// Create a custom server with timeouts
-		srv := &http.Server{
-			Addr:         fmt.Sprintf(":%d", cfg.ApiPort),
-			Handler:      apiServer.Echo(),
-			ReadTimeout:  15 * time.Second,
-			WriteTimeout: 15 * time.Second,
-			IdleTimeout:  60 * time.Second,
-		}
-
-		// Use Echo's built-in server start with custom server
-		apiServer.SetHTTPServer(srv)
-
-		// Signal that server is about to start
-		serverStarted <- true
-
-		// This will block until server stops
-		if err := apiServer.StartServer(srv); err != nil && err != http.ErrServerClosed {
-			serverErrors <- fmt.Errorf("API server error: %w", err)
-		}
+		log.Infof("Starting Daytona Runner on port %d", cfg.ApiPort)
+		apiServerErrChan <- apiServer.Start()
 	}()
 
-	// Wait for server to start
-	select {
-	case <-serverStarted:
-		time.Sleep(100 * time.Millisecond)
-		log.Info().Msgf("Snapflow executor running on :%d", cfg.ApiPort)
-	case err := <-serverErrors:
-		return err
-	case <-time.After(5 * time.Second):
-		return fmt.Errorf("timeout waiting for server to start")
-	}
+	interruptChannel := make(chan os.Signal, 1)
+	signal.Notify(interruptChannel, os.Interrupt)
 
-	// Setup signal handling
-	signalChan := make(chan os.Signal, 1)
-	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
-
-	// Wait for shutdown signal or error
 	select {
-	case err := <-serverErrors:
-		return err
-	case sig := <-signalChan:
-		log.Info().Msgf("Received signal %v, initiating graceful shutdown...", sig)
-		return gracefulShutdown(ctx, apiServer, 30*time.Second)
-	case <-ctx.Done():
-		log.Info().Msg("Context cancelled, shutting down...")
-		return gracefulShutdown(ctx, apiServer, 30*time.Second)
+	case err := <-apiServerErrChan:
+		log.Error(err)
+		return
+	case <-interruptChannel:
+		log.Info("Shutting down Daytona Runner")
+		apiServer.Stop()
 	}
 }
 
-func gracefulShutdown(ctx context.Context, apiServer *api.ApiServer, timeout time.Duration) error {
-	shutdownCtx, cancel := context.WithTimeout(ctx, timeout)
-	defer cancel()
-
-	if err := apiServer.Shutdown(shutdownCtx); err != nil {
-		log.Error().Err(err).Msg("Error during server shutdown")
-		return err
+func init() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Warning: Error loading .env file:", err)
 	}
 
-	return nil
+	logLevel := log.WarnLevel
+
+	logLevelEnv, logLevelSet := os.LookupEnv("LOG_LEVEL")
+
+	if logLevelSet {
+		var err error
+		logLevel, err = log.ParseLevel(logLevelEnv)
+		if err != nil {
+			logLevel = log.WarnLevel
+		}
+	}
+
+	log.SetLevel(logLevel)
+
+	log.SetOutput(os.Stdout)
+
+	logFilePath, logFilePathSet := os.LookupEnv("LOG_FILE_PATH")
+	if logFilePathSet {
+		logDir := filepath.Dir(logFilePath)
+		if err := os.MkdirAll(logDir, 0755); err != nil {
+			log.Error("Failed to create log directory:", err)
+			os.Exit(1)
+		}
+
+		file, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+		if err != nil {
+			log.Error(err)
+			os.Exit(1)
+		}
+
+		log.SetOutput(io.MultiWriter(os.Stdout, file))
+	}
+
+	zerologLevel, err := zerolog.ParseLevel(logLevel.String())
+	if err != nil {
+		zerologLevel = zerolog.ErrorLevel
+	}
+
+	zerolog.SetGlobalLevel(zerologLevel)
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	zlog.Logger = zlog.Output(zerolog.ConsoleWriter{
+		Out:        &util.DebugLogWriter{},
+		TimeFormat: time.RFC3339,
+	})
+
+	golog.SetOutput(&util.DebugLogWriter{})
 }

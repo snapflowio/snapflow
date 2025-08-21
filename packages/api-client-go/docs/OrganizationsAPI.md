@@ -6,6 +6,7 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**AcceptOrganizationInvitation**](OrganizationsAPI.md#AcceptOrganizationInvitation) | **Post** /organizations/invitations/{invitationId}/accept | Accept organization invitation
 [**CancelOrganizationInvitation**](OrganizationsAPI.md#CancelOrganizationInvitation) | **Post** /organizations/{organizationId}/invitations/{invitationId}/cancel | Cancel organization invitation
+[**CreateCheckoutLink**](OrganizationsAPI.md#CreateCheckoutLink) | **Get** /organizations/{organizationId}/billing/checkout | Get payment checkout link
 [**CreateOrganization**](OrganizationsAPI.md#CreateOrganization) | **Post** /organizations | Create organization
 [**CreateOrganizationInvitation**](OrganizationsAPI.md#CreateOrganizationInvitation) | **Post** /organizations/{organizationId}/invitations | Create organization invitation
 [**CreateOrganizationRole**](OrganizationsAPI.md#CreateOrganizationRole) | **Post** /organizations/{organizationId}/roles | Create organization role
@@ -100,7 +101,7 @@ Name | Type | Description  | Notes
 
 ## CancelOrganizationInvitation
 
-> CancelOrganizationInvitation(ctx, organizationId, invitationId).Execute()
+> CancelOrganizationInvitation(ctx, invitationId, organizationId).Execute()
 
 Cancel organization invitation
 
@@ -117,12 +118,12 @@ import (
 )
 
 func main() {
-	organizationId := "organizationId_example" // string | Organization ID
 	invitationId := "invitationId_example" // string | Invitation ID
+	organizationId := "organizationId_example" // string | Organization ID
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	r, err := apiClient.OrganizationsAPI.CancelOrganizationInvitation(context.Background(), organizationId, invitationId).Execute()
+	r, err := apiClient.OrganizationsAPI.CancelOrganizationInvitation(context.Background(), invitationId, organizationId).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `OrganizationsAPI.CancelOrganizationInvitation``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -136,8 +137,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** | Organization ID | 
 **invitationId** | **string** | Invitation ID | 
+**organizationId** | **string** | Organization ID | 
 
 ### Other Parameters
 
@@ -160,6 +161,74 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
+- **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## CreateCheckoutLink
+
+> CreateCheckoutLink(ctx, organizationId).CreateOrganizationCheckout(createOrganizationCheckout).Execute()
+
+Get payment checkout link
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
+)
+
+func main() {
+	organizationId := "organizationId_example" // string | 
+	createOrganizationCheckout := *openapiclient.NewCreateOrganizationCheckout("d13c586c-ce41-4673-8917-0043c0a22867") // CreateOrganizationCheckout | 
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	r, err := apiClient.OrganizationsAPI.CreateCheckoutLink(context.Background(), organizationId).CreateOrganizationCheckout(createOrganizationCheckout).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `OrganizationsAPI.CreateCheckoutLink``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**organizationId** | **string** |  | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiCreateCheckoutLinkRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+ **createOrganizationCheckout** | [**CreateOrganizationCheckout**](CreateOrganizationCheckout.md) |  | 
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[bearer](../README.md#bearer)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
 - **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
@@ -1434,7 +1503,7 @@ Name | Type | Description  | Notes
 
 ## UpdateOrganizationInvitation
 
-> OrganizationInvitation UpdateOrganizationInvitation(ctx, organizationId, invitationId).UpdateOrganizationInvitation(updateOrganizationInvitation).Execute()
+> OrganizationInvitation UpdateOrganizationInvitation(ctx, invitationId, organizationId).UpdateOrganizationInvitation(updateOrganizationInvitation).Execute()
 
 Update organization invitation
 
@@ -1451,13 +1520,13 @@ import (
 )
 
 func main() {
-	organizationId := "organizationId_example" // string | Organization ID
 	invitationId := "invitationId_example" // string | Invitation ID
+	organizationId := "organizationId_example" // string | Organization ID
 	updateOrganizationInvitation := *openapiclient.NewUpdateOrganizationInvitation("Role_example", []string{"AssignedRoleIds_example"}) // UpdateOrganizationInvitation | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.OrganizationsAPI.UpdateOrganizationInvitation(context.Background(), organizationId, invitationId).UpdateOrganizationInvitation(updateOrganizationInvitation).Execute()
+	resp, r, err := apiClient.OrganizationsAPI.UpdateOrganizationInvitation(context.Background(), invitationId, organizationId).UpdateOrganizationInvitation(updateOrganizationInvitation).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `OrganizationsAPI.UpdateOrganizationInvitation``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -1473,8 +1542,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** | Organization ID | 
 **invitationId** | **string** | Invitation ID | 
+**organizationId** | **string** | Organization ID | 
 
 ### Other Parameters
 

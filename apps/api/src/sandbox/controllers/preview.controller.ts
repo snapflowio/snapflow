@@ -1,16 +1,7 @@
-import { Controller, Get, Logger, NotFoundException, Param, Req, UseGuards } from "@nestjs/common";
-import {
-  ApiBearerAuth,
-  ApiOAuth2,
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
-  ApiTags,
-} from "@nestjs/swagger";
+import { Controller, Get, Logger, NotFoundException, Param } from "@nestjs/common";
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { InjectRedis } from "@nestjs-modules/ioredis";
 import Redis from "ioredis";
-import { CombinedAuthGuard } from "../../auth/guards/auth.guard";
-import { OrganizationService } from "../../organization/services/organization.service";
 import { SandboxService } from "../services/sandbox.service";
 
 @ApiTags("preview")
@@ -20,8 +11,7 @@ export class PreviewController {
 
   constructor(
     @InjectRedis() private readonly redis: Redis,
-    private readonly sandboxService: SandboxService,
-    private readonly organizationService: OrganizationService
+    private readonly sandboxService: SandboxService
   ) {}
 
   @Get(":sandboxId/public")
@@ -68,84 +58,5 @@ export class PreviewController {
       }
       throw ex;
     }
-  }
-
-  @Get(":sandboxId/validate/:authToken")
-  @ApiOperation({
-    summary: "Check if sandbox auth token is valid",
-    operationId: "isValidAuthToken",
-  })
-  @ApiParam({
-    name: "sandboxId",
-    description: "ID of the sandbox",
-    type: "string",
-  })
-  @ApiParam({
-    name: "authToken",
-    description: "Auth token of the sandbox",
-    type: "string",
-  })
-  @ApiResponse({
-    status: 200,
-    description: "Sandbox auth token validation status",
-    type: Boolean,
-  })
-  async isValidAuthToken(
-    @Param("sandboxId") sandboxId: string,
-    @Param("authToken") authToken: string
-  ): Promise<boolean> {
-    const cached = await this.redis.get(`preview:token:${sandboxId}:${authToken}`);
-    if (cached) {
-      if (cached === "1") return true;
-      throw new NotFoundException(`Sandbox with ID ${sandboxId} not found`);
-    }
-
-    const sandbox = await this.sandboxService.findOne(sandboxId);
-    if (!sandbox) {
-      await this.redis.setex(`preview:token:${sandboxId}:${authToken}`, 3, "0");
-      throw new NotFoundException(`Sandbox with ID ${sandboxId} not found`);
-    }
-
-    if (sandbox.authToken === authToken) {
-      await this.redis.setex(`preview:token:${sandboxId}:${authToken}`, 3, "1");
-      return true;
-    }
-
-    await this.redis.setex(`preview:token:${sandboxId}:${authToken}`, 3, "0");
-    throw new NotFoundException(`Sandbox with ID ${sandboxId} not found`);
-  }
-
-  @Get(":sandboxId/access")
-  @ApiOperation({
-    summary: "Check if user has access to the sandbox",
-    operationId: "hasSandboxAccess",
-  })
-  @UseGuards(CombinedAuthGuard)
-  @ApiOAuth2(["openid", "profile", "email"])
-  @ApiBearerAuth()
-  async hasSandboxAccess(
-    @Req() req: Request,
-    @Param("sandboxId") sandboxId: string
-  ): Promise<boolean> {
-    // @ts-ignore
-    const userId = req.user?.userId;
-
-    const cached = await this.redis.get(`preview:access:${sandboxId}:${userId}`);
-    if (cached) {
-      if (cached === "1") return true;
-      throw new NotFoundException(`Sandbox with ID ${sandboxId} not found`);
-    }
-
-    const organizations = await this.organizationService.findByUser(userId);
-    const sandbox = await this.sandboxService.findOne(sandboxId);
-    const hasAccess = organizations.find((org) => org.id === sandbox.organizationId);
-
-    if (!hasAccess) {
-      await this.redis.setex(`preview:token:${sandboxId}:${userId}`, 3, "0");
-      throw new NotFoundException(`Sandbox with ID ${sandboxId} not found`);
-    }
-
-    await this.redis.setex(`preview:access:${sandboxId}:${userId}`, 30, "1");
-    return true;
   }
 }

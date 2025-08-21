@@ -11,10 +11,10 @@ package apiclient
 
 import (
 	"context"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
 )
 
 func Test_apiclient_ToolboxAPIService(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService CreateFolder", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -37,7 +37,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService CreateSession", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -50,7 +50,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService DeleteFile", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -63,7 +63,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService DeleteSession", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 		var sessionId string
@@ -77,7 +77,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService DownloadFile", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -91,7 +91,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService ExecuteCommand", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -105,7 +105,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService ExecuteSessionCommand", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 		var sessionId string
@@ -120,7 +120,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService FindInFiles", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -134,7 +134,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService GetFileInfo", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -148,7 +148,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService GetProjectDir", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -162,7 +162,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService GetSession", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 		var sessionId string
@@ -177,7 +177,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService GetSessionCommand", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 		var sessionId string
@@ -193,7 +193,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService GetSessionCommandLogs", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 		var sessionId string
@@ -209,7 +209,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService GitAddFiles", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -222,7 +222,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService GitCheckoutBranch", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -235,7 +235,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService GitCloneRepository", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -248,7 +248,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService GitCommitChanges", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -262,7 +262,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService GitCreateBranch", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -275,7 +275,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService GitDeleteBranch", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -288,7 +288,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService GitGetHistory", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -302,7 +302,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService GitGetStatus", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -316,7 +316,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService GitListBranches", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -330,7 +330,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService GitPullChanges", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -343,7 +343,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService GitPushChanges", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -356,7 +356,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService ListFiles", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -370,7 +370,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService ListSessions", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -384,7 +384,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService LspCompletions", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -398,7 +398,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService LspDidClose", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -411,7 +411,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService LspDidOpen", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -424,7 +424,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService LspDocumentSymbols", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -438,7 +438,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService LspStart", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -451,7 +451,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService LspStop", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -464,7 +464,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService LspWorkspaceSymbols", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -478,7 +478,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService MoveFile", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -491,7 +491,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService ReplaceInFiles", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -505,7 +505,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService SearchFiles", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -519,7 +519,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService SetFilePermissions", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 
@@ -532,7 +532,7 @@ func Test_apiclient_ToolboxAPIService(t *testing.T) {
 
 	t.Run("Test ToolboxAPIService UploadFiles", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var sandboxId string
 

@@ -12,31 +12,28 @@
  * Do not edit the class manually.
  */
 
-
-
 /**
- * 
+ *
  * @export
  * @interface ExecutorImageDto
  */
 export interface ExecutorImageDto {
-    /**
-     * Executor image ID
-     * @type {string}
-     * @memberof ExecutorImageDto
-     */
-    'executorImageId': string;
-    /**
-     * Executor ID
-     * @type {string}
-     * @memberof ExecutorImageDto
-     */
-    'executorId': string;
-    /**
-     * Executor domain
-     * @type {string}
-     * @memberof ExecutorImageDto
-     */
-    'executorDomain': string;
+  /**
+   * Executor image ID
+   * @type {string}
+   * @memberof ExecutorImageDto
+   */
+  executorImageId: string;
+  /**
+   * Executor ID
+   * @type {string}
+   * @memberof ExecutorImageDto
+   */
+  executorId: string;
+  /**
+   * Executor domain
+   * @type {string}
+   * @memberof ExecutorImageDto
+   */
+  executorDomain: string;
 }
-

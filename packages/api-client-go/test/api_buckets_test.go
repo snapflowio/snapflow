@@ -11,10 +11,10 @@ package apiclient
 
 import (
 	"context"
+	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
 )
 
 func Test_apiclient_BucketsAPIService(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_apiclient_BucketsAPIService(t *testing.T) {
 
 	t.Run("Test BucketsAPIService CreateBucket", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.BucketsAPI.CreateBucket(context.Background()).Execute()
 
@@ -36,7 +36,7 @@ func Test_apiclient_BucketsAPIService(t *testing.T) {
 
 	t.Run("Test BucketsAPIService DeleteBucket", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var bucketId string
 
@@ -49,7 +49,7 @@ func Test_apiclient_BucketsAPIService(t *testing.T) {
 
 	t.Run("Test BucketsAPIService GetBucket", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var bucketId string
 
@@ -63,7 +63,7 @@ func Test_apiclient_BucketsAPIService(t *testing.T) {
 
 	t.Run("Test BucketsAPIService GetBucketByName", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var name string
 
@@ -77,7 +77,7 @@ func Test_apiclient_BucketsAPIService(t *testing.T) {
 
 	t.Run("Test BucketsAPIService ListBuckets", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.BucketsAPI.ListBuckets(context.Background()).Execute()
 

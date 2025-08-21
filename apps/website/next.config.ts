@@ -1,13 +1,13 @@
 import { NextConfig } from "next";
+import { withContentlayer } from "next-contentlayer2";
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  distDir: "../../dist/apps/website",
   typescript: {
     ignoreBuildErrors: true,
     tsconfigPath: "./tsconfig.app.json",
   },
-  transpilePackages: ["@snapflow/api-client"],
+  transpilePackages: ["@snapflow/api-client", "@snapflow/executor-api-client"],
   experimental: {
     optimizePackageImports: ["lucide-react"],
   },
@@ -20,4 +20,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withContentlayer(nextConfig);
