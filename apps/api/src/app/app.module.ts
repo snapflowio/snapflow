@@ -1,15 +1,12 @@
-import { join } from "path";
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
 import { EventEmitterModule } from "@nestjs/event-emitter";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ThrottlerModule } from "@nestjs/throttler";
-import { TypeOrmModule } from "@nestjs/typeorm";
 import { RedisModule } from "@nestjs-modules/ioredis";
 import { McpModule, McpTransportType } from "@rekog/mcp-nest";
 import { ApiKeyModule } from "../api-key/api-key.module";
 import { MaintenanceMiddleware } from "../common/middleware/maintenance.middleware";
 import { VersionHeaderMiddleware } from "../common/middleware/version-header.middleware";
-import { CustomNamingStrategy } from "../common/utils/naming-strategy.util";
 import { TypedConfigModule } from "../config/typed-config.module";
 import { TypedConfigService } from "../config/typed-config.service";
 import { OrganizationModule } from "../organization/organization.module";
@@ -26,24 +23,6 @@ import { AppTool } from "./app.tool";
   imports: [
     TypedConfigModule.forRoot({
       isGlobal: true,
-    }),
-    TypeOrmModule.forRootAsync({
-      inject: [TypedConfigService],
-      useFactory: (configService: TypedConfigService) => {
-        return {
-          type: "postgres",
-          host: configService.getOrThrow("database.host"),
-          port: configService.getOrThrow("database.port"),
-          username: configService.getOrThrow("database.username"),
-          password: configService.getOrThrow("database.password"),
-          database: configService.getOrThrow("database.database"),
-          autoLoadEntities: true,
-          migrations: [join(__dirname, "migrations/**/*{.ts,.js}")],
-          migrationsRun: !configService.getOrThrow("production"),
-          namingStrategy: new CustomNamingStrategy(),
-          manualInitialization: configService.get("skipConnections"),
-        };
-      },
     }),
     McpModule.forRoot({
       name: "snapflow",
