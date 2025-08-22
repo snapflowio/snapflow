@@ -1,14 +1,13 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
-import { InjectRepository } from "@nestjs/typeorm";
-import { DataSource, In, Repository } from "typeorm";
+import type { User } from "@prisma/client";
+import { PrismaService } from "../database/prisma.service";
 import { UserEvents } from "./constants/user-events.constant";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { SystemRole } from "./enums/system-role.enum";
 import { UserCreatedEvent } from "./events/user-created.event";
 import { UserDeletedEvent } from "./events/user-deleted.event";
 import { UserEmailVerifiedEvent } from "./events/user-email-verified.event";
-import { User } from "./user.entity";
 
 /**
  * Service responsible for user-related business logic and data manipulation.
@@ -16,10 +15,8 @@ import { User } from "./user.entity";
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    private readonly eventEmitter: EventEmitter2,
-    private readonly dataSource: DataSource
+    private readonly prisma: PrismaService,
+    private readonly eventEmitter: EventEmitter2
   ) {}
 
   /**
@@ -27,7 +24,7 @@ export class UserService {
    * @returns A promise that resolves to an array of User entities.
    */
   async findAll(): Promise<User[]> {
-    return this.userRepository.find();
+    return this.prisma.user.findMany();
   }
 
   /**
@@ -41,9 +38,11 @@ export class UserService {
       return [];
     }
 
-    return this.userRepository.find({
+    return this.prisma.user.findMany({
       where: {
-        id: In(ids),
+        id: {
+          in: ids,
+        },
       },
     });
   }
@@ -54,7 +53,7 @@ export class UserService {
    * @returns A promise that resolves to the User entity or null if not found.
    */
   async findOne(id: string): Promise<User | null> {
-    return this.userRepository.findOne({ where: { id } });
+    return this.prisma.user.findUnique({ where: { id } });
   }
 
   /**
@@ -64,7 +63,11 @@ export class UserService {
    * @throws {NotFoundException} If no user is found with the given ID.
    */
   async findOneOrFail(id: string): Promise<User> {
-    return this.userRepository.findOneOrFail({ where: { id } });
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found.`);
+    }
+    return user;
   }
 
   /**
@@ -73,7 +76,7 @@ export class UserService {
    * @returns A promise that resolves to the User entity or null if not found.
    */
   async findOneByEmail(email: string): Promise<User | null> {
-    return this.userRepository.findOne({ where: { email } });
+    return this.prisma.user.findFirst({ where: { email } });
   }
 
   /**
@@ -83,12 +86,9 @@ export class UserService {
    * @returns A promise that resolves when the operation is complete.
    */
   async remove(id: string): Promise<void> {
-    await this.dataSource.transaction(async (transactionalEntityManager) => {
-      await transactionalEntityManager.delete(User, id);
-      await this.eventEmitter.emitAsync(
-        UserEvents.DELETED,
-        new UserDeletedEvent(transactionalEntityManager, id)
-      );
+    await this.prisma.$transaction(async (prisma) => {
+      await prisma.user.delete({ where: { id } });
+      await this.eventEmitter.emitAsync(UserEvents.DELETED, new UserDeletedEvent(prisma, id));
     });
   }
 
@@ -99,15 +99,23 @@ export class UserService {
    * @returns A promise that resolves to the newly created User entity.
    */
   async create(createUserDto: CreateUserDto): Promise<User> {
-    // Use the repository's create method to build the entity from the DTO.
-    const user = this.userRepository.create(createUserDto);
+    let user: User;
 
-    await this.dataSource.transaction(async (transactionalEntityManager) => {
-      await transactionalEntityManager.save(user);
+    await this.prisma.$transaction(async (prisma) => {
+      user = await prisma.user.create({
+        data: {
+          id: createUserDto.id,
+          name: createUserDto.name,
+          email: createUserDto.email || "",
+          emailVerified: createUserDto.emailVerified || false,
+          role: createUserDto.role || SystemRole.USER,
+        },
+      });
+
       await this.eventEmitter.emitAsync(
         UserEvents.CREATED,
         new UserCreatedEvent(
-          transactionalEntityManager,
+          prisma,
           user.id,
           createUserDto.email,
           createUserDto.emailVerified,
@@ -116,7 +124,7 @@ export class UserService {
       );
     });
 
-    return user;
+    return user!;
   }
 
   /**
@@ -126,9 +134,10 @@ export class UserService {
    * @returns A promise that resolves to the updated User entity.
    */
   async updateName(userId: string, name: string): Promise<User> {
-    const user = await this.findUserByIdOrFail(userId);
-    user.name = name;
-    return this.userRepository.save(user);
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { name },
+    });
   }
 
   /**
@@ -138,9 +147,10 @@ export class UserService {
    * @returns A promise that resolves to the updated User entity.
    */
   async updateEmail(userId: string, email: string): Promise<User> {
-    const user = await this.findUserByIdOrFail(userId);
-    user.email = email;
-    return this.userRepository.save(user);
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { email },
+    });
   }
 
   /**
@@ -150,9 +160,10 @@ export class UserService {
    * @returns A promise that resolves to the updated User entity.
    */
   async updateEmailVerified(userId: string, verified: boolean): Promise<User> {
-    const user = await this.findUserByIdOrFail(userId);
-    user.emailVerified = verified;
-    return this.userRepository.save(user);
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { emailVerified: verified },
+    });
   }
 
   /**
@@ -162,9 +173,10 @@ export class UserService {
    * @returns A promise that resolves to the updated User entity.
    */
   async updateRole(userId: string, role: SystemRole): Promise<User> {
-    const user = await this.findUserByIdOrFail(userId);
-    user.role = role;
-    return this.userRepository.save(user);
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { role },
+    });
   }
 
   /**
@@ -175,31 +187,22 @@ export class UserService {
    * @returns A promise that resolves to the updated User entity.
    */
   async verifyEmail(userId: string, emailVerified: boolean): Promise<User> {
-    const user = await this.findUserByIdOrFail(userId);
-    user.emailVerified = emailVerified;
+    let user: User;
 
-    await this.dataSource.transaction(async (transactionalEntityManager) => {
-      await transactionalEntityManager.save(user);
+    await this.prisma.$transaction(async (prisma) => {
+      user = await prisma.user.update({
+        where: { id: userId },
+        data: { emailVerified },
+      });
+
       if (emailVerified) {
         await this.eventEmitter.emitAsync(
           UserEvents.EMAIL_VERIFIED,
-          new UserEmailVerifiedEvent(transactionalEntityManager, user.id)
+          new UserEmailVerifiedEvent(prisma, user.id)
         );
       }
     });
 
-    return user;
-  }
-
-  /**
-   * A private helper to find a user by ID or throw a NotFoundException.
-   * @param id - The ID of the user to find.
-   * @returns A promise that resolves to the User entity.
-   * @throws {NotFoundException} If the user is not found.
-   */
-  private async findUserByIdOrFail(id: string): Promise<User> {
-    const user = await this.findOne(id);
-    if (!user) throw new NotFoundException(`User with ID ${id} not found.`);
-    return user;
+    return user!;
   }
 }

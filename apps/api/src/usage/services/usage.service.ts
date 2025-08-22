@@ -1,14 +1,13 @@
 import { forwardRef, Inject, Injectable, Logger } from "@nestjs/common";
 import { OnEvent } from "@nestjs/event-emitter";
 import { Cron, CronExpression } from "@nestjs/schedule";
-import { InjectRepository } from "@nestjs/typeorm";
-import { IsNull, LessThan, Not, Repository } from "typeorm";
+import type { SandboxUsagePeriods } from "@prisma/client";
+import { PrismaService } from "../../database/prisma.service";
 import { RedisLockProvider } from "../../sandbox/common/redis-lock.provider";
 import { SANDBOX_WARM_POOL_UNASSIGNED_ORGANIZATION } from "../../sandbox/constants/sandbox.constants";
 import { SandboxEvents } from "../../sandbox/constants/sandbox-events.constants";
 import { SandboxState } from "../../sandbox/enums/sandbox-state.enum";
 import { SandboxStateUpdatedEvent } from "../../sandbox/events/sandbox-state-updated.event";
-import { SandboxUsagePeriod } from "../sandbox-usage-period.entity";
 import { BillingService } from "./billing.service";
 
 /**
@@ -19,8 +18,7 @@ export class UsageService {
   private readonly logger = new Logger(UsageService.name);
 
   constructor(
-    @InjectRepository(SandboxUsagePeriod)
-    private readonly sandboxUsagePeriodRepository: Repository<SandboxUsagePeriod>,
+    private readonly prisma: PrismaService,
     private readonly redisLockProvider: RedisLockProvider,
     @Inject(forwardRef(() => BillingService))
     private readonly billingService: BillingService
@@ -75,20 +73,21 @@ export class UsageService {
     diskOnly = false
   ): Promise<void> {
     const { sandbox } = event;
-    const usagePeriod = this.sandboxUsagePeriodRepository.create({
-      sandboxId: sandbox.id,
-      organizationId: sandbox.organizationId,
-      region: sandbox.region,
-      disk: sandbox.disk,
-      startAt: new Date(),
-      endAt: null,
-      // Set compute resources based on the diskOnly flag.
-      cpu: diskOnly ? 0 : sandbox.cpu,
-      gpu: diskOnly ? 0 : sandbox.gpu,
-      mem: diskOnly ? 0 : sandbox.mem,
+    await this.prisma.sandboxUsagePeriods.create({
+      data: {
+        sandboxId: sandbox.id,
+        organizationId: sandbox.organizationId,
+        region: sandbox.region,
+        disk: sandbox.disk,
+        startAt: new Date(),
+        endAt: null,
+        // Set compute resources based on the diskOnly flag.
+        cpu: diskOnly ? 0 : sandbox.cpu,
+        gpu: diskOnly ? 0 : sandbox.gpu,
+        mem: diskOnly ? 0 : sandbox.mem,
+        billed: false,
+      },
     });
-
-    await this.sandboxUsagePeriodRepository.save(usagePeriod);
   }
 
   /**
@@ -96,19 +95,22 @@ export class UsageService {
    * @param sandboxId - The ID of the sandbox whose usage period should be closed.
    */
   private async closeUsagePeriod(sandboxId: string): Promise<void> {
-    const lastUsagePeriod = await this.sandboxUsagePeriodRepository.findOne({
+    const lastUsagePeriod = await this.prisma.sandboxUsagePeriods.findFirst({
       where: {
         sandboxId,
-        endAt: IsNull(),
+        endAt: null,
       },
-      order: {
-        startAt: "DESC",
+      orderBy: {
+        startAt: "desc",
       },
     });
 
     if (lastUsagePeriod) {
-      lastUsagePeriod.endAt = new Date();
-      const savedPeriod = await this.sandboxUsagePeriodRepository.save(lastUsagePeriod);
+      const endAt = new Date();
+      const savedPeriod = await this.prisma.sandboxUsagePeriods.update({
+        where: { id: lastUsagePeriod.id },
+        data: { endAt },
+      });
 
       // Trigger billing for the completed usage period
       this.processBillingAsync(savedPeriod);
@@ -118,7 +120,7 @@ export class UsageService {
   /**
    * Processes billing for a usage period asynchronously to avoid blocking the main flow.
    */
-  private processBillingAsync(usagePeriod: SandboxUsagePeriod): void {
+  private processBillingAsync(usagePeriod: SandboxUsagePeriods): void {
     // Use setImmediate to process billing in the next tick
     setImmediate(async () => {
       try {
@@ -143,14 +145,18 @@ export class UsageService {
 
     try {
       // Find active usage periods older than 24 hours for non-warm-pool sandboxes.
-      const usagePeriods = await this.sandboxUsagePeriodRepository.find({
+      const usagePeriods = await this.prisma.sandboxUsagePeriods.findMany({
         where: {
-          endAt: IsNull(),
-          startAt: LessThan(new Date(Date.now() - 24 * 60 * 60 * 1000)), // 24 hours ago
-          organizationId: Not(SANDBOX_WARM_POOL_UNASSIGNED_ORGANIZATION),
+          endAt: null,
+          startAt: {
+            lt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 24 hours ago
+          },
+          organizationId: {
+            not: SANDBOX_WARM_POOL_UNASSIGNED_ORGANIZATION,
+          },
         },
-        order: {
-          startAt: "ASC",
+        orderBy: {
+          startAt: "asc",
         },
         take: 100,
       });
@@ -159,22 +165,34 @@ export class UsageService {
         if (!(await this.acquireLock(usagePeriod.sandboxId))) continue;
 
         try {
-          await this.sandboxUsagePeriodRepository.manager.transaction(
-            async (transactionalEntityManager) => {
-              const closeTime = new Date();
-              usagePeriod.endAt = closeTime;
-              const savedPeriod = await transactionalEntityManager.save(usagePeriod);
+          await this.prisma.$transaction(async (prisma) => {
+            const closeTime = new Date();
 
-              // Create a new period starting immediately after the old one ended.
-              const newUsagePeriod = SandboxUsagePeriod.fromUsagePeriod(usagePeriod);
-              newUsagePeriod.startAt = closeTime;
-              newUsagePeriod.endAt = null;
-              await transactionalEntityManager.save(newUsagePeriod);
+            // Update the existing period to close it
+            const savedPeriod = await prisma.sandboxUsagePeriods.update({
+              where: { id: usagePeriod.id },
+              data: { endAt: closeTime },
+            });
 
-              // Process billing for the closed period
-              this.processBillingAsync(savedPeriod);
-            }
-          );
+            // Create a new period starting immediately after the old one ended.
+            await prisma.sandboxUsagePeriods.create({
+              data: {
+                sandboxId: usagePeriod.sandboxId,
+                organizationId: usagePeriod.organizationId,
+                region: usagePeriod.region,
+                disk: usagePeriod.disk,
+                cpu: usagePeriod.cpu,
+                gpu: usagePeriod.gpu,
+                mem: usagePeriod.mem,
+                startAt: closeTime,
+                endAt: null,
+                billed: false,
+              },
+            });
+
+            // Process billing for the closed period
+            this.processBillingAsync(savedPeriod);
+          });
         } catch (error) {
           this.logger.error(
             `Error closing and reopening usage period for sandbox ${usagePeriod.sandboxId}`,

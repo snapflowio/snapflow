@@ -7,10 +7,10 @@ import {
   ApiResponse,
   ApiTags,
 } from "@nestjs/swagger";
-import { RequiredApiRole } from "../../common/decorators/required-role.decorator";
 import { CombinedAuthGuard } from "../../auth/guards/auth.guard";
 import { ProxyGuard } from "../../auth/guards/proxy.guard";
 import { SystemActionGuard } from "../../auth/guards/system-action.guard";
+import { RequiredApiRole } from "../../common/decorators/required-role.decorator";
 import { SystemRole } from "../../user/enums/system-role.enum";
 import { CreateExecutorDto } from "../dto/create-executor.dto";
 import { ExecutorDto } from "../dto/executor.dto";

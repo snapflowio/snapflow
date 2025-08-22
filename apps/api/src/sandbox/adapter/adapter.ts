@@ -1,12 +1,12 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { Executor } from "../entities/executor.entity";
 import { ModuleRef } from "@nestjs/core";
-import { ExecutorAdapterLegacy } from "./legacy";
-import { BuildInfo } from "../entities/build-info.entity";
 import { Registry } from "../../registry/entities/registry.entity";
+import { BuildInfo } from "../entities/build-info.entity";
+import { Executor } from "../entities/executor.entity";
 import { Sandbox } from "../entities/sandbox.entity";
-import { SandboxState } from "../enums/sandbox-state.enum";
 import { BackupState } from "../enums/backup-state.enum";
+import { SandboxState } from "../enums/sandbox-state.enum";
+import { ExecutorAdapterLegacy } from "./legacy";
 
 export interface ExecutorSandboxInfo {
   state: SandboxState;

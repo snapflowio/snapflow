@@ -17,13 +17,13 @@ import {
   ApiResponse,
   ApiTags,
 } from "@nestjs/swagger";
+import { CombinedAuthGuard } from "../auth/guards/auth.guard";
 import { CustomHeaders } from "../common/constants/header.constants";
 import { AuthContext } from "../common/decorators/auth-context.decorator";
 import {
   AuthContext as IAuthContext,
   OrganizationAuthContext,
 } from "../common/interfaces/auth-context.interface";
-import { CombinedAuthGuard } from "../auth/guards/auth.guard";
 import { OrganizationMemberRole } from "../organization/enums/organization-member-role.enum";
 import { OrganizationResourcePermission } from "../organization/enums/organization-resource-permission.enum";
 import { OrganizationResourceActionGuard } from "../organization/guards/organization-resource-action.guard";

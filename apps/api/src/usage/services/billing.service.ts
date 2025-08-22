@@ -1,18 +1,16 @@
 import { forwardRef, Inject, Injectable, Logger } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { Cron, CronExpression } from "@nestjs/schedule";
-import { InjectRepository } from "@nestjs/typeorm";
-import { IsNull, LessThan, Repository } from "typeorm";
+import type { SandboxUsagePeriods } from "@prisma/client";
 import {
   CPU_CORE_PER_SECOND_PRICE,
   MEMORY_GIG_PER_SECOND_PRICE,
 } from "../../common/constants/prices.constants";
 import { WrapperType } from "../../common/types/wrapper.type";
-import { Organization } from "../../organization/entities/organization.entity";
+import { PrismaService } from "../../database/prisma.service";
 import { OrganizationService } from "../../organization/services/organization.service";
 import { RedisLockProvider } from "../../sandbox/common/redis-lock.provider";
 import { SandboxService } from "../../sandbox/services/sandbox.service";
-import { SandboxUsagePeriod } from "../sandbox-usage-period.entity";
 
 /**
  * Service responsible for calculating usage costs and deducting credits from organization wallet.
@@ -23,10 +21,7 @@ export class BillingService {
   private readonly logger = new Logger(BillingService.name);
 
   constructor(
-    @InjectRepository(SandboxUsagePeriod)
-    private readonly sandboxUsagePeriodRepository: Repository<SandboxUsagePeriod>,
-    @InjectRepository(Organization)
-    private readonly organizationRepository: Repository<Organization>,
+    private readonly prisma: PrismaService,
     private readonly organizationService: OrganizationService,
     @Inject(forwardRef(() => SandboxService))
     private readonly sandboxService: WrapperType<SandboxService>,
@@ -38,7 +33,7 @@ export class BillingService {
    * Processes billing for completed usage periods.
    * Called when usage periods are closed to calculate and deduct costs.
    */
-  async processBillingForUsagePeriod(usagePeriod: SandboxUsagePeriod): Promise<void> {
+  async processBillingForUsagePeriod(usagePeriod: SandboxUsagePeriods): Promise<void> {
     // Skip if already billed
     if (usagePeriod.billed) {
       return;
@@ -55,7 +50,7 @@ export class BillingService {
     }
 
     try {
-      const organization = await this.organizationRepository.findOne({
+      const organization = await this.prisma.organization.findUnique({
         where: { id: usagePeriod.organizationId },
       });
 
@@ -68,12 +63,14 @@ export class BillingService {
 
       if (cost <= 0) {
         // Mark as billed even if no cost to prevent reprocessing
-        usagePeriod.billed = true;
-        await this.sandboxUsagePeriodRepository.save(usagePeriod);
+        await this.prisma.sandboxUsagePeriods.update({
+          where: { id: usagePeriod.id },
+          data: { billed: true },
+        });
         return;
       }
 
-      const currentBalance = Number.parseFloat(organization.wallet) || 0.0;
+      const currentBalance = Number.parseFloat(organization.wallet.toString()) || 0.0;
       const newBalance = Math.max(0, currentBalance - cost);
 
       this.logger.log(
@@ -82,12 +79,16 @@ export class BillingService {
       );
 
       // Update wallet balance and mark period as billed in a transaction
-      await this.sandboxUsagePeriodRepository.manager.transaction(async (manager) => {
-        organization.wallet = newBalance.toFixed(6);
-        await manager.save(organization);
+      await this.prisma.$transaction(async (prisma) => {
+        await prisma.organization.update({
+          where: { id: organization.id },
+          data: { wallet: newBalance.toFixed(6) },
+        });
 
-        usagePeriod.billed = true;
-        await manager.save(usagePeriod);
+        await prisma.sandboxUsagePeriods.update({
+          where: { id: usagePeriod.id },
+          data: { billed: true },
+        });
       });
 
       // If balance reaches zero, stop all running sandboxes
@@ -105,7 +106,7 @@ export class BillingService {
    * Calculates the cost for a specific usage period based on CPU and memory consumption.
    * Uses the pricing constants for per-second resource costs.
    */
-  private calculateUsageCost(usagePeriod: SandboxUsagePeriod): number {
+  private calculateUsageCost(usagePeriod: SandboxUsagePeriods): number {
     if (!usagePeriod.endAt) {
       return 0; // Cannot calculate cost for open periods
     }
@@ -157,7 +158,7 @@ export class BillingService {
    * Gets the current wallet balance for an organization.
    */
   async getOrganizationBalance(organizationId: string): Promise<number> {
-    const organization = await this.organizationRepository.findOne({
+    const organization = await this.prisma.organization.findUnique({
       where: { id: organizationId },
     });
 
@@ -165,7 +166,7 @@ export class BillingService {
       throw new Error(`Organization ${organizationId} not found`);
     }
 
-    return Number.parseFloat(organization.wallet) || 0.0;
+    return Number.parseFloat(organization.wallet.toString()) || 0.0;
   }
 
   /**
@@ -205,13 +206,15 @@ export class BillingService {
    * This method can be called periodically to ensure consistent billing.
    */
   async processPendingBilling(): Promise<void> {
-    const completedPeriods = await this.sandboxUsagePeriodRepository.find({
+    const completedPeriods = await this.prisma.sandboxUsagePeriods.findMany({
       where: {
-        endAt: LessThan(new Date()),
+        endAt: {
+          lt: new Date(),
+        },
         billed: false,
       },
       take: 100,
-      order: { endAt: "ASC" },
+      orderBy: { endAt: "asc" },
     });
 
     this.logger.log(`Processing ${completedPeriods.length} unbilled usage periods`);

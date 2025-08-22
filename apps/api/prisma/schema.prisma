@@ -7,34 +7,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// === MODELS ===
-
 model ApiKey {
+  id             String              @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   organizationId String              @db.Uuid
   userId         String              @db.VarChar
   name           String              @db.VarChar
   keyHash        String              @unique(map: "api_key_key_hash_unique") @db.VarChar
   keyPrefix      String              @db.VarChar
   keySuffix      String              @db.VarChar
-  permissions    ApiKeyPermission[]
+  permissions    ApiKeyPermissions[]
   createdAt      DateTime            @db.Timestamp(6)
   lastUsedAt     DateTime?           @db.Timestamp(6)
   expiresAt      DateTime?           @db.Timestamp(6)
 
-  @@id([organizationId, userId, name], map: "api_key_organization_id_user_id_name_pk")
+  @@unique([organizationId, userId, name])
+  @@map("api_key")
 }
 
 model Bucket {
-  id             String         @id(map: "bucket_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  organizationId String?        @db.Uuid
-  name           String         @db.VarChar
-  state          BucketState    @default(PendingCreate)
-  errorReason    String?        @db.VarChar
-  createdAt      DateTime       @default(now()) @db.Timestamp(6)
-  updatedAt      DateTime       @default(now()) @db.Timestamp(6)
-  lastUsedAt     DateTime?      @db.Timestamp(6)
+  id             String      @id(map: "bucket_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  organizationId String?     @db.Uuid
+  name           String      @db.VarChar
+  state          BucketState @default(pending_create)
+  errorReason    String?     @db.VarChar
+  createdAt      DateTime    @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime    @default(now()) @db.Timestamp(6)
+  lastUsedAt     DateTime?   @db.Timestamp(6)
 
   @@unique([organizationId, name], map: "bucket_organization_id_name_unique")
+  @@map("bucket")
 }
 
 model BuildInfo {
@@ -44,216 +45,241 @@ model BuildInfo {
   lastUsedAt        DateTime  @default(now()) @db.Timestamp(6)
   createdAt         DateTime  @default(now()) @db.Timestamp(6)
   updatedAt         DateTime  @default(now()) @db.Timestamp(6)
-  images            Image[]
-  sandboxes         Sandbox[]
+  image             Image[]
+  sandbox           Sandbox[]
+
+  @@map("build_info")
 }
 
 model Executor {
-  id            String            @id(map: "executor_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  domain        String            @unique(map: "executor_domain_unique") @db.VarChar
-  apiUrl        String            @db.VarChar
-  apiKey        String            @db.VarChar
+  id            String         @id(map: "executor_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  domain        String         @unique(map: "executor_domain_unique") @db.VarChar
+  apiUrl        String         @db.VarChar
+  apiKey        String         @db.VarChar
   cpu           Int
   memory        Int
   disk          Int
   gpu           Int
-  gpuType       String            @db.VarChar
-  class         ExecutorClass     @default(Small)
-  used          Int               @default(0)
+  gpuType       String         @db.VarChar
+  class         ExecutorClass  @default(small)
+  used          Int            @default(0)
   capacity      Int
   region        ExecutorRegion
-  state         ExecutorState     @default(Initializing)
-  lastChecked   DateTime?         @db.Timestamp(6)
-  unschedulable Boolean           @default(false)
-  createdAt     DateTime          @default(now()) @db.Timestamp(6)
-  updatedAt     DateTime          @default(now()) @db.Timestamp(6)
+  state         ExecutorState  @default(initializing)
+  lastChecked   DateTime?      @db.Timestamp(6)
+  unschedulable Boolean        @default(false)
+  createdAt     DateTime       @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime       @default(now()) @db.Timestamp(6)
+
+  @@map("executor")
 }
 
 model Image {
-  id                String           @id(map: "image_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  organizationId    String?          @db.Uuid
-  general           Boolean          @default(false)
-  name              String           @db.VarChar
-  imageName         String           @db.VarChar
-  internalName      String?          @db.VarChar
-  enabled           Boolean          @default(true)
-  state             ImageState       @default(Pending)
-  errorReason       String?          @db.VarChar
+  id                String     @id(map: "image_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  organizationId    String?    @db.Uuid
+  general           Boolean    @default(false)
+  name              String     @db.VarChar
+  imageName         String     @db.VarChar
+  internalName      String?    @db.VarChar
+  enabled           Boolean    @default(true)
+  state             ImageState @default(pending)
+  errorReason       String?    @db.VarChar
   size              Float?
-  cpu               Int              @default(1)
-  gpu               Int              @default(0)
-  mem               Int              @default(1)
-  disk              Int              @default(3)
-  hideFromUsers     Boolean          @default(false)
+  cpu               Int        @default(1)
+  gpu               Int        @default(0)
+  mem               Int        @default(1)
+  disk              Int        @default(3)
+  hideFromUsers     Boolean    @default(false)
   entrypoint        String[]
-  createdAt         DateTime         @default(now()) @db.Timestamp(6)
-  updatedAt         DateTime         @default(now()) @db.Timestamp(6)
-  lastUsedAt        DateTime?        @db.Timestamp(6)
-  buildExecutorId   String?          @db.VarChar
-  buildInfoImageRef String?          @db.VarChar
-  buildInfo         BuildInfo?       @relation(fields: [buildInfoImageRef], references: [imageRef], onDelete: NoAction, onUpdate: NoAction, map: "image_build_info_image_ref_fk")
+  createdAt         DateTime   @default(now()) @db.Timestamp(6)
+  updatedAt         DateTime   @default(now()) @db.Timestamp(6)
+  lastUsedAt        DateTime?  @db.Timestamp(6)
+  buildExecutorId   String?    @db.VarChar
+  buildInfoImageRef String?    @db.VarChar
+  buildInfo         BuildInfo? @relation(fields: [buildInfoImageRef], references: [imageRef], onDelete: NoAction, onUpdate: NoAction, map: "image_build_info_image_ref_fk")
 
   @@unique([organizationId, name], map: "image_organization_id_name_unique")
+  @@map("image")
 }
 
 model ImageExecutor {
-  id          String              @id(map: "image_executor_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  state       ImageExecutorState  @default(PullingImage)
-  errorReason String?             @db.VarChar
-  imageRef    String              @default("") @db.VarChar
-  executorId  String              @db.VarChar
-  createdAt   DateTime            @default(now()) @db.Timestamp(6)
-  updatedAt   DateTime            @default(now()) @db.Timestamp(6)
+  id          String             @id(map: "image_executor_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  state       ImageExecutorState @default(pulling_image)
+  errorReason String?            @db.VarChar
+  imageRef    String             @default("") @db.VarChar
+  executorId  String             @db.VarChar
+  createdAt   DateTime           @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime           @default(now()) @db.Timestamp(6)
+
+  @@map("image_executor")
 }
 
-model Migration {
-  id        Int      @id(map: "migrations_id_pk") @default(autoincrement())
+model Migrations {
+  id        Int    @id(map: "migrations_id_pk") @default(autoincrement())
   timestamp BigInt
-  name      String   @db.VarChar
+  name      String @db.VarChar
+
+  @@map("migrations")
 }
 
 model Organization {
-  id                        String                        @id(map: "organization_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  name                      String                        @db.VarChar
-  createdBy                 String                        @db.VarChar
-  personal                  Boolean                       @default(false)
-  wallet                    Decimal                       @default(0.000000) @db.Decimal(12, 6)
-  telemetryEnabled          Boolean                       @default(true)
-  totalCpuQuota             Int                           @default(10)
-  totalMemoryQuota          Int                           @default(10)
-  totalDiskQuota            Int                           @default(30)
-  maxCpuPerSandbox          Int                           @default(4)
-  maxMemoryPerSandbox       Int                           @default(8)
-  maxDiskPerSandbox         Int                           @default(10)
-  maxImageSize              Int                           @default(20)
-  imageQuota                Int                           @default(100)
-  bucketQuota               Int                           @default(100)
-  suspended                 Boolean                       @default(false)
-  suspendedAt               DateTime?                     @db.Timestamp(6)
-  suspensionReason          String?                       @db.VarChar
-  suspendedUntil            DateTime?                     @db.Timestamp(6)
-  createdAt                 DateTime                      @default(now()) @db.Timestamp(6)
-  updatedAt                 DateTime                      @default(now()) @db.Timestamp(6)
-  invitations               OrganizationInvitation[]
-  roles                     OrganizationRole[]
-  users                     OrganizationUser[]
+  id                  String                   @id(map: "organization_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name                String                   @db.VarChar
+  createdBy           String                   @db.VarChar
+  personal            Boolean                  @default(false)
+  wallet              Decimal                  @default(0.000000) @db.Decimal(12, 6)
+  telemetryEnabled    Boolean                  @default(true)
+  totalCpuQuota       Int                      @default(10) @map("total_cpu_quota")
+  totalMemoryQuota    Int                      @default(10) @map("total_memory_quota")
+  totalDiskQuota      Int                      @default(30) @map("total_disk_quota")
+  maxCpuPerSandbox    Int                      @default(4) @map("max_cpu_per_sandbox")
+  maxMemoryPerSandbox Int                      @default(8) @map("max_memory_per_sandbox")
+  maxDiskPerSandbox   Int                      @default(10) @map("max_disk_per_sandbox")
+  maxImageSize        Int                      @default(20) @map("max_image_size")
+  imageQuota          Int                      @default(100) @map("image_quota")
+  bucketQuota         Int                      @default(100) @map("bucket_quota")
+  suspended           Boolean                  @default(false)
+  suspendedAt         DateTime?                @db.Timestamp(6)
+  suspensionReason    String?                  @db.VarChar
+  suspendedUntil      DateTime?                @db.Timestamp(6)
+  createdAt           DateTime                 @default(now()) @db.Timestamp(6)
+  updatedAt           DateTime                 @default(now()) @db.Timestamp(6)
+  invitations         OrganizationInvitation[]
+  roles               OrganizationRole[]
+  users               OrganizationUser[]
+
+  @@map("organization")
 }
 
 model OrganizationInvitation {
-  id              String                             @id(map: "organization_invitation_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  organizationId  String                             @db.Uuid
-  email           String                             @db.VarChar
-  invitedBy       String                             @default("") @db.VarChar
-  role            OrganizationInvitationRole         @default(Member)
-  expiresAt       DateTime                           @db.Timestamp(6)
-  status          OrganizationInvitationStatus       @default(Pending)
-  createdAt       DateTime                           @default(now()) @db.Timestamp(6)
-  updatedAt       DateTime                           @default(now()) @db.Timestamp(6)
-  organization    Organization                       @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "organization_invitation_organization_id_fk")
+  id              String                                 @id(map: "organization_invitation_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  organizationId  String                                 @db.Uuid
+  email           String                                 @db.VarChar
+  invitedBy       String                                 @default("") @db.VarChar
+  role            OrganizationInvitationRole             @default(member)
+  expiresAt       DateTime                               @db.Timestamp(6)
+  status          OrganizationInvitationStatus           @default(pending)
+  createdAt       DateTime                               @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime                               @default(now()) @db.Timestamp(6)
+  organization    Organization                           @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "organization_invitation_organization_id_fk")
   roleAssignments OrganizationRoleAssignmentInvitation[]
+
+  @@map("organization_invitation")
 }
 
 model OrganizationRole {
-  id                String                     @id(map: "organization_role_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  name              String                     @db.VarChar
-  description       String                     @db.VarChar
-  permissions       OrganizationPermission[]
-  isGlobal          Boolean                    @default(false)
-  organizationId    String?                    @db.Uuid
-  createdAt         DateTime                   @default(now()) @db.Timestamp(6)
-  updatedAt         DateTime                   @default(now()) @db.Timestamp(6)
-  organization      Organization?              @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "organization_role_organization_id_fk")
-  roleAssignments   OrganizationRoleAssignment[]
+  id                    String                                 @id(map: "organization_role_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name                  String                                 @db.VarChar
+  description           String                                 @db.VarChar
+  permissions           OrganizationRolePermissions[]
+  isGlobal              Boolean                                @default(false)
+  organizationId        String?                                @db.Uuid
+  createdAt             DateTime                               @default(now()) @db.Timestamp(6)
+  updatedAt             DateTime                               @default(now()) @db.Timestamp(6)
+  organization          Organization?                          @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "organization_role_organization_id_fk")
+  assignments           OrganizationRoleAssignment[]
   invitationAssignments OrganizationRoleAssignmentInvitation[]
+
+  @@map("organization_role")
 }
 
 model OrganizationRoleAssignment {
-  organizationId String                   @db.Uuid
-  userId         String                   @db.VarChar
-  roleId         String                   @db.Uuid
-  user           OrganizationUser         @relation(fields: [organizationId, userId], references: [organizationId, userId], onDelete: Cascade, map: "organization_role_assignment_organization_id_user_id_fk")
-  role           OrganizationRole         @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "organization_role_assignment_role_id_fk")
+  id             String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  organizationId String           @db.Uuid
+  userId         String           @db.VarChar
+  roleId         String           @db.Uuid
+  user           OrganizationUser @relation(fields: [organizationId, userId], references: [organizationId, userId], onDelete: Cascade, map: "organization_role_assignment_organization_id_user_id_fk")
+  role           OrganizationRole @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "organization_role_assignment_role_id_fk")
 
-  @@id([organizationId, userId, roleId], map: "org_role_assignment_org_user_role_pk")
-  @@index([organizationId, userId], map: "org_role_assignment_org_user_idx")
-  @@index([roleId], map: "org_role_assignment_role_idx")
+  @@unique([organizationId, userId, roleId])
+  @@index([organizationId, userId], map: "organization_role_assignment_organization_id_user_id_index")
+  @@index([roleId], map: "organization_role_assignment_role_id_index")
+  @@map("organization_role_assignment")
 }
 
 model OrganizationRoleAssignmentInvitation {
-  invitationId String                             @db.Uuid
-  roleId       String                             @db.Uuid
-  invitation   OrganizationInvitation             @relation(fields: [invitationId], references: [id], onDelete: Cascade, map: "org_role_assignment_invitation_invitation_id_fk")
-  role         OrganizationRole                   @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "org_role_assignment_invitation_role_id_fk")
+  id           String                 @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  invitationId String                 @db.Uuid
+  roleId       String                 @db.Uuid
+  invitation   OrganizationInvitation @relation(fields: [invitationId], references: [id], onDelete: Cascade, map: "organization_role_assignment_invitation_invitation_id_fk")
+  role         OrganizationRole       @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "organization_role_assignment_invitation_role_id_fk")
 
-  @@id([invitationId, roleId], map: "org_role_assignment_invitation_pk")
-  @@index([invitationId], map: "org_role_assignment_invitation_invitation_idx")
-  @@index([roleId], map: "org_role_assignment_invitation_role_idx")
+  @@unique([invitationId, roleId])
+  @@index([invitationId], map: "organization_role_assignment_invitation_invitation_id_index")
+  @@index([roleId], map: "organization_role_assignment_invitation_role_id_index")
+  @@map("organization_role_assignment_invitation")
 }
 
 model OrganizationUser {
-  organizationId String                     @db.Uuid
-  userId         String                     @db.VarChar
-  role           OrganizationUserRole       @default(Member)
-  createdAt      DateTime                   @default(now()) @db.Timestamp(6)
-  updatedAt      DateTime                   @default(now()) @db.Timestamp(6)
+  id              String                       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  organizationId  String                       @db.Uuid
+  userId          String                       @db.VarChar
+  role            OrganizationUserRole         @default(member)
+  createdAt       DateTime                     @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime                     @default(now()) @db.Timestamp(6)
   roleAssignments OrganizationRoleAssignment[]
-  organization    Organization               @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "organization_user_organization_id_fk")
+  organization    Organization                 @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "organization_user_organization_id_fk")
 
-  @@id([organizationId, userId], map: "organization_user_organization_id_user_id_pk")
+  @@unique([organizationId, userId])
+  @@map("organization_user")
 }
 
 model Registry {
-  id             String              @id(map: "registry_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  name           String              @db.VarChar
-  url            String              @db.VarChar
-  username       String              @db.VarChar
-  password       String              @db.VarChar
-  isDefault      Boolean             @default(false)
-  project        String              @db.VarChar
-  organizationId String?             @db.Uuid
-  registryType   RegistryType        @default(Internal)
-  createdAt      DateTime            @default(now()) @db.Timestamp(6)
-  updatedAt      DateTime            @default(now()) @db.Timestamp(6)
+  id             String       @id(map: "registry_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name           String       @db.VarChar
+  url            String       @db.VarChar
+  username       String       @db.VarChar
+  password       String       @db.VarChar
+  isDefault      Boolean      @default(false)
+  project        String       @db.VarChar
+  organizationId String?      @db.Uuid
+  registryType   RegistryType @default(internal)
+  createdAt      DateTime     @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime     @default(now()) @db.Timestamp(6)
+
+  @@map("registry")
 }
 
 model Sandbox {
-  id                   String                  @id(map: "sandbox_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  organizationId       String                  @db.Uuid
-  region               SandboxRegion           @default(EU)
-  executorId           String?                 @db.Uuid
-  prevExecutorId       String?                 @db.Uuid
-  class                SandboxClass            @default(Small)
-  state                SandboxState            @default(Unknown)
-  desiredState         SandboxDesiredState     @default(Started)
-  image                String?                 @db.VarChar
-  osUser               String                  @db.VarChar
-  errorReason          String?                 @db.VarChar
-  env                  Json                    @default("{}")
-  public               Boolean                 @default(false)
+  id                   String              @id(map: "sandbox_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  organizationId       String              @db.Uuid
+  region               SandboxRegion       @default(eu)
+  executorId           String?             @db.Uuid
+  prevExecutorId       String?             @db.Uuid
+  class                SandboxClass        @default(small)
+  state                SandboxState        @default(unknown)
+  desiredState         SandboxDesiredState @default(started)
+  image                String?             @db.VarChar
+  osUser               String              @db.VarChar
+  errorReason          String?             @db.VarChar
+  env                  Json                @default("{}")
+  public               Boolean             @default(false)
   labels               Json?
-  backupRegistryId     String?                 @db.VarChar
-  backupImage          String?                 @db.VarChar
-  lastBackupAt         DateTime?               @db.Timestamp(6)
-  backupState          SandboxBackupState      @default(None)
-  existingBackupImages Json                    @default("[]")
-  cpu                  Int                     @default(2)
-  gpu                  Int                     @default(0)
-  mem                  Int                     @default(4)
-  disk                 Int                     @default(10)
-  buckets              Json                    @default("[]")
-  createdAt            DateTime                @default(now()) @db.Timestamp(6)
-  updatedAt            DateTime                @default(now()) @db.Timestamp(6)
-  lastActivityAt       DateTime?               @db.Timestamp(6)
-  autoStopInterval     Int                     @default(15)
-  autoArchiveInterval  Int                     @default(10080)
-  pending              Boolean                 @default(false)
-  authToken            String                  @default(dbgenerated("md5((random())::text)")) @db.VarChar
-  nodeVersion          String?                 @db.VarChar
-  buildInfoImageRef    String?                 @db.VarChar
-  buildInfo            BuildInfo?              @relation(fields: [buildInfoImageRef], references: [imageRef], onDelete: NoAction, onUpdate: NoAction, map: "sandbox_build_info_image_ref_fk")
+  backupRegistryId     String?             @db.VarChar
+  backupImage          String?             @db.VarChar
+  lastBackupAt         DateTime?           @db.Timestamp(6)
+  backupState          SandboxBackupState  @default(None)
+  existingBackupImages Json                @default("[]")
+  cpu                  Int                 @default(2)
+  gpu                  Int                 @default(0)
+  mem                  Int                 @default(4)
+  disk                 Int                 @default(10)
+  buckets              Json                @default("[]")
+  createdAt            DateTime            @default(now()) @db.Timestamp(6)
+  updatedAt            DateTime            @default(now()) @db.Timestamp(6)
+  lastActivityAt       DateTime?           @db.Timestamp(6)
+  autoStopInterval     Int                 @default(15)
+  autoArchiveInterval  Int                 @default(10080)
+  pending              Boolean             @default(false)
+  authToken            String              @default(dbgenerated("md5((random())::text)")) @db.VarChar
+  nodeVersion          String?             @db.VarChar
+  buildInfoImageRef    String?             @db.VarChar
+  buildInfo            BuildInfo?          @relation(fields: [buildInfoImageRef], references: [imageRef], onDelete: NoAction, onUpdate: NoAction, map: "sandbox_build_info_image_ref_fk")
+
+  @@map("sandbox")
 }
 
-model SandboxUsagePeriod {
+model SandboxUsagePeriods {
   id             String    @id(map: "sandbox_usage_periods_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   sandboxId      String    @db.VarChar
   organizationId String    @db.VarChar
@@ -265,134 +291,162 @@ model SandboxUsagePeriod {
   disk           Float
   region         String    @db.VarChar
   billed         Boolean   @default(false)
+
+  @@map("sandbox_usage_periods")
 }
 
 model User {
-  id            String         @id(map: "user_id_pk") @db.VarChar
-  name          String         @db.VarChar
-  email         String         @default("") @db.VarChar
-  emailVerified Boolean        @default(false)
-  role          UserRole       @default(User)
+  id            String   @id(map: "user_id_pk") @db.VarChar
+  name          String   @db.VarChar
+  email         String   @default("") @db.VarChar
+  emailVerified Boolean  @default(false)
+  role          UserRole @default(user)
+
+  @@map("user")
 }
 
 model WarmPool {
-  id          String             @id(map: "warm_pool_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id          String         @id(map: "warm_pool_id_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   pool        Int
-  image       String             @db.VarChar
-  target      WarmPoolTarget     @default(EU)
+  image       String         @db.VarChar
+  target      WarmPoolTarget @default(eu)
   cpu         Int
   mem         Int
   disk        Int
   gpu         Int
-  gpuType     String             @db.VarChar
-  class       WarmPoolClass      @default(Small)
-  osUser      String             @db.VarChar
-  errorReason String?            @db.VarChar
-  env         String             @default("{}")
-  createdAt   DateTime           @default(now()) @db.Timestamp(6)
-  updatedAt   DateTime           @default(now()) @db.Timestamp(6)
+  gpuType     String         @db.VarChar
+  class       WarmPoolClass  @default(small)
+  osUser      String         @db.VarChar
+  errorReason String?        @db.VarChar
+  env         String         @default("{}")
+  createdAt   DateTime       @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime       @default(now()) @db.Timestamp(6)
+
+  @@map("warm_pool")
 }
 
-// === ENUMS ===
+enum ApiKeyPermissions {
+  write_registries  @map("write:registries")
+  delete_registries @map("delete:registries")
+  write_images      @map("write:images")
+  delete_images     @map("delete:images")
+  write_sandboxes   @map("write:sandboxes")
+  delete_sandboxes  @map("delete:sandboxes")
+  read_buckets      @map("read:buckets")
+  write_buckets     @map("write:buckets")
+  delete_buckets    @map("delete:buckets")
 
-enum ApiKeyPermission {
-  WriteRegistries  @map("write:registries")
-  DeleteRegistries @map("delete:registries")
-  WriteImages      @map("write:images")
-  DeleteImages     @map("delete:images")
-  WriteSandboxes   @map("write:sandboxes")
-  DeleteSandboxes  @map("delete:sandboxes")
-  ReadBuckets      @map("read:buckets")
-  WriteBuckets     @map("write:buckets")
-  DeleteBuckets    @map("delete:buckets")
+  @@map("api_key_permissions_enum")
 }
 
 enum BucketState {
-  Creating
-  Ready
-  PendingCreate
-  PendingDelete
-  Deleting
-  Deleted
-  Error
+  creating
+  ready
+  pending_create
+  pending_delete
+  deleting
+  deleted
+  error
+
+  @@map("bucket_state_enum")
 }
 
 enum ExecutorClass {
-  Small
-  Medium
-  Large
+  small
+  medium
+  large
+
+  @@map("executor_class_enum")
 }
 
 enum ExecutorRegion {
-  EU
-  US
-  Asia
+  eu
+  us
+  asia
+
+  @@map("executor_region_enum")
 }
 
 enum ExecutorState {
-  Initializing
-  Ready
-  Disabled
-  Decommissioned
-  Unresponsive
+  initializing
+  ready
+  disabled
+  decommissioned
+  unresponsive
+
+  @@map("executor_state_enum")
 }
 
 enum ImageExecutorState {
-  PullingImage
-  BuildingImage
-  Ready
-  Error
-  Removing
+  pulling_image
+  building_image
+  ready
+  error
+  removing
+
+  @@map("image_executor_state_enum")
 }
 
 enum ImageState {
-  BuildPending
-  Building
-  Pending
-  Pulling
-  PendingValidation
-  Validating
-  Active
-  Inactive
-  Error
-  BuildFailed
-  Removing
+  build_pending
+  building
+  pending
+  pulling
+  pending_validation
+  validating
+  active
+  inactive
+  error
+  build_failed
+  removing
+
+  @@map("image_state_enum")
 }
 
 enum OrganizationInvitationRole {
-  Owner
-  Member
+  owner
+  member
+
+  @@map("organization_invitation_role_enum")
 }
 
 enum OrganizationInvitationStatus {
-  Pending
-  Accepted
-  Declined
-  Cancelled
+  pending
+  accepted
+  declined
+  cancelled
+
+  @@map("organization_invitation_status_enum")
 }
 
-enum OrganizationPermission {
-  WriteRegistries  @map("write:registries")
-  DeleteRegistries @map("delete:registries")
-  WriteImages      @map("write:images")
-  DeleteImages     @map("delete:images")
-  WriteSandboxes   @map("write:sandboxes")
-  DeleteSandboxes  @map("delete:sandboxes")
-  ReadBuckets      @map("read:buckets")
-  WriteBuckets     @map("write:buckets")
-  DeleteBuckets    @map("delete:buckets")
+enum OrganizationRolePermissions {
+  write_registries  @map("write:registries")
+  delete_registries @map("delete:registries")
+  write_images      @map("write:images")
+  delete_images     @map("delete:images")
+  write_sandboxes   @map("write:sandboxes")
+  delete_sandboxes  @map("delete:sandboxes")
+  read_buckets      @map("read:buckets")
+  write_buckets     @map("write:buckets")
+  delete_buckets    @map("delete:buckets")
+
+  @@map("organization_role_permissions_enum")
 }
 
 enum OrganizationUserRole {
-  Owner
-  Member
+  owner
+  member
+
+  @@map("organization_user_role_enum")
 }
 
 enum RegistryType {
-  Internal
-  Organization
-  Public
-  Transient
+  internal
+  organization
+  public
+  transient
+
+  @@map("registry_registrytype_enum")
 }
 
 enum SandboxBackupState {
@@ -401,90 +455,113 @@ enum SandboxBackupState {
   InProgress
   Completed
   Error
+
+  @@map("sandbox_backupstate_enum")
 }
 
 enum SandboxClass {
-  Small
-  Medium
-  Large
+  small
+  medium
+  large
+
+  @@map("sandbox_class_enum")
 }
 
 enum SandboxDesiredState {
-  Destroyed
-  Started
-  Stopped
-  Resized
-  Archived
+  destroyed
+  started
+  stopped
+  resized
+  archived
+
+  @@map("sandbox_desiredstate_enum")
 }
 
 enum SandboxRegion {
-  EU
-  US
-  Asia
+  eu
+  us
+  asia
+
+  @@map("sandbox_region_enum")
 }
 
 enum SandboxState {
-  Creating
-  Restoring
-  Destroyed
-  Destroying
-  Started
-  Stopped
-  Starting
-  Stopping
-  Error
-  BuildFailed
-  PendingBuild
-  BuildingImage
-  Unknown
-  PullingImage
-  Archiving
-  Archived
+  creating
+  restoring
+  destroyed
+  destroying
+  started
+  stopped
+  starting
+  stopping
+  error
+  build_failed
+  pending_build
+  building_image
+  unknown
+  pulling_image
+  archiving
+  archived
+
+  @@map("sandbox_state_enum")
 }
 
 enum UserRole {
-  Admin
-  User
+  admin
+  user
+
+  @@map("user_role_enum")
 }
 
 enum WarmPoolClass {
-  Small
-  Medium
-  Large
+  small
+  medium
+  large
+
+  @@map("warm_pool_class_enum")
 }
 
 enum WarmPoolTarget {
-  EU
-  US
-  Asia
+  eu
+  us
+  asia
+
+  @@map("warm_pool_target_enum")
 }
 
-// Unused enums (left for completeness)
 enum WorkspaceInvitationRole {
-  Owner
-  Member
+  owner
+  member
+
+  @@map("workspace_invitation_role_enum")
 }
 
 enum WorkspaceInvitationStatus {
-  Pending
-  Accepted
-  Declined
-  Cancelled
+  pending
+  accepted
+  declined
+  cancelled
+
+  @@map("workspace_invitation_status_enum")
 }
 
-enum WorkspacePermission {
-  WriteRegistries  @map("write:registries")
-  DeleteRegistries @map("delete:registries")
-  WriteImages      @map("write:images")
-  DeleteImages     @map("delete:images")
-  WriteSandboxes   @map("write:sandboxes")
-  DeleteSandboxes  @map("delete:sandboxes")
-  ReadBuckets      @map("read:buckets")
-  WriteBuckets     @map("write:buckets")
-  DeleteBuckets    @map("delete:buckets")
+enum WorkspaceRolePermissions {
+  write_registries  @map("write:registries")
+  delete_registries @map("delete:registries")
+  write_images      @map("write:images")
+  delete_images     @map("delete:images")
+  write_sandboxes   @map("write:sandboxes")
+  delete_sandboxes  @map("delete:sandboxes")
+  read_buckets      @map("read:buckets")
+  write_buckets     @map("write:buckets")
+  delete_buckets    @map("delete:buckets")
+
+  @@map("workspace_role_permissions_enum")
 }
 
 enum WorkspaceUserRole {
-  Owner
-  Member
+  owner
+  member
+
+  @@map("workspace_user_role_enum")
 }

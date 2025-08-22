@@ -1,82 +1,82 @@
+import { IncomingMessage, ServerResponse } from "http";
 import {
-  Controller,
-  Get,
-  Post,
-  Delete,
   Body,
-  Param,
-  Request,
-  Logger,
-  UseGuards,
+  Controller,
+  Delete,
+  Get,
   HttpCode,
-  UseInterceptors,
-  RawBodyRequest,
-  Res,
+  Logger,
   Next,
+  Param,
+  Post,
+  RawBodyRequest,
+  Request,
+  Res,
+  UseGuards,
+  UseInterceptors,
 } from "@nestjs/common";
-import { CombinedAuthGuard } from "../../auth/guards/auth.guard";
 import {
-  ApiOAuth2,
-  ApiResponse,
-  ApiQuery,
-  ApiOperation,
-  ApiConsumes,
-  ApiBody,
-  ApiTags,
-  ApiParam,
-  ApiHeader,
   ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiHeader,
+  ApiOAuth2,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
 } from "@nestjs/swagger";
+import { NextFunction } from "express";
+import followRedirects from "follow-redirects";
 import {
-  FileInfoDto,
-  MatchDto,
-  SearchFilesResponseDto,
-  ReplaceRequestDto,
-  ReplaceResultDto,
-  GitAddRequestDto,
-  GitBranchRequestDto,
-  GitDeleteBranchRequestDto,
-  GitCloneRequestDto,
-  GitCommitRequestDto,
-  GitCommitResponseDto,
-  GitRepoRequestDto,
-  GitStatusDto,
-  ListBranchResponseDto,
-  GitCommitInfoDto,
-  GitCheckoutRequestDto,
-  ExecuteRequestDto,
-  ExecuteResponseDto,
-  ProjectDirResponseDto,
-  CreateSessionRequestDto,
-  SessionExecuteRequestDto,
-  SessionExecuteResponseDto,
-  SessionDto,
-  CommandDto,
-} from "../dto/toolbox.dto";
-import { ToolboxService } from "../services/toolbox.service";
+  createProxyMiddleware,
+  fixRequestBody,
+  Options,
+  RequestHandler,
+} from "http-proxy-middleware";
+import { CombinedAuthGuard } from "../../auth/guards/auth.guard";
+import { CustomHeaders } from "../../common/constants/header.constants";
 import { ContentTypeInterceptor } from "../../common/interceptors/content-type.interceptors";
+import { RequiredOrganizationResourcePermissions } from "../../organization/decorators/required-organization-resource-permissions.decorator";
+import { OrganizationResourcePermission } from "../../organization/enums/organization-resource-permission.enum";
+import { OrganizationResourceActionGuard } from "../../organization/guards/organization-resource-action.guard";
 import {
   CompletionListDto,
   LspCompletionParamsDto,
   LspDocumentRequestDto,
-  LspSymbolDto,
   LspServerRequestDto,
+  LspSymbolDto,
 } from "../dto/lsp.dto";
 import {
-  createProxyMiddleware,
-  RequestHandler,
-  fixRequestBody,
-  Options,
-} from "http-proxy-middleware";
-import { IncomingMessage, ServerResponse } from "http";
-import { NextFunction } from "express";
-import { SandboxAccessGuard } from "../guards/sandbox-access.guard";
-import { CustomHeaders } from "../../common/constants/header.constants";
-import { OrganizationResourceActionGuard } from "../../organization/guards/organization-resource-action.guard";
-import { RequiredOrganizationResourcePermissions } from "../../organization/decorators/required-organization-resource-permissions.decorator";
-import { OrganizationResourcePermission } from "../../organization/enums/organization-resource-permission.enum";
-import followRedirects from "follow-redirects";
+  CommandDto,
+  CreateSessionRequestDto,
+  ExecuteRequestDto,
+  ExecuteResponseDto,
+  FileInfoDto,
+  GitAddRequestDto,
+  GitBranchRequestDto,
+  GitCheckoutRequestDto,
+  GitCloneRequestDto,
+  GitCommitInfoDto,
+  GitCommitRequestDto,
+  GitCommitResponseDto,
+  GitDeleteBranchRequestDto,
+  GitRepoRequestDto,
+  GitStatusDto,
+  ListBranchResponseDto,
+  MatchDto,
+  ProjectDirResponseDto,
+  ReplaceRequestDto,
+  ReplaceResultDto,
+  SearchFilesResponseDto,
+  SessionDto,
+  SessionExecuteRequestDto,
+  SessionExecuteResponseDto,
+} from "../dto/toolbox.dto";
 import { UploadFileDto } from "../dto/upload-file.dto";
+import { SandboxAccessGuard } from "../guards/sandbox-access.guard";
+import { ToolboxService } from "../services/toolbox.service";
 
 followRedirects.maxRedirects = 10;
 followRedirects.maxBodyLength = 50 * 1024 * 1024;
@@ -105,7 +105,7 @@ export class ToolboxController {
     const commonProxyOptions: Options = {
       router: async (req: RawBodyRequest<IncomingMessage>) => {
         // eslint-disable-next-line no-useless-escape
-        const sandboxId = req.url.match(/^\/api\/toolbox\/([^\/]+)\/toolbox/)?.[1];
+        const sandboxId = req.url.match(/^\/api\/toolbox\/([^/]+)\/toolbox/)?.[1];
         try {
           const executor = await this.toolboxService.getExecutor(sandboxId);
           // @ts-expect-error - used later to set request headers
@@ -122,7 +122,7 @@ export class ToolboxController {
       },
       pathRewrite: (path) => {
         // eslint-disable-next-line no-useless-escape
-        const sandboxId = path.match(/^\/api\/toolbox\/([^\/]+)\/toolbox/)?.[1];
+        const sandboxId = path.match(/^\/api\/toolbox\/([^/]+)\/toolbox/)?.[1];
         const routePath = path.split(`/api/toolbox/${sandboxId}/toolbox`)[1];
         const newPath = `/sandboxes/${sandboxId}/toolbox${routePath}`;
 

@@ -17,12 +17,12 @@ import {
 } from "../../common/constants/prices.constants";
 import { BadRequestError } from "../../common/exceptions/bad-request.exception";
 import { SandboxError } from "../../common/exceptions/sandbox-error.exception";
+import { WrapperType } from "../../common/types/wrapper.type";
 import { TypedConfigService } from "../../config/typed-config.service";
 import { OrganizationEvents } from "../../organization/constants/organization-events.constant";
 import { Organization } from "../../organization/entities/organization.entity";
 import { OrganizationSuspendedSandboxStoppedEvent } from "../../organization/events/organization-suspended-sandbox-stopped.event";
 import { OrganizationService } from "../../organization/services/organization.service";
-import { WrapperType } from "../../common/types/wrapper.type";
 import { BillingService } from "../../usage/services/billing.service";
 import { SANDBOX_WARM_POOL_UNASSIGNED_ORGANIZATION } from "../constants/sandbox.constants";
 import { SandboxEvents } from "../constants/sandbox-events.constants";

@@ -1,4 +1,11 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Relation } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Relation,
+} from "typeorm";
 import { OrganizationInvitation } from "./organization-invitation.entity";
 import { OrganizationRole } from "./organization-role.entity";
 import { OrganizationUser } from "./organization-user.entity";

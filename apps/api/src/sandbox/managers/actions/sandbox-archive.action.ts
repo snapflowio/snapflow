@@ -1,16 +1,16 @@
 import { Injectable } from "@nestjs/common";
-import { Sandbox } from "../../entities/sandbox.entity";
-import { SandboxState } from "../../enums/sandbox-state.enum";
-import { DONT_SYNC_AGAIN, SandboxAction, SyncState, SYNC_AGAIN } from "./sandbox.action";
-import { BackupState } from "../../enums/backup-state.enum";
-import { In, Repository } from "typeorm";
-import { RedisLockProvider } from "../../common/redis-lock.provider";
-import { ExecutorService } from "../../services/executor.service";
 import { InjectRepository } from "@nestjs/typeorm";
 import { InjectRedis } from "@nestjs-modules/ioredis";
 import Redis from "ioredis";
+import { In, Repository } from "typeorm";
 import { ExecutorAdapterFactory } from "../../adapter/adapter";
+import { RedisLockProvider } from "../../common/redis-lock.provider";
+import { Sandbox } from "../../entities/sandbox.entity";
+import { BackupState } from "../../enums/backup-state.enum";
+import { SandboxState } from "../../enums/sandbox-state.enum";
+import { ExecutorService } from "../../services/executor.service";
 import { ToolboxService } from "../../services/toolbox.service";
+import { DONT_SYNC_AGAIN, SandboxAction, SYNC_AGAIN, SyncState } from "./sandbox.action";
 
 @Injectable()
 export class SandboxArchiveAction extends SandboxAction {
