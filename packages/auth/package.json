@@ -1,0 +1,13 @@
+{
+  "name": "@snapflow/auth",
+  "version": "0.0.0-dev",
+  "license": "AGPL-3.0-only",
+  "main": "./src/index.ts",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./server": "./src/server.ts",
+    "./tanstack": "./src/tanstack.ts",
+    "./*": "./src/*"
+  }
+}

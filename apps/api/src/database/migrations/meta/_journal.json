@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1757103683168,
+      "tag": "0000_clammy_the_spike",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1757103777290,
+      "tag": "0001_light_sprite",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1757104713392,
+      "tag": "0002_warm_thena",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1757115920513,
+      "tag": "0003_past_doctor_strange",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+name: ❓ Question
+description: Ask a question about Snapflow usage, setup, or development
+title: "[Question]: "
+labels: ["question", "triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question about Snapflow? We're here to help! Please provide as much context as possible.
+        
+        **Before asking:**
+        - [ ] I have checked the documentation
+        - [ ] I have searched existing issues and discussions
+        
+  - type: dropdown
+    id: category
+    attributes:
+      label: Question Category
+      description: What type of question is this?
+      options:
+        - Setup/Installation
+        - Development/Contributing
+        - Usage/How-to
+        - Configuration
+        - Troubleshooting
+        - Architecture/Design
+        - Performance
+        - Security
+        - Deployment
+        - API Usage
+        - Frontend Development
+        - Database/Migrations
+        - Other
+    validations:
+      required: true
+      
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What would you like to know?
+      placeholder: Please be as specific as possible about what you're trying to accomplish or understand.
+    validations:
+      required: true
+      
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Provide any relevant context, code snippets, or background information
+      placeholder: |
+        - What are you trying to achieve?
+        - What have you tried so far?
+        - Any relevant code or configuration?
+      render: markdown
+      
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment (if relevant)
+      description: Your development environment details
+      placeholder: |
+        **Operating System:** (e.g., macOS 13.0, Windows 11, Ubuntu 22.04)
+        **Node.js Version:** (e.g., v20.10.0)
+        **Bun Version:** (e.g., 1.2.20)
+        **Browser:** (if frontend-related)
+      render: markdown
+      
+  - type: checkboxes
+    id: research
+    attributes:
+      label: Research Done
+      description: What have you already tried to find the answer?
+      options:
+        - label: I searched the existing documentation
+          required: false
+        - label: I searched existing issues and discussions
+          required: false
+        - label: I looked at the source code
+          required: false
+        - label: I tried searching online
+          required: false

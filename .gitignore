@@ -1,0 +1,77 @@
+# compiled output
+dist
+tmp
+out-tsc
+*.tsbuildinfo
+
+# router
+routeTree.gen.ts
+.tanstack
+
+# environment
+.env
+.env.production
+.env.local
+.turbo
+
+# dependencies
+node_modules
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.cursor
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db
+
+.nx/cache
+.nx/workspace-data
+
+vite.config.*.timestamp*
+vitest.config.*.timestamp*
+
+# yarn
+# https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+.eslintcache
+.tmp/
+.env.local
+
+# Python package metadata
+*.egg-info/
+*.egg
+*.pyc
+__pycache__/
+
+examples/**/*.png

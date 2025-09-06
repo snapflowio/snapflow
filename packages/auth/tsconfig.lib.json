@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "../../dist/packages/auth",
+    "types": ["node"],
+    "jsx": "react-jsx"
+  },
+  "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts"],
+  "include": ["src/**/*"]
+}

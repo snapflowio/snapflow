@@ -1,0 +1,43 @@
+{
+  "name": "api-client",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/api-client",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "inputs": ["default", "{projectRoot}/package.json"],
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/api-client",
+        "tsConfig": "{projectRoot}/tsconfig.lib.json",
+        "packageJson": "{projectRoot}/package.json",
+        "main": "{projectRoot}/src/index.ts",
+        "updateBuildableProjectDepsInPackageJson": true
+      },
+      "dependsOn": ["set-version"]
+    },
+    "generate:api-client": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "openapi-generator-cli generate -i dist/apps/api/openapi.json -g typescript-axios --additional-properties=supportsES6=true,typescriptThreePlus=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=models,useTags=true,enumPropertyNaming=UPPERCASE --type-mappings=DateTime=Date --skip-validate-spec -o packages/api-client/src"
+        ],
+        "parallel": false
+      },
+      "dependsOn": [
+        {
+          "target": "openapi",
+          "projects": "api"
+        }
+      ]
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd {projectRoot} && bun run format"
+      }
+    }
+  },
+  "tags": []
+}

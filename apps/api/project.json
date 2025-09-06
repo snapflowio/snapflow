@@ -1,0 +1,74 @@
+{
+  "name": "api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "options": {
+        "outputPath": "dist/apps/api",
+        "main": "apps/api/src/main.ts",
+        "tsConfig": "apps/api/tsconfig.app.json",
+        "target": "node",
+        "compiler": "tsc",
+        "sourceMap": true,
+        "webpackConfig": "apps/api/webpack.config.js"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "openapi": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx ts-node --compiler-options '{\"module\":\"commonjs\"}' -r tsconfig-paths/register apps/api/src/generate-openapi.ts -o dist/apps/api/openapi.json",
+        "env": {
+          "TS_NODE_PROJECT": "apps/api/tsconfig.app.json",
+          "NODE_OPTIONS": "--require tsconfig-paths/register",
+          "SKIP_CONNECTIONS": "true"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "api:build",
+        "runBuildTargetDependencies": false,
+        "watch": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "api:build:development"
+        },
+        "production": {
+          "buildTarget": "api:build:production"
+        }
+      }
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd {projectRoot} && bun run format"
+      }
+    },
+    "test": {
+      "options": {
+        "passWithNoTests": true
+      }
+    },
+    "migration:generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx migration:generate"
+      }
+    }
+  }
+}

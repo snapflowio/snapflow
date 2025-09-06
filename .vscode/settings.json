@@ -1,0 +1,8 @@
+{
+	"editor.formatOnSave": true,
+	"editor.codeActionsOnSave": {
+		"source.organizeImports": "explicit"
+	},
+	"editor.defaultFormatter": "biomejs.biome",
+	"nxConsole.generateAiAgentRules": true,
+}

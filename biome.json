@@ -1,0 +1,142 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": false },
+  "files": {
+    "ignoreUnknown": false,
+    "includes": ["packages/**", "apps/**", "examples/**"]
+  },
+  "formatter": {
+    "enabled": true,
+    "useEditorconfig": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 100,
+    "attributePosition": "auto",
+    "bracketSpacing": true,
+    "includes": ["packages/**", "apps/**"]
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              [":NODE:", "react", "react/**"],
+              ":PACKAGE:",
+              "@/components/**",
+              "@/lib/**",
+              "@/app/**",
+              ":ALIAS:",
+              ":RELATIVE:"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "nursery": {
+        "useSortedClasses": "error"
+      },
+      "a11y": {
+        "noSvgWithoutTitle": "off",
+        "useAltText": "off",
+        "useKeyWithClickEvents": "off",
+        "noRedundantAlt": "off",
+        "useSemanticElements": "off",
+        "useButtonType": "off",
+        "useFocusableInteractive": "off",
+        "noStaticElementInteractions": "off",
+        "useAriaPropsSupportedByRole": "off",
+        "useAriaPropsForRole": "off"
+      },
+      "suspicious": {
+        "noImplicitAnyLet": "off",
+        "noArrayIndexKey": "off",
+        "noExplicitAny": "off",
+        "noControlCharactersInRegex": "off",
+        "noThenProperty": "off",
+        "noAssignInExpressions": "off",
+        "noDocumentCookie": "off"
+      },
+      "correctness": {
+        "useHookAtTopLevel": "off",
+        "useExhaustiveDependencies": "off",
+        "noUnusedFunctionParameters": "off",
+        "noUnusedVariables": "off"
+      },
+      "security": {
+        "noDangerouslySetInnerHtml": "off"
+      },
+      "style": {
+        "noNonNullAssertion": "off",
+        "noParameterAssign": "off",
+        "useNodejsImportProtocol": "off",
+        "useAsConstAssertion": "error",
+        "useDefaultParameterLast": "error",
+        "useEnumInitializers": "error",
+        "useSelfClosingElements": "error",
+        "useSingleVarDeclarator": "error",
+        "noUnusedTemplateLiteral": "off",
+        "useNumberNamespace": "error",
+        "noInferrableTypes": "error",
+        "noUselessElse": "error",
+        "useImportType": "off"
+      },
+      "complexity": {
+        "noForEach": "off",
+        "noUselessFragments": "off"
+      },
+      "performance": {
+        "noAccumulatingSpread": "off",
+        "noDelete": "error"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "trailingCommas": "es5",
+      "semicolons": "always",
+      "arrowParentheses": "always",
+      "bracketSameLine": false,
+      "quoteStyle": "double",
+      "attributePosition": "auto",
+      "bracketSpacing": true
+    },
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
+    }
+  },
+  "css": {
+    "formatter": {
+      "enabled": true,
+      "indentWidth": 2
+    },
+    "linter": {
+      "enabled": true,
+      "rules": {
+        "recommended": true,
+        "suspicious": {
+          "noUnknownAtRules": "off"
+        }
+      }
+    },
+    "parser": {
+      "allowWrongLineComments": true
+    }
+  },
+  "json": {
+    "formatter": {
+      "enabled": true,
+      "indentWidth": 2
+    }
+  }
+}

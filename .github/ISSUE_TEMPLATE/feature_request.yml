@@ -1,0 +1,137 @@
+name: ✨ Feature Request
+description: Suggest an idea or enhancement for Snapflow
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! Please provide as much detail as possible to help us understand your request.
+        
+        **Before submitting:**
+        - [ ] I have searched existing issues to ensure this feature hasn't been requested already
+        - [ ] I have considered if this feature aligns with the project's goals
+        
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which area would this feature affect?
+      options:
+        - Backend/API
+        - Frontend/UI
+        - Database
+        - Authentication & Authorization
+        - Performance
+        - Security
+        - DevOps/Infrastructure
+        - Build System
+        - Testing
+        - Documentation
+        - Mobile/Responsive
+        - Third-party Integration
+        - Other
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature?
+      options:
+        - High (Essential for core functionality)
+        - Medium (Would significantly improve user experience)
+        - Low (Nice to have, quality of life improvement)
+    validations:
+      required: true
+      
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: Is your feature request related to a problem? Please describe what problem this would solve.
+      placeholder: A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+    validations:
+      required: true
+      
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like to see implemented
+      placeholder: A clear and concise description of what you want to happen.
+    validations:
+      required: true
+      
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: Describe any alternative solutions or features you've considered
+      placeholder: A clear and concise description of any alternative solutions or features you've considered.
+      
+  - type: textarea
+    id: user-stories
+    attributes:
+      label: User Stories
+      description: Describe how users would interact with this feature
+      placeholder: |
+        As a [type of user], I want [some goal] so that [some reason].
+        
+        Example:
+        - As a student, I want to track my study hours so that I can monitor my productivity
+        - As a workspace owner, I want to set member permissions so that I can control access levels
+        
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: What conditions must be met for this feature to be considered complete?
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+        - [ ] Criterion 3
+        
+  - type: textarea
+    id: technical-considerations
+    attributes:
+      label: Technical Considerations
+      description: Any technical details, constraints, or considerations for implementation
+      placeholder: |
+        - API endpoints needed
+        - Database changes required
+        - Third-party services involved
+        - Performance implications
+        - Security considerations
+        
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups/Screenshots
+      description: Add any mockups, wireframes, or visual examples
+      placeholder: Drag and drop images here or paste links to designs...
+      
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context or screenshots about the feature request here
+      placeholder: |
+        - Links to similar implementations
+        - Research or user feedback
+        - Business justification
+        
+  - type: checkboxes
+    id: implementation
+    attributes:
+      label: Implementation
+      description: Are you willing to help implement this feature?
+      options:
+        - label: I would be interested in implementing this feature
+          required: false
+        - label: I need help implementing this feature
+          required: false
+        - label: I prefer someone else implements this feature
+          required: false
