@@ -1,12 +1,12 @@
-# SnapFlow Code of Conduct
+# Snapflow Code of Conduct
 
 ## Our Mission
 
-SnapFlow is dedicated to creating a student productivity and social platform that empowers learners to achieve their academic goals. We are committed to fostering an inclusive, respectful, and collaborative environment for all contributors.
+Snapflow is dedicated to creating a student productivity and social platform that empowers learners to achieve their academic goals. We are committed to fostering an inclusive, respectful, and collaborative environment for all contributors.
 
 ## Our Pledge
 
-We pledge to make participation in the SnapFlow project a welcoming experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, caste, color, religion, or sexual identity and orientation.
+We pledge to make participation in the Snapflow project a welcoming experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, caste, color, religion, or sexual identity and orientation.
 
 We commit to acting in ways that contribute to an open, collaborative, and productive development environment focused on building tools that help students succeed.
 
@@ -36,7 +36,7 @@ The following behaviors are not tolerated:
 
 ## Development Guidelines
 
-When contributing to SnapFlow:
+When contributing to Snapflow:
 
 - **Test your changes** thoroughly before submitting pull requests
 - **Update documentation** when modifying APIs or shared libraries

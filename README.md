@@ -18,6 +18,8 @@
     ·
     <a href="https://github.com/snapflowio/snapflow/issues/new?labels=enhancement&template=feature_request.yml">Request Feature</a>
   </p>
+
+  <img src="https://discord.com/api/guilds/1364359194400002150/widget.png?style=banner2" alt="Discord Banner 1"/>
 </div>
 
 <details>
@@ -43,7 +45,7 @@
 
 ## About The Project
 
-Snapflow is a **gamified productivity and social platform** designed specifically for students to maximize their efficiency and reduce cognitive load. By combining competitive features, social learning tools, gameified aspects, and productivity workflows, Snapflow helps students focus on what matters most—achieving their academic goals with less stress and more success.
+Snapflow is a **gamified productivity and social platform** designed specifically for students to maximize their efficiency and reduce cognitive load. By combining competitive features, social learning tools, gameified aspects, and productivity workflows, Snapflow helps students focus on what matters most: achieving their academic goals with less stress and more success.
 
 ### Key Features
 
