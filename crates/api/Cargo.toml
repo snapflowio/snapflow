@@ -7,7 +7,7 @@ edition = "2024"
 # Web framework
 axum = { workspace = true, features = ["macros"] }
 tower = { workspace = true }
-tower-http = { workspace = true, features = ["timeout", "fs", "normalize-path"] }
+tower-http = { workspace = true, features = ["timeout", "normalize-path"] }
 hyper = { workspace = true }
 hyper-util = { workspace = true }
 

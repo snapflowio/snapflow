@@ -176,15 +176,8 @@ async fn main() -> anyhow::Result<()> {
         ])
         .allow_headers(AllowHeaders::mirror_request());
 
-    let website_dir = std::path::PathBuf::from("dist/web");
-
-    let spa_fallback = tower_http::services::ServeDir::new(&website_dir).not_found_service(
-        tower_http::services::ServeFile::new(website_dir.join("index.html")),
-    );
-
     let router = Router::default()
         .nest("/api", routes::router(&config, &state))
-        .fallback_service(spa_fallback)
         .layer(sio_layer)
         .layer(cors)
         .layer(TraceLayer::new_for_http())

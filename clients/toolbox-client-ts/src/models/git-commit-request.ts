@@ -14,11 +14,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/*
- * Copyright 2025 Snapflow
- * SPDX-License-Identifier: Apache-2.0
- */
-
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -39,6 +34,12 @@
  * @interface GitCommitRequest
  */
 export interface GitCommitRequest {
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof GitCommitRequest
+	 */
+	allow_empty?: boolean;
 	/**
 	 *
 	 * @type {string}

@@ -4,7 +4,7 @@ services:
   executor:
     build:
       context: ../..
-      dockerfile: apps/executor/Dockerfile
+      dockerfile: crates/executor/Dockerfile
     container_name: snapflow-executor
     restart: unless-stopped
     ports:

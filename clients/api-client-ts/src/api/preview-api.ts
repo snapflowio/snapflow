@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2026 Snapflow. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -12,194 +28,198 @@
  * Do not edit the class manually.
  */
 
-import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import type { Configuration } from '../configuration';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
-// @ts-expect-error
-import {
-	BASE_PATH,
-	BaseAPI,
-	COLLECTION_FORMATS,
-	operationServerMap,
-	type RequestArgs,
-	RequiredError,
-} from '../base';
 // Some imports not used depending on template conditions
-// @ts-expect-error
+// @ts-ignore
 import {
-	assertParamExists,
-	createRequestFunction,
 	DUMMY_BASE_URL,
-	serializeDataIfNeeded,
+	assertParamExists,
 	setApiKeyToObject,
 	setBasicAuthToObject,
 	setBearerAuthToObject,
 	setOAuthToObject,
 	setSearchParams,
+	serializeDataIfNeeded,
 	toPathString,
+	createRequestFunction,
 } from '../common';
-import type { Configuration } from '../configuration';
+// @ts-ignore
+import {
+	BASE_PATH,
+	COLLECTION_FORMATS,
+	type RequestArgs,
+	BaseAPI,
+	RequiredError,
+	operationServerMap,
+} from '../base';
 /**
  * PreviewApi - axios parameter creator
  * @export
  */
-export const PreviewApiAxiosParamCreator = (configuration?: Configuration) => ({
-	/**
-	 *
-	 * @param {string} sandboxId ID of the sandbox
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 */
-	hasSandboxAccess: async (
-		sandboxId: string,
-		options: RawAxiosRequestConfig = {}
-	): Promise<RequestArgs> => {
-		// verify required parameter 'sandboxId' is not null or undefined
-		assertParamExists('hasSandboxAccess', 'sandboxId', sandboxId);
-		const localVarPath = '/preview/{sandboxId}/access'.replace(
-			`{${'sandboxId'}}`,
-			encodeURIComponent(String(sandboxId))
-		);
-		// use dummy base URL string because the URL constructor only accepts absolute URLs.
-		const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-		let baseOptions;
-		if (configuration) {
-			baseOptions = configuration.baseOptions;
-		}
+export const PreviewApiAxiosParamCreator = function (
+	configuration?: Configuration
+) {
+	return {
+		/**
+		 *
+		 * @param {string} sandboxId ID of the sandbox
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		hasSandboxAccess: async (
+			sandboxId: string,
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'sandboxId' is not null or undefined
+			assertParamExists('hasSandboxAccess', 'sandboxId', sandboxId);
+			const localVarPath = `/preview/{sandboxId}/access`.replace(
+				`{${'sandboxId'}}`,
+				encodeURIComponent(String(sandboxId))
+			);
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
 
-		const localVarRequestOptions = {
-			method: 'GET',
-			...baseOptions,
-			...options,
-		};
-		const localVarHeaderParameter = {} as any;
-		const localVarQueryParameter = {} as any;
+			const localVarRequestOptions = {
+				method: 'GET',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
 
-		// authentication bearer required
-		// http bearer authentication required
-		await setBearerAuthToObject(localVarHeaderParameter, configuration);
+			// authentication bearer required
+			// http bearer authentication required
+			await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-		setSearchParams(localVarUrlObj, localVarQueryParameter);
-		const headersFromBaseOptions =
-			baseOptions && baseOptions.headers ? baseOptions.headers : {};
-		localVarRequestOptions.headers = {
-			...localVarHeaderParameter,
-			...headersFromBaseOptions,
-			...options.headers,
-		};
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
 
-		return {
-			url: toPathString(localVarUrlObj),
-			options: localVarRequestOptions,
-		};
-	},
-	/**
-	 *
-	 * @param {string} sandboxId ID of the sandbox
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 */
-	isSandboxPublic: async (
-		sandboxId: string,
-		options: RawAxiosRequestConfig = {}
-	): Promise<RequestArgs> => {
-		// verify required parameter 'sandboxId' is not null or undefined
-		assertParamExists('isSandboxPublic', 'sandboxId', sandboxId);
-		const localVarPath = '/preview/{sandboxId}/public'.replace(
-			`{${'sandboxId'}}`,
-			encodeURIComponent(String(sandboxId))
-		);
-		// use dummy base URL string because the URL constructor only accepts absolute URLs.
-		const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-		let baseOptions;
-		if (configuration) {
-			baseOptions = configuration.baseOptions;
-		}
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+		/**
+		 *
+		 * @param {string} sandboxId ID of the sandbox
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		isSandboxPublic: async (
+			sandboxId: string,
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'sandboxId' is not null or undefined
+			assertParamExists('isSandboxPublic', 'sandboxId', sandboxId);
+			const localVarPath = `/preview/{sandboxId}/public`.replace(
+				`{${'sandboxId'}}`,
+				encodeURIComponent(String(sandboxId))
+			);
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
 
-		const localVarRequestOptions = {
-			method: 'GET',
-			...baseOptions,
-			...options,
-		};
-		const localVarHeaderParameter = {} as any;
-		const localVarQueryParameter = {} as any;
+			const localVarRequestOptions = {
+				method: 'GET',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
 
-		// authentication bearer required
-		// http bearer authentication required
-		await setBearerAuthToObject(localVarHeaderParameter, configuration);
+			// authentication bearer required
+			// http bearer authentication required
+			await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-		setSearchParams(localVarUrlObj, localVarQueryParameter);
-		const headersFromBaseOptions =
-			baseOptions && baseOptions.headers ? baseOptions.headers : {};
-		localVarRequestOptions.headers = {
-			...localVarHeaderParameter,
-			...headersFromBaseOptions,
-			...options.headers,
-		};
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
 
-		return {
-			url: toPathString(localVarUrlObj),
-			options: localVarRequestOptions,
-		};
-	},
-	/**
-	 *
-	 * @param {string} sandboxId ID of the sandbox
-	 * @param {string} authToken Auth token to validate
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 */
-	isValidAuthToken: async (
-		sandboxId: string,
-		authToken: string,
-		options: RawAxiosRequestConfig = {}
-	): Promise<RequestArgs> => {
-		// verify required parameter 'sandboxId' is not null or undefined
-		assertParamExists('isValidAuthToken', 'sandboxId', sandboxId);
-		// verify required parameter 'authToken' is not null or undefined
-		assertParamExists('isValidAuthToken', 'authToken', authToken);
-		const localVarPath = '/preview/{sandboxId}/validate/{authToken}'
-			.replace(`{${'sandboxId'}}`, encodeURIComponent(String(sandboxId)))
-			.replace(`{${'authToken'}}`, encodeURIComponent(String(authToken)));
-		// use dummy base URL string because the URL constructor only accepts absolute URLs.
-		const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-		let baseOptions;
-		if (configuration) {
-			baseOptions = configuration.baseOptions;
-		}
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+		/**
+		 *
+		 * @param {string} sandboxId ID of the sandbox
+		 * @param {string} authToken Auth token to validate
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		isValidAuthToken: async (
+			sandboxId: string,
+			authToken: string,
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'sandboxId' is not null or undefined
+			assertParamExists('isValidAuthToken', 'sandboxId', sandboxId);
+			// verify required parameter 'authToken' is not null or undefined
+			assertParamExists('isValidAuthToken', 'authToken', authToken);
+			const localVarPath = `/preview/{sandboxId}/validate/{authToken}`
+				.replace(`{${'sandboxId'}}`, encodeURIComponent(String(sandboxId)))
+				.replace(`{${'authToken'}}`, encodeURIComponent(String(authToken)));
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
 
-		const localVarRequestOptions = {
-			method: 'GET',
-			...baseOptions,
-			...options,
-		};
-		const localVarHeaderParameter = {} as any;
-		const localVarQueryParameter = {} as any;
+			const localVarRequestOptions = {
+				method: 'GET',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
 
-		// authentication bearer required
-		// http bearer authentication required
-		await setBearerAuthToObject(localVarHeaderParameter, configuration);
+			// authentication bearer required
+			// http bearer authentication required
+			await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-		setSearchParams(localVarUrlObj, localVarQueryParameter);
-		const headersFromBaseOptions =
-			baseOptions && baseOptions.headers ? baseOptions.headers : {};
-		localVarRequestOptions.headers = {
-			...localVarHeaderParameter,
-			...headersFromBaseOptions,
-			...options.headers,
-		};
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
 
-		return {
-			url: toPathString(localVarUrlObj),
-			options: localVarRequestOptions,
-		};
-	},
-});
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+	};
+};
 
 /**
  * PreviewApi - functional programming interface
  * @export
  */
-export const PreviewApiFp = (configuration?: Configuration) => {
+export const PreviewApiFp = function (configuration?: Configuration) {
 	const localVarAxiosParamCreator = PreviewApiAxiosParamCreator(configuration);
 	return {
 		/**
@@ -298,11 +318,11 @@ export const PreviewApiFp = (configuration?: Configuration) => {
  * PreviewApi - factory interface
  * @export
  */
-export const PreviewApiFactory = (
+export const PreviewApiFactory = function (
 	configuration?: Configuration,
 	basePath?: string,
 	axios?: AxiosInstance
-) => {
+) {
 	const localVarFp = PreviewApiFp(configuration);
 	return {
 		/**

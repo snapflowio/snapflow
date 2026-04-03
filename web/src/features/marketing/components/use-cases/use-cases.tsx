@@ -7,16 +7,15 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { useRef, useState } from "react";
-import { Link } from "react-router";
+import { Code } from "@/components/ui/code/code";
 import { cn } from "@/lib/utils";
-import { Path } from "@/constants/paths";
+import { useRef, useState } from "react";
 
 interface TemplateItem {
   id: string;
   name: string;
   color: string;
-  description: string;
+  code: string;
 }
 
 const TEMPLATES: TemplateItem[] = [
@@ -24,49 +23,158 @@ const TEMPLATES: TemplateItem[] = [
     id: "tpl-ai-sandbox",
     name: "AI Code Sandbox",
     color: "#2ABBF8",
-    description: "Execute untrusted code safely in an isolated sandbox with full system access.",
+    code: `import { Snapflow } from "@snapflow/sdk"
+
+const snapflow = new Snapflow()
+
+const sandbox = await snapflow
+  .sandbox()
+  .setImage("ubuntu:22.04")
+  .setResources({ cpu: 2, memory: 4096 })
+  .create()
+
+// Execute untrusted code safely
+const result = await sandbox.exec("python3 script.py")
+console.log(result.result)`,
   },
   {
     id: "tpl-web-scraper",
     name: "Web Scraper Agent",
     color: "#00F701",
-    description: "Scrape and extract data from websites using headless browsers in sandboxes.",
+    code: `const sandbox = await snapflow
+  .sandbox()
+  .setImage("snapflow/playwright:latest")
+  .create()
+
+// Install dependencies and run scraper
+await sandbox.exec("npm install cheerio")
+await sandbox.upload(Buffer.from(scraperCode), "/app/scrape.js")
+
+const result = await sandbox.exec("node /app/scrape.js")
+const data = JSON.parse(result.result)`,
   },
   {
     id: "tpl-ci-runner",
     name: "CI Test Runner",
     color: "#FFCC02",
-    description: "Run test suites in ephemeral environments with automatic cleanup.",
+    code: `const sandbox = await snapflow
+  .sandbox()
+  .setImage("node:20")
+  .setEnvVars({ CI: "true", NODE_ENV: "test" })
+  .create()
+
+// Clone repo and run test suite
+await sandbox.git.clone(
+  "https://github.com/org/repo.git",
+  "/app"
+)
+await sandbox.exec("cd /app && npm install")
+const result = await sandbox.exec("cd /app && npm test")
+
+console.log(result.exitCode) // 0 = all tests passed`,
   },
   {
     id: "tpl-data-pipeline",
     name: "Data Pipeline",
     color: "#FA4EDF",
-    description: "Process and transform data streams through sandboxed compute stages.",
+    code: `const sandbox = await snapflow
+  .sandbox()
+  .setImage("python:3.12")
+  .setResources({ cpu: 4, memory: 8192 })
+  .create()
+
+await sandbox.exec("pip install pandas pyarrow")
+
+// Upload raw data and transform
+await sandbox.upload("./data/raw.csv", "/data/raw.csv")
+await sandbox.upload(
+  Buffer.from(transformScript),
+  "/app/transform.py"
+)
+await sandbox.exec("python3 /app/transform.py")
+const output = await sandbox.download("/data/output.parquet")`,
   },
   {
     id: "tpl-threat-analysis",
     name: "Threat Analysis",
     color: "#FF6B2C",
-    description: "Safely analyze suspicious files and URLs in isolated environments.",
+    code: `const sandbox = await snapflow
+  .sandbox()
+  .setImage("snapflow/security:latest")
+  .setNetwork({ blockAll: true })
+  .create()
+
+// Upload suspicious file to isolated environment
+await sandbox.upload(suspiciousFile, "/tmp/sample.bin")
+
+// Run analysis in a fully isolated sandbox
+const result = await sandbox.exec(
+  "file /tmp/sample.bin && sha256sum /tmp/sample.bin"
+)
+await sandbox.exec("strings /tmp/sample.bin > /tmp/strings.txt")
+const strings = await sandbox.download("/tmp/strings.txt")`,
   },
   {
     id: "tpl-notebook",
     name: "Interactive Notebook",
     color: "#6366F1",
-    description: "Run Jupyter-style notebooks with persistent state and file access.",
+    code: `const sandbox = await snapflow
+  .sandbox()
+  .setImage("jupyter/scipy-notebook:latest")
+  .create()
+
+// Start Jupyter server
+await sandbox.exec(
+  "jupyter notebook --ip=0.0.0.0 --no-browser &"
+)
+
+// Get preview link for the notebook UI
+const preview = await sandbox.getPreviewLink(8888)
+console.log(preview.url)
+
+// Upload notebook files
+await sandbox.upload("./analysis.ipynb", "/home/jovyan/work/analysis.ipynb")`,
   },
   {
     id: "tpl-api-testing",
     name: "API Load Tester",
     color: "#F43F5E",
-    description: "Stress test APIs from distributed sandbox instances.",
+    code: `const sandbox = await snapflow
+  .sandbox()
+  .setImage("grafana/k6:latest")
+  .setResources({ cpu: 4, memory: 4096 })
+  .create()
+
+// Upload k6 test script
+await sandbox.upload(
+  Buffer.from(loadTestScript),
+  "/scripts/load-test.js"
+)
+
+// Run load test
+const result = await sandbox.exec(
+  "k6 run --vus 50 --duration 30s /scripts/load-test.js"
+)
+console.log(result.result)`,
   },
   {
     id: "tpl-ml-training",
     name: "ML Training Job",
     color: "#14B8A6",
-    description: "Train models in GPU-enabled sandboxes with artifact storage.",
+    code: `const sandbox = await snapflow
+  .sandbox()
+  .setImage("pytorch/pytorch:latest")
+  .setResources({ cpu: 8, memory: 16384, gpu: 1 })
+  .create()
+
+await sandbox.exec("pip install transformers datasets")
+
+// Upload training script and data
+await sandbox.upload("./train.py", "/app/train.py")
+await sandbox.exec("python3 /app/train.py --epochs 10")
+
+// Download trained model artifacts
+const model = await sandbox.download("/app/output/model.pt")`,
   },
 ];
 
@@ -273,7 +381,7 @@ function DotGrid({
 
 const TEMPLATES_PANEL_ID = "templates-panel";
 
-export function Templates() {
+export function UseCases() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -320,9 +428,7 @@ export function Templates() {
               </h2>
 
               <p className="font-[430] font-season text-[15px] text-text-primary/50 leading-[150%] tracking-[0.02em] lg:text-[18px]">
-                Pre-configured sandbox environments for common use cases—pick one,
-                <br className="hidden lg:inline" />
-                customize it, and deploy in seconds.
+                Spin up sandboxes for any use case with a few lines of code from our SDKs.
               </p>
             </div>
           </div>
@@ -374,8 +480,8 @@ export function Templates() {
                           : cn(
                               "flex items-center px-3 py-2.5 hover:bg-surface-2/50",
                               index < TEMPLATES.length - 1 &&
-                                "shadow-[inset_0_-1px_0_0_var(--border)]"
-                            )
+                                "shadow-[inset_0_-1px_0_0_var(--border)]",
+                            ),
                       )}
                     >
                       {isActive ? (
@@ -428,41 +534,33 @@ export function Templates() {
                 })}
               </div>
 
-              {/* Preview panel */}
+              {/* Code preview panel — desktop */}
               <div
                 id={TEMPLATES_PANEL_ID}
                 role="tabpanel"
                 aria-labelledby={`template-tab-${activeIndex}`}
                 className="relative hidden flex-1 lg:block"
               >
-                <div className="flex h-full flex-col items-center justify-center gap-4 bg-bg p-10">
-                  <div
-                    className="h-1.5 w-10 rounded-full"
-                    style={{ backgroundColor: hexToRgba(active.color, 0.4) }}
-                  />
-                  <p className="max-w-90 text-center font-[430] font-season text-[15px] text-text-primary/40 leading-[150%]">
-                    {active.description}
-                  </p>
-                  <Link
-                    to={Path.SIGNUP}
-                    className="mt-2 inline-flex h-8 items-center gap-1.5 rounded-[5px] border border-[#FFFFFF] bg-[#FFFFFF] px-2.5 font-[430] font-season text-[14px] text-black transition-colors hover:border-[#E0E0E0] hover:bg-[#E0E0E0]"
-                  >
-                    Try it out
-                  </Link>
-                </div>
+                <Code.Viewer
+                  code={active.code}
+                  language="javascript"
+                  showGutter
+                  paddingLeft={24}
+                  className="h-full min-h-95 rounded-none border-none bg-bg dark:bg-bg"
+                  gutterStyle={{ background: "var(--bg)" }}
+                />
               </div>
 
-              {/* Mobile: show description below active tab */}
-              <div className="border-border border-t p-4 lg:hidden">
-                <p className="font-[430] font-season text-[14px] text-text-primary/40 leading-[150%]">
-                  {active.description}
-                </p>
-                <Link
-                  to={Path.SIGNUP}
-                  className="mt-3 inline-flex h-8 w-full items-center justify-center rounded-[5px] border border-[#FFFFFF] bg-[#FFFFFF] font-[430] font-season text-[14px] text-black transition-colors active:bg-[#E0E0E0]"
-                >
-                  Try it out
-                </Link>
+              {/* Code preview panel — mobile */}
+              <div className="border-border border-t lg:hidden">
+                <Code.Viewer
+                  code={active.code}
+                  language="javascript"
+                  showGutter
+                  paddingLeft={24}
+                  className="rounded-none border-none bg-bg dark:bg-bg"
+                  gutterStyle={{ background: "var(--bg)" }}
+                />
               </div>
             </div>
 

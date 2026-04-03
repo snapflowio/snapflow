@@ -14,6 +14,7 @@ Method | HTTP request | Description
 [**list_sandboxes**](SandboxApi.md#list_sandboxes) | **GET** /sandbox | List all sandboxes
 [**list_sandboxes_paginated**](SandboxApi.md#list_sandboxes_paginated) | **GET** /sandbox/paginated | List all sandboxes with pagination
 [**replace_labels**](SandboxApi.md#replace_labels) | **PUT** /sandbox/{sandboxId}/labels | Replace sandbox labels
+[**resize_sandbox**](SandboxApi.md#resize_sandbox) | **POST** /sandbox/{sandboxId}/resize | Resize sandbox
 [**set_auto_delete_interval**](SandboxApi.md#set_auto_delete_interval) | **POST** /sandbox/{sandboxId}/autodelete/{interval} | Set sandbox auto-delete interval
 [**set_autostop_interval**](SandboxApi.md#set_autostop_interval) | **POST** /sandbox/{sandboxId}/autostop/{interval} | Set sandbox auto-stop interval
 [**start_sandbox**](SandboxApi.md#start_sandbox) | **POST** /sandbox/{sandboxId}/start | Start sandbox
@@ -317,6 +318,36 @@ Name | Type | Description  | Required | Notes
 
 - **Content-Type**: application/json
 - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## resize_sandbox
+
+> resize_sandbox(sandbox_id, resize_sandbox, x_snapflow_organization_id)
+Resize sandbox
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**sandbox_id** | **uuid::Uuid** | ID of the sandbox | [required] |
+**resize_sandbox** | [**ResizeSandbox**](ResizeSandbox.md) |  | [required] |
+**x_snapflow_organization_id** | Option<**String**> | Organization ID |  |
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[bearer](../README.md#bearer)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

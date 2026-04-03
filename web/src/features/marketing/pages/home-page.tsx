@@ -7,19 +7,19 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { MarketingLayout } from "@/components/layouts/marketing-layout";
-import { Hero } from "@/features/marketing/components/hero/hero";
-import { OpenSource } from "@/features/marketing/components/open-source/open-source";
-import { Pricing } from "@/features/marketing/components/pricing/pricing";
-import { Templates } from "@/features/marketing/components/templates/templates";
+import { MarketingLayout } from '@/components/layouts/marketing-layout';
+import { Hero } from '@/features/marketing/components/hero/hero';
+import { OpenSource } from '@/features/marketing/components/open-source/open-source';
+import { Pricing } from '@/features/marketing/components/pricing/pricing';
+import { UseCases } from '@/features/marketing/components/use-cases/use-cases';
 
 export default function LandingPage() {
-  return (
-    <MarketingLayout>
-      <Hero />
-      <Templates />
-      <Pricing />
-      <OpenSource />
-    </MarketingLayout>
-  );
+	return (
+		<MarketingLayout>
+			<Hero />
+			<UseCases />
+			<Pricing />
+			<OpenSource />
+		</MarketingLayout>
+	);
 }

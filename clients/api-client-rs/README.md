@@ -36,6 +36,7 @@ Class | Method | HTTP request | Description
 *AuthApi* | [**forgot_password**](docs/AuthApi.md#forgot_password) | **POST** /auth/forgot-password | Request password reset
 *AuthApi* | [**get_jwks**](docs/AuthApi.md#get_jwks) | **GET** /.well-known/jwks.json | Get JSON Web Key Set
 *AuthApi* | [**get_session**](docs/AuthApi.md#get_session) | **GET** /auth/session | Get current session
+*AuthApi* | [**refresh_token**](docs/AuthApi.md#refresh_token) | **POST** /auth/refresh | Refresh access token
 *AuthApi* | [**reset_password**](docs/AuthApi.md#reset_password) | **POST** /auth/reset-password | Reset password
 *AuthApi* | [**send_verification_email**](docs/AuthApi.md#send_verification_email) | **POST** /auth/send-verification-email | Resend verification email
 *AuthApi* | [**sign_in**](docs/AuthApi.md#sign_in) | **POST** /auth/sign-in | Sign in
@@ -43,6 +44,8 @@ Class | Method | HTTP request | Description
 *AuthApi* | [**sign_up**](docs/AuthApi.md#sign_up) | **POST** /auth/sign-up | Sign up
 *AuthApi* | [**update_user**](docs/AuthApi.md#update_user) | **POST** /auth/update-user | Update user profile
 *AuthApi* | [**verify_email**](docs/AuthApi.md#verify_email) | **GET** /auth/verify-email | Verify email address
+*BillingApi* | [**get_wallet_overview**](docs/BillingApi.md#get_wallet_overview) | **GET** /organizations/{organization_id}/wallet | Get wallet overview
+*BillingApi* | [**list_wallet_transactions**](docs/BillingApi.md#list_wallet_transactions) | **GET** /organizations/{organization_id}/wallet/transactions | List wallet transactions
 *BucketsApi* | [**create_bucket**](docs/BucketsApi.md#create_bucket) | **POST** /buckets | Create a new bucket
 *BucketsApi* | [**delete_bucket**](docs/BucketsApi.md#delete_bucket) | **DELETE** /buckets/{bucketId} | Delete bucket
 *BucketsApi* | [**get_bucket**](docs/BucketsApi.md#get_bucket) | **GET** /buckets/{bucketId} | Get bucket details
@@ -110,6 +113,7 @@ Class | Method | HTTP request | Description
 *SandboxApi* | [**list_sandboxes**](docs/SandboxApi.md#list_sandboxes) | **GET** /sandbox | List all sandboxes
 *SandboxApi* | [**list_sandboxes_paginated**](docs/SandboxApi.md#list_sandboxes_paginated) | **GET** /sandbox/paginated | List all sandboxes with pagination
 *SandboxApi* | [**replace_labels**](docs/SandboxApi.md#replace_labels) | **PUT** /sandbox/{sandboxId}/labels | Replace sandbox labels
+*SandboxApi* | [**resize_sandbox**](docs/SandboxApi.md#resize_sandbox) | **POST** /sandbox/{sandboxId}/resize | Resize sandbox
 *SandboxApi* | [**set_auto_delete_interval**](docs/SandboxApi.md#set_auto_delete_interval) | **POST** /sandbox/{sandboxId}/autodelete/{interval} | Set sandbox auto-delete interval
 *SandboxApi* | [**set_autostop_interval**](docs/SandboxApi.md#set_autostop_interval) | **POST** /sandbox/{sandboxId}/autostop/{interval} | Set sandbox auto-stop interval
 *SandboxApi* | [**start_sandbox**](docs/SandboxApi.md#start_sandbox) | **POST** /sandbox/{sandboxId}/start | Start sandbox
@@ -160,10 +164,12 @@ Class | Method | HTTP request | Description
  - [PaginatedImages](docs/PaginatedImages.md)
  - [PaginatedSandboxes](docs/PaginatedSandboxes.md)
  - [PortPreviewUrl](docs/PortPreviewUrl.md)
+ - [RefreshToken](docs/RefreshToken.md)
  - [Registry](docs/Registry.md)
  - [RegistryPushAccess](docs/RegistryPushAccess.md)
  - [RegistryType](docs/RegistryType.md)
  - [ResetPassword](docs/ResetPassword.md)
+ - [ResizeSandbox](docs/ResizeSandbox.md)
  - [Sandbox](docs/Sandbox.md)
  - [SandboxBucketRef](docs/SandboxBucketRef.md)
  - [SandboxClass](docs/SandboxClass.md)
@@ -190,6 +196,8 @@ Class | Method | HTTP request | Description
  - [UsageOverview](docs/UsageOverview.md)
  - [User](docs/User.md)
  - [VerifyEmailQuery](docs/VerifyEmailQuery.md)
+ - [WalletOverview](docs/WalletOverview.md)
+ - [WalletTransaction](docs/WalletTransaction.md)
 
 
 To get access to the crate's generated documentation, use:

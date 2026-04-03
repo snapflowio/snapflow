@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2026 Snapflow. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -12,335 +28,340 @@
  * Do not edit the class manually.
  */
 
-import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import type { Configuration } from '../configuration';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
-// @ts-expect-error
-import {
-	BASE_PATH,
-	BaseAPI,
-	COLLECTION_FORMATS,
-	operationServerMap,
-	type RequestArgs,
-	RequiredError,
-} from '../base';
 // Some imports not used depending on template conditions
-// @ts-expect-error
+// @ts-ignore
 import {
-	assertParamExists,
-	createRequestFunction,
 	DUMMY_BASE_URL,
-	serializeDataIfNeeded,
+	assertParamExists,
 	setApiKeyToObject,
 	setBasicAuthToObject,
 	setBearerAuthToObject,
 	setOAuthToObject,
 	setSearchParams,
+	serializeDataIfNeeded,
 	toPathString,
+	createRequestFunction,
 } from '../common';
-import type { Configuration } from '../configuration';
-// @ts-expect-error
-// @ts-expect-error
-import type { Bucket, CreateBucket } from '../models';
+// @ts-ignore
+import {
+	BASE_PATH,
+	COLLECTION_FORMATS,
+	type RequestArgs,
+	BaseAPI,
+	RequiredError,
+	operationServerMap,
+} from '../base';
+// @ts-ignore
+import type { Bucket } from '../models';
+// @ts-ignore
+import type { CreateBucket } from '../models';
 /**
  * BucketsApi - axios parameter creator
  * @export
  */
-export const BucketsApiAxiosParamCreator = (configuration?: Configuration) => ({
-	/**
-	 *
-	 * @summary Create a new bucket
-	 * @param {CreateBucket} createBucket
-	 * @param {string} [xSnapflowOrganizationId] Organization ID
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 */
-	createBucket: async (
-		createBucket: CreateBucket,
-		xSnapflowOrganizationId?: string,
-		options: RawAxiosRequestConfig = {}
-	): Promise<RequestArgs> => {
-		// verify required parameter 'createBucket' is not null or undefined
-		assertParamExists('createBucket', 'createBucket', createBucket);
-		const localVarPath = '/buckets';
-		// use dummy base URL string because the URL constructor only accepts absolute URLs.
-		const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-		let baseOptions;
-		if (configuration) {
-			baseOptions = configuration.baseOptions;
-		}
+export const BucketsApiAxiosParamCreator = function (
+	configuration?: Configuration
+) {
+	return {
+		/**
+		 *
+		 * @summary Create a new bucket
+		 * @param {CreateBucket} createBucket
+		 * @param {string} [xSnapflowOrganizationId] Organization ID
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		createBucket: async (
+			createBucket: CreateBucket,
+			xSnapflowOrganizationId?: string,
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'createBucket' is not null or undefined
+			assertParamExists('createBucket', 'createBucket', createBucket);
+			const localVarPath = `/buckets`;
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
 
-		const localVarRequestOptions = {
-			method: 'POST',
-			...baseOptions,
-			...options,
-		};
-		const localVarHeaderParameter = {} as any;
-		const localVarQueryParameter = {} as any;
+			const localVarRequestOptions = {
+				method: 'POST',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
 
-		// authentication bearer required
-		// http bearer authentication required
-		await setBearerAuthToObject(localVarHeaderParameter, configuration);
+			// authentication bearer required
+			// http bearer authentication required
+			await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-		localVarHeaderParameter['Content-Type'] = 'application/json';
+			localVarHeaderParameter['Content-Type'] = 'application/json';
 
-		if (xSnapflowOrganizationId != null) {
-			localVarHeaderParameter['x-snapflow-organization-id'] = String(
-				xSnapflowOrganizationId
+			if (xSnapflowOrganizationId != null) {
+				localVarHeaderParameter['x-snapflow-organization-id'] = String(
+					xSnapflowOrganizationId
+				);
+			}
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
+			localVarRequestOptions.data = serializeDataIfNeeded(
+				createBucket,
+				localVarRequestOptions,
+				configuration
 			);
-		}
-		setSearchParams(localVarUrlObj, localVarQueryParameter);
-		const headersFromBaseOptions =
-			baseOptions && baseOptions.headers ? baseOptions.headers : {};
-		localVarRequestOptions.headers = {
-			...localVarHeaderParameter,
-			...headersFromBaseOptions,
-			...options.headers,
-		};
-		localVarRequestOptions.data = serializeDataIfNeeded(
-			createBucket,
-			localVarRequestOptions,
-			configuration
-		);
 
-		return {
-			url: toPathString(localVarUrlObj),
-			options: localVarRequestOptions,
-		};
-	},
-	/**
-	 *
-	 * @summary Delete bucket
-	 * @param {string} bucketId ID of the bucket
-	 * @param {string} [xSnapflowOrganizationId] Organization ID
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 */
-	deleteBucket: async (
-		bucketId: string,
-		xSnapflowOrganizationId?: string,
-		options: RawAxiosRequestConfig = {}
-	): Promise<RequestArgs> => {
-		// verify required parameter 'bucketId' is not null or undefined
-		assertParamExists('deleteBucket', 'bucketId', bucketId);
-		const localVarPath = '/buckets/{bucketId}'.replace(
-			`{${'bucketId'}}`,
-			encodeURIComponent(String(bucketId))
-		);
-		// use dummy base URL string because the URL constructor only accepts absolute URLs.
-		const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-		let baseOptions;
-		if (configuration) {
-			baseOptions = configuration.baseOptions;
-		}
-
-		const localVarRequestOptions = {
-			method: 'DELETE',
-			...baseOptions,
-			...options,
-		};
-		const localVarHeaderParameter = {} as any;
-		const localVarQueryParameter = {} as any;
-
-		// authentication bearer required
-		// http bearer authentication required
-		await setBearerAuthToObject(localVarHeaderParameter, configuration);
-
-		if (xSnapflowOrganizationId != null) {
-			localVarHeaderParameter['x-snapflow-organization-id'] = String(
-				xSnapflowOrganizationId
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+		/**
+		 *
+		 * @summary Delete bucket
+		 * @param {string} bucketId ID of the bucket
+		 * @param {string} [xSnapflowOrganizationId] Organization ID
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		deleteBucket: async (
+			bucketId: string,
+			xSnapflowOrganizationId?: string,
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'bucketId' is not null or undefined
+			assertParamExists('deleteBucket', 'bucketId', bucketId);
+			const localVarPath = `/buckets/{bucketId}`.replace(
+				`{${'bucketId'}}`,
+				encodeURIComponent(String(bucketId))
 			);
-		}
-		setSearchParams(localVarUrlObj, localVarQueryParameter);
-		const headersFromBaseOptions =
-			baseOptions && baseOptions.headers ? baseOptions.headers : {};
-		localVarRequestOptions.headers = {
-			...localVarHeaderParameter,
-			...headersFromBaseOptions,
-			...options.headers,
-		};
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
 
-		return {
-			url: toPathString(localVarUrlObj),
-			options: localVarRequestOptions,
-		};
-	},
-	/**
-	 *
-	 * @summary Get bucket details
-	 * @param {string} bucketId ID of the bucket
-	 * @param {string} [xSnapflowOrganizationId] Organization ID
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 */
-	getBucket: async (
-		bucketId: string,
-		xSnapflowOrganizationId?: string,
-		options: RawAxiosRequestConfig = {}
-	): Promise<RequestArgs> => {
-		// verify required parameter 'bucketId' is not null or undefined
-		assertParamExists('getBucket', 'bucketId', bucketId);
-		const localVarPath = '/buckets/{bucketId}'.replace(
-			`{${'bucketId'}}`,
-			encodeURIComponent(String(bucketId))
-		);
-		// use dummy base URL string because the URL constructor only accepts absolute URLs.
-		const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-		let baseOptions;
-		if (configuration) {
-			baseOptions = configuration.baseOptions;
-		}
+			const localVarRequestOptions = {
+				method: 'DELETE',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
 
-		const localVarRequestOptions = {
-			method: 'GET',
-			...baseOptions,
-			...options,
-		};
-		const localVarHeaderParameter = {} as any;
-		const localVarQueryParameter = {} as any;
+			// authentication bearer required
+			// http bearer authentication required
+			await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-		// authentication bearer required
-		// http bearer authentication required
-		await setBearerAuthToObject(localVarHeaderParameter, configuration);
+			if (xSnapflowOrganizationId != null) {
+				localVarHeaderParameter['x-snapflow-organization-id'] = String(
+					xSnapflowOrganizationId
+				);
+			}
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
 
-		if (xSnapflowOrganizationId != null) {
-			localVarHeaderParameter['x-snapflow-organization-id'] = String(
-				xSnapflowOrganizationId
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+		/**
+		 *
+		 * @summary Get bucket details
+		 * @param {string} bucketId ID of the bucket
+		 * @param {string} [xSnapflowOrganizationId] Organization ID
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		getBucket: async (
+			bucketId: string,
+			xSnapflowOrganizationId?: string,
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'bucketId' is not null or undefined
+			assertParamExists('getBucket', 'bucketId', bucketId);
+			const localVarPath = `/buckets/{bucketId}`.replace(
+				`{${'bucketId'}}`,
+				encodeURIComponent(String(bucketId))
 			);
-		}
-		setSearchParams(localVarUrlObj, localVarQueryParameter);
-		const headersFromBaseOptions =
-			baseOptions && baseOptions.headers ? baseOptions.headers : {};
-		localVarRequestOptions.headers = {
-			...localVarHeaderParameter,
-			...headersFromBaseOptions,
-			...options.headers,
-		};
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
 
-		return {
-			url: toPathString(localVarUrlObj),
-			options: localVarRequestOptions,
-		};
-	},
-	/**
-	 *
-	 * @summary Get bucket details by name
-	 * @param {string} name Name of the bucket
-	 * @param {string} [xSnapflowOrganizationId] Organization ID
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 */
-	getBucketByName: async (
-		name: string,
-		xSnapflowOrganizationId?: string,
-		options: RawAxiosRequestConfig = {}
-	): Promise<RequestArgs> => {
-		// verify required parameter 'name' is not null or undefined
-		assertParamExists('getBucketByName', 'name', name);
-		const localVarPath = '/buckets/by-name/{name}'.replace(
-			`{${'name'}}`,
-			encodeURIComponent(String(name))
-		);
-		// use dummy base URL string because the URL constructor only accepts absolute URLs.
-		const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-		let baseOptions;
-		if (configuration) {
-			baseOptions = configuration.baseOptions;
-		}
+			const localVarRequestOptions = {
+				method: 'GET',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
 
-		const localVarRequestOptions = {
-			method: 'GET',
-			...baseOptions,
-			...options,
-		};
-		const localVarHeaderParameter = {} as any;
-		const localVarQueryParameter = {} as any;
+			// authentication bearer required
+			// http bearer authentication required
+			await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-		// authentication bearer required
-		// http bearer authentication required
-		await setBearerAuthToObject(localVarHeaderParameter, configuration);
+			if (xSnapflowOrganizationId != null) {
+				localVarHeaderParameter['x-snapflow-organization-id'] = String(
+					xSnapflowOrganizationId
+				);
+			}
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
 
-		if (xSnapflowOrganizationId != null) {
-			localVarHeaderParameter['x-snapflow-organization-id'] = String(
-				xSnapflowOrganizationId
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+		/**
+		 *
+		 * @summary Get bucket details by name
+		 * @param {string} name Name of the bucket
+		 * @param {string} [xSnapflowOrganizationId] Organization ID
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		getBucketByName: async (
+			name: string,
+			xSnapflowOrganizationId?: string,
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'name' is not null or undefined
+			assertParamExists('getBucketByName', 'name', name);
+			const localVarPath = `/buckets/by-name/{name}`.replace(
+				`{${'name'}}`,
+				encodeURIComponent(String(name))
 			);
-		}
-		setSearchParams(localVarUrlObj, localVarQueryParameter);
-		const headersFromBaseOptions =
-			baseOptions && baseOptions.headers ? baseOptions.headers : {};
-		localVarRequestOptions.headers = {
-			...localVarHeaderParameter,
-			...headersFromBaseOptions,
-			...options.headers,
-		};
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
 
-		return {
-			url: toPathString(localVarUrlObj),
-			options: localVarRequestOptions,
-		};
-	},
-	/**
-	 *
-	 * @summary List all buckets
-	 * @param {string} [xSnapflowOrganizationId] Organization ID
-	 * @param {boolean} [includeDeleted] Include deleted buckets in the response
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 */
-	listBuckets: async (
-		xSnapflowOrganizationId?: string,
-		includeDeleted?: boolean,
-		options: RawAxiosRequestConfig = {}
-	): Promise<RequestArgs> => {
-		const localVarPath = '/buckets';
-		// use dummy base URL string because the URL constructor only accepts absolute URLs.
-		const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-		let baseOptions;
-		if (configuration) {
-			baseOptions = configuration.baseOptions;
-		}
+			const localVarRequestOptions = {
+				method: 'GET',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
 
-		const localVarRequestOptions = {
-			method: 'GET',
-			...baseOptions,
-			...options,
-		};
-		const localVarHeaderParameter = {} as any;
-		const localVarQueryParameter = {} as any;
+			// authentication bearer required
+			// http bearer authentication required
+			await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-		// authentication bearer required
-		// http bearer authentication required
-		await setBearerAuthToObject(localVarHeaderParameter, configuration);
+			if (xSnapflowOrganizationId != null) {
+				localVarHeaderParameter['x-snapflow-organization-id'] = String(
+					xSnapflowOrganizationId
+				);
+			}
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
 
-		if (includeDeleted !== undefined) {
-			localVarQueryParameter['includeDeleted'] = includeDeleted;
-		}
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+		/**
+		 *
+		 * @summary List all buckets
+		 * @param {string} [xSnapflowOrganizationId] Organization ID
+		 * @param {boolean} [includeDeleted] Include deleted buckets in the response
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		listBuckets: async (
+			xSnapflowOrganizationId?: string,
+			includeDeleted?: boolean,
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			const localVarPath = `/buckets`;
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
 
-		if (xSnapflowOrganizationId != null) {
-			localVarHeaderParameter['x-snapflow-organization-id'] = String(
-				xSnapflowOrganizationId
-			);
-		}
-		setSearchParams(localVarUrlObj, localVarQueryParameter);
-		const headersFromBaseOptions =
-			baseOptions && baseOptions.headers ? baseOptions.headers : {};
-		localVarRequestOptions.headers = {
-			...localVarHeaderParameter,
-			...headersFromBaseOptions,
-			...options.headers,
-		};
+			const localVarRequestOptions = {
+				method: 'GET',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
 
-		return {
-			url: toPathString(localVarUrlObj),
-			options: localVarRequestOptions,
-		};
-	},
-});
+			// authentication bearer required
+			// http bearer authentication required
+			await setBearerAuthToObject(localVarHeaderParameter, configuration);
+
+			if (includeDeleted !== undefined) {
+				localVarQueryParameter['includeDeleted'] = includeDeleted;
+			}
+
+			if (xSnapflowOrganizationId != null) {
+				localVarHeaderParameter['x-snapflow-organization-id'] = String(
+					xSnapflowOrganizationId
+				);
+			}
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
+
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+	};
+};
 
 /**
  * BucketsApi - functional programming interface
  * @export
  */
-export const BucketsApiFp = (configuration?: Configuration) => {
+export const BucketsApiFp = function (configuration?: Configuration) {
 	const localVarAxiosParamCreator = BucketsApiAxiosParamCreator(configuration);
 	return {
 		/**
@@ -515,11 +536,11 @@ export const BucketsApiFp = (configuration?: Configuration) => {
  * BucketsApi - factory interface
  * @export
  */
-export const BucketsApiFactory = (
+export const BucketsApiFactory = function (
 	configuration?: Configuration,
 	basePath?: string,
 	axios?: AxiosInstance
-) => {
+) {
 	const localVarFp = BucketsApiFp(configuration);
 	return {
 		/**

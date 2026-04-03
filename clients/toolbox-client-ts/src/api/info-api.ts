@@ -14,11 +14,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/*
- * Copyright 2025 Snapflow
- * SPDX-License-Identifier: Apache-2.0
- */
-
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -33,120 +28,200 @@
  * Do not edit the class manually.
  */
 
-import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import type { Configuration } from '../configuration';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
-// @ts-expect-error
-import {
-	BASE_PATH,
-	BaseAPI,
-	COLLECTION_FORMATS,
-	operationServerMap,
-	type RequestArgs,
-	RequiredError,
-} from '../base';
 // Some imports not used depending on template conditions
-// @ts-expect-error
+// @ts-ignore
 import {
-	assertParamExists,
-	createRequestFunction,
 	DUMMY_BASE_URL,
-	serializeDataIfNeeded,
+	assertParamExists,
 	setApiKeyToObject,
 	setBasicAuthToObject,
 	setBearerAuthToObject,
 	setOAuthToObject,
 	setSearchParams,
+	serializeDataIfNeeded,
 	toPathString,
+	createRequestFunction,
 } from '../common';
-import type { Configuration } from '../configuration';
+// @ts-ignore
+import {
+	BASE_PATH,
+	COLLECTION_FORMATS,
+	type RequestArgs,
+	BaseAPI,
+	RequiredError,
+	operationServerMap,
+} from '../base';
 /**
  * InfoApi - axios parameter creator
  * @export
  */
-export const InfoApiAxiosParamCreator = (configuration?: Configuration) => ({
-	/**
-	 *
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 */
-	getProjectDir: async (
-		options: RawAxiosRequestConfig = {}
-	): Promise<RequestArgs> => {
-		const localVarPath = '/project-dir';
-		// use dummy base URL string because the URL constructor only accepts absolute URLs.
-		const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-		let baseOptions;
-		if (configuration) {
-			baseOptions = configuration.baseOptions;
-		}
+export const InfoApiAxiosParamCreator = function (
+	configuration?: Configuration
+) {
+	return {
+		/**
+		 *
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		getProjectDir: async (
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			const localVarPath = `/project-dir`;
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
 
-		const localVarRequestOptions = {
-			method: 'GET',
-			...baseOptions,
-			...options,
-		};
-		const localVarHeaderParameter = {} as any;
-		const localVarQueryParameter = {} as any;
+			const localVarRequestOptions = {
+				method: 'GET',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
 
-		setSearchParams(localVarUrlObj, localVarQueryParameter);
-		const headersFromBaseOptions =
-			baseOptions && baseOptions.headers ? baseOptions.headers : {};
-		localVarRequestOptions.headers = {
-			...localVarHeaderParameter,
-			...headersFromBaseOptions,
-			...options.headers,
-		};
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
 
-		return {
-			url: toPathString(localVarUrlObj),
-			options: localVarRequestOptions,
-		};
-	},
-	/**
-	 *
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 */
-	getVersion: async (
-		options: RawAxiosRequestConfig = {}
-	): Promise<RequestArgs> => {
-		const localVarPath = '/version';
-		// use dummy base URL string because the URL constructor only accepts absolute URLs.
-		const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-		let baseOptions;
-		if (configuration) {
-			baseOptions = configuration.baseOptions;
-		}
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+		/**
+		 *
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		getUserHomeDir: async (
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			const localVarPath = `/user-home-dir`;
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
 
-		const localVarRequestOptions = {
-			method: 'GET',
-			...baseOptions,
-			...options,
-		};
-		const localVarHeaderParameter = {} as any;
-		const localVarQueryParameter = {} as any;
+			const localVarRequestOptions = {
+				method: 'GET',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
 
-		setSearchParams(localVarUrlObj, localVarQueryParameter);
-		const headersFromBaseOptions =
-			baseOptions && baseOptions.headers ? baseOptions.headers : {};
-		localVarRequestOptions.headers = {
-			...localVarHeaderParameter,
-			...headersFromBaseOptions,
-			...options.headers,
-		};
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
 
-		return {
-			url: toPathString(localVarUrlObj),
-			options: localVarRequestOptions,
-		};
-	},
-});
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+		/**
+		 *
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		getVersion: async (
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			const localVarPath = `/version`;
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
+
+			const localVarRequestOptions = {
+				method: 'GET',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
+
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
+
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+		/**
+		 *
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		getWorkDir: async (
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			const localVarPath = `/work-dir`;
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
+
+			const localVarRequestOptions = {
+				method: 'GET',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
+
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
+
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+	};
+};
 
 /**
  * InfoApi - functional programming interface
  * @export
  */
-export const InfoApiFp = (configuration?: Configuration) => {
+export const InfoApiFp = function (configuration?: Configuration) {
 	const localVarAxiosParamCreator = InfoApiAxiosParamCreator(configuration);
 	return {
 		/**
@@ -164,6 +239,31 @@ export const InfoApiFp = (configuration?: Configuration) => {
 			const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
 			const localVarOperationServerBasePath =
 				operationServerMap['InfoApi.getProjectDir']?.[
+					localVarOperationServerIndex
+				]?.url;
+			return (axios, basePath) =>
+				createRequestFunction(
+					localVarAxiosArgs,
+					globalAxios,
+					BASE_PATH,
+					configuration
+				)(axios, localVarOperationServerBasePath || basePath);
+		},
+		/**
+		 *
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		async getUserHomeDir(
+			options?: RawAxiosRequestConfig
+		): Promise<
+			(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+		> {
+			const localVarAxiosArgs =
+				await localVarAxiosParamCreator.getUserHomeDir(options);
+			const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+			const localVarOperationServerBasePath =
+				operationServerMap['InfoApi.getUserHomeDir']?.[
 					localVarOperationServerIndex
 				]?.url;
 			return (axios, basePath) =>
@@ -198,6 +298,30 @@ export const InfoApiFp = (configuration?: Configuration) => {
 					configuration
 				)(axios, localVarOperationServerBasePath || basePath);
 		},
+		/**
+		 *
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		async getWorkDir(
+			options?: RawAxiosRequestConfig
+		): Promise<
+			(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+		> {
+			const localVarAxiosArgs =
+				await localVarAxiosParamCreator.getWorkDir(options);
+			const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+			const localVarOperationServerBasePath =
+				operationServerMap['InfoApi.getWorkDir']?.[localVarOperationServerIndex]
+					?.url;
+			return (axios, basePath) =>
+				createRequestFunction(
+					localVarAxiosArgs,
+					globalAxios,
+					BASE_PATH,
+					configuration
+				)(axios, localVarOperationServerBasePath || basePath);
+		},
 	};
 };
 
@@ -205,11 +329,11 @@ export const InfoApiFp = (configuration?: Configuration) => {
  * InfoApi - factory interface
  * @export
  */
-export const InfoApiFactory = (
+export const InfoApiFactory = function (
 	configuration?: Configuration,
 	basePath?: string,
 	axios?: AxiosInstance
-) => {
+) {
 	const localVarFp = InfoApiFp(configuration);
 	return {
 		/**
@@ -227,9 +351,29 @@ export const InfoApiFactory = (
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
+		getUserHomeDir(options?: RawAxiosRequestConfig): AxiosPromise<void> {
+			return localVarFp
+				.getUserHomeDir(options)
+				.then((request) => request(axios, basePath));
+		},
+		/**
+		 *
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
 		getVersion(options?: RawAxiosRequestConfig): AxiosPromise<void> {
 			return localVarFp
 				.getVersion(options)
+				.then((request) => request(axios, basePath));
+		},
+		/**
+		 *
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		getWorkDir(options?: RawAxiosRequestConfig): AxiosPromise<void> {
+			return localVarFp
+				.getWorkDir(options)
 				.then((request) => request(axios, basePath));
 		},
 	};
@@ -260,9 +404,33 @@ export class InfoApi extends BaseAPI {
 	 * @throws {RequiredError}
 	 * @memberof InfoApi
 	 */
+	public getUserHomeDir(options?: RawAxiosRequestConfig) {
+		return InfoApiFp(this.configuration)
+			.getUserHomeDir(options)
+			.then((request) => request(this.axios, this.basePath));
+	}
+
+	/**
+	 *
+	 * @param {*} [options] Override http request option.
+	 * @throws {RequiredError}
+	 * @memberof InfoApi
+	 */
 	public getVersion(options?: RawAxiosRequestConfig) {
 		return InfoApiFp(this.configuration)
 			.getVersion(options)
+			.then((request) => request(this.axios, this.basePath));
+	}
+
+	/**
+	 *
+	 * @param {*} [options] Override http request option.
+	 * @throws {RequiredError}
+	 * @memberof InfoApi
+	 */
+	public getWorkDir(options?: RawAxiosRequestConfig) {
+		return InfoApiFp(this.configuration)
+			.getWorkDir(options)
 			.then((request) => request(this.axios, this.basePath));
 	}
 }

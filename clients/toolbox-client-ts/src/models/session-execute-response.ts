@@ -14,11 +14,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/*
- * Copyright 2025 Snapflow
- * SPDX-License-Identifier: Apache-2.0
- */
-
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -57,4 +52,16 @@ export interface SessionExecuteResponse {
 	 * @memberof SessionExecuteResponse
 	 */
 	output?: string | null;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof SessionExecuteResponse
+	 */
+	stderr?: string | null;
+	/**
+	 *
+	 * @type {string}
+	 * @memberof SessionExecuteResponse
+	 */
+	stdout?: string | null;
 }

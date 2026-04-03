@@ -3,7 +3,7 @@ name = "snapflow-executor-client"
 version = "0.1.0"
 authors = ["OpenAPI Generator team and contributors"]
 description = "Snapflow Executor API"
-license = "Apache-2.0"
+license = ""
 edition = "2021"
 
 [dependencies]

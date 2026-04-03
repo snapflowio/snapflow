@@ -4,6 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**refresh_token** | Option<**String**> |  | [optional]
 **token** | **String** |  | 
 **user** | [**models::User**](User.md) |  | 
 

@@ -14,11 +14,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/*
- * Copyright 2025 Snapflow
- * SPDX-License-Identifier: Apache-2.0
- */
-
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -33,130 +28,135 @@
  * Do not edit the class manually.
  */
 
-import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import type { Configuration } from '../configuration';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
-// @ts-expect-error
-import {
-	BASE_PATH,
-	BaseAPI,
-	COLLECTION_FORMATS,
-	operationServerMap,
-	type RequestArgs,
-	RequiredError,
-} from '../base';
 // Some imports not used depending on template conditions
-// @ts-expect-error
+// @ts-ignore
 import {
-	assertParamExists,
-	createRequestFunction,
 	DUMMY_BASE_URL,
-	serializeDataIfNeeded,
+	assertParamExists,
 	setApiKeyToObject,
 	setBasicAuthToObject,
 	setBearerAuthToObject,
 	setOAuthToObject,
 	setSearchParams,
+	serializeDataIfNeeded,
 	toPathString,
+	createRequestFunction,
 } from '../common';
-import type { Configuration } from '../configuration';
-// @ts-expect-error
-// @ts-expect-error
-import type { IsPortInUseResponse, PortList } from '../models';
+// @ts-ignore
+import {
+	BASE_PATH,
+	COLLECTION_FORMATS,
+	type RequestArgs,
+	BaseAPI,
+	RequiredError,
+	operationServerMap,
+} from '../base';
+// @ts-ignore
+import type { IsPortInUseResponse } from '../models';
+// @ts-ignore
+import type { PortList } from '../models';
 /**
  * PortApi - axios parameter creator
  * @export
  */
-export const PortApiAxiosParamCreator = (configuration?: Configuration) => ({
-	/**
-	 *
-	 * @param {string} port
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 */
-	isPortInUse: async (
-		port: string,
-		options: RawAxiosRequestConfig = {}
-	): Promise<RequestArgs> => {
-		// verify required parameter 'port' is not null or undefined
-		assertParamExists('isPortInUse', 'port', port);
-		const localVarPath = '/port/{port}/in-use'.replace(
-			`{${'port'}}`,
-			encodeURIComponent(String(port))
-		);
-		// use dummy base URL string because the URL constructor only accepts absolute URLs.
-		const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-		let baseOptions;
-		if (configuration) {
-			baseOptions = configuration.baseOptions;
-		}
+export const PortApiAxiosParamCreator = function (
+	configuration?: Configuration
+) {
+	return {
+		/**
+		 *
+		 * @param {string} port
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		isPortInUse: async (
+			port: string,
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'port' is not null or undefined
+			assertParamExists('isPortInUse', 'port', port);
+			const localVarPath = `/port/{port}/in-use`.replace(
+				`{${'port'}}`,
+				encodeURIComponent(String(port))
+			);
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
 
-		const localVarRequestOptions = {
-			method: 'GET',
-			...baseOptions,
-			...options,
-		};
-		const localVarHeaderParameter = {} as any;
-		const localVarQueryParameter = {} as any;
+			const localVarRequestOptions = {
+				method: 'GET',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
 
-		setSearchParams(localVarUrlObj, localVarQueryParameter);
-		const headersFromBaseOptions =
-			baseOptions && baseOptions.headers ? baseOptions.headers : {};
-		localVarRequestOptions.headers = {
-			...localVarHeaderParameter,
-			...headersFromBaseOptions,
-			...options.headers,
-		};
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
 
-		return {
-			url: toPathString(localVarUrlObj),
-			options: localVarRequestOptions,
-		};
-	},
-	/**
-	 *
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 */
-	listPorts: async (
-		options: RawAxiosRequestConfig = {}
-	): Promise<RequestArgs> => {
-		const localVarPath = '/port';
-		// use dummy base URL string because the URL constructor only accepts absolute URLs.
-		const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-		let baseOptions;
-		if (configuration) {
-			baseOptions = configuration.baseOptions;
-		}
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+		/**
+		 *
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		listPorts: async (
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			const localVarPath = `/port`;
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
 
-		const localVarRequestOptions = {
-			method: 'GET',
-			...baseOptions,
-			...options,
-		};
-		const localVarHeaderParameter = {} as any;
-		const localVarQueryParameter = {} as any;
+			const localVarRequestOptions = {
+				method: 'GET',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
 
-		setSearchParams(localVarUrlObj, localVarQueryParameter);
-		const headersFromBaseOptions =
-			baseOptions && baseOptions.headers ? baseOptions.headers : {};
-		localVarRequestOptions.headers = {
-			...localVarHeaderParameter,
-			...headersFromBaseOptions,
-			...options.headers,
-		};
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
 
-		return {
-			url: toPathString(localVarUrlObj),
-			options: localVarRequestOptions,
-		};
-	},
-});
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+	};
+};
 
 /**
  * PortApi - functional programming interface
  * @export
  */
-export const PortApiFp = (configuration?: Configuration) => {
+export const PortApiFp = function (configuration?: Configuration) {
 	const localVarAxiosParamCreator = PortApiAxiosParamCreator(configuration);
 	return {
 		/**
@@ -222,11 +222,11 @@ export const PortApiFp = (configuration?: Configuration) => {
  * PortApi - factory interface
  * @export
  */
-export const PortApiFactory = (
+export const PortApiFactory = function (
 	configuration?: Configuration,
 	basePath?: string,
 	axios?: AxiosInstance
-) => {
+) {
 	const localVarFp = PortApiFp(configuration);
 	return {
 		/**

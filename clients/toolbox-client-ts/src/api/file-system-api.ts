@@ -14,11 +14,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/*
- * Copyright 2025 Snapflow
- * SPDX-License-Identifier: Apache-2.0
- */
-
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -59,6 +54,8 @@ import {
 	RequiredError,
 	operationServerMap,
 } from '../base';
+// @ts-ignore
+import type { BulkDownloadRequest } from '../models';
 // @ts-ignore
 import type { FileInfo } from '../models';
 // @ts-ignore
@@ -253,6 +250,59 @@ export const FileSystemApiAxiosParamCreator = function (
 				...headersFromBaseOptions,
 				...options.headers,
 			};
+
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+		/**
+		 *
+		 * @param {BulkDownloadRequest} bulkDownloadRequest
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		downloadFiles: async (
+			bulkDownloadRequest: BulkDownloadRequest,
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'bulkDownloadRequest' is not null or undefined
+			assertParamExists(
+				'downloadFiles',
+				'bulkDownloadRequest',
+				bulkDownloadRequest
+			);
+			const localVarPath = `/files/bulk-download`;
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
+
+			const localVarRequestOptions = {
+				method: 'POST',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
+
+			localVarHeaderParameter['Content-Type'] = 'application/json';
+
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
+			localVarRequestOptions.data = serializeDataIfNeeded(
+				bulkDownloadRequest,
+				localVarRequestOptions,
+				configuration
+			);
 
 			return {
 				url: toPathString(localVarUrlObj),
@@ -783,6 +833,35 @@ export const FileSystemApiFp = function (configuration?: Configuration) {
 		},
 		/**
 		 *
+		 * @param {BulkDownloadRequest} bulkDownloadRequest
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		async downloadFiles(
+			bulkDownloadRequest: BulkDownloadRequest,
+			options?: RawAxiosRequestConfig
+		): Promise<
+			(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+		> {
+			const localVarAxiosArgs = await localVarAxiosParamCreator.downloadFiles(
+				bulkDownloadRequest,
+				options
+			);
+			const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+			const localVarOperationServerBasePath =
+				operationServerMap['FileSystemApi.downloadFiles']?.[
+					localVarOperationServerIndex
+				]?.url;
+			return (axios, basePath) =>
+				createRequestFunction(
+					localVarAxiosArgs,
+					globalAxios,
+					BASE_PATH,
+					configuration
+				)(axios, localVarOperationServerBasePath || basePath);
+		},
+		/**
+		 *
 		 * @param {string | null} [path]
 		 * @param {string | null} [pattern]
 		 * @param {*} [options] Override http request option.
@@ -1113,6 +1192,20 @@ export const FileSystemApiFactory = function (
 		},
 		/**
 		 *
+		 * @param {BulkDownloadRequest} bulkDownloadRequest
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		downloadFiles(
+			bulkDownloadRequest: BulkDownloadRequest,
+			options?: RawAxiosRequestConfig
+		): AxiosPromise<void> {
+			return localVarFp
+				.downloadFiles(bulkDownloadRequest, options)
+				.then((request) => request(axios, basePath));
+		},
+		/**
+		 *
 		 * @param {string | null} [path]
 		 * @param {string | null} [pattern]
 		 * @param {*} [options] Override http request option.
@@ -1303,6 +1396,22 @@ export class FileSystemApi extends BaseAPI {
 	public downloadFile(path?: string | null, options?: RawAxiosRequestConfig) {
 		return FileSystemApiFp(this.configuration)
 			.downloadFile(path, options)
+			.then((request) => request(this.axios, this.basePath));
+	}
+
+	/**
+	 *
+	 * @param {BulkDownloadRequest} bulkDownloadRequest
+	 * @param {*} [options] Override http request option.
+	 * @throws {RequiredError}
+	 * @memberof FileSystemApi
+	 */
+	public downloadFiles(
+		bulkDownloadRequest: BulkDownloadRequest,
+		options?: RawAxiosRequestConfig
+	) {
+		return FileSystemApiFp(this.configuration)
+			.downloadFiles(bulkDownloadRequest, options)
 			.then((request) => request(this.axios, this.basePath));
 	}
 

@@ -14,11 +14,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/*
- * Copyright 2025 Snapflow
- * SPDX-License-Identifier: Apache-2.0
- */
-
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -34,10 +29,10 @@
  */
 
 // May contain unused imports in some cases
-// @ts-expect-error
+// @ts-ignore
 import type { CompletionContext } from './completion-context';
 // May contain unused imports in some cases
-// @ts-expect-error
+// @ts-ignore
 import type { Position } from './position';
 
 /**

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2026 Snapflow. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -12,174 +28,176 @@
  * Do not edit the class manually.
  */
 
-import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import type { Configuration } from '../configuration';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
-// @ts-expect-error
-import {
-	BASE_PATH,
-	BaseAPI,
-	COLLECTION_FORMATS,
-	operationServerMap,
-	type RequestArgs,
-	RequiredError,
-} from '../base';
 // Some imports not used depending on template conditions
-// @ts-expect-error
+// @ts-ignore
 import {
-	assertParamExists,
-	createRequestFunction,
 	DUMMY_BASE_URL,
-	serializeDataIfNeeded,
+	assertParamExists,
 	setApiKeyToObject,
 	setBasicAuthToObject,
 	setBearerAuthToObject,
 	setOAuthToObject,
 	setSearchParams,
+	serializeDataIfNeeded,
 	toPathString,
+	createRequestFunction,
 } from '../common';
-import type { Configuration } from '../configuration';
-// @ts-expect-error
-// @ts-expect-error
-// @ts-expect-error
-// @ts-expect-error
-import type {
-	AuthorizeRequest,
-	AuthorizeResponse,
-	TokenRequest,
-	TokenResponse,
-} from '../models';
+// @ts-ignore
+import {
+	BASE_PATH,
+	COLLECTION_FORMATS,
+	type RequestArgs,
+	BaseAPI,
+	RequiredError,
+	operationServerMap,
+} from '../base';
+// @ts-ignore
+import type { AuthorizeRequest } from '../models';
+// @ts-ignore
+import type { AuthorizeResponse } from '../models';
+// @ts-ignore
+import type { TokenRequest } from '../models';
+// @ts-ignore
+import type { TokenResponse } from '../models';
 /**
  * OauthApi - axios parameter creator
  * @export
  */
-export const OauthApiAxiosParamCreator = (configuration?: Configuration) => ({
-	/**
-	 *
-	 * @param {AuthorizeRequest} authorizeRequest
-	 * @param {string} [xSnapflowOrganizationId] Organization ID
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 */
-	oauthAuthorize: async (
-		authorizeRequest: AuthorizeRequest,
-		xSnapflowOrganizationId?: string,
-		options: RawAxiosRequestConfig = {}
-	): Promise<RequestArgs> => {
-		// verify required parameter 'authorizeRequest' is not null or undefined
-		assertParamExists('oauthAuthorize', 'authorizeRequest', authorizeRequest);
-		const localVarPath = '/oauth/authorize';
-		// use dummy base URL string because the URL constructor only accepts absolute URLs.
-		const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-		let baseOptions;
-		if (configuration) {
-			baseOptions = configuration.baseOptions;
-		}
+export const OauthApiAxiosParamCreator = function (
+	configuration?: Configuration
+) {
+	return {
+		/**
+		 *
+		 * @param {AuthorizeRequest} authorizeRequest
+		 * @param {string} [xSnapflowOrganizationId] Organization ID
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		oauthAuthorize: async (
+			authorizeRequest: AuthorizeRequest,
+			xSnapflowOrganizationId?: string,
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'authorizeRequest' is not null or undefined
+			assertParamExists('oauthAuthorize', 'authorizeRequest', authorizeRequest);
+			const localVarPath = `/oauth/authorize`;
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
 
-		const localVarRequestOptions = {
-			method: 'POST',
-			...baseOptions,
-			...options,
-		};
-		const localVarHeaderParameter = {} as any;
-		const localVarQueryParameter = {} as any;
+			const localVarRequestOptions = {
+				method: 'POST',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
 
-		// authentication bearer required
-		// http bearer authentication required
-		await setBearerAuthToObject(localVarHeaderParameter, configuration);
+			// authentication bearer required
+			// http bearer authentication required
+			await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-		localVarHeaderParameter['Content-Type'] = 'application/json';
+			localVarHeaderParameter['Content-Type'] = 'application/json';
 
-		if (xSnapflowOrganizationId != null) {
-			localVarHeaderParameter['x-snapflow-organization-id'] = String(
-				xSnapflowOrganizationId
+			if (xSnapflowOrganizationId != null) {
+				localVarHeaderParameter['x-snapflow-organization-id'] = String(
+					xSnapflowOrganizationId
+				);
+			}
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
+			localVarRequestOptions.data = serializeDataIfNeeded(
+				authorizeRequest,
+				localVarRequestOptions,
+				configuration
 			);
-		}
-		setSearchParams(localVarUrlObj, localVarQueryParameter);
-		const headersFromBaseOptions =
-			baseOptions && baseOptions.headers ? baseOptions.headers : {};
-		localVarRequestOptions.headers = {
-			...localVarHeaderParameter,
-			...headersFromBaseOptions,
-			...options.headers,
-		};
-		localVarRequestOptions.data = serializeDataIfNeeded(
-			authorizeRequest,
-			localVarRequestOptions,
-			configuration
-		);
 
-		return {
-			url: toPathString(localVarUrlObj),
-			options: localVarRequestOptions,
-		};
-	},
-	/**
-	 *
-	 * @param {TokenRequest} tokenRequest
-	 * @param {string} [xSnapflowOrganizationId] Organization ID
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 */
-	oauthExchangeToken: async (
-		tokenRequest: TokenRequest,
-		xSnapflowOrganizationId?: string,
-		options: RawAxiosRequestConfig = {}
-	): Promise<RequestArgs> => {
-		// verify required parameter 'tokenRequest' is not null or undefined
-		assertParamExists('oauthExchangeToken', 'tokenRequest', tokenRequest);
-		const localVarPath = '/oauth/token';
-		// use dummy base URL string because the URL constructor only accepts absolute URLs.
-		const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-		let baseOptions;
-		if (configuration) {
-			baseOptions = configuration.baseOptions;
-		}
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+		/**
+		 *
+		 * @param {TokenRequest} tokenRequest
+		 * @param {string} [xSnapflowOrganizationId] Organization ID
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		oauthExchangeToken: async (
+			tokenRequest: TokenRequest,
+			xSnapflowOrganizationId?: string,
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'tokenRequest' is not null or undefined
+			assertParamExists('oauthExchangeToken', 'tokenRequest', tokenRequest);
+			const localVarPath = `/oauth/token`;
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
 
-		const localVarRequestOptions = {
-			method: 'POST',
-			...baseOptions,
-			...options,
-		};
-		const localVarHeaderParameter = {} as any;
-		const localVarQueryParameter = {} as any;
+			const localVarRequestOptions = {
+				method: 'POST',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
 
-		// authentication bearer required
-		// http bearer authentication required
-		await setBearerAuthToObject(localVarHeaderParameter, configuration);
+			// authentication bearer required
+			// http bearer authentication required
+			await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-		localVarHeaderParameter['Content-Type'] = 'application/json';
+			localVarHeaderParameter['Content-Type'] = 'application/json';
 
-		if (xSnapflowOrganizationId != null) {
-			localVarHeaderParameter['x-snapflow-organization-id'] = String(
-				xSnapflowOrganizationId
+			if (xSnapflowOrganizationId != null) {
+				localVarHeaderParameter['x-snapflow-organization-id'] = String(
+					xSnapflowOrganizationId
+				);
+			}
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
+			localVarRequestOptions.data = serializeDataIfNeeded(
+				tokenRequest,
+				localVarRequestOptions,
+				configuration
 			);
-		}
-		setSearchParams(localVarUrlObj, localVarQueryParameter);
-		const headersFromBaseOptions =
-			baseOptions && baseOptions.headers ? baseOptions.headers : {};
-		localVarRequestOptions.headers = {
-			...localVarHeaderParameter,
-			...headersFromBaseOptions,
-			...options.headers,
-		};
-		localVarRequestOptions.data = serializeDataIfNeeded(
-			tokenRequest,
-			localVarRequestOptions,
-			configuration
-		);
 
-		return {
-			url: toPathString(localVarUrlObj),
-			options: localVarRequestOptions,
-		};
-	},
-});
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+	};
+};
 
 /**
  * OauthApi - functional programming interface
  * @export
  */
-export const OauthApiFp = (configuration?: Configuration) => {
+export const OauthApiFp = function (configuration?: Configuration) {
 	const localVarAxiosParamCreator = OauthApiAxiosParamCreator(configuration);
 	return {
 		/**
@@ -257,11 +275,11 @@ export const OauthApiFp = (configuration?: Configuration) => {
  * OauthApi - factory interface
  * @export
  */
-export const OauthApiFactory = (
+export const OauthApiFactory = function (
 	configuration?: Configuration,
 	basePath?: string,
 	axios?: AxiosInstance
-) => {
+) {
 	const localVarFp = OauthApiFp(configuration);
 	return {
 		/**

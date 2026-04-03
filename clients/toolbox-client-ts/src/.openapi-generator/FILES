@@ -13,6 +13,7 @@ common.ts
 configuration.ts
 git_push.sh
 index.ts
+models/bulk-download-request.ts
 models/click-request.ts
 models/code-file.ts
 models/code-run-request.ts

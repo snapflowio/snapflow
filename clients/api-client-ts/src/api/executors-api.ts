@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2026 Snapflow. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -12,319 +28,319 @@
  * Do not edit the class manually.
  */
 
-import type { AxiosInstance, AxiosPromise, RawAxiosRequestConfig } from 'axios';
+import type { Configuration } from '../configuration';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
-// @ts-expect-error
-import {
-	BASE_PATH,
-	BaseAPI,
-	COLLECTION_FORMATS,
-	operationServerMap,
-	type RequestArgs,
-	RequiredError,
-} from '../base';
 // Some imports not used depending on template conditions
-// @ts-expect-error
+// @ts-ignore
 import {
-	assertParamExists,
-	createRequestFunction,
 	DUMMY_BASE_URL,
-	serializeDataIfNeeded,
+	assertParamExists,
 	setApiKeyToObject,
 	setBasicAuthToObject,
 	setBearerAuthToObject,
 	setOAuthToObject,
 	setSearchParams,
+	serializeDataIfNeeded,
 	toPathString,
+	createRequestFunction,
 } from '../common';
-import type { Configuration } from '../configuration';
-// @ts-expect-error
-// @ts-expect-error
-// @ts-expect-error
-// @ts-expect-error
-import type {
-	CreateExecutor,
-	Executor,
-	ExecutorImage,
-	UpdateSchedulingBody,
-} from '../models';
+// @ts-ignore
+import {
+	BASE_PATH,
+	COLLECTION_FORMATS,
+	type RequestArgs,
+	BaseAPI,
+	RequiredError,
+	operationServerMap,
+} from '../base';
+// @ts-ignore
+import type { CreateExecutor } from '../models';
+// @ts-ignore
+import type { Executor } from '../models';
+// @ts-ignore
+import type { ExecutorImage } from '../models';
+// @ts-ignore
+import type { UpdateSchedulingBody } from '../models';
 /**
  * ExecutorsApi - axios parameter creator
  * @export
  */
-export const ExecutorsApiAxiosParamCreator = (
+export const ExecutorsApiAxiosParamCreator = function (
 	configuration?: Configuration
-) => ({
-	/**
-	 *
-	 * @summary Create executor
-	 * @param {CreateExecutor} createExecutor
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 */
-	createExecutor: async (
-		createExecutor: CreateExecutor,
-		options: RawAxiosRequestConfig = {}
-	): Promise<RequestArgs> => {
-		// verify required parameter 'createExecutor' is not null or undefined
-		assertParamExists('createExecutor', 'createExecutor', createExecutor);
-		const localVarPath = '/executors';
-		// use dummy base URL string because the URL constructor only accepts absolute URLs.
-		const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-		let baseOptions;
-		if (configuration) {
-			baseOptions = configuration.baseOptions;
-		}
+) {
+	return {
+		/**
+		 *
+		 * @summary Create executor
+		 * @param {CreateExecutor} createExecutor
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		createExecutor: async (
+			createExecutor: CreateExecutor,
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'createExecutor' is not null or undefined
+			assertParamExists('createExecutor', 'createExecutor', createExecutor);
+			const localVarPath = `/executors`;
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
 
-		const localVarRequestOptions = {
-			method: 'POST',
-			...baseOptions,
-			...options,
-		};
-		const localVarHeaderParameter = {} as any;
-		const localVarQueryParameter = {} as any;
+			const localVarRequestOptions = {
+				method: 'POST',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
 
-		// authentication bearer required
-		// http bearer authentication required
-		await setBearerAuthToObject(localVarHeaderParameter, configuration);
+			// authentication bearer required
+			// http bearer authentication required
+			await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-		localVarHeaderParameter['Content-Type'] = 'application/json';
+			localVarHeaderParameter['Content-Type'] = 'application/json';
 
-		setSearchParams(localVarUrlObj, localVarQueryParameter);
-		const headersFromBaseOptions =
-			baseOptions && baseOptions.headers ? baseOptions.headers : {};
-		localVarRequestOptions.headers = {
-			...localVarHeaderParameter,
-			...headersFromBaseOptions,
-			...options.headers,
-		};
-		localVarRequestOptions.data = serializeDataIfNeeded(
-			createExecutor,
-			localVarRequestOptions,
-			configuration
-		);
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
+			localVarRequestOptions.data = serializeDataIfNeeded(
+				createExecutor,
+				localVarRequestOptions,
+				configuration
+			);
 
-		return {
-			url: toPathString(localVarUrlObj),
-			options: localVarRequestOptions,
-		};
-	},
-	/**
-	 *
-	 * @summary Get executor by sandbox ID
-	 * @param {string} sandboxId ID of the sandbox
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 */
-	getExecutorBySandboxId: async (
-		sandboxId: string,
-		options: RawAxiosRequestConfig = {}
-	): Promise<RequestArgs> => {
-		// verify required parameter 'sandboxId' is not null or undefined
-		assertParamExists('getExecutorBySandboxId', 'sandboxId', sandboxId);
-		const localVarPath = '/executors/by-sandbox/{sandboxId}'.replace(
-			`{${'sandboxId'}}`,
-			encodeURIComponent(String(sandboxId))
-		);
-		// use dummy base URL string because the URL constructor only accepts absolute URLs.
-		const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-		let baseOptions;
-		if (configuration) {
-			baseOptions = configuration.baseOptions;
-		}
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+		/**
+		 *
+		 * @summary Get executor by sandbox ID
+		 * @param {string} sandboxId ID of the sandbox
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		getExecutorBySandboxId: async (
+			sandboxId: string,
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'sandboxId' is not null or undefined
+			assertParamExists('getExecutorBySandboxId', 'sandboxId', sandboxId);
+			const localVarPath = `/executors/by-sandbox/{sandboxId}`.replace(
+				`{${'sandboxId'}}`,
+				encodeURIComponent(String(sandboxId))
+			);
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
 
-		const localVarRequestOptions = {
-			method: 'GET',
-			...baseOptions,
-			...options,
-		};
-		const localVarHeaderParameter = {} as any;
-		const localVarQueryParameter = {} as any;
+			const localVarRequestOptions = {
+				method: 'GET',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
 
-		// authentication bearer required
-		// http bearer authentication required
-		await setBearerAuthToObject(localVarHeaderParameter, configuration);
+			// authentication bearer required
+			// http bearer authentication required
+			await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-		setSearchParams(localVarUrlObj, localVarQueryParameter);
-		const headersFromBaseOptions =
-			baseOptions && baseOptions.headers ? baseOptions.headers : {};
-		localVarRequestOptions.headers = {
-			...localVarHeaderParameter,
-			...headersFromBaseOptions,
-			...options.headers,
-		};
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
 
-		return {
-			url: toPathString(localVarUrlObj),
-			options: localVarRequestOptions,
-		};
-	},
-	/**
-	 *
-	 * @summary Get executors by image ref
-	 * @param {string} ref Image ref
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 */
-	getExecutorsByImageRef: async (
-		ref: string,
-		options: RawAxiosRequestConfig = {}
-	): Promise<RequestArgs> => {
-		// verify required parameter 'ref' is not null or undefined
-		assertParamExists('getExecutorsByImageRef', 'ref', ref);
-		const localVarPath = '/executors/by-image-ref';
-		// use dummy base URL string because the URL constructor only accepts absolute URLs.
-		const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-		let baseOptions;
-		if (configuration) {
-			baseOptions = configuration.baseOptions;
-		}
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+		/**
+		 *
+		 * @summary Get executors by image ref
+		 * @param {string} ref Image ref
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		getExecutorsByImageRef: async (
+			ref: string,
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'ref' is not null or undefined
+			assertParamExists('getExecutorsByImageRef', 'ref', ref);
+			const localVarPath = `/executors/by-image-ref`;
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
 
-		const localVarRequestOptions = {
-			method: 'GET',
-			...baseOptions,
-			...options,
-		};
-		const localVarHeaderParameter = {} as any;
-		const localVarQueryParameter = {} as any;
+			const localVarRequestOptions = {
+				method: 'GET',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
 
-		// authentication bearer required
-		// http bearer authentication required
-		await setBearerAuthToObject(localVarHeaderParameter, configuration);
+			// authentication bearer required
+			// http bearer authentication required
+			await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-		if (ref !== undefined) {
-			localVarQueryParameter['ref'] = ref;
-		}
+			if (ref !== undefined) {
+				localVarQueryParameter['ref'] = ref;
+			}
 
-		setSearchParams(localVarUrlObj, localVarQueryParameter);
-		const headersFromBaseOptions =
-			baseOptions && baseOptions.headers ? baseOptions.headers : {};
-		localVarRequestOptions.headers = {
-			...localVarHeaderParameter,
-			...headersFromBaseOptions,
-			...options.headers,
-		};
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
 
-		return {
-			url: toPathString(localVarUrlObj),
-			options: localVarRequestOptions,
-		};
-	},
-	/**
-	 *
-	 * @summary List all executors
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 */
-	listExecutors: async (
-		options: RawAxiosRequestConfig = {}
-	): Promise<RequestArgs> => {
-		const localVarPath = '/executors';
-		// use dummy base URL string because the URL constructor only accepts absolute URLs.
-		const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-		let baseOptions;
-		if (configuration) {
-			baseOptions = configuration.baseOptions;
-		}
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+		/**
+		 *
+		 * @summary List all executors
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		listExecutors: async (
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			const localVarPath = `/executors`;
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
 
-		const localVarRequestOptions = {
-			method: 'GET',
-			...baseOptions,
-			...options,
-		};
-		const localVarHeaderParameter = {} as any;
-		const localVarQueryParameter = {} as any;
+			const localVarRequestOptions = {
+				method: 'GET',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
 
-		// authentication bearer required
-		// http bearer authentication required
-		await setBearerAuthToObject(localVarHeaderParameter, configuration);
+			// authentication bearer required
+			// http bearer authentication required
+			await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-		setSearchParams(localVarUrlObj, localVarQueryParameter);
-		const headersFromBaseOptions =
-			baseOptions && baseOptions.headers ? baseOptions.headers : {};
-		localVarRequestOptions.headers = {
-			...localVarHeaderParameter,
-			...headersFromBaseOptions,
-			...options.headers,
-		};
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
 
-		return {
-			url: toPathString(localVarUrlObj),
-			options: localVarRequestOptions,
-		};
-	},
-	/**
-	 *
-	 * @summary Update executor scheduling status
-	 * @param {string} id ID of the executor
-	 * @param {UpdateSchedulingBody} updateSchedulingBody
-	 * @param {*} [options] Override http request option.
-	 * @throws {RequiredError}
-	 */
-	updateExecutorScheduling: async (
-		id: string,
-		updateSchedulingBody: UpdateSchedulingBody,
-		options: RawAxiosRequestConfig = {}
-	): Promise<RequestArgs> => {
-		// verify required parameter 'id' is not null or undefined
-		assertParamExists('updateExecutorScheduling', 'id', id);
-		// verify required parameter 'updateSchedulingBody' is not null or undefined
-		assertParamExists(
-			'updateExecutorScheduling',
-			'updateSchedulingBody',
-			updateSchedulingBody
-		);
-		const localVarPath = '/executors/{id}/scheduling'.replace(
-			`{${'id'}}`,
-			encodeURIComponent(String(id))
-		);
-		// use dummy base URL string because the URL constructor only accepts absolute URLs.
-		const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-		let baseOptions;
-		if (configuration) {
-			baseOptions = configuration.baseOptions;
-		}
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+		/**
+		 *
+		 * @summary Update executor scheduling status
+		 * @param {string} id ID of the executor
+		 * @param {UpdateSchedulingBody} updateSchedulingBody
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		updateExecutorScheduling: async (
+			id: string,
+			updateSchedulingBody: UpdateSchedulingBody,
+			options: RawAxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'id' is not null or undefined
+			assertParamExists('updateExecutorScheduling', 'id', id);
+			// verify required parameter 'updateSchedulingBody' is not null or undefined
+			assertParamExists(
+				'updateExecutorScheduling',
+				'updateSchedulingBody',
+				updateSchedulingBody
+			);
+			const localVarPath = `/executors/{id}/scheduling`.replace(
+				`{${'id'}}`,
+				encodeURIComponent(String(id))
+			);
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+			let baseOptions;
+			if (configuration) {
+				baseOptions = configuration.baseOptions;
+			}
 
-		const localVarRequestOptions = {
-			method: 'PATCH',
-			...baseOptions,
-			...options,
-		};
-		const localVarHeaderParameter = {} as any;
-		const localVarQueryParameter = {} as any;
+			const localVarRequestOptions = {
+				method: 'PATCH',
+				...baseOptions,
+				...options,
+			};
+			const localVarHeaderParameter = {} as any;
+			const localVarQueryParameter = {} as any;
 
-		// authentication bearer required
-		// http bearer authentication required
-		await setBearerAuthToObject(localVarHeaderParameter, configuration);
+			// authentication bearer required
+			// http bearer authentication required
+			await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-		localVarHeaderParameter['Content-Type'] = 'application/json';
+			localVarHeaderParameter['Content-Type'] = 'application/json';
 
-		setSearchParams(localVarUrlObj, localVarQueryParameter);
-		const headersFromBaseOptions =
-			baseOptions && baseOptions.headers ? baseOptions.headers : {};
-		localVarRequestOptions.headers = {
-			...localVarHeaderParameter,
-			...headersFromBaseOptions,
-			...options.headers,
-		};
-		localVarRequestOptions.data = serializeDataIfNeeded(
-			updateSchedulingBody,
-			localVarRequestOptions,
-			configuration
-		);
+			setSearchParams(localVarUrlObj, localVarQueryParameter);
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers ? baseOptions.headers : {};
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers,
+			};
+			localVarRequestOptions.data = serializeDataIfNeeded(
+				updateSchedulingBody,
+				localVarRequestOptions,
+				configuration
+			);
 
-		return {
-			url: toPathString(localVarUrlObj),
-			options: localVarRequestOptions,
-		};
-	},
-});
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions,
+			};
+		},
+	};
+};
 
 /**
  * ExecutorsApi - functional programming interface
  * @export
  */
-export const ExecutorsApiFp = (configuration?: Configuration) => {
+export const ExecutorsApiFp = function (configuration?: Configuration) {
 	const localVarAxiosParamCreator =
 		ExecutorsApiAxiosParamCreator(configuration);
 	return {
@@ -490,11 +506,11 @@ export const ExecutorsApiFp = (configuration?: Configuration) => {
  * ExecutorsApi - factory interface
  * @export
  */
-export const ExecutorsApiFactory = (
+export const ExecutorsApiFactory = function (
 	configuration?: Configuration,
 	basePath?: string,
 	axios?: AxiosInstance
-) => {
+) {
 	const localVarFp = ExecutorsApiFp(configuration);
 	return {
 		/**

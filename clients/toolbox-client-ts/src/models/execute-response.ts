@@ -14,11 +14,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/*
- * Copyright 2025 Snapflow
- * SPDX-License-Identifier: Apache-2.0
- */
-
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -44,7 +39,7 @@ export interface ExecuteResponse {
 	 * @type {number}
 	 * @memberof ExecuteResponse
 	 */
-	code: number;
+	exitCode: number;
 	/**
 	 *
 	 * @type {string}

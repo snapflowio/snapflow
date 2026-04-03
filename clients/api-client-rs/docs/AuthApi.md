@@ -8,6 +8,7 @@ Method | HTTP request | Description
 [**forgot_password**](AuthApi.md#forgot_password) | **POST** /auth/forgot-password | Request password reset
 [**get_jwks**](AuthApi.md#get_jwks) | **GET** /.well-known/jwks.json | Get JSON Web Key Set
 [**get_session**](AuthApi.md#get_session) | **GET** /auth/session | Get current session
+[**refresh_token**](AuthApi.md#refresh_token) | **POST** /auth/refresh | Refresh access token
 [**reset_password**](AuthApi.md#reset_password) | **POST** /auth/reset-password | Reset password
 [**send_verification_email**](AuthApi.md#send_verification_email) | **POST** /auth/send-verification-email | Resend verification email
 [**sign_in**](AuthApi.md#sign_in) | **POST** /auth/sign-in | Sign in
@@ -122,6 +123,34 @@ This endpoint does not need any parameter.
 ### HTTP request headers
 
 - **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## refresh_token
+
+> models::Auth refresh_token(refresh_token)
+Refresh access token
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**refresh_token** | [**RefreshToken**](RefreshToken.md) |  | [required] |
+
+### Return type
+
+[**models::Auth**](Auth.md)
+
+### Authorization
+
+[bearer](../README.md#bearer)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

@@ -225,7 +225,7 @@ generate-api-client-ts: openapi-api
     bunx openapi-generator-cli generate \
         -i dist/openapi/api.json \
         -g typescript-axios \
-        --additional-properties=supportsES6=true,typescriptThreePlus=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=models,useTags=true,enumPropertyNaming=UPPERCASE \
+        --additional-properties=supportsES6=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=models,useTags=true,enumPropertyNaming=UPPERCASE,licenseName=Apache-2.0 \
         --type-mappings=DateTime=Date \
         --skip-validate-spec \
         -o clients/api-client-ts/src
@@ -235,7 +235,7 @@ generate-toolbox-client-ts: openapi-node
     bunx openapi-generator-cli generate \
         -i dist/openapi/node.json \
         -g typescript-axios \
-        --additional-properties=supportsES6=true,typescriptThreePlus=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=models,useTags=true,enumPropertyNaming=UPPERCASE \
+        --additional-properties=supportsES6=true,withSeparateModelsAndApi=true,apiPackage=api,modelPackage=models,useTags=true,enumPropertyNaming=UPPERCASE,licenseName=Apache-2.0 \
         --type-mappings=DateTime=Date \
         --skip-validate-spec \
         -o clients/toolbox-client-ts/src
@@ -245,7 +245,7 @@ generate-api-client-rs: openapi-api
     bunx openapi-generator-cli generate \
         -i dist/openapi/api.json \
         -g rust \
-        --additional-properties=packageName=snapflow-api-client,packageVersion=0.1.0,library=reqwest,supportAsync=true,enumClassPrefix=true \
+        --additional-properties=packageName=snapflow-api-client,packageVersion=0.1.0,library=reqwest,supportAsync=true,enumClassPrefix=true,licenseName=Apache-2.0 \
         --skip-validate-spec \
         -o clients/api-client-rs
 
@@ -254,12 +254,13 @@ generate-executor-client-rs: openapi-executor
     bunx openapi-generator-cli generate \
         -i dist/openapi/executor.json \
         -g rust \
-        --additional-properties=packageName=snapflow-executor-client,packageVersion=0.1.0,library=reqwest,supportAsync=true,enumClassPrefix=true \
+        --additional-properties=packageName=snapflow-executor-client,packageVersion=0.1.0,library=reqwest,supportAsync=true,enumClassPrefix=true,licenseName=Apache-2.0 \
         --skip-validate-spec \
         -o clients/executor-client-rs
 
 [group('codegen')]
 generate-all: generate-api-client-ts generate-toolbox-client-ts generate-api-client-rs generate-executor-client-rs
+    just license-fix
 
 # --- Setup ---
 
