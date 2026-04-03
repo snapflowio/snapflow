@@ -1,0 +1,82 @@
+[package]
+name = "executor"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# Web framework
+axum = { workspace = true, features = ["macros"] }
+tower = { workspace = true }
+tower-http = { workspace = true }
+hyper = { workspace = true }
+hyper-util = { workspace = true }
+http-body-util = { workspace = true }
+
+# Async runtime
+tokio = { workspace = true }
+tokio-util = "0.7"
+async-trait = { workspace = true }
+futures-util = { workspace = true }
+tokio-tungstenite = { workspace = true }
+async-stream = "0.3"
+tungstenite = "0.26"
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Configuration
+envconfig = "0.11.1"
+dotenvy = { workspace = true }
+
+# Error handling
+anyhow = { workspace = true }
+
+# Logging and tracing
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true, features = ["json"] }
+
+# Data structures
+dashmap = { workspace = true }
+chrono = { workspace = true }
+base64 = { workspace = true }
+bytes = { workspace = true }
+regex = { workspace = true }
+
+# OpenAPI and validation
+utoipa = { workspace = true, features = ["chrono"] }
+validator = { workspace = true }
+
+# Cryptography
+md5 = { workspace = true }
+
+# Docker
+bollard = { workspace = true }
+
+# AWS
+aws-sdk-s3 = { workspace = true }
+aws-config = { workspace = true }
+aws-credential-types = { workspace = true }
+aws-types = "1"
+
+# OS and system
+nix = { workspace = true }
+tempfile = { workspace = true }
+rust-embed = { workspace = true }
+sysinfo = "0.33"
+tar = "0.4"
+
+# Metrics
+prometheus = "0.13"
+
+# TLS
+axum-server = { version = "0.7", features = ["tls-rustls"] }
+
+# HTTP client
+reqwest = { workspace = true }
+
+# Internal crates
+common-rs = { workspace = true }
+snapflow-models = { workspace = true, features = ["utoipa"] }
+snapflow-errors = { workspace = true, features = ["utoipa"] }
+snapflow-storage = { workspace = true }

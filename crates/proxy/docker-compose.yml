@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  proxy:
+    build:
+      context: ../..
+      dockerfile: crates/proxy/Dockerfile
+    container_name: snapflow-proxy
+    restart: unless-stopped
+    ports:
+      - "${PROXY_PORT:-4000}:4000"
+    environment:
+      # Proxy Configuration
+      PROXY_PORT: ${PROXY_PORT:-4000}
+      PROXY_DOMAIN: ${PROXY_DOMAIN:-proxy.localhost:4000}
+      PROXY_PROTOCOL: ${PROXY_PROTOCOL:-http}
+      PROXY_API_KEY: ${PROXY_API_KEY:-super_secret_key}
+
+      # TLS Configuration (Optional)
+      ENABLE_TLS: ${ENABLE_TLS:-false}
+      TLS_CERT_FILE: ${TLS_CERT_FILE:-}
+      TLS_KEY_FILE: ${TLS_KEY_FILE:-}
+
+      # Snapflow API
+      SNAPFLOW_API_URL: ${SNAPFLOW_API_URL:-http://localhost:8081}
+
+      # Redis Configuration (Optional)
+      REDIS_HOST: ${REDIS_HOST:-}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+    volumes:
+      # Mount TLS certificates if needed
+      - ${TLS_CERT_PATH:-./certs}:/app/certs:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - snapflow
+
+networks:
+  snapflow:
+    external: true

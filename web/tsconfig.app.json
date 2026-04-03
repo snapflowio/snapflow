@@ -1,0 +1,44 @@
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"jsx": "react-jsx",
+		"allowJs": false,
+		"strict": true,
+		"esModuleInterop": false,
+		"allowSyntheticDefaultImports": true,
+		"noFallthroughCasesInSwitch": true,
+		"forceConsistentCasingInFileNames": true,
+		"incremental": true,
+		"outDir": "../dist/out-tsc",
+		"noEmit": true,
+		"allowImportingTsExtensions": true,
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["src/*"],
+			"@snapflow/api-client": ["../clients/api-client-ts/src/index.ts"],
+			"@snapflow/toolbox-client": ["../clients/toolbox-client-ts/src/index.ts"],
+			"@snapflow/sdk": ["../sdk/typescript-sdk/src/index.ts"]
+		},
+		"skipLibCheck": true
+	},
+	"include": [
+		"src/**/*.js",
+		"src/**/*.jsx",
+		"src/**/*.ts",
+		"src/**/*.tsx",
+		"vite.config.mts"
+	],
+	"exclude": [
+		"src/**/*.spec.ts",
+		"src/**/*.test.ts",
+		"src/**/*.spec.tsx",
+		"src/**/*.test.tsx",
+		"src/**/*.spec.js",
+		"src/**/*.test.js",
+		"src/**/*.spec.jsx",
+		"src/**/*.test.jsx"
+	]
+}

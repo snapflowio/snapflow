@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  executor:
+    build:
+      context: ../..
+      dockerfile: apps/executor/Dockerfile
+    container_name: snapflow-executor
+    restart: unless-stopped
+    ports:
+      - "${EXECUTOR_PORT:-8083}:8083"
+    environment:
+      # API Configuration
+      API_TOKEN: ${API_TOKEN:-super_secret_executor_token}
+      API_PORT: ${API_PORT:-8083}
+
+      # Cache Configuration
+      CACHE_RETENTION_DAYS: ${CACHE_RETENTION_DAYS:-7}
+
+      # Environment
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+
+      # Container Configuration
+      CONTAINER_RUNTIME: ${CONTAINER_RUNTIME:-docker}
+      CONTAINER_NETWORK: ${CONTAINER_NETWORK:-snapflow}
+
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      LOG_FILE_PATH: ${LOG_FILE_PATH:-/app/logs/executor.log}
+
+      # R2/S3 Object Storage Configuration
+      R2_REGION: ${R2_REGION:-auto}
+      R2_ENDPOINT_URL: ${R2_ENDPOINT_URL}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY}
+      R2_DEFAULT_BUCKET: ${R2_DEFAULT_BUCKET:-snapflow}
+    volumes:
+      # Mount Docker socket for container management
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Mount logs directory
+      - ${EXECUTOR_LOGS_PATH:-./logs}:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - snapflow
+
+networks:
+  snapflow:
+    external: true

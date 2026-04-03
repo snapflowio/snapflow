@@ -1,0 +1,85 @@
+services:
+  devcontainer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/workspaces/snapflow:cached
+      - bun-cache:/home/vscode/.bun/install/cache
+      - cargo-cache:/home/vscode/.cargo/registry
+    ports:
+      - "3000:3000"
+      - "4000:4000"
+      - "8081:8081"
+      - "5432:5432"
+      - "6379:6379"
+      - "8001:8001"
+      - "1025:1025"
+      - "8025:8025"
+      - "5001:5001"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    command: sleep infinity
+
+  postgres:
+    image: postgres:17-alpine
+    network_mode: service:devcontainer
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ../dev/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    environment:
+      POSTGRES_USER: snapflow
+      POSTGRES_PASSWORD: snapflow
+      POSTGRES_DB: snapflow
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U snapflow"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis/redis-stack:latest
+    network_mode: service:devcontainer
+    volumes:
+      - redis-data:/data
+      - ../dev/redis/redis.conf:/redis-stack.conf:ro
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  mailpit:
+    image: axllent/mailpit:latest
+    network_mode: service:devcontainer
+    volumes:
+      - mailpit-data:/data
+    environment:
+      MP_DATABASE: /data/mailpit.db
+    healthcheck:
+      test:
+        ["CMD", "wget", "--spider", "-q", "http://localhost:8025/api/v1/info"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  registry:
+    image: registry:2
+    network_mode: service:devcontainer
+    volumes:
+      - registry-data:/var/lib/registry
+      - ../dev/registry/config.yml:/etc/docker/registry/config.yml:ro
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5001/v2/"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  postgres-data:
+  redis-data:
+  mailpit-data:
+  registry-data:
+  bun-cache:
+  cargo-cache:

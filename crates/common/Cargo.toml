@@ -1,0 +1,24 @@
+[package]
+name = "common-rs"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+axum = { workspace = true }
+hyper = { workspace = true }
+hyper-util = { workspace = true }
+http = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+dashmap = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+uuid = { workspace = true }
+redis = { workspace = true, optional = true }
+governor = { version = "0.10", features = ["dashmap", "std"], optional = true }
+
+[features]
+default = []
+redis = ["dep:redis"]
+rate-limit = ["dep:governor"]

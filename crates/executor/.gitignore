@@ -1,0 +1,2 @@
+src/node/static/*
+!*.gitkeep

@@ -1,0 +1,10 @@
+* @lawless
+/web/ @lawless
+/crates/ @lawless
+/docs/ @lawless
+/sdk/ @lawless
+/clients/ @lawless
+/Dockerfile @lawless
+/docker-compose.yml @lawless
+/.github/workflows/ @lawless
+/crates/api/migrations/ @lawless

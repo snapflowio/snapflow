@@ -1,0 +1,529 @@
+@import "tailwindcss";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+
+@source "../app/**/*.{js,ts,jsx,tsx,mdx}";
+@source "../components/**/*.{js,ts,jsx,tsx,mdx}";
+@source "../content/**/*.{js,ts,jsx,tsx,mdx}";
+@source "../mdx-components.tsx";
+@source "../node_modules/fumadocs-ui/dist/**/*.js";
+
+/* ───────────────────────────────────────────────
+   Base / Reset
+   ─────────────────────────────────────────────── */
+
+html,
+body {
+  overscroll-behavior: none;
+  padding-right: 0 !important;
+  margin-right: 0 !important;
+}
+
+video {
+  outline: none !important;
+}
+
+/* ───────────────────────────────────────────────
+   Theme Variables
+   ─────────────────────────────────────────────── */
+
+@theme {
+  --color-fd-primary: var(--color-fd-foreground);
+}
+
+:root {
+  --fd-border: transparent !important;
+  --fd-border-sidebar: transparent !important;
+  --fd-nav-height: 93px;
+  --spacing-fd-container: 1400px;
+  --edge-gutter: max(1rem, calc((100vw - var(--spacing-fd-container)) / 2));
+  --sidebar-shift: 90px;
+  --sidebar-offset: max(0px, calc(var(--edge-gutter) - var(--sidebar-shift)));
+  --toc-shift: 90px;
+  --toc-offset: max(0px, calc(var(--edge-gutter) - var(--toc-shift)));
+  --content-gap: 1.75rem;
+}
+
+.dark {
+  --color-fd-background: hsl(0, 0%, 10.6%) !important;
+  --color-fd-card: hsl(0, 0%, 13%) !important;
+  --color-fd-popover: hsl(0, 0%, 14%) !important;
+  --color-fd-secondary: hsl(0, 0%, 15.5%) !important;
+  --color-fd-muted: hsl(0, 0%, 18%) !important;
+}
+
+/* ───────────────────────────────────────────────
+   Typography
+   ─────────────────────────────────────────────── */
+
+.font-sans {
+  font-family:
+    var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.font-mono {
+  font-family:
+    var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+code,
+pre,
+pre code {
+  font-family:
+    var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+:not(pre) > code {
+  padding: 0.2em 0.4em;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+  font-weight: 500;
+}
+
+:root:not(.dark) :not(pre) > code {
+  background-color: rgb(243 244 246);
+  color: rgb(220 38 38);
+  border: 1px solid rgb(229 231 235);
+}
+
+.dark :not(pre) > code {
+  background-color: rgb(31 41 55);
+  color: rgb(248 113 113);
+  border: 1px solid rgb(55 65 81);
+}
+
+pre {
+  font-size: 0.875rem;
+  line-height: 1.7;
+  tab-size: 2;
+  -webkit-overflow-scrolling: touch;
+}
+
+pre code {
+  display: block;
+  width: fit-content;
+  min-width: 100%;
+}
+
+pre code .line {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.text-highlight {
+  color: var(--color-fd-primary);
+}
+
+.highlight-markers li::marker {
+  color: var(--color-fd-primary);
+}
+
+/* ───────────────────────────────────────────────
+   Navbar
+   ─────────────────────────────────────────────── */
+
+:root:not(.dark) nav {
+  background-color: hsla(0, 0%, 96%, 0.85) !important;
+}
+
+:root.dark nav {
+  background-color: hsla(0, 0%, 10.6%, 0.92) !important;
+}
+
+:root.dark nav button[type="button"] {
+  background-color: hsla(0, 0%, 15%, 0.85) !important;
+  backdrop-filter: blur(33px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(33px) saturate(180%) !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+:root.dark nav button[type="button"] kbd {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* ───────────────────────────────────────────────
+   Layout
+   ─────────────────────────────────────────────── */
+
+@media (max-width: 1023px) {
+  #nd-docs-layout {
+    margin-top: -25px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  #nd-docs-layout {
+    --fd-toc-popover-height: 0px !important;
+  }
+
+  [data-toc-popover] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --fd-banner-height: 93px !important;
+  }
+
+  #nd-docs-layout {
+    --fd-docs-height: calc(100dvh - 93px) !important;
+    --fd-sidebar-width: 300px !important;
+    margin-left: var(--sidebar-offset) !important;
+    margin-right: var(--toc-offset) !important;
+  }
+
+  #nd-docs-layout > header {
+    display: none !important;
+  }
+}
+
+main[data-main] {
+  max-width: var(--spacing-fd-container, 1400px);
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 1rem;
+  padding-left: var(--content-gap);
+  padding-right: var(--content-gap);
+  order: 1 !important;
+}
+
+@media (max-width: 768px) {
+  main[data-main] {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+[data-content] {
+  padding-top: 1.5rem !important;
+  padding-bottom: 4rem;
+}
+
+main article,
+.docs-page main {
+  padding-top: 1.5rem !important;
+  padding-bottom: 4rem;
+}
+
+[data-docs-page] {
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 1.5rem !important;
+}
+
+#nd-toc a[style*="padding-inline-start"] {
+  border-left: none !important;
+}
+
+/* ───────────────────────────────────────────────
+   Sidebar — Container & Background
+   ─────────────────────────────────────────────── */
+
+[data-sidebar-container],
+#nd-sidebar {
+  background: transparent !important;
+  border: none !important;
+  --color-fd-muted: transparent !important;
+  --color-fd-card: transparent !important;
+  --color-fd-secondary: transparent !important;
+}
+
+aside[data-sidebar],
+aside#nd-sidebar {
+  background: transparent !important;
+  border: none !important;
+}
+
+[data-sidebar-placeholder] {
+  background: transparent !important;
+}
+
+[data-sidebar-panel] {
+  display: none !important;
+}
+
+[data-sidebar-container],
+aside[data-sidebar],
+[data-sidebar],
+[data-sidebar] *,
+#nd-sidebar,
+#nd-sidebar * {
+  border: none !important;
+}
+
+.dark #nd-sidebar,
+.dark [data-sidebar-container],
+.dark aside[data-sidebar] {
+  --color-fd-muted: transparent !important;
+  --color-fd-secondary: transparent !important;
+  background: transparent !important;
+}
+
+[data-sidebar],
+[data-sidebar] *,
+[data-sidebar-viewport],
+[data-sidebar-viewport] * {
+  writing-mode: horizontal-tb !important;
+}
+
+aside[data-sidebar] > div:first-child {
+  padding-top: 0;
+}
+
+/* ───────────────────────────────────────────────
+   Sidebar — Spacing
+   ─────────────────────────────────────────────── */
+
+[data-sidebar-viewport],
+#nd-sidebar > div {
+  padding: 0.5rem 12px 12px;
+  background: transparent !important;
+}
+
+[data-sidebar-viewport] > * {
+  margin-bottom: 0.0625rem;
+}
+
+[data-sidebar-viewport] > *:last-child {
+  margin-bottom: 0;
+}
+
+[data-sidebar-viewport] ul {
+  margin: 0;
+  padding: 0;
+}
+
+#nd-sidebar ul li {
+  margin-bottom: 0.0625rem !important;
+}
+
+#nd-sidebar ul li:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* ───────────────────────────────────────────────
+   Sidebar — Item Styling
+   ─────────────────────────────────────────────── */
+
+html #nd-sidebar a,
+html #nd-sidebar button:not([aria-label*="ollapse"]):not([aria-label*="xpand"]) {
+  font-size: 0.9375rem !important;
+  line-height: 1.4 !important;
+  padding: 0.5rem 0.75rem !important;
+  font-weight: 400 !important;
+  border-radius: 0.75rem !important;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+}
+
+html.dark #nd-sidebar a,
+html.dark #nd-sidebar button:not([aria-label*="ollapse"]):not([aria-label*="xpand"]) {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+html:not(.dark) #nd-sidebar a,
+html:not(.dark) #nd-sidebar button:not([aria-label*="ollapse"]):not([aria-label*="xpand"]) {
+  color: rgba(0, 0, 0, 0.6) !important;
+}
+
+#nd-sidebar svg {
+  display: inline-block !important;
+  opacity: 0.6 !important;
+  flex-shrink: 0 !important;
+  width: 0.75rem !important;
+  height: 0.75rem !important;
+}
+
+#nd-sidebar button[aria-label*="ollapse"],
+#nd-sidebar button[aria-label*="xpand"] {
+  display: flex !important;
+  opacity: 1 !important;
+  padding: 0.25rem !important;
+}
+
+/* ───────────────────────────────────────────────
+   Sidebar — Section Headers
+   ─────────────────────────────────────────────── */
+
+[data-sidebar-viewport] [data-separator],
+#nd-sidebar [data-separator],
+#nd-sidebar p {
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* ───────────────────────────────────────────────
+   Sidebar — Active State
+   ─────────────────────────────────────────────── */
+
+#nd-sidebar a[data-active="true"],
+#nd-sidebar button[data-active="true"],
+#nd-sidebar a.bg-fd-primary\/10,
+#nd-sidebar a.text-fd-primary,
+#nd-sidebar a[class*="bg-fd-primary"],
+#nd-sidebar a[class*="text-fd-primary"],
+#nd-sidebar a.bg-emerald-50\/80,
+#nd-sidebar a.text-emerald-600,
+#nd-sidebar a[class*="bg-emerald"],
+#nd-sidebar a[class*="text-emerald"] {
+  background-image: none !important;
+}
+
+html.dark #nd-sidebar a[data-active="true"],
+html.dark #nd-sidebar button[data-active="true"],
+html.dark #nd-sidebar a.bg-fd-primary\/10,
+html.dark #nd-sidebar a.text-fd-primary,
+html.dark #nd-sidebar a[class*="bg-fd-primary"],
+html.dark #nd-sidebar a[class*="text-fd-primary"],
+html.dark #nd-sidebar a.bg-emerald-50\/80,
+html.dark #nd-sidebar a.text-emerald-600,
+html.dark #nd-sidebar a[class*="bg-emerald"],
+html.dark #nd-sidebar a[class*="text-emerald"] {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  color: rgba(255, 255, 255, 1) !important;
+}
+
+html:not(.dark) #nd-sidebar a[data-active="true"],
+html:not(.dark) #nd-sidebar button[data-active="true"],
+html:not(.dark) #nd-sidebar a.bg-fd-primary\/10,
+html:not(.dark) #nd-sidebar a.text-fd-primary,
+html:not(.dark) #nd-sidebar a[class*="bg-fd-primary"],
+html:not(.dark) #nd-sidebar a[class*="text-fd-primary"],
+html:not(.dark) #nd-sidebar a.bg-emerald-50\/80,
+html:not(.dark) #nd-sidebar a.text-emerald-600,
+html:not(.dark) #nd-sidebar a[class*="bg-emerald"],
+html:not(.dark) #nd-sidebar a[class*="text-emerald"] {
+  background-color: rgba(0, 0, 0, 0.07) !important;
+  color: rgba(0, 0, 0, 0.9) !important;
+}
+
+/* ───────────────────────────────────────────────
+   Sidebar — Hover State
+   ─────────────────────────────────────────────── */
+
+html.dark #nd-sidebar a:hover:not([data-active="true"]),
+html.dark #nd-sidebar button:hover:not([data-active="true"]) {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+html:not(.dark) #nd-sidebar a:hover:not([data-active="true"]),
+html:not(.dark) #nd-sidebar button:hover:not([data-active="true"]) {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+html.dark #nd-sidebar a.bg-emerald-50\/80:hover,
+html.dark #nd-sidebar a[class*="bg-emerald"]:hover,
+html.dark #nd-sidebar a[data-active="true"]:hover,
+html.dark #nd-sidebar button[data-active="true"]:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  color: rgba(255, 255, 255, 1) !important;
+}
+
+html:not(.dark) #nd-sidebar a.bg-emerald-50\/80:hover,
+html:not(.dark) #nd-sidebar a[class*="bg-emerald"]:hover,
+html:not(.dark) #nd-sidebar a[data-active="true"]:hover,
+html:not(.dark) #nd-sidebar button[data-active="true"]:hover {
+  background-color: rgba(0, 0, 0, 0.07) !important;
+  color: rgba(0, 0, 0, 0.9) !important;
+}
+
+/* ───────────────────────────────────────────────
+   Sidebar — Hidden Elements
+   ─────────────────────────────────────────────── */
+
+[data-sidebar] [data-search],
+[data-sidebar] .search-toggle,
+#nd-sidebar [data-search],
+#nd-sidebar .search-toggle,
+[data-sidebar-viewport] [data-search],
+[data-sidebar-viewport] button[data-search],
+aside[data-sidebar] [role="button"]:has([data-search]),
+aside[data-sidebar] > div > button:first-child,
+#nd-sidebar > div > button:first-child,
+[data-sidebar] a[href*="Snapflow.io"],
+#nd-sidebar a[href*="Snapflow.io"],
+[data-sidebar-viewport] a[href*="Snapflow.io"],
+aside[data-sidebar]
+  > div:first-child
+  > button:not([aria-label="Collapse"]):not([aria-label="Expand"]),
+#nd-sidebar > div:first-child > button:not([aria-label="Collapse"]):not([aria-label="Expand"]),
+aside[data-sidebar] > button:first-of-type:not([aria-label="Collapse"]):not([aria-label="Expand"]),
+[data-sidebar]
+  > button[type="button"]:first-of-type:not([aria-label="Collapse"]):not([aria-label="Expand"]),
+button[data-collapse]:not([aria-label="Collapse"]):not([aria-label="Expand"]),
+[data-sidebar-header] button,
+aside[data-sidebar] [data-theme-toggle],
+[data-sidebar-footer],
+[data-sidebar] footer,
+footer button[aria-label*="heme"],
+aside[data-sidebar] > div:last-child:has(button[aria-label*="heme"]),
+aside[data-sidebar] button[aria-label*="heme"],
+[data-sidebar] button[aria-label*="Theme"],
+aside[data-sidebar] > *:last-child button,
+[data-sidebar-viewport] ~ *,
+aside[data-sidebar] > div:not([data-sidebar-viewport]),
+aside[data-sidebar] svg[class*="sun"],
+aside[data-sidebar] svg[class*="moon"],
+aside[data-sidebar] button[type="button"]:last-child,
+aside button:has(svg:only-child),
+[data-sidebar] div:has(> button[type="button"]:only-child:last-child),
+aside[data-sidebar] > *:not([data-sidebar-viewport]) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+}
+
+aside[data-sidebar] [data-sidebar-viewport] ~ * {
+  display: none !important;
+}
+
+@media (min-width: 1025px) {
+  [data-sidebar-container] > button,
+  [data-sidebar-container] [data-toggle],
+  aside[data-sidebar] [data-sidebar-toggle],
+  button[data-sidebar-toggle],
+  nav button[data-sidebar-toggle],
+  button[aria-label="Toggle Sidebar"],
+  button[aria-label="Collapse Sidebar"],
+  [data-sidebar-header],
+  [data-sidebar] [data-title],
+  aside[data-sidebar] a[href="/"],
+  aside[data-sidebar] a[href="/"] img,
+  aside[data-sidebar] > a:first-child,
+  aside[data-sidebar] > div > a:first-child,
+  aside[data-sidebar] img[alt="Snapflow"],
+  aside[data-sidebar] svg[aria-label="Snapflow"],
+  #nd-sidebar a[href="/"],
+  #nd-sidebar a[href="/"] img,
+  #nd-sidebar a[href="/"] svg,
+  #nd-sidebar > a:first-child,
+  #nd-sidebar > div:first-child > a:first-child,
+  #nd-sidebar img[alt="Snapflow"],
+  #nd-sidebar svg[aria-label="Snapflow"],
+  #nd-sidebar > footer,
+  #nd-sidebar footer,
+  aside#nd-sidebar > *:last-child:not(div),
+  #nd-sidebar > button:last-child,
+  #nd-sidebar button[aria-label*="theme" i],
+  #nd-sidebar button[aria-label*="Theme"],
+  #nd-sidebar > div:last-child > button {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+  }
+}

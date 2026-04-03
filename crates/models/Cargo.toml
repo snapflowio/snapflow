@@ -1,0 +1,19 @@
+[package]
+name = "snapflow-models"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+chrono = { workspace = true }
+
+sqlx = { version = "0.8", features = ["postgres"], optional = true }
+strum = { version = "0.26", features = ["derive"], optional = true }
+utoipa = { workspace = true, optional = true }
+
+[features]
+default = []
+sqlx = ["dep:sqlx"]
+strum = ["dep:strum"]
+utoipa = ["dep:utoipa"]

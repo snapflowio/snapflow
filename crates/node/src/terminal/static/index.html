@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Snapflow Terminal</title>
+        <link rel="stylesheet" href="/xterm.css" />
+        <script src="/xterm.js"></script>
+        <script src="/xterm-addon-fit.js"></script>
+        <style>
+            :root {
+                --bg: #1b1b1b;
+                --surface-1: #1e1e1e;
+                --surface-4: #292929;
+                --surface-5: #363636;
+                --surface-6: #454545;
+                --surface-active: #2c2c2c;
+                --text-primary: #e6e6e6;
+                --text-secondary: #cccccc;
+                --text-muted: #787878;
+                --text-icon: #939393;
+                --border: #333333;
+                --border-1: #3d3d3d;
+                --font-ui: system-ui, "Segoe UI", Roboto, "Helvetica Neue",
+                    Arial, sans-serif;
+                --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco,
+                    Consolas, "Liberation Mono", monospace;
+            }
+
+            *,
+            *::before,
+            *::after {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            html,
+            body {
+                height: 100%;
+                background: var(--bg);
+                color: var(--text-primary);
+                font-family: var(--font-ui);
+                overflow: hidden;
+            }
+
+            #app {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
+
+            #toolbar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                height: 38px;
+                min-height: 38px;
+                padding: 0 10px;
+                background: var(--surface-1);
+                border-bottom: 1px solid var(--border);
+                user-select: none;
+                -webkit-user-select: none;
+            }
+
+            #toolbar-left {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            #toolbar-right {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            #session-label {
+                font-family: var(--font-mono);
+                font-size: 11px;
+                color: var(--text-muted);
+                letter-spacing: 0.01em;
+            }
+
+            .toolbar-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+                height: 26px;
+                padding: 0 8px;
+                font-family: var(--font-ui);
+                font-size: 11px;
+                font-weight: 500;
+                color: var(--text-secondary);
+                background: var(--surface-4);
+                border: 1px solid var(--border);
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background 0.15s, color 0.15s, border-color 0.15s;
+                outline: none;
+            }
+
+            .toolbar-btn:hover {
+                background: var(--surface-6);
+                color: var(--text-primary);
+                border-color: var(--border-1);
+            }
+
+            .toolbar-btn:active {
+                background: var(--surface-active);
+            }
+
+            .toolbar-btn svg {
+                width: 13px;
+                height: 13px;
+                flex-shrink: 0;
+            }
+
+            .toolbar-dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: #787878;
+                flex-shrink: 0;
+                transition: background 0.3s;
+            }
+
+            .toolbar-dot.connected {
+                background: #22c55e;
+            }
+
+            #terminal {
+                flex: 1;
+                min-height: 0;
+                background: var(--bg);
+            }
+
+            .xterm {
+                padding: 6px 4px 4px 8px;
+                background: var(--bg);
+            }
+
+            .xterm-viewport {
+                background-color: var(--bg) !important;
+            }
+
+            .xterm-screen {
+                background-color: var(--bg);
+            }
+
+            #toast {
+                position: fixed;
+                bottom: 16px;
+                left: 50%;
+                transform: translateX(-50%) translateY(8px);
+                background: var(--surface-4);
+                color: var(--text-primary);
+                border: 1px solid var(--border);
+                padding: 5px 14px;
+                border-radius: 5px;
+                font-family: var(--font-ui);
+                font-size: 12px;
+                opacity: 0;
+                transition: opacity 0.2s, transform 0.2s;
+                pointer-events: none;
+                z-index: 50;
+            }
+
+            #toast.visible {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+
+            ::-webkit-scrollbar {
+                width: 8px;
+            }
+            ::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: var(--surface-5);
+                border-radius: 4px;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: var(--surface-6);
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+            <div id="toolbar">
+                <div id="toolbar-left">
+                    <span class="toolbar-dot" id="status-dot"></span>
+                    <span id="session-label"></span>
+                </div>
+                <div id="toolbar-right">
+                    <button class="toolbar-btn" id="btn-share" title="Copy share link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                        </svg>
+                        Share
+                    </button>
+                    <button class="toolbar-btn" id="btn-new" title="New terminal session">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        New
+                    </button>
+                </div>
+            </div>
+            <div id="terminal"></div>
+        </div>
+        <div id="toast"></div>
+
+        <script>
+            function generateId() {
+                const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+                let id = "";
+                for (let i = 0; i < 8; i++)
+                    id += chars[Math.floor(Math.random() * chars.length)];
+                return id;
+            }
+
+            function showToast(msg) {
+                const t = document.getElementById("toast");
+                t.textContent = msg;
+                t.classList.add("visible");
+                setTimeout(() => t.classList.remove("visible"), 1500);
+            }
+
+            const params = new URLSearchParams(window.location.search);
+            let sessionId = params.get("sessionId");
+            if (!sessionId) {
+                sessionId = "term-" + generateId();
+                params.set("sessionId", sessionId);
+                history.replaceState(null, "", "?" + params.toString());
+            }
+
+            document.title = "Terminal \u00b7 " + sessionId;
+            document.getElementById("session-label").textContent = sessionId;
+
+            document
+                .getElementById("btn-share")
+                .addEventListener("click", () => {
+                    navigator.clipboard.writeText(window.location.href).then(
+                        () => showToast("Link copied"),
+                        () => showToast("Failed to copy"),
+                    );
+                });
+
+            document
+                .getElementById("btn-new")
+                .addEventListener("click", () => {
+                    window.open("?" + new URLSearchParams().toString(), "_blank");
+                });
+
+            const term = new Terminal({
+                cursorBlink: true,
+                fontSize: 14,
+                fontFamily:
+                    "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+                theme: {
+                    background: "#1b1b1b",
+                    foreground: "#e6e6e6",
+                    cursor: "#e6e6e6",
+                    cursorAccent: "#1b1b1b",
+                    selectionBackground: "rgba(75, 131, 247, 0.35)",
+                    black: "#1b1b1b",
+                    red: "#ef4444",
+                    green: "#22c55e",
+                    yellow: "#fcd34d",
+                    blue: "#33b4ff",
+                    magenta: "#8e4cfb",
+                    cyan: "#5eead4",
+                    white: "#e6e6e6",
+                    brightBlack: "#787878",
+                    brightRed: "#f87171",
+                    brightGreen: "#86efac",
+                    brightYellow: "#fde68a",
+                    brightBlue: "#93c5fd",
+                    brightMagenta: "#d8b4fe",
+                    brightCyan: "#7dd3fc",
+                    brightWhite: "#ffffff",
+                },
+            });
+
+            const fitAddon = new FitAddon.FitAddon();
+            term.loadAddon(fitAddon);
+            term.open(document.getElementById("terminal"));
+            fitAddon.fit();
+
+            const dot = document.getElementById("status-dot");
+
+            function isControlMessage(data) {
+                return (
+                    typeof data === "string" &&
+                    data.charCodeAt(0) === 123 &&
+                    data.includes('"type":"control"')
+                );
+            }
+
+            function sendResize(ws, rows, cols) {
+                ws.send(
+                    JSON.stringify({ type: "resize", rows: rows, cols: cols }),
+                );
+            }
+
+            const proto =
+                window.location.protocol === "https:" ? "wss:" : "ws:";
+            const socket = new WebSocket(
+                `${proto}//${window.location.host}/ws?sessionId=${encodeURIComponent(sessionId)}`,
+            );
+            socket.binaryType = "arraybuffer";
+
+            socket.onopen = () => {
+                dot.classList.add("connected");
+                sendResize(socket, term.rows, term.cols);
+            };
+
+            socket.onmessage = (event) => {
+                if (isControlMessage(event.data)) return;
+                if (typeof event.data === "string") {
+                    term.write(event.data);
+                } else {
+                    term.write(new Uint8Array(event.data));
+                }
+            };
+
+            socket.onclose = (event) => {
+                dot.classList.remove("connected");
+                const reason = event.reason || "";
+                try {
+                    const parsed = JSON.parse(reason);
+                    if (parsed && parsed.exitCode !== undefined) {
+                        term.write(
+                            `\r\n\x1b[90m[exited: ${parsed.exitCode}]\x1b[0m\r\n`,
+                        );
+                        return;
+                    }
+                } catch {}
+                term.write(
+                    "\r\n\x1b[90m[connection closed]\x1b[0m\r\n",
+                );
+            };
+
+            socket.onerror = () => {
+                dot.classList.remove("connected");
+            };
+
+            term.onData((data) => {
+                if (socket.readyState === WebSocket.OPEN) socket.send(data);
+            });
+
+            term.onResize((size) => {
+                if (socket.readyState === WebSocket.OPEN)
+                    sendResize(socket, size.rows, size.cols);
+            });
+
+            window.addEventListener("resize", () => fitAddon.fit());
+        </script>
+    </body>
+</html>

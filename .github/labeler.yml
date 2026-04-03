@@ -1,0 +1,49 @@
+"web":
+  - changed-files:
+      - any-glob-to-any-file: "web/**/*"
+
+"docs":
+  - changed-files:
+      - any-glob-to-any-file: "docs/**/*"
+
+"rust":
+  - changed-files:
+      - any-glob-to-any-file: "crates/**/*"
+
+"sdk":
+  - changed-files:
+      - any-glob-to-any-file: "sdk/**/*"
+
+"clients":
+  - changed-files:
+      - any-glob-to-any-file: "clients/**/*"
+
+"docker":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "Dockerfile"
+          - "docker-compose.yml"
+          - ".dockerignore"
+
+"documentation":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.md"
+          - "docs/**/*"
+
+"dependencies":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "package.json"
+          - "bun.lock"
+          - "Cargo.toml"
+          - "**/Cargo.toml"
+          - "**/package.json"
+
+"github-actions":
+  - changed-files:
+      - any-glob-to-any-file: ".github/workflows/**/*"
+
+"database":
+  - changed-files:
+      - any-glob-to-any-file: "crates/api/migrations/**/*"

@@ -1,0 +1,15 @@
+{
+	"version": 1.8,
+	"locale": {
+		"source": "en"
+	},
+	"buckets": {
+		"mdx": {
+			"include": [
+				"src/content/docs/[locale]/*.mdx",
+				"src/content/docs/[locale]/*/*.mdx",
+				"src/content/docs/[locale]/*/*/*.mdx"
+			]
+		}
+	}
+}

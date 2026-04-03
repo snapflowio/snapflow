@@ -1,0 +1,30 @@
+version = 1
+
+exclude_patterns = [
+  "**/migrations/**",
+  "clients/api-client-ts/**",
+  "clients/toolbox-client-ts/**",
+  "clients/api-client-rs/**",
+  "clients/executor-client-rs/**",
+  "dist/**",
+  "tmp/**",
+  "node_modules/**",
+  "**/node_modules/**",
+  "**/*.min.js",
+  "**/*.bundle.js"
+]
+
+[[analyzers]]
+name = "javascript"
+
+  [analyzers.meta]
+  plugins = ["react"]
+
+[[analyzers]]
+name = "docker"
+
+[[analyzers]]
+name = "rust"
+
+[[analyzers]]
+name = "shell"

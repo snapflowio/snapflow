@@ -1,0 +1,99 @@
+[workspace]
+resolver = "3"
+members = ["crates/*", "clients/*-rs"]
+exclude = []
+
+[workspace.dependencies]
+# Web framework
+axum = { version = "0.8", features = ["ws"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["cors", "trace"] }
+hyper = { version = "1", features = ["full"] }
+hyper-util = { version = "0.1", features = ["client-legacy", "http1", "http2", "tokio"] }
+http = "1"
+http-body-util = "0.1"
+
+# Async runtime
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "net", "time", "signal", "sync", "io-util", "fs", "process"] }
+async-trait = "0.1"
+futures-util = "0.3"
+tokio-tungstenite = "0.26"
+tokio-util = { version = "0.7", features = ["rt"] }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Configuration
+envconfig = "0.10"
+dotenvy = "0.15"
+
+# Error handling
+anyhow = "1"
+thiserror = "2"
+
+# Logging and tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Data structures
+cookie = { version = "0.18", features = ["percent-encode"] }
+dashmap = "6"
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+url = "2"
+base64 = "0.22"
+bytes = "1"
+regex = "1"
+
+# OpenAPI and validation
+utoipa = { version = "5", features = ["axum_extras"] }
+validator = { version = "0.19", features = ["derive"] }
+
+# Docker
+bollard = "0.18"
+
+# AWS
+aws-sdk-s3 = "1"
+aws-config = "1"
+aws-credential-types = "1"
+
+# Randomness
+rand = "0.9"
+
+# Cryptography
+sha2 = "0.10"
+hmac = "0.12"
+md5 = "0.7"
+hex = "0.4"
+jsonwebtoken = "9"
+
+# Redis
+redis = { version = "1.1", features = ["tokio-comp"] }
+
+# HTTP client
+reqwest = { version = "0.12", features = ["json", "cookies"] }
+
+# DNS
+hickory-proto = "0.25"
+
+# TLS
+rcgen = "0.13"
+rustls = "0.23"
+tokio-rustls = "0.26"
+rustls-pemfile = "2"
+rustls-native-certs = "0.8"
+
+# OS and system
+nix = { version = "0.29", features = ["fs"] }
+tempfile = "3"
+rust-embed = { version = "8", features = ["debug-embed"] }
+
+# Internal crates
+common-rs = { path = "crates/common" }
+snapflow-models = { path = "crates/models" }
+snapflow-errors = { path = "crates/errors" }
+snapflow-auth = { path = "crates/auth" }
+snapflow-storage = { path = "crates/storage" }
+snapflow-api-client = { path = "clients/api-client-rs" }
+snapflow-executor-client = { path = "clients/executor-client-rs" }

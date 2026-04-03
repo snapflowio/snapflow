@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Verify your email address - Snapflow{% endblock %}
+
+{% block content %}
+<h1>Verify your email</h1>
+<p class="subtitle">Confirm your email address to get started.</p>
+<p>Hi {{ name }},</p>
+<p>Thanks for signing up for Snapflow. Please verify your email address.</p>
+<div class="button-container">
+  <a href="{{ verification_url }}" class="button">Verify Email Address</a>
+</div>
+<div class="notes">
+  <p>Link expires in 24 hours</p>
+  <p>Didn't create an account? You can ignore this email.</p>
+</div>
+{% endblock %}

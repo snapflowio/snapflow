@@ -1,0 +1,77 @@
+[package]
+name = "node"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# Web framework
+axum = { workspace = true, features = ["multipart"] }
+tower = { workspace = true }
+tower-http = { workspace = true }
+hyper = { workspace = true }
+hyper-util = { workspace = true }
+http-body-util = { workspace = true }
+
+# Async runtime
+tokio = { workspace = true }
+async-trait = { workspace = true }
+futures-util = { workspace = true }
+tokio-tungstenite = { workspace = true }
+tokio-stream = "0.1"
+tokio-util = { workspace = true, features = ["io"] }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Configuration
+envconfig = { workspace = true }
+
+# Error handling
+anyhow = { workspace = true }
+
+# Logging and tracing
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+# Data structures
+dashmap = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+url = { workspace = true }
+base64 = { workspace = true }
+regex = { workspace = true }
+glob = "0.3"
+parking_lot = "0.12"
+
+# OpenAPI
+utoipa = { workspace = true }
+
+# OS and system
+nix = { workspace = true, features = ["signal", "user", "process"] }
+tempfile = { workspace = true }
+rust-embed = { workspace = true }
+mime_guess = "2"
+procfs = "0.17"
+
+# Terminal and SSH
+portable-pty = "0.8"
+russh = "0.48"
+russh-sftp = "2.0.7"
+russh-keys = "0.48"
+rand_core = { version = "0.6", features = ["getrandom"] }
+
+# LSP
+lsp-types = "0.97"
+
+# Archive
+tar = "0.4"
+
+# DNS
+hickory-proto = { workspace = true }
+
+# Network interception (MITM proxy)
+hudsucker = "0.24.0"
+
+# Internal crates
+common-rs = { workspace = true }

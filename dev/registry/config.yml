@@ -1,0 +1,17 @@
+version: 0.1
+
+log:
+  level: info
+
+storage:
+  filesystem:
+    rootdirectory: /var/lib/registry
+  delete:
+    enabled: true
+  cache:
+    blobdescriptor: inmemory
+
+http:
+  addr: :5001
+  headers:
+    X-Content-Type-Options: [nosniff]

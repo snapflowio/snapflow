@@ -1,0 +1,109 @@
+name: "[PR] Validate code"
+
+on:
+  pull_request:
+    branches:
+      - canary
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  license-check:
+    name: License Header Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Check AGPL-3.0 license headers
+        uses: apache/skywalking-eyes/header@main
+        with:
+          config: .licenserc.yaml
+          mode: 'check'
+
+      - name: Check Apache-2.0 license headers
+        uses: apache/skywalking-eyes/header@main
+        with:
+          config: .licenserc-clients.yaml
+          mode: 'check'
+
+  lint:
+    name: Lint & Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.10
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run Biome lint
+        run: bun lint
+
+      - name: Check Biome formatting
+        run: |
+          bun format --write=false
+          git diff --exit-code || (echo "Code is not formatted! Please run 'bun format' or 'bun lint:fix' and commit" && exit 1)
+
+  rust:
+    name: Rust Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Clippy
+        run: cargo clippy --workspace --exclude snapflow-api-client -- -D warnings
+
+      - name: Build
+        run: cargo build --workspace
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [lint, rust]
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.10
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build Rust binaries
+        run: |
+          cargo build --workspace --release
+          mkdir -p dist/bin
+          cp target/release/api dist/bin/
+          cp target/release/executor dist/bin/
+          cp target/release/node dist/bin/
+          cp target/release/proxy dist/bin/
+
+      - name: Build web frontend
+        run: bun build:web
+
+      - name: Verify build artifacts
+        run: |
+          test -f dist/bin/api || (echo "API binary not found at dist/bin/api" && exit 1)
+          test -f dist/bin/executor || (echo "Executor binary not found at dist/bin/executor" && exit 1)
+          test -f dist/bin/node || (echo "Node binary not found at dist/bin/node" && exit 1)
+          test -f dist/bin/proxy || (echo "Proxy binary not found at dist/bin/proxy" && exit 1)
+          test -d dist/web || (echo "Web build not found at dist/web/" && exit 1)

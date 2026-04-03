@@ -1,0 +1,15 @@
+# StorageAccessDto
+
+## Properties
+
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**upload_url** | **String** | Pre-signed URL for uploading objects to R2 storage | 
+**expires_at** | **String** | When the pre-signed URL expires (ISO 8601 timestamp) | 
+**organization_id** | **String** | Organization ID | 
+**bucket** | **String** | R2 bucket name | 
+**file_path** | **String** | The path where the file will be stored in R2 | 
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Snapflow{% endblock %}</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 48px 0;
+      background-color: #1b1b1b;
+      font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      color: #cdcdcd;
+    }
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    .header {
+      text-align: center;
+      padding: 0 0 32px 0;
+    }
+    .header img {
+      display: inline-block;
+    }
+    .card {
+      background-color: #1e1e1e;
+      border: 1px solid #333333;
+      border-radius: 12px;
+      padding: 40px 32px;
+    }
+    .card h1 {
+      margin: 0 0 8px 0;
+      color: #e6e6e6;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    .card .subtitle {
+      margin: 0 0 28px 0;
+      color: #787878;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .card p {
+      margin: 0 0 16px 0;
+      color: #cdcdcd;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .button-container {
+      margin: 28px 0;
+      text-align: center;
+    }
+    .button {
+      display: inline-block;
+      padding: 10px 24px;
+      background-color: #e6e6e6;
+      color: #1b1b1b;
+      text-decoration: none;
+      font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      border-radius: 5px;
+    }
+    .notes {
+      margin: 24px 0 0 0;
+      padding: 16px;
+      background-color: #232323;
+      border: 1px solid #333333;
+      border-radius: 8px;
+    }
+    .notes p {
+      margin: 0 0 6px 0;
+      color: #787878;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .notes p:last-child {
+      margin-bottom: 0;
+    }
+    .footer {
+      text-align: center;
+      padding: 32px 0 0 0;
+    }
+    .footer p {
+      margin: 0 0 8px 0;
+      color: #787878;
+      font-size: 12px;
+    }
+    .footer a {
+      color: #939393;
+      text-decoration: none;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid #333333;
+      margin: 24px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="https://cdn.snapflow.io/logo.png" width="99" height="51" alt="Snapflow">
+    </div>
+    <div class="card">
+      {% block content %}{% endblock %}
+    </div>
+    <div class="footer">
+      <p>&copy; {{ year }} Snapflow</p>
+      <p>
+        <a href="https://snapflow.io/terms">Terms</a>
+        &middot;
+        <a href="https://snapflow.io/privacy">Privacy</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>
