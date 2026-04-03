@@ -84,7 +84,7 @@ async fn main() -> Result<()> {
 
     let node_path = node::write_static_binary()?;
 
-    let net_rules_manager = Arc::new(NetRulesManager::new());
+    let net_rules_manager = Arc::new(NetRulesManager::default());
 
     let docker_client = Arc::new(DockerClient::new(docker::DockerClientConfig {
         api_client: docker_api,
