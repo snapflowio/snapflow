@@ -84,12 +84,7 @@ async fn main() -> Result<()> {
 
     let node_path = node::write_static_binary()?;
 
-    let persistent_netrules = config.environment != "development";
-    let net_rules_manager = Arc::new(NetRulesManager::new(
-        persistent_netrules,
-        cancel_token.clone(),
-    ));
-    net_rules_manager.start();
+    let net_rules_manager = Arc::new(NetRulesManager::new());
 
     let docker_client = Arc::new(DockerClient::new(docker::DockerClientConfig {
         api_client: docker_api,

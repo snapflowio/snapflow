@@ -6,41 +6,26 @@
 // SPDX-License-Identifier: AGPL-3.0
 
 use std::sync::Arc;
-use std::time::Duration;
 
 use anyhow::{Context, Result};
 use tokio::process::Command;
 use tokio::sync::Mutex;
-use tokio_util::sync::CancellationToken;
-use tracing::{error, info};
 
 const CHAIN_PREFIX: &str = "SNAPFLOW-SB-";
 
 pub struct NetRulesManager {
     mu: Arc<Mutex<()>>,
-    persistent: bool,
-    cancel: CancellationToken,
+}
+
+impl Default for NetRulesManager {
+    fn default() -> Self {
+        Self {
+            mu: Arc::new(Mutex::new(())),
+        }
+    }
 }
 
 impl NetRulesManager {
-    pub fn new(persistent: bool, cancel: CancellationToken) -> Self {
-        Self {
-            mu: Arc::new(Mutex::new(())),
-            persistent,
-            cancel,
-        }
-    }
-
-    pub fn start(&self) {
-        if self.persistent {
-            let cancel = self.cancel.clone();
-            let mu = Arc::clone(&self.mu);
-            tokio::spawn(async move {
-                persist_rules_loop(cancel, mu).await;
-            });
-        }
-    }
-
     pub async fn set_network_rules(
         &self,
         name: &str,
@@ -486,39 +471,6 @@ fn extract_destination(rule: &str) -> Option<String> {
         }
     }
     None
-}
-
-async fn save_iptables_rules() -> Result<()> {
-    let output = Command::new("sh")
-        .args(["-c", "iptables-save > /etc/iptables/rules.v4"])
-        .output()
-        .await
-        .context("failed to save iptables rules")?;
-
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        anyhow::bail!("iptables-save failed: {}", stderr.trim());
-    }
-
-    Ok(())
-}
-
-async fn persist_rules_loop(cancel: CancellationToken, _mu: Arc<Mutex<()>>) {
-    info!("starting iptables persistence loop");
-    let mut ticker = tokio::time::interval(Duration::from_secs(60));
-    loop {
-        tokio::select! {
-            _ = cancel.cancelled() => {
-                info!("stopping iptables persistence loop");
-                return;
-            }
-            _ = ticker.tick() => {
-                if let Err(e) = save_iptables_rules().await {
-                    error!("failed to save iptables rules: {e}");
-                }
-            }
-        }
-    }
 }
 
 pub fn get_container_ip(inspect: &bollard::models::ContainerInspectResponse) -> String {
