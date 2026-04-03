@@ -5,7 +5,6 @@
 	"private": true,
 	"workspaces": [
 		"web",
-		"docs",
 		"sdk/typescript-sdk",
 		"clients/api-client-ts",
 		"clients/toolbox-client-ts"

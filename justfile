@@ -269,6 +269,10 @@ install:
     bun install
     cargo build --workspace
 
+[group('setup')]
+install-docs:
+    cd docs && bun install
+
 # --- Maintenance ---
 
 [group('maintenance')]

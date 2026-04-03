@@ -46,8 +46,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /etc/iptables \
     && update-alternatives --set iptables /usr/sbin/iptables-legacy \
-    && update-alternatives --set iptables-save /usr/sbin/iptables-save-legacy \
-    && update-alternatives --set iptables-restore /usr/sbin/iptables-restore-legacy
+    && ln -sf /usr/sbin/iptables-legacy-save /usr/sbin/iptables-save \
+    && ln -sf /usr/sbin/iptables-legacy-restore /usr/sbin/iptables-restore
 
 RUN curl -fsSL https://s3.amazonaws.com/mountpoint-s3-release/latest/x86_64/mount-s3.deb -o mount-s3.deb \
     && dpkg -i mount-s3.deb \
