@@ -3,7 +3,7 @@ version: "3.8"
 services:
   proxy:
     build:
-      context: ../..
+      context: .
       dockerfile: crates/proxy/Dockerfile
     container_name: snapflow-proxy
     restart: unless-stopped
