@@ -10,28 +10,28 @@ RUN cargo chef prepare --recipe-path recipe.json
 
 FROM chef AS node-builder
 COPY --from=planner /build/recipe.json recipe.json
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    --mount=type=cache,target=/usr/local/cargo/git \
-    --mount=type=cache,target=/build/target \
+RUN --mount=type=cache,sharing=locked,target=/usr/local/cargo/registry \
+    --mount=type=cache,sharing=locked,target=/usr/local/cargo/git \
+    --mount=type=cache,id=node-target,target=/build/target \
     cargo chef cook --release --recipe-path recipe.json -p node
 COPY . .
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    --mount=type=cache,target=/usr/local/cargo/git \
-    --mount=type=cache,target=/build/target \
+RUN --mount=type=cache,sharing=locked,target=/usr/local/cargo/registry \
+    --mount=type=cache,sharing=locked,target=/usr/local/cargo/git \
+    --mount=type=cache,id=node-target,target=/build/target \
     cargo build --release -p node && \
     cp /build/target/release/node /build/node-binary
 
 FROM chef AS builder
 COPY --from=planner /build/recipe.json recipe.json
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    --mount=type=cache,target=/usr/local/cargo/git \
-    --mount=type=cache,target=/build/target \
+RUN --mount=type=cache,sharing=locked,target=/usr/local/cargo/registry \
+    --mount=type=cache,sharing=locked,target=/usr/local/cargo/git \
+    --mount=type=cache,id=executor-target,target=/build/target \
     cargo chef cook --release --recipe-path recipe.json -p executor
 COPY . .
 COPY --from=node-builder /build/node-binary ./crates/executor/src/node/static/snapflow-amd64
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    --mount=type=cache,target=/usr/local/cargo/git \
-    --mount=type=cache,target=/build/target \
+RUN --mount=type=cache,sharing=locked,target=/usr/local/cargo/registry \
+    --mount=type=cache,sharing=locked,target=/usr/local/cargo/git \
+    --mount=type=cache,id=executor-target,target=/build/target \
     cargo build --release -p executor && \
     cp /build/target/release/executor /build/executor-binary
 

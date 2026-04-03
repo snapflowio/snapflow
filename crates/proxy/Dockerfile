@@ -9,14 +9,14 @@ RUN cargo chef prepare --recipe-path recipe.json
 
 FROM chef AS builder
 COPY --from=planner /build/recipe.json recipe.json
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    --mount=type=cache,target=/usr/local/cargo/git \
-    --mount=type=cache,target=/build/target \
+RUN --mount=type=cache,sharing=locked,target=/usr/local/cargo/registry \
+    --mount=type=cache,sharing=locked,target=/usr/local/cargo/git \
+    --mount=type=cache,id=proxy-target,target=/build/target \
     cargo chef cook --release --recipe-path recipe.json -p proxy
 COPY . .
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    --mount=type=cache,target=/usr/local/cargo/git \
-    --mount=type=cache,target=/build/target \
+RUN --mount=type=cache,sharing=locked,target=/usr/local/cargo/registry \
+    --mount=type=cache,sharing=locked,target=/usr/local/cargo/git \
+    --mount=type=cache,id=proxy-target,target=/build/target \
     cargo build --release -p proxy && \
     cp /build/target/release/proxy /build/proxy-binary
 
