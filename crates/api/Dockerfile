@@ -10,9 +10,16 @@ RUN cargo chef prepare --recipe-path recipe.json
 
 FROM chef AS builder
 COPY --from=planner /build/recipe.json recipe.json
-RUN cargo chef cook --release --recipe-path recipe.json -p api
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/usr/local/cargo/git \
+    --mount=type=cache,target=/build/target \
+    cargo chef cook --release --recipe-path recipe.json -p api
 COPY . .
-RUN cargo build --release -p api
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/usr/local/cargo/git \
+    --mount=type=cache,target=/build/target \
+    cargo build --release -p api && \
+    cp /build/target/release/api /build/api-binary
 
 FROM debian:bookworm-slim AS runtime
 
@@ -23,7 +30,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-COPY --from=builder /build/target/release/api ./api
+COPY --from=builder /build/api-binary ./api
 
 EXPOSE 8081
 

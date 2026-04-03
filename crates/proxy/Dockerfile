@@ -9,10 +9,16 @@ RUN cargo chef prepare --recipe-path recipe.json
 
 FROM chef AS builder
 COPY --from=planner /build/recipe.json recipe.json
-RUN cargo chef cook --release --recipe-path recipe.json -p proxy
-
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/usr/local/cargo/git \
+    --mount=type=cache,target=/build/target \
+    cargo chef cook --release --recipe-path recipe.json -p proxy
 COPY . .
-RUN cargo build --release -p proxy
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/usr/local/cargo/git \
+    --mount=type=cache,target=/build/target \
+    cargo build --release -p proxy && \
+    cp /build/target/release/proxy /build/proxy-binary
 
 FROM debian:bookworm-slim AS runtime
 
@@ -22,7 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY --from=builder /build/target/release/proxy ./proxy
+COPY --from=builder /build/proxy-binary ./proxy
 
 EXPOSE 4000
 ENV TZ=UTC

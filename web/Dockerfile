@@ -15,7 +15,8 @@ COPY web/ web/
 COPY clients/ clients/
 COPY sdk/ sdk/
 COPY tsconfig.base.json biome.json ./
-RUN bun install --frozen-lockfile
+RUN --mount=type=cache,target=/root/.bun/install/cache \
+    bun install --frozen-lockfile
 RUN cd web && bun run build
 
 FROM caddy:alpine AS runtime
