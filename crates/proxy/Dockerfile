@@ -1,55 +1,33 @@
 # syntax=docker/dockerfile:1.4
-
-FROM rust:bookworm AS builder
-
+FROM rust:1 AS chef
+RUN cargo install --locked cargo-chef
 WORKDIR /build
 
-COPY Cargo.toml Cargo.lock ./
+FROM chef AS planner
+COPY . .
+RUN cargo chef prepare --recipe-path recipe.json
 
-COPY crates/proxy/Cargo.toml crates/proxy/Cargo.toml
-COPY crates/common/Cargo.toml crates/common/Cargo.toml
-COPY crates/auth/Cargo.toml crates/auth/Cargo.toml
-COPY crates/models/Cargo.toml crates/models/Cargo.toml
-COPY crates/errors/Cargo.toml crates/errors/Cargo.toml
-COPY clients/api-client-rs/Cargo.toml clients/api-client-rs/Cargo.toml
-COPY clients/executor-client-rs/Cargo.toml clients/executor-client-rs/Cargo.toml
+FROM chef AS builder
+COPY --from=planner /build/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json -p proxy
 
-RUN mkdir -p crates/proxy/src && echo "fn main() {}" > crates/proxy/src/main.rs && \
-    mkdir -p crates/common/src && echo "" > crates/common/src/lib.rs && \
-    mkdir -p crates/auth/src && echo "" > crates/auth/src/lib.rs && \
-    mkdir -p crates/models/src && echo "" > crates/models/src/lib.rs && \
-    mkdir -p crates/errors/src && echo "" > crates/errors/src/lib.rs && \
-    mkdir -p clients/api-client-rs/src && echo "" > clients/api-client-rs/src/lib.rs && \
-    mkdir -p clients/executor-client-rs/src && echo "" > clients/executor-client-rs/src/lib.rs
-
-RUN cargo build --release -p proxy 2>/dev/null || true
-
-COPY crates/proxy/src crates/proxy/src
-COPY crates/common/src crates/common/src
-COPY crates/auth/src crates/auth/src
-COPY crates/models/src crates/models/src
-COPY crates/errors/src crates/errors/src
-COPY clients/api-client-rs/src clients/api-client-rs/src
-COPY clients/executor-client-rs/src clients/executor-client-rs/src
-
-RUN touch crates/proxy/src/main.rs
+COPY . .
 RUN cargo build --release -p proxy
 
-FROM debian:bookworm-slim
+FROM debian:bookworm-slim AS runtime
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates curl \
+    ca-certificates \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-
-COPY --from=builder /build/target/release/proxy dist/bin/proxy
+COPY --from=builder /build/target/release/proxy ./proxy
 
 EXPOSE 4000
-
 ENV TZ=UTC
 
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=10s \
-	CMD curl -f http://localhost:4000/health || exit 1
+    CMD curl -f http://localhost:4000/health || exit 1
 
-CMD ["./dist/bin/proxy"]
+ENTRYPOINT ["./proxy"]
