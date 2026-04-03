@@ -8,10 +8,17 @@ FROM chef AS planner
 COPY . .
 RUN cargo chef prepare --recipe-path recipe.json
 
+FROM chef AS node-builder
+COPY --from=planner /build/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json -p node
+COPY . .
+RUN cargo build --release -p node
+
 FROM chef AS builder
 COPY --from=planner /build/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json -p executor
 COPY . .
+COPY --from=node-builder /build/target/release/node ./crates/executor/src/node/static/snapflow-amd64
 RUN cargo build --release -p executor
 
 FROM debian:bookworm-slim AS runtime
