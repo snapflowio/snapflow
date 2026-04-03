@@ -42,7 +42,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     fuse \
     libfuse2 \
-    && rm -rf /var/lib/apt/lists/*
+    iptables \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /etc/iptables
 
 RUN curl -fsSL https://s3.amazonaws.com/mountpoint-s3-release/latest/x86_64/mount-s3.deb -o mount-s3.deb \
     && dpkg -i mount-s3.deb \
