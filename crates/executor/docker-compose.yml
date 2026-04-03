@@ -3,7 +3,7 @@ version: "3.8"
 services:
   executor:
     build:
-      context: ../..
+      context: .
       dockerfile: crates/executor/Dockerfile
     container_name: snapflow-executor
     restart: unless-stopped
