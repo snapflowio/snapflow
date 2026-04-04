@@ -64,6 +64,9 @@ pub struct Config {
 
     #[envconfig(from = "RESOURCE_LIMITS_DISABLED", default = "false")]
     pub resource_limits_disabled: bool,
+
+    #[envconfig(from = "NODE_BINARY_DIR", default = "/var/lib/snapflow/binaries")]
+    pub node_binary_dir: String,
 }
 
 impl Config {

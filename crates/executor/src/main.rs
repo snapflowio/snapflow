@@ -82,7 +82,7 @@ async fn main() -> Result<()> {
     ));
     let (shutdown_tx, shutdown_rx) = tokio::sync::watch::channel(());
 
-    let node_path = node::write_static_binary()?;
+    let node_path = node::write_static_binary(&config.node_binary_dir)?;
 
     let net_rules_manager = Arc::new(NetRulesManager::default());
 

@@ -21,12 +21,11 @@ const BINARY_NAME: &str = if cfg!(target_arch = "aarch64") {
     "snapflow-amd64"
 };
 
-pub fn write_static_binary() -> Result<PathBuf> {
+pub fn write_static_binary(dir: &str) -> Result<PathBuf> {
     let binary_data = NodeAssets::get(BINARY_NAME)
         .with_context(|| format!("Embedded binary '{}' not found", BINARY_NAME))?;
 
-    let cwd = std::env::current_dir().context("Failed to get current working directory")?;
-    let tmp_binaries_dir = cwd.join(".tmp").join("binaries");
+    let tmp_binaries_dir = std::path::PathBuf::from(dir);
     std::fs::create_dir_all(&tmp_binaries_dir).with_context(|| {
         format!(
             "Failed to create binaries directory: {}",
