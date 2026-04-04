@@ -173,12 +173,9 @@ async fn initialize_internal_registry(pool: &PgPool, config: &AppConfig) -> anyh
 }
 
 async fn initialize_default_executor(pool: &PgPool, config: &AppConfig) -> anyhow::Result<()> {
-    if config.is_production() {
-        return Ok(());
-    }
-
     let exec_cfg = &config.default_executor;
-    if !exec_cfg.is_configured() {
+
+    if !exec_cfg.bootstrap || !exec_cfg.is_configured() {
         return Ok(());
     }
 

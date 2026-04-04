@@ -47,6 +47,9 @@ pub struct DefaultExecutorConfig {
 
     #[envconfig(from = "DEFAULT_EXECUTOR_VERSION", default = "0")]
     pub version: String,
+
+    #[envconfig(from = "DEFAULT_EXECUTOR_BOOTSTRAP", default = "true")]
+    pub bootstrap: bool,
 }
 
 impl DefaultExecutorConfig {
