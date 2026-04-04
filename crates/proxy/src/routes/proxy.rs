@@ -323,8 +323,24 @@ async fn forward_to_executor(
         req.headers_mut().insert(header::HOST, val);
     }
 
-    let target_addr = authority.clone();
-    common_rs::proxy::forward(req, &target_addr).await
+    let scheme = target_uri.scheme_str().unwrap_or("http");
+    let use_tls = scheme == "https";
+
+    // Ensure host:port format — default ports are implicit in authority when omitted
+    let hostname = authority.split(':').next().unwrap_or(&authority).to_string();
+    let target_addr = if authority.contains(':') {
+        authority.clone()
+    } else if use_tls {
+        format!("{authority}:443")
+    } else {
+        format!("{authority}:80")
+    };
+
+    if use_tls {
+        common_rs::proxy::forward_tls(req, &target_addr, &hostname).await
+    } else {
+        common_rs::proxy::forward(req, &target_addr).await
+    }
 }
 
 fn send_last_activity_update(state: &SharedState, sandbox_id: &str) {

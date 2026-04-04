@@ -5,21 +5,57 @@
 //
 // SPDX-License-Identifier: AGPL-3.0
 
+use std::sync::Arc;
+
 use axum::{
     body::Body,
     http::{Request, StatusCode, header},
     response::{IntoResponse, Response},
 };
 use hyper_util::rt::TokioIo;
+use rustls::ClientConfig;
+use rustls::pki_types::ServerName;
+use tokio_rustls::TlsConnector;
 
-pub async fn forward(mut request: Request<Body>, target_addr: &str) -> Response {
+fn build_tls_connector() -> TlsConnector {
+    let mut root_store = rustls::RootCertStore::empty();
+
+    let certs = rustls_native_certs::load_native_certs();
+    if !certs.errors.is_empty() {
+        tracing::warn!("errors loading native certs: {:?}", certs.errors);
+    }
+    for cert in certs.certs {
+        let _ = root_store.add(cert);
+    }
+
+    let config = ClientConfig::builder()
+        .with_root_certificates(root_store)
+        .with_no_client_auth();
+
+    TlsConnector::from(Arc::new(config))
+}
+
+pub async fn forward(request: Request<Body>, target_addr: &str) -> Response {
+    forward_inner(request, target_addr, false, "").await
+}
+
+pub async fn forward_tls(request: Request<Body>, target_addr: &str, server_name: &str) -> Response {
+    forward_inner(request, target_addr, true, server_name).await
+}
+
+async fn forward_inner(
+    request: Request<Body>,
+    target_addr: &str,
+    use_tls: bool,
+    server_name: &str,
+) -> Response {
     let is_upgrade = request
         .headers()
         .get(header::UPGRADE)
         .and_then(|v| v.to_str().ok())
         .is_some_and(|v| v.eq_ignore_ascii_case("websocket"));
 
-    let stream = match tokio::time::timeout(
+    let tcp_stream = match tokio::time::timeout(
         std::time::Duration::from_secs(30),
         tokio::net::TcpStream::connect(target_addr),
     )
@@ -36,8 +72,41 @@ pub async fn forward(mut request: Request<Body>, target_addr: &str) -> Response 
         }
     };
 
-    let io = TokioIo::new(stream);
+    if use_tls {
+        let connector = build_tls_connector();
+        let dns_name = match ServerName::try_from(server_name.to_owned()) {
+            Ok(n) => n,
+            Err(e) => {
+                tracing::error!(error = %e, server_name, "invalid TLS server name");
+                return (StatusCode::BAD_GATEWAY, "invalid tls server name").into_response();
+            }
+        };
 
+        let tls_stream = match connector.connect(dns_name, tcp_stream).await {
+            Ok(s) => s,
+            Err(e) => {
+                tracing::error!(error = %e, addr = target_addr, "TLS handshake failed");
+                return (StatusCode::BAD_GATEWAY, "tls handshake failed").into_response();
+            }
+        };
+
+        let io = TokioIo::new(tls_stream);
+        forward_over_io(request, io, target_addr, is_upgrade).await
+    } else {
+        let io = TokioIo::new(tcp_stream);
+        forward_over_io(request, io, target_addr, is_upgrade).await
+    }
+}
+
+async fn forward_over_io<I>(
+    mut request: Request<Body>,
+    io: I,
+    _target_addr: &str,
+    is_upgrade: bool,
+) -> Response
+where
+    I: hyper::rt::Read + hyper::rt::Write + Send + Unpin + 'static,
+{
     let (mut sender, conn) = match hyper::client::conn::http1::handshake(io).await {
         Ok(v) => v,
         Err(e) => {

@@ -19,7 +19,7 @@ services:
       ENVIRONMENT: ${ENVIRONMENT:-production}
 
       # Container Configuration
-      CONTAINER_RUNTIME: ${CONTAINER_RUNTIME:-docker}
+      CONTAINER_RUNTIME: ${CONTAINER_RUNTIME:-runc}
       CONTAINER_NETWORK: ${CONTAINER_NETWORK:-snapflow}
 
       # Logging
