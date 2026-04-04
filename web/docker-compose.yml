@@ -2,16 +2,7 @@ version: "3.8"
 
 services:
   web:
-    build:
-      context: .
-      dockerfile: web/Dockerfile
-      args:
-        VITE_API_URL: ${VITE_API_URL}
-        VITE_WEBSITE_URL: ${VITE_WEBSITE_URL}
-        VITE_POSTHOG_KEY: ${VITE_POSTHOG_KEY}
-        VITE_POSTHOG_HOST: ${VITE_POSTHOG_HOST}
-        VITE_SHOW_ENTERPRISE: ${VITE_SHOW_ENTERPRISE}
-        VITE_PROXY_TEMPLATE_URL: ${VITE_PROXY_TEMPLATE_URL}
+    image: snapflowio/web:latest
     container_name: snapflow-web
     restart: unless-stopped
     ports:

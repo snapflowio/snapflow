@@ -2,9 +2,7 @@ version: "3.8"
 
 services:
   api:
-    build:
-      context: .
-      dockerfile: crates/api/Dockerfile
+    image: snapflowio/api:latest
     container_name: snapflow-api
     restart: unless-stopped
     ports:
@@ -13,7 +11,7 @@ services:
       PORT: 8081
 
       # General
-      NODE_ENV: ${NODE_ENV}
+      ENVIRONMENT: ${ENVIRONMENT}
       MAINTENANCE_MODE: ${MAINTENANCE_MODE}
       DEFAULT_IMAGE: ${DEFAULT_IMAGE}
 
@@ -24,12 +22,6 @@ services:
 
       # Auth
       JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
-
-      # Polar (billing)
-      POLAR_SERVER: ${POLAR_SERVER}
-      POLAR_ACCESS_TOKEN: ${POLAR_ACCESS_TOKEN}
-      POLAR_WEBHOOK_SECRET: ${POLAR_WEBHOOK_SECRET}
-      POLAR_PRODUCT_ID_CREDITS: ${POLAR_PRODUCT_ID_CREDITS}
 
       # Proxy
       PROXY_DOMAIN: ${PROXY_DOMAIN}

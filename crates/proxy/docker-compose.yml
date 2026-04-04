@@ -2,9 +2,7 @@ version: "3.8"
 
 services:
   proxy:
-    build:
-      context: .
-      dockerfile: crates/proxy/Dockerfile
+    image: snapflowio/proxy:latest
     container_name: snapflow-proxy
     restart: unless-stopped
     ports:
@@ -23,6 +21,15 @@ services:
 
       # Snapflow API
       SNAPFLOW_API_URL: ${SNAPFLOW_API_URL:-http://localhost:8081}
+
+      # Preview & Access
+      PREVIEW_WARNING_ENABLED: ${PREVIEW_WARNING_ENABLED:-true}
+      RESTRICTED_MODE: ${RESTRICTED_MODE:-false}
+
+      # OAuth
+      OAUTH_CLIENT_ID: ${OAUTH_CLIENT_ID}
+      OAUTH_AUTHORIZE_URL: ${OAUTH_AUTHORIZE_URL}
+      OAUTH_TOKEN_URL: ${OAUTH_TOKEN_URL}
 
       # Redis Configuration (Optional)
       REDIS_HOST: ${REDIS_HOST:-}

@@ -2,9 +2,7 @@ version: "3.8"
 
 services:
   executor:
-    build:
-      context: .
-      dockerfile: crates/executor/Dockerfile
+    image: snapflowio/executor:latest
     container_name: snapflow-executor
     restart: unless-stopped
     ports:
