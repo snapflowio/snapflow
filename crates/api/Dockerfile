@@ -1,7 +1,10 @@
 # syntax=docker/dockerfile:1.4
 
 FROM rust:1.94.0-bookworm AS chef
+RUN apt-get update && apt-get install -y mold && rm -rf /var/lib/apt/lists/*
 RUN cargo install --locked cargo-chef
+ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
+ENV RUSTFLAGS="-C link-arg=-fuse-ld=mold"
 WORKDIR /build
 
 FROM chef AS planner

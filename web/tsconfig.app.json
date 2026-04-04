@@ -7,7 +7,6 @@
 		"jsx": "react-jsx",
 		"allowJs": false,
 		"strict": true,
-		"esModuleInterop": false,
 		"allowSyntheticDefaultImports": true,
 		"noFallthroughCasesInSwitch": true,
 		"forceConsistentCasingInFileNames": true,
@@ -15,9 +14,8 @@
 		"outDir": "../dist/out-tsc",
 		"noEmit": true,
 		"allowImportingTsExtensions": true,
-		"baseUrl": ".",
 		"paths": {
-			"@/*": ["src/*"],
+			"@/*": ["./src/*"],
 			"@snapflow/api-client": ["../clients/api-client-ts/src/index.ts"],
 			"@snapflow/toolbox-client": ["../clients/toolbox-client-ts/src/index.ts"],
 			"@snapflow/sdk": ["../sdk/typescript-sdk/src/index.ts"]
