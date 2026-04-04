@@ -5,6 +5,7 @@
 //
 // SPDX-License-Identifier: AGPL-3.0
 
+use base64::Engine;
 use std::collections::HashSet;
 use std::net::SocketAddr;
 use std::sync::Arc;
@@ -109,7 +110,12 @@ async fn main() -> anyhow::Result<()> {
 
     let lock = RedisLock::new(redis_conn.clone());
 
-    let pem = config.jwt_private_key.replace("\\n", "\n");
+    let pem = String::from_utf8(
+        base64::engine::general_purpose::STANDARD
+            .decode(config.jwt_private_key.trim())
+            .expect("failed to base64 decode JWT_PRIVATE_KEY"),
+    )
+    .expect("JWT_PRIVATE_KEY is not valid UTF-8");
     let jwt_keys = Arc::new(
         snapflow_auth::jwt::JwtKeys::from_ec_pem(pem.as_bytes())
             .expect("failed to load JWT keys from JWT_PRIVATE_KEY"),

@@ -5,93 +5,156 @@ on:
     branches: [canary]
 
 jobs:
-  build:
-    name: Build & push images
+  changes:
+    name: Detect changes
     runs-on: blacksmith-2vcpu-ubuntu-2204
-
+    outputs:
+      api: ${{ steps.filter.outputs.api }}
+      proxy: ${{ steps.filter.outputs.proxy }}
+      executor: ${{ steps.filter.outputs.executor }}
+      web: ${{ steps.filter.outputs.web }}
     steps:
       - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            api:
+              - 'crates/api/**'
+              - 'crates/auth/**'
+              - 'crates/common/**'
+              - 'Cargo.toml'
+              - 'Cargo.lock'
+            proxy:
+              - 'crates/proxy/**'
+              - 'crates/common/**'
+              - 'Cargo.toml'
+              - 'Cargo.lock'
+            executor:
+              - 'crates/executor/**'
+              - 'crates/node/**'
+              - 'crates/common/**'
+              - 'Cargo.toml'
+              - 'Cargo.lock'
+            web:
+              - 'web/**'
+              - 'clients/**'
+              - 'sdk/**'
+              - 'package.json'
+              - 'bun.lock'
+              - 'tsconfig.base.json'
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
+  build-api:
+    name: Build & push api
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    needs: changes
+    if: needs.changes.outputs.api == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Docker metadata for api
-        id: meta-api
+      - name: Docker metadata
+        id: meta
         uses: docker/metadata-action@v5
         with:
           images: snapflowio/api
           tags: |
             type=raw,value=latest
             type=sha,prefix=,format=short
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: crates/api/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Docker metadata for proxy
-        id: meta-proxy
+  build-proxy:
+    name: Build & push proxy
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    needs: changes
+    if: needs.changes.outputs.proxy == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Docker metadata
+        id: meta
         uses: docker/metadata-action@v5
         with:
           images: snapflowio/proxy
           tags: |
             type=raw,value=latest
             type=sha,prefix=,format=short
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: crates/proxy/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Docker metadata for executor
-        id: meta-executor
+  build-executor:
+    name: Build & push executor
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    needs: changes
+    if: needs.changes.outputs.executor == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Docker metadata
+        id: meta
         uses: docker/metadata-action@v5
         with:
           images: snapflowio/executor
           tags: |
             type=raw,value=latest
             type=sha,prefix=,format=short
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: crates/executor/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Docker metadata for web
-        id: meta-web
+  build-web:
+    name: Build & push web
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Docker metadata
+        id: meta
         uses: docker/metadata-action@v5
         with:
           images: snapflowio/web
           tags: |
             type=raw,value=latest
             type=sha,prefix=,format=short
-
-      - name: Build & push api
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: crates/api/Dockerfile
-          push: true
-          tags: ${{ steps.meta-api.outputs.tags }}
-          labels: ${{ steps.meta-api.outputs.labels }}
-
-      - name: Build & push proxy
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: crates/proxy/Dockerfile
-          push: true
-          tags: ${{ steps.meta-proxy.outputs.tags }}
-          labels: ${{ steps.meta-proxy.outputs.labels }}
-
-      - name: Build & push executor
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: crates/executor/Dockerfile
-          push: true
-          tags: ${{ steps.meta-executor.outputs.tags }}
-          labels: ${{ steps.meta-executor.outputs.labels }}
-
-      - name: Build & push web
-        uses: docker/build-push-action@v6
+      - uses: docker/build-push-action@v6
         with:
           context: .
           file: web/Dockerfile
           push: true
-          tags: ${{ steps.meta-web.outputs.tags }}
-          labels: ${{ steps.meta-web.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             VITE_API_URL=${{ secrets.VITE_API_URL }}
             VITE_WEBSITE_URL=${{ secrets.VITE_WEBSITE_URL }}
@@ -103,25 +166,37 @@ jobs:
   deploy:
     name: Trigger Deploy
     runs-on: blacksmith-2vcpu-ubuntu-2204
-    needs: build
-
+    needs: [changes, build-api, build-proxy, build-executor, build-web]
+    if: |
+      always() &&
+      !contains(needs.*.result, 'failure') &&
+      (
+        needs.changes.outputs.api == 'true' ||
+        needs.changes.outputs.proxy == 'true' ||
+        needs.changes.outputs.executor == 'true' ||
+        needs.changes.outputs.web == 'true'
+      )
     steps:
       - name: Deploy api
+        if: needs.changes.outputs.api == 'true'
         run: |
           curl -sf -X POST "${{ secrets.COOLIFY_URL }}/api/v1/deploy?uuid=${{ secrets.COOLIFY_SERVICE_UUID_API }}&force=false" \
             -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}"
 
       - name: Deploy proxy
+        if: needs.changes.outputs.proxy == 'true'
         run: |
           curl -sf -X POST "${{ secrets.COOLIFY_URL }}/api/v1/deploy?uuid=${{ secrets.COOLIFY_SERVICE_UUID_PROXY }}&force=false" \
             -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}"
 
       - name: Deploy executor
+        if: needs.changes.outputs.executor == 'true'
         run: |
           curl -sf -X POST "${{ secrets.COOLIFY_URL }}/api/v1/deploy?uuid=${{ secrets.COOLIFY_SERVICE_UUID_EXECUTOR }}&force=false" \
             -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}"
 
       - name: Deploy web
+        if: needs.changes.outputs.web == 'true'
         run: |
           curl -sf -X POST "${{ secrets.COOLIFY_URL }}/api/v1/deploy?uuid=${{ secrets.COOLIFY_SERVICE_UUID_WEB }}&force=false" \
             -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}"
