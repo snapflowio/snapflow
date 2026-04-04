@@ -101,7 +101,7 @@ jobs:
             VITE_PROXY_TEMPLATE_URL=${{ secrets.VITE_PROXY_TEMPLATE_URL }}
 
   deploy:
-    name: Trigger Coolify deploys
+    name: Trigger Deploy
     runs-on: blacksmith-2vcpu-ubuntu-2204
     needs: build
 
