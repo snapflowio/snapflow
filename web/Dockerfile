@@ -24,9 +24,8 @@ COPY sdk/ sdk/
 COPY tsconfig.base.json biome.json ./
 RUN cd web && bun run build
 
-FROM busybox:1.36 AS runtime
-WORKDIR /app
-COPY --from=builder /build/dist/web ./
-RUN cp index.html 404.html
+FROM nginx:alpine AS runtime
+COPY --from=builder /build/dist/web /usr/share/nginx/html
+COPY web/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 8080
-CMD ["busybox", "httpd", "-f", "-v", "-p", "8080"]
+CMD ["nginx", "-g", "daemon off;"]
