@@ -11,15 +11,22 @@ ARG VITE_SHOW_ENTERPRISE
 ARG VITE_PROXY_TEMPLATE_URL
 
 COPY package.json bun.lock ./
+COPY web/package.json web/package.json
+COPY clients/api-client-ts/package.json clients/api-client-ts/package.json
+COPY clients/toolbox-client-ts/package.json clients/toolbox-client-ts/package.json
+COPY sdk/typescript-sdk/package.json sdk/typescript-sdk/package.json
+RUN --mount=type=cache,sharing=locked,target=/root/.bun/install/cache \
+    bun install --frozen-lockfile
+
 COPY web/ web/
 COPY clients/ clients/
 COPY sdk/ sdk/
 COPY tsconfig.base.json biome.json ./
-RUN --mount=type=cache,target=/root/.bun/install/cache \
-    bun install --frozen-lockfile
 RUN cd web && bun run build
 
-FROM caddy:alpine AS runtime
-COPY --from=builder /build/dist/web /srv
-RUN echo ':80 { root * /srv; try_files {path} /index.html; file_server }' > /etc/caddy/Caddyfile
-EXPOSE 80
+FROM busybox:1.36 AS runtime
+WORKDIR /app
+COPY --from=builder /build/dist/web ./
+RUN cp index.html 404.html
+EXPOSE 8080
+CMD ["busybox", "httpd", "-f", "-v", "-p", "8080"]
