@@ -36,7 +36,7 @@ export default defineConfig((mode) => ({
       optimize: true,
     }),
     tsconfigPaths(),
-    mode.command === "build" &&
+    mode.command === "serve" &&
       checker({
         typescript: {
           tsconfigPath: "./tsconfig.app.json",
