@@ -10,6 +10,7 @@
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
 		"ghcr.io/devcontainers/features/git:1": {},
+		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/devcontainers/features/node:1": {
 			"version": "22"
 		},
@@ -85,5 +86,5 @@
 			]
 		}
 	},
-	"postCreateCommand": "echo '127.0.0.1 proxy.localhost' | sudo tee -a /etc/hosts > /dev/null && bun install && cargo install just cargo-watch && cargo install sqlx-cli --features postgres --no-default-features && npm install -g @biomejs/biome dotenv-cli @anthropic-ai/claude-code @openapitools/openapi-generator-cli && go install github.com/apache/skywalking-eyes/cmd/license-eye@latest && sudo mv ~/go/bin/license-eye /usr/local/bin/license-eye"
+	"postCreateCommand": "echo '127.0.0.1 proxy.localhost' | sudo tee -a /etc/hosts > /dev/null && bun install && cargo install just cargo-watch && cargo install sqlx-cli --features postgres --no-default-features && npm install -g @biomejs/biome dotenv-cli @anthropic-ai/claude-code @openapitools/openapi-generator-cli && go install github.com/apache/skywalking-eyes/cmd/license-eye@latest && sudo mv $(go env GOPATH)/bin/license-eye /usr/local/bin/license-eye"
 }
