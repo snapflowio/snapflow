@@ -5,7 +5,7 @@ on:
     - cron: "0 6 * * 1"
   pull_request:
     branches:
-      - canary
+      - main
     paths:
       - "Cargo.lock"
       - "Cargo.toml"

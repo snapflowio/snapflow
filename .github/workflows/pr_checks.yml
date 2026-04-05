@@ -3,7 +3,7 @@ name: "[PR] Validate code"
 on:
   pull_request:
     branches:
-      - canary
+      - main
 
 permissions:
   contents: read

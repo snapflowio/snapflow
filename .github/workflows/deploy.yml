@@ -2,7 +2,7 @@ name: Build & Deploy
 
 on:
   push:
-    branches: [canary]
+    branches: [main]
 
 jobs:
   changes:
