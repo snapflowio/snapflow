@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: AGPL-3.0
 
 use super::types::{ExecuteRequest, ExecuteResponse};
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use crate::common::shell::get_shell;
 use axum::Json;
 use tokio::process::Command;

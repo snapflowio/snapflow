@@ -9,8 +9,9 @@
 
 export class SnapflowError extends Error {
 	public static fromError(error: Error): SnapflowError {
-		if (String(error).includes('Organization is suspended'))
+		if (String(error).includes('Organization is suspended')) {
 			return new OrganizationSuspendedError(error.message);
+		}
 
 		return new SnapflowError(error.message);
 	}

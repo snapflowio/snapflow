@@ -7,21 +7,21 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { Footer } from "@/features/marketing/components/footer/footer";
-import { Navbar } from "@/features/marketing/components/navbar/navbar";
+import { Footer } from '@/features/marketing/components/footer/footer';
+import { Navbar } from '@/features/marketing/components/navbar/navbar';
 
 interface MarketingLayoutProps {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }
 
 export function MarketingLayout({ children }: MarketingLayoutProps) {
-  return (
-    <div className="min-h-screen bg-bg">
-      <header>
-        <Navbar />
-      </header>
-      <main>{children}</main>
-      <Footer />
-    </div>
-  );
+	return (
+		<div className="min-h-screen bg-bg">
+			<header>
+				<Navbar />
+			</header>
+			<main>{children}</main>
+			<Footer />
+		</div>
+	);
 }

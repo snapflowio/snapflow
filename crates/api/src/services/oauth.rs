@@ -145,15 +145,9 @@ fn validate_redirect_uri(redirect_uri: &str) -> Result<()> {
 }
 
 fn generate_auth_code() -> String {
+    const ALPHABET: &[u8] = b"0123456789abcdefghijklmnopqrstuvwxyz";
     let mut rng = rand::rng();
     (0..AUTH_CODE_LENGTH)
-        .map(|_| {
-            let idx = rng.random_range(0..36u8);
-            if idx < 10 {
-                (b'0' + idx) as char
-            } else {
-                (b'a' + idx - 10) as char
-            }
-        })
+        .map(|_| ALPHABET[rng.random_range(0..ALPHABET.len())] as char)
         .collect()
 }

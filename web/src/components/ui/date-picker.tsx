@@ -31,94 +31,98 @@
  * ```
  */
 
-import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { cva, type VariantProps } from 'class-variance-authority';
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import * as React from 'react';
+import { Button } from '@/components/ui/button';
+import {
+	Popover,
+	PopoverAnchor,
+	PopoverContent,
+} from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 
 /**
  * Variant styles for the date picker trigger button.
  * Matches the combobox and input styling patterns.
  */
 const datePickerVariants = cva(
-  "flex w-full rounded-[4px] border border-(--border-1) bg-(--surface-5) px-[8px] font-sans font-medium text-(--text-primary) placeholder:text-(--text-muted) outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50 hover:border-(--surface-7) hover:bg-(--surface-5) dark:hover:border-(--surface-7) dark:hover:bg-(--border-1)",
-  {
-    variants: {
-      variant: {
-        default: "",
-      },
-      size: {
-        default: "py-[6px] text-sm",
-        sm: "py-[5px] text-[12px]",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
+	'flex w-full rounded-[4px] border border-(--border-1) bg-(--surface-5) px-[8px] font-sans font-medium text-(--text-primary) placeholder:text-(--text-muted) outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50 hover:border-(--surface-7) hover:bg-(--surface-5) dark:hover:border-(--surface-7) dark:hover:bg-(--border-1)',
+	{
+		variants: {
+			variant: {
+				default: '',
+			},
+			size: {
+				default: 'py-[6px] text-sm',
+				sm: 'py-[5px] text-[12px]',
+			},
+		},
+		defaultVariants: {
+			variant: 'default',
+			size: 'default',
+		},
+	}
 );
 
 /** Base props shared by both single and range modes */
 interface DatePickerBaseProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange">,
-    VariantProps<typeof datePickerVariants> {
-  /** Placeholder text when no value is selected */
-  placeholder?: string;
-  /** Whether the picker is disabled */
-  disabled?: boolean;
-  /** Size variant */
-  size?: "default" | "sm";
-  /** Whether to show the trigger button (set to false for inline/controlled usage) */
-  showTrigger?: boolean;
-  /** Controlled open state */
-  open?: boolean;
-  /** Callback when open state changes */
-  onOpenChange?: (open: boolean) => void;
-  /** Render calendar inline without popover (for use inside modals) */
-  inline?: boolean;
+	extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'>,
+		VariantProps<typeof datePickerVariants> {
+	/** Placeholder text when no value is selected */
+	placeholder?: string;
+	/** Whether the picker is disabled */
+	disabled?: boolean;
+	/** Size variant */
+	size?: 'default' | 'sm';
+	/** Whether to show the trigger button (set to false for inline/controlled usage) */
+	showTrigger?: boolean;
+	/** Controlled open state */
+	open?: boolean;
+	/** Callback when open state changes */
+	onOpenChange?: (open: boolean) => void;
+	/** Render calendar inline without popover (for use inside modals) */
+	inline?: boolean;
 }
 
 /** Props for single date mode */
 interface DatePickerSingleProps extends DatePickerBaseProps {
-  /** Selection mode */
-  mode?: "single";
-  /** Current selected date value (YYYY-MM-DD string or Date) */
-  value?: string | Date;
-  /** Callback when date changes, returns YYYY-MM-DD format */
-  onChange?: (value: string) => void;
-  /** Not used in single mode */
-  startDate?: never;
-  /** Not used in single mode */
-  endDate?: never;
-  /** Not used in single mode */
-  onRangeChange?: never;
-  /** Not used in single mode */
-  onCancel?: never;
-  /** Not used in single mode */
-  onClear?: never;
+	/** Selection mode */
+	mode?: 'single';
+	/** Current selected date value (YYYY-MM-DD string or Date) */
+	value?: string | Date;
+	/** Callback when date changes, returns YYYY-MM-DD format */
+	onChange?: (value: string) => void;
+	/** Not used in single mode */
+	startDate?: never;
+	/** Not used in single mode */
+	endDate?: never;
+	/** Not used in single mode */
+	onRangeChange?: never;
+	/** Not used in single mode */
+	onCancel?: never;
+	/** Not used in single mode */
+	onClear?: never;
 }
 
 /** Props for range date mode */
 interface DatePickerRangeProps extends DatePickerBaseProps {
-  /** Selection mode */
-  mode: "range";
-  /** Start date for range mode (YYYY-MM-DD string or Date) */
-  startDate?: string | Date;
-  /** End date for range mode (YYYY-MM-DD string or Date) */
-  endDate?: string | Date;
-  /** Callback when date range is applied */
-  onRangeChange?: (startDate: string, endDate: string) => void;
-  /** Callback when range selection is cancelled */
-  onCancel?: () => void;
-  /** Callback when range is cleared */
-  onClear?: () => void;
-  /** Not used in range mode */
-  value?: never;
-  /** Not used in range mode */
-  onChange?: never;
+	/** Selection mode */
+	mode: 'range';
+	/** Start date for range mode (YYYY-MM-DD string or Date) */
+	startDate?: string | Date;
+	/** End date for range mode (YYYY-MM-DD string or Date) */
+	endDate?: string | Date;
+	/** Callback when date range is applied */
+	onRangeChange?: (startDate: string, endDate: string) => void;
+	/** Callback when range selection is cancelled */
+	onCancel?: () => void;
+	/** Callback when range is cleared */
+	onClear?: () => void;
+	/** Not used in range mode */
+	value?: never;
+	/** Not used in range mode */
+	onChange?: never;
 }
 
 export type DatePickerProps = DatePickerSingleProps | DatePickerRangeProps;
@@ -127,116 +131,134 @@ export type DatePickerProps = DatePickerSingleProps | DatePickerRangeProps;
  * Month names for calendar display.
  */
 const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+	'January',
+	'February',
+	'March',
+	'April',
+	'May',
+	'June',
+	'July',
+	'August',
+	'September',
+	'October',
+	'November',
+	'December',
 ];
 
 /**
  * Day abbreviations for calendar header.
  */
-const DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+const DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
 /**
  * Gets the number of days in a given month.
  */
 function getDaysInMonth(year: number, month: number): number {
-  return new Date(year, month + 1, 0).getDate();
+	return new Date(year, month + 1, 0).getDate();
 }
 
 /**
  * Gets the day of the week (0-6) for the first day of the month.
  */
 function getFirstDayOfMonth(year: number, month: number): number {
-  return new Date(year, month, 1).getDay();
+	return new Date(year, month, 1).getDay();
 }
 
 /**
  * Short month names for display.
  */
 const MONTHS_SHORT = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
+	'Jan',
+	'Feb',
+	'Mar',
+	'Apr',
+	'May',
+	'Jun',
+	'Jul',
+	'Aug',
+	'Sep',
+	'Oct',
+	'Nov',
+	'Dec',
 ];
 
 /**
  * Formats a date for display in the trigger button.
  */
 function formatDateForDisplay(date: Date | null): string {
-  if (!date) return "";
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+	if (!date) {
+		return '';
+	}
+
+	return date.toLocaleDateString('en-US', {
+		year: 'numeric',
+		month: 'short',
+		day: 'numeric',
+	});
 }
 
 /**
  * Formats a date range for display.
  */
-function formatDateRangeForDisplay(start: Date | null, end: Date | null): string {
-  if (!start && !end) return "";
-  if (start && !end) return formatDateForDisplay(start);
-  if (!start && end) return formatDateForDisplay(end);
-  if (start && end) {
-    const startStr = `${MONTHS_SHORT[start.getMonth()]} ${start.getDate()}`;
-    const endStr =
-      start.getFullYear() === end.getFullYear()
-        ? `${MONTHS_SHORT[end.getMonth()]} ${end.getDate()}`
-        : `${MONTHS_SHORT[end.getMonth()]} ${end.getDate()}, ${end.getFullYear()}`;
-    return `${startStr} - ${endStr}${start.getFullYear() !== end.getFullYear() ? "" : `, ${start.getFullYear()}`}`;
-  }
-  return "";
+function formatDateRangeForDisplay(
+	start: Date | null,
+	end: Date | null
+): string {
+	if (!start && !end) {
+		return '';
+	}
+	if (start && !end) {
+		return formatDateForDisplay(start);
+	}
+	if (!start && end) {
+		return formatDateForDisplay(end);
+	}
+	if (start && end) {
+		const startStr = `${MONTHS_SHORT[start.getMonth()]} ${start.getDate()}`;
+		const endStr =
+			start.getFullYear() === end.getFullYear()
+				? `${MONTHS_SHORT[end.getMonth()]} ${end.getDate()}`
+				: `${MONTHS_SHORT[end.getMonth()]} ${end.getDate()}, ${end.getFullYear()}`;
+		return `${startStr} - ${endStr}${start.getFullYear() !== end.getFullYear() ? '' : `, ${start.getFullYear()}`}`;
+	}
+	return '';
 }
 
 /**
  * Checks if a date is between two dates (inclusive).
  */
-function isDateInRange(date: Date, start: Date | null, end: Date | null): boolean {
-  if (!start || !end) return false;
-  const time = date.getTime();
-  const startTime = Math.min(start.getTime(), end.getTime());
-  const endTime = Math.max(start.getTime(), end.getTime());
-  return time >= startTime && time <= endTime;
+function isDateInRange(
+	date: Date,
+	start: Date | null,
+	end: Date | null
+): boolean {
+	if (!start || !end) {
+		return false;
+	}
+	const time = date.getTime();
+	const startTime = Math.min(start.getTime(), end.getTime());
+	const endTime = Math.max(start.getTime(), end.getTime());
+	return time >= startTime && time <= endTime;
 }
 
 /**
  * Checks if two dates are the same day.
  */
 function isSameDay(date1: Date, date2: Date): boolean {
-  return (
-    date1.getFullYear() === date2.getFullYear() &&
-    date1.getMonth() === date2.getMonth() &&
-    date1.getDate() === date2.getDate()
-  );
+	return (
+		date1.getFullYear() === date2.getFullYear() &&
+		date1.getMonth() === date2.getMonth() &&
+		date1.getDate() === date2.getDate()
+	);
 }
 
 /**
  * Formats a date as YYYY-MM-DD string.
  */
 function formatDateAsString(year: number, month: number, day: number): string {
-  const m = (month + 1).toString().padStart(2, "0");
-  const d = day.toString().padStart(2, "0");
-  return `${year}-${m}-${d}`;
+	const m = (month + 1).toString().padStart(2, '0');
+	const d = day.toString().padStart(2, '0');
+	return `${year}-${m}-${d}`;
 }
 
 /**
@@ -244,238 +266,253 @@ function formatDateAsString(year: number, month: number, day: number): string {
  * Handles various date formats including YYYY-MM-DD and ISO strings.
  */
 function parseDate(value: string | Date | undefined): Date | null {
-  if (!value) return null;
+	if (!value) {
+		return null;
+	}
 
-  if (value instanceof Date) {
-    if (Number.isNaN(value.getTime())) return null;
-    return value;
-  }
+	if (value instanceof Date) {
+		if (Number.isNaN(value.getTime())) {
+			return null;
+		}
+		return value;
+	}
 
-  try {
-    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-      const [year, month, day] = value.split("-").map(Number);
-      return new Date(year, month - 1, day);
-    }
+	try {
+		if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+			const [year, month, day] = value.split('-').map(Number);
+			return new Date(year, month - 1, day);
+		}
 
-    if (value.endsWith("Z") || /[+-]\d{2}:\d{2}$/.test(value)) {
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return null;
-      return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
-    }
+		if (value.endsWith('Z') || /[+-]\d{2}:\d{2}$/.test(value)) {
+			const date = new Date(value);
+			if (Number.isNaN(date.getTime())) {
+				return null;
+			}
+			return new Date(
+				date.getUTCFullYear(),
+				date.getUTCMonth(),
+				date.getUTCDate()
+			);
+		}
 
-    const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? null : date;
-  } catch {
-    return null;
-  }
+		const date = new Date(value);
+		return Number.isNaN(date.getTime()) ? null : date;
+	} catch {
+		return null;
+	}
 }
 
 /**
  * Calendar component for rendering a single month.
  */
 interface CalendarMonthProps {
-  viewMonth: number;
-  viewYear: number;
-  selectedDate?: Date | null;
-  rangeStart?: Date | null;
-  rangeEnd?: Date | null;
-  hoverDate?: Date | null;
-  isRangeMode?: boolean;
-  onSelectDate: (day: number) => void;
-  onHoverDate?: (day: number | null) => void;
-  onPrevMonth: () => void;
-  onNextMonth: () => void;
-  showNavigation?: "left" | "right" | "both";
+	viewMonth: number;
+	viewYear: number;
+	selectedDate?: Date | null;
+	rangeStart?: Date | null;
+	rangeEnd?: Date | null;
+	isRangeMode?: boolean;
+	onSelectDate: (day: number) => void;
+	onPrevMonth: () => void;
+	onNextMonth: () => void;
+	showNavigation?: 'left' | 'right' | 'both';
 }
 
 function CalendarMonth({
-  viewMonth,
-  viewYear,
-  selectedDate,
-  rangeStart,
-  rangeEnd,
-  hoverDate,
-  isRangeMode,
-  onSelectDate,
-  onHoverDate,
-  onPrevMonth,
-  onNextMonth,
-  showNavigation = "both",
+	viewMonth,
+	viewYear,
+	selectedDate,
+	rangeStart,
+	rangeEnd,
+	isRangeMode,
+	onSelectDate,
+	onPrevMonth,
+	onNextMonth,
+	showNavigation = 'both',
 }: CalendarMonthProps) {
-  const daysInMonth = getDaysInMonth(viewYear, viewMonth);
-  const firstDayOfMonth = getFirstDayOfMonth(viewYear, viewMonth);
+	const daysInMonth = getDaysInMonth(viewYear, viewMonth);
+	const firstDayOfMonth = getFirstDayOfMonth(viewYear, viewMonth);
 
-  const calendarDays = React.useMemo(() => {
-    const days: (number | null)[] = [];
-    for (let i = 0; i < firstDayOfMonth; i++) {
-      days.push(null);
-    }
-    for (let day = 1; day <= daysInMonth; day++) {
-      days.push(day);
-    }
-    return days;
-  }, [firstDayOfMonth, daysInMonth]);
+	const calendarDays = React.useMemo(() => {
+		const days: (number | null)[] = [];
+		for (let i = 0; i < firstDayOfMonth; i++) {
+			days.push(null);
+		}
+		for (let day = 1; day <= daysInMonth; day++) {
+			days.push(day);
+		}
+		return days;
+	}, [firstDayOfMonth, daysInMonth]);
 
-  const isToday = React.useCallback(
-    (day: number) => {
-      const today = new Date();
-      return (
-        today.getDate() === day &&
-        today.getMonth() === viewMonth &&
-        today.getFullYear() === viewYear
-      );
-    },
-    [viewMonth, viewYear]
-  );
+	const isToday = React.useCallback(
+		(day: number) => {
+			const today = new Date();
+			return (
+				today.getDate() === day &&
+				today.getMonth() === viewMonth &&
+				today.getFullYear() === viewYear
+			);
+		},
+		[viewMonth, viewYear]
+	);
 
-  const isSelected = React.useCallback(
-    (day: number) => {
-      if (!selectedDate) return false;
-      return (
-        selectedDate.getDate() === day &&
-        selectedDate.getMonth() === viewMonth &&
-        selectedDate.getFullYear() === viewYear
-      );
-    },
-    [selectedDate, viewMonth, viewYear]
-  );
+	const isSelected = React.useCallback(
+		(day: number) => {
+			if (!selectedDate) {
+				return false;
+			}
+			return (
+				selectedDate.getDate() === day &&
+				selectedDate.getMonth() === viewMonth &&
+				selectedDate.getFullYear() === viewYear
+			);
+		},
+		[selectedDate, viewMonth, viewYear]
+	);
 
-  const isRangeStart = React.useCallback(
-    (day: number) => {
-      if (!rangeStart) return false;
-      return (
-        rangeStart.getDate() === day &&
-        rangeStart.getMonth() === viewMonth &&
-        rangeStart.getFullYear() === viewYear
-      );
-    },
-    [rangeStart, viewMonth, viewYear]
-  );
+	const isRangeStart = React.useCallback(
+		(day: number) => {
+			if (!rangeStart) {
+				return false;
+			}
+			return (
+				rangeStart.getDate() === day &&
+				rangeStart.getMonth() === viewMonth &&
+				rangeStart.getFullYear() === viewYear
+			);
+		},
+		[rangeStart, viewMonth, viewYear]
+	);
 
-  const isRangeEnd = React.useCallback(
-    (day: number) => {
-      if (!rangeEnd) return false;
-      return (
-        rangeEnd.getDate() === day &&
-        rangeEnd.getMonth() === viewMonth &&
-        rangeEnd.getFullYear() === viewYear
-      );
-    },
-    [rangeEnd, viewMonth, viewYear]
-  );
+	const isRangeEnd = React.useCallback(
+		(day: number) => {
+			if (!rangeEnd) {
+				return false;
+			}
+			return (
+				rangeEnd.getDate() === day &&
+				rangeEnd.getMonth() === viewMonth &&
+				rangeEnd.getFullYear() === viewYear
+			);
+		},
+		[rangeEnd, viewMonth, viewYear]
+	);
 
-  const isInRange = React.useCallback(
-    (day: number) => {
-      if (!isRangeMode) return false;
-      const date = new Date(viewYear, viewMonth, day);
-      // Only show range highlight when both start and end are selected
-      if (rangeStart && rangeEnd) {
-        return (
-          isDateInRange(date, rangeStart, rangeEnd) &&
-          !isSameDay(date, rangeStart) &&
-          !isSameDay(date, rangeEnd)
-        );
-      }
-      return false;
-    },
-    [isRangeMode, rangeStart, rangeEnd, viewMonth, viewYear]
-  );
+	const isInRange = React.useCallback(
+		(day: number) => {
+			if (!isRangeMode) {
+				return false;
+			}
+			const date = new Date(viewYear, viewMonth, day);
+			// Only show range highlight when both start and end are selected
+			if (rangeStart && rangeEnd) {
+				return (
+					isDateInRange(date, rangeStart, rangeEnd) &&
+					!isSameDay(date, rangeStart) &&
+					!isSameDay(date, rangeEnd)
+				);
+			}
+			return false;
+		},
+		[isRangeMode, rangeStart, rangeEnd, viewMonth, viewYear]
+	);
 
-  return (
-    <div className="flex flex-col">
-      {/* Calendar Header */}
-      <div className="flex items-center justify-between border-(--border-1) border-b px-[12px] py-[10px]">
-        {showNavigation === "left" || showNavigation === "both" ? (
-          <button
-            type="button"
-            className="flex h-[24px] w-[24px] items-center justify-center rounded-[4px] text-(--text-muted) transition-colors hover:bg-(--surface-5) hover:text-(--text-primary)"
-            onClick={onPrevMonth}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-        ) : (
-          <div className="h-[24px] w-[24px]" />
-        )}
-        <span className="font-medium text-(--text-primary) text-[13px]">
-          {MONTHS[viewMonth]} {viewYear}
-        </span>
-        {showNavigation === "right" || showNavigation === "both" ? (
-          <button
-            type="button"
-            className="flex h-[24px] w-[24px] items-center justify-center rounded-[4px] text-(--text-muted) transition-colors hover:bg-(--surface-5) hover:text-(--text-primary)"
-            onClick={onNextMonth}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        ) : (
-          <div className="h-[24px] w-[24px]" />
-        )}
-      </div>
+	return (
+		<div className="flex flex-col">
+			{/* Calendar Header */}
+			<div className="flex items-center justify-between border-border-1 border-b px-3 py-2.5">
+				{showNavigation === 'left' || showNavigation === 'both' ? (
+					<button
+						type="button"
+						className="flex h-6 w-6 items-center justify-center rounded-sm text-text-muted transition-colors hover:bg-surface-5 hover:text-text-primary"
+						onClick={onPrevMonth}
+					>
+						<ChevronLeft className="h-4 w-4" />
+					</button>
+				) : (
+					<div className="h-6 w-6" />
+				)}
+				<span className="font-medium text-text-primary text-[13px]">
+					{MONTHS[viewMonth]} {viewYear}
+				</span>
+				{showNavigation === 'right' || showNavigation === 'both' ? (
+					<button
+						type="button"
+						className="flex h-6 w-6 items-center justify-center rounded-sm text-text-muted transition-colors hover:bg-surface-5 hover:text-text-primary"
+						onClick={onNextMonth}
+					>
+						<ChevronRight className="h-4 w-4" />
+					</button>
+				) : (
+					<div className="h-6 w-6" />
+				)}
+			</div>
 
-      {/* Day Headers */}
-      <div className="grid grid-cols-7 px-[8px] pt-[8px]">
-        {DAYS.map((day) => (
-          <div
-            key={day}
-            className="flex h-[28px] items-center justify-center text-(--text-muted) text-[11px]"
-          >
-            {day}
-          </div>
-        ))}
-      </div>
+			{/* Day Headers */}
+			<div className="grid grid-cols-7 px-2 pt-2">
+				{DAYS.map((day) => (
+					<div
+						key={day}
+						className="flex h-7 items-center justify-center text-text-muted text-[11px]"
+					>
+						{day}
+					</div>
+				))}
+			</div>
 
-      {/* Calendar Grid */}
-      <div className="grid grid-cols-7 px-[8px] pb-[8px]">
-        {calendarDays.map((day, index) => {
-          const inRange = day !== null && isInRange(day);
-          const isStart = day !== null && isRangeStart(day);
-          const isEnd = day !== null && isRangeEnd(day);
-          const hasRangeHighlight = inRange || isStart || isEnd;
+			{/* Calendar Grid */}
+			<div className="grid grid-cols-7 px-2 pb-2">
+				{calendarDays.map((day, index) => {
+					const inRange = day !== null && isInRange(day);
+					const isStart = day !== null && isRangeStart(day);
+					const isEnd = day !== null && isRangeEnd(day);
+					const hasRangeHighlight = inRange || isStart || isEnd;
 
-          return (
-            <div
-              key={index}
-              className={cn(
-                "relative flex h-[32px] items-center justify-center",
-                isRangeMode &&
-                  hasRangeHighlight &&
-                  "before:absolute before:inset-y-[2px] before:right-0 before:left-0 before:bg-[#60a5fa]/25",
-                isRangeMode && isStart && "before:left-[2px] before:rounded-l-[4px]",
-                isRangeMode && isEnd && "before:right-[2px] before:rounded-r-[4px]",
-                isRangeMode && isStart && !rangeEnd && "before:right-[2px] before:rounded-r-[4px]",
-                isRangeMode && isStart && isEnd && "before:rounded-[4px]"
-              )}
-            >
-              {day !== null && (
-                <button
-                  type="button"
-                  className={cn(
-                    "relative z-10 flex h-[28px] w-[28px] items-center justify-center rounded-[4px] text-[12px] transition-colors",
-                    isRangeMode
-                      ? isStart || isEnd
-                        ? "bg-(--brand-secondary) text-(--bg)"
-                        : inRange
-                          ? "text-(--text-primary) hover:bg-[#60a5fa]/40"
-                          : "text-(--text-primary) hover:bg-(--surface-5)"
-                      : isSelected(day)
-                        ? "bg-(--brand-secondary) text-(--bg)"
-                        : isToday(day)
-                          ? "bg-(--surface-5) text-(--text-primary)"
-                          : "text-(--text-primary) hover:bg-(--surface-5)"
-                  )}
-                  onClick={() => onSelectDate(day)}
-                  onMouseEnter={() => onHoverDate?.(day)}
-                  onMouseLeave={() => onHoverDate?.(null)}
-                >
-                  {day}
-                </button>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+					return (
+						<div
+							key={day !== null ? `day-${day}` : `empty-${index}`}
+							className={cn(
+								'relative flex h-8 items-center justify-center',
+								isRangeMode &&
+									hasRangeHighlight &&
+									'before:absolute before:inset-y-0.5 before:right-0 before:left-0 before:bg-[#60a5fa]/25',
+								isRangeMode && isStart && 'before:left-0.5 before:rounded-l-sm',
+								isRangeMode && isEnd && 'before:right-0.5 before:rounded-r-sm',
+								isRangeMode &&
+									isStart &&
+									!rangeEnd &&
+									'before:right-0.5 before:rounded-r-sm',
+								isRangeMode && isStart && isEnd && 'before:rounded-sm'
+							)}
+						>
+							{day !== null && (
+								<button
+									type="button"
+									className={cn(
+										'relative z-10 flex h-7 w-7 items-center justify-center rounded-sm text-[12px] transition-colors',
+										isRangeMode
+											? isStart || isEnd
+												? 'bg-brand-secondary text-bg'
+												: inRange
+													? 'text-text-primary hover:bg-[#60a5fa]/40'
+													: 'text-text-primary hover:bg-surface-5'
+											: isSelected(day)
+												? 'bg-brand-secondary text-bg'
+												: isToday(day)
+													? 'bg-surface-5 text-text-primary'
+													: 'text-text-primary hover:bg-surface-5'
+									)}
+									onClick={() => onSelectDate(day)}
+								>
+									{day}
+								</button>
+							)}
+						</div>
+					);
+				})}
+			</div>
+		</div>
+	);
 }
 
 /**
@@ -483,396 +520,420 @@ function CalendarMonth({
  * Provides a calendar dropdown for date selection.
  * Supports both single date and date range modes.
  */
-const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>((props, ref) => {
-  const {
-    className,
-    variant,
-    size,
-    placeholder = props.mode === "range" ? "Select date range" : "Select date",
-    disabled,
-    showTrigger = true,
-    open: controlledOpen,
-    onOpenChange,
-    inline = false,
-    mode: _mode,
-    ...rest
-  } = props;
+const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(
+	(props, ref) => {
+		const {
+			className,
+			variant,
+			size,
+			placeholder = props.mode === 'range'
+				? 'Select date range'
+				: 'Select date',
+			disabled,
+			showTrigger = true,
+			open: controlledOpen,
+			onOpenChange,
+			inline = false,
+			mode: _mode,
+			...rest
+		} = props;
 
-  const {
-    value: _value,
-    onChange: _onChange,
-    startDate: _startDate,
-    endDate: _endDate,
-    onRangeChange: _onRangeChange,
-    onCancel: _onCancel,
-    onClear: _onClear,
-    ...htmlProps
-  } = rest as any;
+		const {
+			value: _value,
+			onChange: _onChange,
+			startDate: _startDate,
+			endDate: _endDate,
+			onRangeChange: _onRangeChange,
+			onCancel: _onCancel,
+			onClear: _onClear,
+			...htmlProps
+		} = rest as DatePickerBaseProps & {
+			value?: string | Date;
+			onChange?: (value: string) => void;
+			startDate?: string | Date;
+			endDate?: string | Date;
+			onRangeChange?: (startDate: string, endDate: string) => void;
+			onCancel?: () => void;
+			onClear?: () => void;
+		};
 
-  const isRangeMode = props.mode === "range";
+		const isRangeMode = props.mode === 'range';
+		const isControlled = controlledOpen !== undefined;
+		const [internalOpen, setInternalOpen] = React.useState(false);
+		const open = isControlled ? controlledOpen : internalOpen;
 
-  const isControlled = controlledOpen !== undefined;
-  const [internalOpen, setInternalOpen] = React.useState(false);
-  const open = isControlled ? controlledOpen : internalOpen;
+		const setOpen = React.useCallback(
+			(value: boolean) => {
+				if (!isControlled) {
+					setInternalOpen(value);
+				}
+				onOpenChange?.(value);
+			},
+			[isControlled, onOpenChange]
+		);
 
-  const setOpen = React.useCallback(
-    (value: boolean) => {
-      if (!isControlled) {
-        setInternalOpen(value);
-      }
-      onOpenChange?.(value);
-    },
-    [isControlled, onOpenChange]
-  );
+		const selectedDate = !isRangeMode ? parseDate(props.value) : null;
 
-  const selectedDate = !isRangeMode ? parseDate(props.value) : null;
+		const initialStart = isRangeMode ? parseDate(props.startDate) : null;
+		const initialEnd = isRangeMode ? parseDate(props.endDate) : null;
+		const [rangeStart, setRangeStart] = React.useState<Date | null>(
+			initialStart
+		);
+		const [rangeEnd, setRangeEnd] = React.useState<Date | null>(initialEnd);
+		const [selectingEnd, setSelectingEnd] = React.useState(false);
 
-  const initialStart = isRangeMode ? parseDate(props.startDate) : null;
-  const initialEnd = isRangeMode ? parseDate(props.endDate) : null;
-  const [rangeStart, setRangeStart] = React.useState<Date | null>(initialStart);
-  const [rangeEnd, setRangeEnd] = React.useState<Date | null>(initialEnd);
-  const [hoverDate, setHoverDate] = React.useState<Date | null>(null);
-  const [selectingEnd, setSelectingEnd] = React.useState(false);
+		const [viewMonth, setViewMonth] = React.useState(() => {
+			const d = selectedDate || initialStart || new Date();
+			return d.getMonth();
+		});
+		const [viewYear, setViewYear] = React.useState(() => {
+			const d = selectedDate || initialStart || new Date();
+			return d.getFullYear();
+		});
 
-  const [viewMonth, setViewMonth] = React.useState(() => {
-    const d = selectedDate || initialStart || new Date();
-    return d.getMonth();
-  });
-  const [viewYear, setViewYear] = React.useState(() => {
-    const d = selectedDate || initialStart || new Date();
-    return d.getFullYear();
-  });
+		const rightViewMonth = viewMonth === 11 ? 0 : viewMonth + 1;
+		const rightViewYear = viewMonth === 11 ? viewYear + 1 : viewYear;
 
-  const rightViewMonth = viewMonth === 11 ? 0 : viewMonth + 1;
-  const rightViewYear = viewMonth === 11 ? viewYear + 1 : viewYear;
+		React.useEffect(() => {
+			if (open && isRangeMode) {
+				setRangeStart(initialStart);
+				setRangeEnd(initialEnd);
+				setSelectingEnd(false);
+				if (initialStart) {
+					setViewMonth(initialStart.getMonth());
+					setViewYear(initialStart.getFullYear());
+				} else {
+					const now = new Date();
+					setViewMonth(now.getMonth());
+					setViewYear(now.getFullYear());
+				}
+			}
+		}, [open, isRangeMode, initialStart, initialEnd]);
 
-  React.useEffect(() => {
-    if (open && isRangeMode) {
-      setRangeStart(initialStart);
-      setRangeEnd(initialEnd);
-      setSelectingEnd(false);
-      if (initialStart) {
-        setViewMonth(initialStart.getMonth());
-        setViewYear(initialStart.getFullYear());
-      } else {
-        const now = new Date();
-        setViewMonth(now.getMonth());
-        setViewYear(now.getFullYear());
-      }
-    }
-  }, [open, isRangeMode, initialStart, initialEnd]);
+		React.useEffect(() => {
+			if (!isRangeMode && selectedDate) {
+				setViewMonth(selectedDate.getMonth());
+				setViewYear(selectedDate.getFullYear());
+			}
+		}, [isRangeMode, selectedDate]);
 
-  React.useEffect(() => {
-    if (!isRangeMode && selectedDate) {
-      setViewMonth(selectedDate.getMonth());
-      setViewYear(selectedDate.getFullYear());
-    }
-  }, [isRangeMode, selectedDate]);
+		/**
+		 * Handles selection of a specific day in single mode.
+		 */
+		const handleSelectDateSingle = React.useCallback(
+			(day: number) => {
+				if (!isRangeMode && props.onChange) {
+					props.onChange(formatDateAsString(viewYear, viewMonth, day));
+					setOpen(false);
+				}
+			},
+			[isRangeMode, viewYear, viewMonth, props.onChange, setOpen]
+		);
 
-  /**
-   * Handles selection of a specific day in single mode.
-   */
-  const handleSelectDateSingle = React.useCallback(
-    (day: number) => {
-      if (!isRangeMode && props.onChange) {
-        props.onChange(formatDateAsString(viewYear, viewMonth, day));
-        setOpen(false);
-      }
-    },
-    [isRangeMode, viewYear, viewMonth, props.onChange, setOpen]
-  );
+		/**
+		 * Handles selection of a day in range mode.
+		 */
+		const handleSelectDateRange = React.useCallback(
+			(year: number, month: number, day: number) => {
+				const date = new Date(year, month, day);
 
-  /**
-   * Handles selection of a day in range mode.
-   */
-  const handleSelectDateRange = React.useCallback(
-    (year: number, month: number, day: number) => {
-      const date = new Date(year, month, day);
+				if (!selectingEnd || !rangeStart) {
+					setRangeStart(date);
+					setRangeEnd(null);
+					setSelectingEnd(true);
+				} else {
+					if (date < rangeStart) {
+						setRangeEnd(rangeStart);
+						setRangeStart(date);
+					} else {
+						setRangeEnd(date);
+					}
+					setSelectingEnd(false);
+				}
+			},
+			[selectingEnd, rangeStart]
+		);
 
-      if (!selectingEnd || !rangeStart) {
-        setRangeStart(date);
-        setRangeEnd(null);
-        setSelectingEnd(true);
-      } else {
-        if (date < rangeStart) {
-          setRangeEnd(rangeStart);
-          setRangeStart(date);
-        } else {
-          setRangeEnd(date);
-        }
-        setSelectingEnd(false);
-      }
-    },
-    [selectingEnd, rangeStart]
-  );
+		/**
+		 * Navigates to the previous month.
+		 */
+		const goToPrevMonth = React.useCallback(() => {
+			if (viewMonth === 0) {
+				setViewMonth(11);
+				setViewYear((prev) => prev - 1);
+			} else {
+				setViewMonth((prev) => prev - 1);
+			}
+		}, [viewMonth]);
 
-  /**
-   * Handles hover for range preview.
-   */
-  const handleHoverDate = React.useCallback((year: number, month: number, day: number | null) => {
-    if (day === null) {
-      setHoverDate(null);
-    } else {
-      setHoverDate(new Date(year, month, day));
-    }
-  }, []);
+		/**
+		 * Navigates to the next month.
+		 */
+		const goToNextMonth = React.useCallback(() => {
+			if (viewMonth === 11) {
+				setViewMonth(0);
+				setViewYear((prev) => prev + 1);
+			} else {
+				setViewMonth((prev) => prev + 1);
+			}
+		}, [viewMonth]);
 
-  /**
-   * Navigates to the previous month.
-   */
-  const goToPrevMonth = React.useCallback(() => {
-    if (viewMonth === 0) {
-      setViewMonth(11);
-      setViewYear((prev) => prev - 1);
-    } else {
-      setViewMonth((prev) => prev - 1);
-    }
-  }, [viewMonth]);
+		/**
+		 * Selects today's date (single mode only).
+		 */
+		const handleSelectToday = React.useCallback(() => {
+			if (!isRangeMode && props.onChange) {
+				const now = new Date();
+				setViewMonth(now.getMonth());
+				setViewYear(now.getFullYear());
+				props.onChange(
+					formatDateAsString(now.getFullYear(), now.getMonth(), now.getDate())
+				);
+				setOpen(false);
+			}
+		}, [isRangeMode, props.onChange, setOpen]);
 
-  /**
-   * Navigates to the next month.
-   */
-  const goToNextMonth = React.useCallback(() => {
-    if (viewMonth === 11) {
-      setViewMonth(0);
-      setViewYear((prev) => prev + 1);
-    } else {
-      setViewMonth((prev) => prev + 1);
-    }
-  }, [viewMonth]);
+		/**
+		 * Applies the selected range (range mode only).
+		 */
+		const handleApplyRange = React.useCallback(() => {
+			if (isRangeMode && props.onRangeChange && rangeStart) {
+				const start = rangeEnd && rangeEnd < rangeStart ? rangeEnd : rangeStart;
+				const end =
+					rangeEnd && rangeEnd < rangeStart
+						? rangeStart
+						: rangeEnd || rangeStart;
+				props.onRangeChange(
+					formatDateAsString(
+						start.getFullYear(),
+						start.getMonth(),
+						start.getDate()
+					),
+					formatDateAsString(end.getFullYear(), end.getMonth(), end.getDate())
+				);
+				setOpen(false);
+			}
+		}, [isRangeMode, props.onRangeChange, rangeStart, rangeEnd, setOpen]);
 
-  /**
-   * Selects today's date (single mode only).
-   */
-  const handleSelectToday = React.useCallback(() => {
-    if (!isRangeMode && props.onChange) {
-      const now = new Date();
-      setViewMonth(now.getMonth());
-      setViewYear(now.getFullYear());
-      props.onChange(formatDateAsString(now.getFullYear(), now.getMonth(), now.getDate()));
-      setOpen(false);
-    }
-  }, [isRangeMode, props.onChange, setOpen]);
+		/**
+		 * Cancels range selection.
+		 */
+		const handleCancelRange = React.useCallback(() => {
+			if (isRangeMode && props.onCancel) {
+				props.onCancel();
+			}
+			setOpen(false);
+		}, [isRangeMode, props.onCancel, setOpen]);
 
-  /**
-   * Applies the selected range (range mode only).
-   */
-  const handleApplyRange = React.useCallback(() => {
-    if (isRangeMode && props.onRangeChange && rangeStart) {
-      const start = rangeEnd && rangeEnd < rangeStart ? rangeEnd : rangeStart;
-      const end = rangeEnd && rangeEnd < rangeStart ? rangeStart : rangeEnd || rangeStart;
-      props.onRangeChange(
-        formatDateAsString(start.getFullYear(), start.getMonth(), start.getDate()),
-        formatDateAsString(end.getFullYear(), end.getMonth(), end.getDate())
-      );
-      setOpen(false);
-    }
-  }, [isRangeMode, props.onRangeChange, rangeStart, rangeEnd, setOpen]);
+		/**
+		 * Clears the selected range.
+		 */
+		const handleClearRange = React.useCallback(() => {
+			setRangeStart(null);
+			setRangeEnd(null);
+			setSelectingEnd(false);
+			if (isRangeMode && props.onClear) {
+				props.onClear();
+			}
+		}, [isRangeMode, props.onClear]);
 
-  /**
-   * Cancels range selection.
-   */
-  const handleCancelRange = React.useCallback(() => {
-    if (isRangeMode && props.onCancel) {
-      props.onCancel();
-    }
-    setOpen(false);
-  }, [isRangeMode, props.onCancel, setOpen]);
+		/**
+		 * Handles keyboard events on the trigger.
+		 */
+		const handleKeyDown = React.useCallback(
+			(e: React.KeyboardEvent) => {
+				if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
+					e.preventDefault();
+					setOpen(!open);
+				}
+			},
+			[disabled, open, setOpen]
+		);
 
-  /**
-   * Clears the selected range.
-   */
-  const handleClearRange = React.useCallback(() => {
-    setRangeStart(null);
-    setRangeEnd(null);
-    setSelectingEnd(false);
-    if (isRangeMode && props.onClear) {
-      props.onClear();
-    }
-  }, [isRangeMode, props.onClear]);
+		/**
+		 * Handles click on the trigger.
+		 */
+		const handleTriggerClick = React.useCallback(() => {
+			if (!disabled) {
+				setOpen(!open);
+			}
+		}, [disabled, open, setOpen]);
 
-  /**
-   * Handles keyboard events on the trigger.
-   */
-  const handleKeyDown = React.useCallback(
-    (e: React.KeyboardEvent) => {
-      if (!disabled && (e.key === "Enter" || e.key === " ")) {
-        e.preventDefault();
-        setOpen(!open);
-      }
-    },
-    [disabled, open, setOpen]
-  );
+		const displayValue = isRangeMode
+			? formatDateRangeForDisplay(initialStart, initialEnd)
+			: formatDateForDisplay(selectedDate);
 
-  /**
-   * Handles click on the trigger.
-   */
-  const handleTriggerClick = React.useCallback(() => {
-    if (!disabled) {
-      setOpen(!open);
-    }
-  }, [disabled, open, setOpen]);
+		const calendarContent = isRangeMode ? (
+			<>
+				<div className="flex">
+					{/* Left Calendar */}
+					<CalendarMonth
+						viewMonth={viewMonth}
+						viewYear={viewYear}
+						rangeStart={rangeStart}
+						rangeEnd={rangeEnd}
+						isRangeMode={true}
+						onSelectDate={(day) =>
+							handleSelectDateRange(viewYear, viewMonth, day)
+						}
+						onPrevMonth={goToPrevMonth}
+						onNextMonth={goToNextMonth}
+						showNavigation="left"
+					/>
 
-  const displayValue = isRangeMode
-    ? formatDateRangeForDisplay(initialStart, initialEnd)
-    : formatDateForDisplay(selectedDate);
+					{/* Divider */}
+					<div className="w-px bg-border-1" />
 
-  const calendarContent = isRangeMode ? (
-    <>
-      <div className="flex">
-        {/* Left Calendar */}
-        <CalendarMonth
-          viewMonth={viewMonth}
-          viewYear={viewYear}
-          rangeStart={rangeStart}
-          rangeEnd={rangeEnd}
-          hoverDate={hoverDate}
-          isRangeMode
-          onSelectDate={(day) => handleSelectDateRange(viewYear, viewMonth, day)}
-          onHoverDate={(day) => handleHoverDate(viewYear, viewMonth, day)}
-          onPrevMonth={goToPrevMonth}
-          onNextMonth={goToNextMonth}
-          showNavigation="left"
-        />
+					{/* Right Calendar */}
+					<CalendarMonth
+						viewMonth={rightViewMonth}
+						viewYear={rightViewYear}
+						rangeStart={rangeStart}
+						rangeEnd={rangeEnd}
+						isRangeMode={true}
+						onSelectDate={(day) =>
+							handleSelectDateRange(rightViewYear, rightViewMonth, day)
+						}
+						onPrevMonth={goToPrevMonth}
+						onNextMonth={goToNextMonth}
+						showNavigation="right"
+					/>
+				</div>
 
-        {/* Divider */}
-        <div className="w-px bg-(--border-1)" />
+				{/* Actions */}
+				<div className="flex items-center justify-between border-border-1 border-t px-3 py-2">
+					<Button
+						variant="ghost"
+						size="sm"
+						onClick={handleClearRange}
+						disabled={!rangeStart && !rangeEnd}
+						className="text-text-secondary hover:text-text-primary"
+					>
+						Clear
+					</Button>
+					<div className="flex items-center gap-2">
+						<Button variant="outline" size="sm" onClick={handleCancelRange}>
+							Cancel
+						</Button>
+						<Button
+							variant="active"
+							size="sm"
+							onClick={handleApplyRange}
+							disabled={!rangeStart}
+						>
+							Apply
+						</Button>
+					</div>
+				</div>
+			</>
+		) : (
+			<>
+				<CalendarMonth
+					viewMonth={viewMonth}
+					viewYear={viewYear}
+					selectedDate={selectedDate}
+					onSelectDate={handleSelectDateSingle}
+					onPrevMonth={goToPrevMonth}
+					onNextMonth={goToNextMonth}
+				/>
 
-        {/* Right Calendar */}
-        <CalendarMonth
-          viewMonth={rightViewMonth}
-          viewYear={rightViewYear}
-          rangeStart={rangeStart}
-          rangeEnd={rangeEnd}
-          hoverDate={hoverDate}
-          isRangeMode
-          onSelectDate={(day) => handleSelectDateRange(rightViewYear, rightViewMonth, day)}
-          onHoverDate={(day) => handleHoverDate(rightViewYear, rightViewMonth, day)}
-          onPrevMonth={goToPrevMonth}
-          onNextMonth={goToNextMonth}
-          showNavigation="right"
-        />
-      </div>
+				{/* Today Button */}
+				<div className="border-border-1 border-t px-2 py-2">
+					<Button
+						variant="active"
+						className="w-full"
+						onClick={handleSelectToday}
+					>
+						Today
+					</Button>
+				</div>
+			</>
+		);
 
-      {/* Actions */}
-      <div className="flex items-center justify-between border-(--border-1) border-t px-[12px] py-[8px]">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleClearRange}
-          disabled={!rangeStart && !rangeEnd}
-          className="text-(--text-secondary) hover:text-(--text-primary)"
-        >
-          Clear
-        </Button>
-        <div className="flex items-center gap-[8px]">
-          <Button variant="outline" size="sm" onClick={handleCancelRange}>
-            Cancel
-          </Button>
-          <Button variant="active" size="sm" onClick={handleApplyRange} disabled={!rangeStart}>
-            Apply
-          </Button>
-        </div>
-      </div>
-    </>
-  ) : (
-    <>
-      <CalendarMonth
-        viewMonth={viewMonth}
-        viewYear={viewYear}
-        selectedDate={selectedDate}
-        onSelectDate={handleSelectDateSingle}
-        onPrevMonth={goToPrevMonth}
-        onNextMonth={goToNextMonth}
-      />
+		const popoverContent = (
+			<PopoverContent
+				side="bottom"
+				align="start"
+				sideOffset={4}
+				collisionPadding={16}
+				className={cn(
+					'rounded-md border border-border-1 p-0',
+					isRangeMode ? 'w-auto' : 'w-70'
+				)}
+			>
+				{calendarContent}
+			</PopoverContent>
+		);
 
-      {/* Today Button */}
-      <div className="border-(--border-1) border-t px-[8px] py-[8px]">
-        <Button variant="active" className="w-full" onClick={handleSelectToday}>
-          Today
-        </Button>
-      </div>
-    </>
-  );
+		if (inline) {
+			return (
+				<div
+					ref={ref}
+					className={cn(
+						'rounded-md border border-border-1 bg-surface-2',
+						isRangeMode ? 'w-auto' : 'w-70',
+						className
+					)}
+					{...htmlProps}
+				>
+					{calendarContent}
+				</div>
+			);
+		}
 
-  const popoverContent = (
-    <PopoverContent
-      side="bottom"
-      align="start"
-      sideOffset={4}
-      collisionPadding={16}
-      className={cn(
-        "rounded-[6px] border border-(--border-1) p-0",
-        isRangeMode ? "w-auto" : "w-[280px]"
-      )}
-    >
-      {calendarContent}
-    </PopoverContent>
-  );
+		if (!showTrigger) {
+			return (
+				<Popover open={open} onOpenChange={setOpen}>
+					<div ref={ref} {...htmlProps}>
+						<PopoverAnchor asChild={true}>
+							<div />
+						</PopoverAnchor>
+						{popoverContent}
+					</div>
+				</Popover>
+			);
+		}
 
-  if (inline) {
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          "rounded-[6px] border border-(--border-1) bg-(--surface-2)",
-          isRangeMode ? "w-auto" : "w-[280px]",
-          className
-        )}
-        {...htmlProps}
-      >
-        {calendarContent}
-      </div>
-    );
-  }
+		return (
+			<Popover open={open} onOpenChange={setOpen}>
+				<div ref={ref} className="relative w-full" {...htmlProps}>
+					<PopoverAnchor asChild={true}>
+						<div
+							role="button"
+							tabIndex={disabled ? -1 : 0}
+							aria-disabled={disabled}
+							className={cn(
+								datePickerVariants({ variant, size }),
+								'relative cursor-pointer items-center justify-between',
+								disabled && 'cursor-not-allowed opacity-50',
+								className
+							)}
+							onClick={handleTriggerClick}
+							onKeyDown={handleKeyDown}
+						>
+							<span
+								className={cn(
+									'flex-1 truncate',
+									!displayValue && 'text-text-muted'
+								)}
+							>
+								{displayValue || placeholder}
+							</span>
+							<ChevronDown
+								className={cn(
+									'ml-2 h-4 w-4 shrink-0 opacity-50 transition-transform',
+									open && 'rotate-180'
+								)}
+							/>
+						</div>
+					</PopoverAnchor>
+					{popoverContent}
+				</div>
+			</Popover>
+		);
+	}
+);
 
-  if (!showTrigger) {
-    return (
-      <Popover open={open} onOpenChange={setOpen}>
-        <div ref={ref} {...htmlProps}>
-          <PopoverAnchor asChild>
-            <div />
-          </PopoverAnchor>
-          {popoverContent}
-        </div>
-      </Popover>
-    );
-  }
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <div ref={ref} className="relative w-full" {...htmlProps}>
-        <PopoverAnchor asChild>
-          <div
-            role="button"
-            tabIndex={disabled ? -1 : 0}
-            aria-disabled={disabled}
-            className={cn(
-              datePickerVariants({ variant, size }),
-              "relative cursor-pointer items-center justify-between",
-              disabled && "cursor-not-allowed opacity-50",
-              className
-            )}
-            onClick={handleTriggerClick}
-            onKeyDown={handleKeyDown}
-          >
-            <span className={cn("flex-1 truncate", !displayValue && "text-(--text-muted)")}>
-              {displayValue || placeholder}
-            </span>
-            <ChevronDown
-              className={cn(
-                "ml-[8px] h-4 w-4 shrink-0 opacity-50 transition-transform",
-                open && "rotate-180"
-              )}
-            />
-          </div>
-        </PopoverAnchor>
-        {popoverContent}
-      </div>
-    </Popover>
-  );
-});
-
-DatePicker.displayName = "DatePicker";
+DatePicker.displayName = 'DatePicker';
 
 export { DatePicker, datePickerVariants };

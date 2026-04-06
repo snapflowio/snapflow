@@ -54,7 +54,6 @@ export interface ExecutionArtifacts {
 
 export interface ExecuteResponse extends ToolboxExecuteResponse {
 	readonly result: string;
-	readonly exitCode?: number;
 	readonly stderr?: string;
 	readonly artifacts?: ExecutionArtifacts;
 }

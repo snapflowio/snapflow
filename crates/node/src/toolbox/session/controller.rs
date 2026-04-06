@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: AGPL-3.0
 
 use super::types::*;
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use crate::common::shell::get_shell;
 use crate::toolbox::AppState;
 use axum::{

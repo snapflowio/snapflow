@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: AGPL-3.0
 
 use super::types::validate_path;
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use axum::{Json, extract::Multipart, http::StatusCode, response::IntoResponse};
 use std::collections::HashMap;
 use std::path::Path;
@@ -36,7 +36,7 @@ pub async fn bulk_upload(mut multipart: Multipart) -> Result<impl IntoResponse, 
                         destinations.insert(idx, validated.to_string_lossy().to_string());
                     }
                     Err(e) => {
-                        errors.push(format!("path[{idx}]: {}", e.message));
+                        errors.push(format!("path[{idx}]: {e}"));
                     }
                 },
                 Err(e) => {

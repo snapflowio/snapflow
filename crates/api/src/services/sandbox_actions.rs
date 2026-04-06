@@ -229,7 +229,9 @@ pub async fn sync_instance_state(infra: &Infra, sandbox_id: Uuid) {
             return;
         };
 
-        let sandbox = if let Ok(Some(s)) = repositories::sandbox::find_by_id(&infra.pool, sandbox_id).await {
+        let sandbox = if let Ok(Some(s)) =
+            repositories::sandbox::find_by_id(&infra.pool, sandbox_id).await
+        {
             s
         } else {
             if let Err(e) = lock.unlock(&lock_key, &lock_code).await {

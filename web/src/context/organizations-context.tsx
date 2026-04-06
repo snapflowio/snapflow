@@ -7,12 +7,14 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { createContext } from "react";
-import { Organization } from "@snapflow/api-client";
+import type { Organization } from '@snapflow/api-client';
+import { createContext } from 'react';
 
-export interface IOrganizationsContext {
-  organizations: Organization[];
-  refreshOrganizations: () => Promise<Organization[]>;
+export interface OrganizationsContextImplementation {
+	organizations: Organization[];
+	refreshOrganizations: () => Promise<Organization[]>;
 }
 
-export const OrganizationsContext = createContext<IOrganizationsContext | undefined>(undefined);
+export const OrganizationsContext = createContext<
+	OrganizationsContextImplementation | undefined
+>(undefined);

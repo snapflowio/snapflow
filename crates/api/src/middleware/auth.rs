@@ -12,6 +12,7 @@ use axum::middleware::Next;
 use axum::response::Response;
 use redis::AsyncCommands;
 use sha2::{Digest, Sha256};
+use subtle::ConstantTimeEq;
 use uuid::Uuid;
 
 use crate::constants::auth as auth_constants;
@@ -233,11 +234,5 @@ async fn update_last_used_with_cooldown(state: &AppState, api_key: &crate::model
 
 /// Constant-time byte comparison to prevent timing side-channel attacks on secrets.
 fn constant_time_eq(a: &[u8], b: &[u8]) -> bool {
-    if a.len() != b.len() {
-        return false;
-    }
-    a.iter()
-        .zip(b.iter())
-        .fold(0u8, |acc, (x, y)| acc | (x ^ y))
-        == 0
+    a.ct_eq(b).into()
 }

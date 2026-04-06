@@ -17,7 +17,7 @@ jobs:
     name: License Header Check
     runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - name: Check AGPL-3.0 license headers
         uses: apache/skywalking-eyes/header@main
@@ -35,7 +35,7 @@ jobs:
     name: Lint & Format Check
     runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - uses: oven-sh/setup-bun@v2
         with:
@@ -44,19 +44,35 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Run Biome lint
-        run: bun lint
+      - name: Run Biome lint & format check
+        run: bunx biome ci .
 
-      - name: Check Biome formatting
-        run: |
-          bun format --write=false
-          git diff --exit-code || (echo "Code is not formatted! Please run 'bun format' or 'bun lint:fix' and commit" && exit 1)
+  sdk:
+    name: SDK Build & Validate
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.10
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build SDK
+        run: bun run build
+        working-directory: sdk/typescript-sdk
+
+      - name: Validate package
+        run: bunx publint
+        working-directory: sdk/typescript-sdk
 
   rust:
     name: Rust Check
     runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - uses: dtolnay/rust-toolchain@stable
         with:

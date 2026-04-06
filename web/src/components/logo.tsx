@@ -7,41 +7,41 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { Link } from "react-router";
+import { Link } from 'react-router';
 
 export function Logo({
-  size = 28,
-  asLink = true,
-  className,
+	size = 28,
+	asLink = true,
+	className,
 }: {
-  size?: number;
-  asLink?: boolean;
-  className?: string;
+	size?: number;
+	asLink?: boolean;
+	className?: string;
 }) {
-  const logoImage = (
-    <img
-      src={"/branding/logo.png"}
-      alt="snapflow logo"
-      width={size}
-      height={size}
-      draggable="false"
-      className={className}
-    />
-  );
+	const logoImage = (
+		<img
+			src={'/branding/logo.png'}
+			alt="snapflow logo"
+			width={size}
+			height={size}
+			draggable="false"
+			className={className}
+		/>
+	);
 
-  if (!asLink) {
-    return (
-      <>
-        {logoImage}
-        <span className="sr-only">Snapflow logo</span>
-      </>
-    );
-  }
+	if (!asLink) {
+		return (
+			<>
+				{logoImage}
+				<span className="sr-only">Snapflow logo</span>
+			</>
+		);
+	}
 
-  return (
-    <Link to={"/"}>
-      {logoImage}
-      <span className="sr-only">Snapflow logo</span>
-    </Link>
-  );
+	return (
+		<Link to={'/'}>
+			{logoImage}
+			<span className="sr-only">Snapflow logo</span>
+		</Link>
+	);
 }

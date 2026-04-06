@@ -9,7 +9,7 @@ use super::{
     helpers::{git, git_with_creds},
     types::GitRepoRequest,
 };
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use axum::{Json, http::StatusCode, response::IntoResponse};
 
 #[utoipa::path(
@@ -36,7 +36,7 @@ pub async fn pull(Json(req): Json<GitRepoRequest>) -> Result<impl IntoResponse, 
     } else {
         let result = git(&req.path, &["pull", "origin"]).await;
         if let Err(e) = &result
-            && !e.message.contains("Already up to date")
+            && !e.to_string().contains("Already up to date")
         {
             result?;
         }

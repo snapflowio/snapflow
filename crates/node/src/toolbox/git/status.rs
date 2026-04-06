@@ -9,7 +9,7 @@ use super::{
     helpers::{git, map_status_char},
     types::{FileStatus, GitStatus, PathQuery},
 };
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use axum::{Json, extract::Query};
 
 #[utoipa::path(

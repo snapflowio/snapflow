@@ -327,7 +327,11 @@ async fn forward_to_executor(
     let use_tls = scheme == "https";
 
     // Ensure host:port format — default ports are implicit in authority when omitted
-    let hostname = authority.split(':').next().unwrap_or(&authority).to_string();
+    let hostname = authority
+        .split(':')
+        .next()
+        .unwrap_or(&authority)
+        .to_string();
     let target_addr = if authority.contains(':') {
         authority.clone()
     } else if use_tls {

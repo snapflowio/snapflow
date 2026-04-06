@@ -14,7 +14,7 @@ use tracing::warn;
 
 use crate::models::SandboxState;
 
-use super::{DEFAULT_BASE_DELAY, DEFAULT_MAX_DELAY, DEFAULT_MAX_RETRIES, DockerClient};
+use super::DockerClient;
 
 const WAIT_TIMEOUT: Duration = Duration::from_secs(30);
 
@@ -55,22 +55,15 @@ impl DockerClient {
         let api = &self.api_client;
         let id = container_id.to_owned();
         let retry_result = self
-            .retry_with_backoff(
-                "stop",
-                container_id,
-                DEFAULT_MAX_RETRIES,
-                DEFAULT_BASE_DELAY,
-                DEFAULT_MAX_DELAY,
-                || {
-                    let id = id.clone();
-                    async move {
-                        api.stop_container(&id, Some(StopContainerOptions { t: 2 }))
-                            .await
-                            .map_err(|e| anyhow::anyhow!("{e}"))?;
-                        Ok(())
-                    }
-                },
-            )
+            .retryable("stop", container_id, || {
+                let id = id.clone();
+                async move {
+                    api.stop_container(&id, Some(StopContainerOptions { t: 2 }))
+                        .await
+                        .map_err(|e| anyhow::anyhow!("{e}"))?;
+                    Ok(())
+                }
+            })
             .await;
 
         if let Err(e) = retry_result {

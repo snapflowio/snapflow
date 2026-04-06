@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: AGPL-3.0
 
 use super::types::{FileInfo, PathQuery, validate_path};
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use axum::{Json, extract::Query};
 use std::os::unix::fs::MetadataExt;
 use std::path::Path;

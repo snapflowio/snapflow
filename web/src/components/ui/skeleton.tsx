@@ -7,16 +7,22 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 /**
  * Placeholder loading skeleton with a subtle pulse animation.
  * @param props - Standard div attributes including className for sizing.
  */
-function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div className={cn("animate-pulse rounded-md bg-(--surface-active)", className)} {...props} />
-  );
+function Skeleton({
+	className,
+	...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+	return (
+		<div
+			className={cn('animate-pulse rounded-md bg-surface-active', className)}
+			{...props}
+		/>
+	);
 }
 
 export { Skeleton };

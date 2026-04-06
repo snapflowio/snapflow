@@ -29,6 +29,7 @@ envconfig = { workspace = true }
 
 # Error handling
 anyhow = { workspace = true }
+snapflow-errors = { path = "../errors", features = ["utoipa"] }
 
 # Logging and tracing
 tracing = { workspace = true }

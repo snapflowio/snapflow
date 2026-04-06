@@ -7,16 +7,20 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { Navigate } from "react-router";
-import { Path } from "@/constants/paths";
-import { useSelectedOrganization } from "@/hooks/use-selected-organization";
+import { Navigate } from 'react-router';
+import { Path } from '@/constants/paths';
+import { useSelectedOrganization } from '@/hooks/use-selected-organization';
 
-export function NotPersonalOrganizationPageWrapper({ children }: { children: React.ReactNode }) {
-  const { selectedOrganization } = useSelectedOrganization();
+export function NotPersonalOrganizationPageWrapper({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
+	const { selectedOrganization } = useSelectedOrganization();
 
-  if (selectedOrganization?.personal) {
-    return <Navigate to={Path.DASHBOARD} replace />;
-  }
+	if (selectedOrganization?.personal) {
+		return <Navigate to={Path.DASHBOARD} replace={true} />;
+	}
 
-  return children;
+	return children;
 }

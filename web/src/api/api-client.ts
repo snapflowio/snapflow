@@ -36,7 +36,7 @@ export class ApiClient {
 	private _oauthApi: OauthApi;
 	private _billingApi: BillingApi;
 
-	private _refreshPromise: Promise<void> | null = null;
+	private _refreshPromise: Promise<unknown> | null = null;
 	private _onAuthFailure: (() => void) | null = null;
 
 	constructor() {
@@ -69,7 +69,6 @@ export class ApiClient {
 						if (!this._refreshPromise) {
 							this._refreshPromise = this.axiosInstance
 								.post(`${env.VITE_API_URL}/auth/refresh`)
-								.then(() => {})
 								.finally(() => {
 									this._refreshPromise = null;
 								});

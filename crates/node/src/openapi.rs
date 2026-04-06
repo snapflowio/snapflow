@@ -84,7 +84,7 @@ use utoipa::OpenApi;
         crate::computer::routes::get_windows,
     ),
     components(schemas(
-        crate::common::errors::ErrorResponse,
+        snapflow_errors::ErrorResponse,
         crate::toolbox::fs::types::FileInfo,
         crate::toolbox::fs::types::Match,
         crate::toolbox::fs::types::SearchFilesResponse,

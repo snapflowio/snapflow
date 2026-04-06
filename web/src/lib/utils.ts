@@ -26,15 +26,18 @@ export function getRelativeTimeString(
 	timestamp: string | Date | null | undefined,
 	fallback = '-'
 ): { date: Date; relativeTimeString: string } {
-	if (!timestamp) return { date: new Date(), relativeTimeString: fallback };
+	if (!timestamp) {
+		return { date: new Date(), relativeTimeString: fallback };
+	}
 
 	let date: Date;
 	if (timestamp instanceof Date) {
 		date = timestamp;
 	} else {
 		date = new Date(timestamp);
-		if (Number.isNaN(date.getTime()))
+		if (Number.isNaN(date.getTime())) {
 			return { date: new Date(), relativeTimeString: fallback };
+		}
 	}
 
 	const now = new Date();
@@ -69,11 +72,17 @@ export function getRelativeTimeString(
 }
 
 export function capitalize(value: string): string {
-	if (!value) return value;
+	if (!value) {
+		return value;
+	}
+
 	return value[0].toUpperCase() + value.slice(1);
 }
 
 export function getMaskedApiKey(key: string): string {
-	if (key.length <= 6) return '*'.repeat(key.length);
+	if (key.length <= 6) {
+		return '*'.repeat(key.length);
+	}
+
 	return `${key.slice(0, 3)}${'*'.repeat(Math.max(0, key.length - 6))}${key.slice(-3)}`;
 }

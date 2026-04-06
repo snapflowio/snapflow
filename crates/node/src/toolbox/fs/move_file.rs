@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: AGPL-3.0
 
 use super::types::{MoveQuery, validate_path};
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use axum::{Json, extract::Query, http::StatusCode, response::IntoResponse};
 use std::path::Path;
 

@@ -39,17 +39,17 @@ export interface ChangePassword {
 	 * @type {string}
 	 * @memberof ChangePassword
 	 */
-	current_password: string;
+	currentPassword: string;
 	/**
 	 *
 	 * @type {string}
 	 * @memberof ChangePassword
 	 */
-	new_password: string;
+	newPassword: string;
 	/**
 	 *
 	 * @type {boolean}
 	 * @memberof ChangePassword
 	 */
-	revoke_other_sessions?: boolean;
+	revokeOtherSessions?: boolean;
 }

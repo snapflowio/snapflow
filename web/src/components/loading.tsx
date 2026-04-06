@@ -7,12 +7,12 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { Loader2 } from "lucide-react";
+import { Loader2 } from 'lucide-react';
 
 export function Loading() {
-  return (
-    <div className="flex h-screen w-full items-center justify-center bg-bg">
-      <Loader2 className="h-6 w-6 animate-spin text-text-icon" />
-    </div>
-  );
+	return (
+		<div className="flex h-screen w-full items-center justify-center bg-bg">
+			<Loader2 className="h-6 w-6 animate-spin text-text-icon" />
+		</div>
+	);
 }

@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: AGPL-3.0
 
 use super::types::{PathQuery, validate_path};
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use axum::{body::Body, extract::Query, http::header, response::IntoResponse};
 use tokio_util::io::ReaderStream;
 

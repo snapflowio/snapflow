@@ -9,7 +9,7 @@ use super::{
     helpers::{git, git_with_creds},
     types::GitCloneRequest,
 };
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use axum::{Json, http::StatusCode, response::IntoResponse};
 
 #[utoipa::path(

@@ -7,7 +7,7 @@
 		"defaultBranch": "main"
 	},
 	"files": {
-		"includes": ["**/*.{js,mjs,ts,json,jsonc}"],
+		"includes": ["**/*.{js,mjs,jsx,ts,tsx,json,jsonc}"],
 		"maxSize": 1048576,
 		"ignoreUnknown": true
 	},
@@ -20,7 +20,11 @@
 	"linter": {
 		"rules": {
 			"a11y": {
-				"recommended": true
+				"recommended": true,
+				"noStaticElementInteractions": "off",
+				"useKeyWithClickEvents": "off",
+				"useSemanticElements": "off",
+				"noSvgWithoutTitle": "off"
 			},
 			"complexity": {
 				"noExtraBooleanCast": "error",
@@ -73,7 +77,7 @@
 				"useConsistentArrayType": "error",
 				"useForOf": "error",
 				"useImportType": "error",
-				"useNamingConvention": "warn"
+				"useNamingConvention": "off"
 			},
 			"suspicious": {
 				"noAssignInExpressions": "error",
@@ -109,7 +113,7 @@
 				"useGetterReturn": "error"
 			},
 			"nursery": {
-				"useExplicitType": "warn"
+				"useExplicitType": "off"
 			}
 		}
 	},
@@ -184,6 +188,16 @@
 			"json": {
 				"parser": {
 					"allowComments": false
+				}
+			}
+		},
+		{
+			"includes": ["**/ui/code/code.tsx"],
+			"linter": {
+				"rules": {
+					"security": {
+						"noDangerouslySetInnerHtml": "off"
+					}
 				}
 			}
 		}

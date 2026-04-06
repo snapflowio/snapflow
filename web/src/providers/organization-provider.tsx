@@ -7,46 +7,49 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { ReactNode, useCallback, useMemo, useState } from "react";
-import { Organization } from "@snapflow/api-client";
-import { suspend } from "suspend-react";
-import { handleApiError } from "@/lib/errors";
-import { apiClient } from "@/api/api-client";
-import { IOrganizationsContext, OrganizationsContext } from "@/context/organizations-context";
+import type { Organization } from '@snapflow/api-client';
+import { type ReactNode, useCallback, useMemo, useState } from 'react';
+import { suspend } from 'suspend-react';
+import { apiClient } from '@/api/api-client';
+import {
+	OrganizationsContext,
+	type OrganizationsContextImplementation,
+} from '@/context/organizations-context';
+import { handleApiError } from '@/lib/errors';
 
 export function OrganizationsProvider(props: { children: ReactNode }) {
-  const organizationsApi = apiClient.organizationsApi;
+	const organizationsApi = apiClient.organizationsApi;
 
-  const getOrganizations = useCallback(async () => {
-    try {
-      return (await organizationsApi.listOrganizations()).data;
-    } catch (error) {
-      handleApiError(error, "Failed to fetch your organizations");
-      throw error;
-    }
-  }, [organizationsApi]);
+	const getOrganizations = useCallback(async () => {
+		try {
+			return (await organizationsApi.listOrganizations()).data;
+		} catch (error) {
+			handleApiError(error, 'Failed to fetch your organizations');
+			throw error;
+		}
+	}, []);
 
-  const [organizations, setOrganizations] = useState<Organization[]>(
-    suspend(getOrganizations, [organizationsApi, "organizations"])
-  );
+	const [organizations, setOrganizations] = useState<Organization[]>(
+		suspend(getOrganizations, [organizationsApi, 'organizations'])
+	);
 
-  const refreshOrganizations = useCallback(async () => {
-    const orgs = await getOrganizations();
-    setOrganizations(orgs);
-    return orgs;
-  }, [getOrganizations]);
+	const refreshOrganizations = useCallback(async () => {
+		const orgs = await getOrganizations();
+		setOrganizations(orgs);
+		return orgs;
+	}, [getOrganizations]);
 
-  const contextValue: IOrganizationsContext = useMemo(() => {
-    return {
-      organizations,
-      setOrganizations,
-      refreshOrganizations,
-    };
-  }, [organizations, refreshOrganizations]);
+	const contextValue: OrganizationsContextImplementation = useMemo(() => {
+		return {
+			organizations,
+			setOrganizations,
+			refreshOrganizations,
+		};
+	}, [organizations, refreshOrganizations]);
 
-  return (
-    <OrganizationsContext.Provider value={contextValue}>
-      {props.children}
-    </OrganizationsContext.Provider>
-  );
+	return (
+		<OrganizationsContext.Provider value={contextValue}>
+			{props.children}
+		</OrganizationsContext.Provider>
+	);
 }

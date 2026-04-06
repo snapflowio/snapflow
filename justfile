@@ -74,6 +74,10 @@ build-docs:
     cd docs && bun run build
 
 [group('build')]
+build-sdk:
+    cd sdk/typescript-sdk && bun run build
+
+[group('build')]
 build-all: build build-web build-docs
 
 # --- Dist ---
@@ -272,6 +276,14 @@ install:
 [group('setup')]
 install-docs:
     cd docs && bun install
+
+# --- Maintenance ---
+
+# --- Publish ---
+
+[group('publish')]
+publish-sdk: build-sdk
+    cd sdk/typescript-sdk && bun publish --access public
 
 # --- Maintenance ---
 

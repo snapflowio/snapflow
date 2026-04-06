@@ -89,10 +89,18 @@ export type BillingTierId = keyof typeof BILLING_TIERS;
 export type BillingTier = (typeof BILLING_TIERS)[BillingTierId];
 
 export function getTierForBalance(balance: number): BillingTier {
-	if (balance >= BILLING_TIERS.MAX.minWalletBalance) return BILLING_TIERS.MAX;
-	if (balance >= BILLING_TIERS.ELITE.minWalletBalance)
+	if (balance >= BILLING_TIERS.MAX.minWalletBalance) {
+		return BILLING_TIERS.MAX;
+	}
+
+	if (balance >= BILLING_TIERS.ELITE.minWalletBalance) {
 		return BILLING_TIERS.ELITE;
-	if (balance >= BILLING_TIERS.PRO.minWalletBalance) return BILLING_TIERS.PRO;
+	}
+
+	if (balance >= BILLING_TIERS.PRO.minWalletBalance) {
+		return BILLING_TIERS.PRO;
+	}
+
 	return BILLING_TIERS.FREE;
 }
 
@@ -130,7 +138,10 @@ export function presetHourlyCost(cpu: number, memoryMb: number): number {
 }
 
 export function formatRate(amount: number): string {
-	if (amount < 0.01) return `$${amount.toFixed(3)}`;
+	if (amount < 0.01) {
+		return `$${amount.toFixed(3)}`;
+	}
+
 	return `$${amount.toFixed(2)}`;
 }
 
@@ -138,5 +149,6 @@ export function formatDollars(amount: number): string {
 	if (amount !== 0 && Math.abs(amount) < 0.01) {
 		return `$${amount.toFixed(4)}`;
 	}
+
 	return `$${amount.toFixed(2)}`;
 }

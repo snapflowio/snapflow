@@ -70,6 +70,7 @@ aws-credential-types = { workspace = true }
 sha2 = { workspace = true }
 hmac = { workspace = true }
 hex = { workspace = true }
+subtle = { workspace = true }
 jsonwebtoken = { workspace = true }
 argon2 = "0.5"
 rand = "0.9"

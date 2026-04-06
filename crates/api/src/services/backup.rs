@@ -143,12 +143,13 @@ pub async fn process_pending_backups(infra: &Infra) {
             continue;
         };
 
-        let mut fresh = if let Ok(Some(s)) = repositories::sandbox::find_by_id(&infra.pool, sandbox.id).await {
-            s
-        } else {
-            unlock_warn(lock, &per_sandbox_lock_key, &per_sandbox_lock_code).await;
-            continue;
-        };
+        let mut fresh =
+            if let Ok(Some(s)) = repositories::sandbox::find_by_id(&infra.pool, sandbox.id).await {
+                s
+            } else {
+                unlock_warn(lock, &per_sandbox_lock_key, &per_sandbox_lock_code).await;
+                continue;
+            };
 
         if fresh.backup_state != BackupState::Pending {
             unlock_warn(lock, &per_sandbox_lock_key, &per_sandbox_lock_code).await;
@@ -165,7 +166,9 @@ pub async fn process_pending_backups(infra: &Infra) {
                 unlock_warn(lock, &per_sandbox_lock_key, &per_sandbox_lock_code).await;
                 continue;
             }
-            fresh = if let Ok(Some(s)) = repositories::sandbox::find_by_id(&infra.pool, sandbox.id).await {
+            fresh = if let Ok(Some(s)) =
+                repositories::sandbox::find_by_id(&infra.pool, sandbox.id).await
+            {
                 s
             } else {
                 unlock_warn(lock, &per_sandbox_lock_key, &per_sandbox_lock_code).await;

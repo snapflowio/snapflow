@@ -82,7 +82,6 @@ export class Process {
 
 			return {
 				...response.data,
-				exitCode: response.data.code,
 				result: artifacts.stdout,
 				artifacts,
 			};

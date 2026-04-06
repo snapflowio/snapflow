@@ -18,7 +18,7 @@ use tokio::io::AsyncWriteExt;
 use tokio_util::sync::CancellationToken;
 
 use super::types::*;
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use crate::toolbox::AppState;
 
 const SYNC_EXECUTE_TIMEOUT: Duration = Duration::from_secs(300);

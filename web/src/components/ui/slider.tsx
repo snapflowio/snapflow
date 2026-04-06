@@ -7,11 +7,12 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import * as React from "react";
-import * as SliderPrimitive from "@radix-ui/react-slider";
-import { cn } from "@/lib/utils";
+import * as SliderPrimitive from '@radix-ui/react-slider';
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
-export interface SliderProps extends React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> {}
+export interface SliderProps
+	extends React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> {}
 
 /**
  * EMCN Slider component built on Radix UI Slider primitive.
@@ -22,25 +23,26 @@ export interface SliderProps extends React.ComponentPropsWithoutRef<typeof Slide
  * <Slider value={[50]} onValueChange={setValue} min={0} max={100} step={10} />
  * ```
  */
-const Slider = React.forwardRef<React.ElementRef<typeof SliderPrimitive.Root>, SliderProps>(
-  ({ className, disabled, ...props }, ref) => (
-    <SliderPrimitive.Root
-      ref={ref}
-      disabled={disabled}
-      className={cn(
-        "relative flex w-full touch-none select-none items-center",
-        "data-disabled:cursor-not-allowed data-disabled:opacity-50",
-        className
-      )}
-      {...props}
-    >
-      <SliderPrimitive.Track className="relative h-[6px] w-full grow overflow-hidden rounded-[20px] bg-(--border-1) transition-colors">
-        <SliderPrimitive.Range className="absolute h-full bg-(--text-primary)" />
-      </SliderPrimitive.Track>
-      <SliderPrimitive.Thumb className="block h-[14px] w-[14px] cursor-pointer rounded-full bg-(--text-primary) shadow-sm transition-colors focus-visible:outline-none" />
-    </SliderPrimitive.Root>
-  )
-);
+const Slider = React.forwardRef<
+	React.ElementRef<typeof SliderPrimitive.Root>,
+	SliderProps
+>(({ className, disabled, ...props }, ref) => (
+	<SliderPrimitive.Root
+		ref={ref}
+		disabled={disabled}
+		className={cn(
+			'relative flex w-full touch-none select-none items-center',
+			'data-disabled:cursor-not-allowed data-disabled:opacity-50',
+			className
+		)}
+		{...props}
+	>
+		<SliderPrimitive.Track className="relative h-1.5 w-full grow overflow-hidden rounded-[20px] bg-border-1 transition-colors">
+			<SliderPrimitive.Range className="absolute h-full bg-text-primary" />
+		</SliderPrimitive.Track>
+		<SliderPrimitive.Thumb className="block h-3.5 w-3.5 cursor-pointer rounded-full bg-text-primary shadow-sm transition-colors focus-visible:outline-none" />
+	</SliderPrimitive.Root>
+));
 
 Slider.displayName = SliderPrimitive.Root.displayName;
 

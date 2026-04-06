@@ -7,62 +7,65 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { ReactNode, useEffect, useState } from "react";
-import { io, Socket } from "socket.io-client";
-import { RealtimeContext } from "@/context/realtime-context";
-import { env } from "@/env";
-import { useAuth } from "@/hooks/use-auth";
+import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { io, type Socket } from 'socket.io-client';
+import { RealtimeContext } from '@/context/realtime-context';
+import { env } from '@/env';
+import { useAuth } from '@/hooks/use-auth';
 
 export function RealtimeProvider(props: { children: ReactNode }) {
-  const { user } = useAuth();
-  const [organizationId, setOrganizationId] = useState<string | null>(() =>
-    localStorage.getItem("organization")
-  );
+	const { user } = useAuth();
+	const [organizationId, setOrganizationId] = useState<string | null>(() =>
+		localStorage.getItem('organization')
+	);
 
-  const [socket, setSocket] = useState<Socket | null>(null);
+	const socketRef = useRef<Socket | null>(null);
+	const [socket, setSocket] = useState<Socket | null>(null);
 
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const newOrgId = localStorage.getItem("organization");
-      setOrganizationId(newOrgId);
-    };
+	useEffect(() => {
+		const handleStorageChange = () => {
+			const newOrgId = localStorage.getItem('organization');
+			setOrganizationId(newOrgId);
+		};
 
-    window.addEventListener("storage", handleStorageChange);
+		window.addEventListener('storage', handleStorageChange);
 
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
+		return () => {
+			window.removeEventListener('storage', handleStorageChange);
+		};
+	}, []);
 
-  useEffect(() => {
-    if (!user || !organizationId) {
-      socket?.disconnect();
-      setSocket(null);
-      return;
-    }
+	useEffect(() => {
+		if (!user || !organizationId) {
+			socketRef.current?.disconnect();
+			socketRef.current = null;
+			setSocket(null);
+			return;
+		}
 
-    socket?.disconnect();
+		socketRef.current?.disconnect();
 
-    const newSocket = io(env.VITE_API_URL.replace("/api", ""), {
-      path: "/api/realtime",
-      autoConnect: true,
-      transports: ["websocket"],
-      withCredentials: true,
-      query: {
-        organizationId,
-      },
-    });
+		const newSocket = io(env.VITE_API_URL.replace('/api', ''), {
+			path: '/api/realtime',
+			autoConnect: true,
+			transports: ['websocket'],
+			withCredentials: true,
+			query: {
+				organizationId,
+			},
+		});
 
-    setSocket(newSocket);
+		socketRef.current = newSocket;
+		setSocket(newSocket);
 
-    return () => {
-      newSocket.disconnect();
-    };
-  }, [user, organizationId]);
+		return () => {
+			newSocket.disconnect();
+		};
+	}, [user, organizationId]);
 
-  return (
-    <RealtimeContext.Provider value={{ realtimeSocket: socket }}>
-      {props.children}
-    </RealtimeContext.Provider>
-  );
+	return (
+		<RealtimeContext.Provider value={{ realtimeSocket: socket }}>
+			{props.children}
+		</RealtimeContext.Provider>
+	);
 }

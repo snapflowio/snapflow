@@ -9,7 +9,7 @@ use super::{
     get_file_info::get_file_info_impl,
     types::{FileInfo, PathQuery, validate_path},
 };
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use axum::{Json, extract::Query};
 
 #[utoipa::path(

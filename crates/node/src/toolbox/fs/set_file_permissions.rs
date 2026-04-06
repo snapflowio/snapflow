@@ -9,7 +9,7 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 
 use super::types::{PermissionsQuery, validate_path};
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use axum::{extract::Query, http::StatusCode, response::IntoResponse};
 
 #[utoipa::path(

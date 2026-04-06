@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: AGPL-3.0
 
 use super::types::{DeleteQuery, validate_path};
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use axum::{extract::Query, http::StatusCode, response::IntoResponse};
 
 #[utoipa::path(

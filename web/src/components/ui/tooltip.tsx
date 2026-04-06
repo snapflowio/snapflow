@@ -7,18 +7,18 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import * as React from "react";
-import * as TooltipPrimitive from "@radix-ui/react-tooltip";
-import { cn } from "@/lib/utils";
+import * as TooltipPrimitive from '@radix-ui/react-tooltip';
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
 /**
  * Tooltip provider component that must wrap your app or tooltip usage area.
  */
 const Provider = ({
-  delayDuration = 400,
-  ...props
+	delayDuration = 400,
+	...props
 }: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Provider>) => (
-  <TooltipPrimitive.Provider delayDuration={delayDuration} {...props} />
+	<TooltipPrimitive.Provider delayDuration={delayDuration} {...props} />
 );
 
 /**
@@ -47,35 +47,35 @@ const Trigger = TooltipPrimitive.Trigger;
  * ```
  */
 const Content = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
+	React.ElementRef<typeof TooltipPrimitive.Content>,
+	React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
 >(({ className, sideOffset = 6, ...props }, ref) => (
-  <TooltipPrimitive.Portal>
-    <TooltipPrimitive.Content
-      ref={ref}
-      sideOffset={sideOffset}
-      collisionPadding={8}
-      avoidCollisions={true}
-      className={cn(
-        "z-10000300 rounded-[4px] bg-[#1b1b1b] px-[8px] py-[3.5px] font-base text-white text-xs shadow-sm dark:bg-[#fdfdfd] dark:text-black",
-        className
-      )}
-      {...props}
-    >
-      {props.children}
-      <TooltipPrimitive.Arrow className="fill-[#1b1b1b] dark:fill-[#fdfdfd]" />
-    </TooltipPrimitive.Content>
-  </TooltipPrimitive.Portal>
+	<TooltipPrimitive.Portal>
+		<TooltipPrimitive.Content
+			ref={ref}
+			sideOffset={sideOffset}
+			collisionPadding={8}
+			avoidCollisions={true}
+			className={cn(
+				'z-10000300 rounded-sm bg-[#1b1b1b] px-2 py-[3.5px] font-base text-white text-xs shadow-sm dark:bg-[#fdfdfd] dark:text-black',
+				className
+			)}
+			{...props}
+		>
+			{props.children}
+			<TooltipPrimitive.Arrow className="fill-[#1b1b1b] dark:fill-[#fdfdfd]" />
+		</TooltipPrimitive.Content>
+	</TooltipPrimitive.Portal>
 ));
 Content.displayName = TooltipPrimitive.Content.displayName;
 
 interface ShortcutProps {
-  /** The keyboard shortcut keys to display (e.g., "⌘D", "⌘K") */
-  keys: string;
-  /** Optional additional class names */
-  className?: string;
-  /** Optional children to display before the shortcut */
-  children?: React.ReactNode;
+	/** The keyboard shortcut keys to display (e.g., "⌘D", "⌘K") */
+	keys: string;
+	/** Optional additional class names */
+	className?: string;
+	/** Optional children to display before the shortcut */
+	children?: React.ReactNode;
 }
 
 /**
@@ -89,17 +89,17 @@ interface ShortcutProps {
  * ```
  */
 const Shortcut = ({ keys, className, children }: ShortcutProps) => (
-  <span className={cn("flex items-center gap-[8px]", className)}>
-    {children && <span>{children}</span>}
-    <span className="opacity-70">{keys}</span>
-  </span>
+	<span className={cn('flex items-center gap-2', className)}>
+		{children && <span>{children}</span>}
+		<span className="opacity-70">{keys}</span>
+	</span>
 );
-Shortcut.displayName = "Tooltip.Shortcut";
+Shortcut.displayName = 'Tooltip.Shortcut';
 
 export const Tooltip = {
-  Root,
-  Trigger,
-  Content,
-  Provider,
-  Shortcut,
+	Root,
+	Trigger,
+	Content,
+	Provider,
+	Shortcut,
 };

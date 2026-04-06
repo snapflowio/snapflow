@@ -300,14 +300,20 @@ pub fn build_sandbox_cookie(state: &AppState, sandbox_id: &str) -> String {
     let cookie_name = format!("{AUTH_COOKIE_PREFIX}{sandbox_id}");
     let signed =
         snapflow_auth::hmac_cookie::sign(sandbox_id, state.config.proxy_api_key.as_bytes());
-    let secure = state.config.enable_tls;
-    let domain_part = state
-        .config
-        .cookie_domain()
-        .map(|d| format!("; Domain={d}"))
-        .unwrap_or_default();
-    format!(
-        "{cookie_name}={signed}; Max-Age=3600; Path=/{domain_part}; HttpOnly; SameSite=Lax{}",
-        if secure { "; Secure" } else { "" }
-    )
+
+    let mut builder = Cookie::build((cookie_name, signed))
+        .max_age(cookie::time::Duration::seconds(3600))
+        .path("/")
+        .http_only(true)
+        .same_site(cookie::SameSite::Lax);
+
+    if let Some(domain) = state.config.cookie_domain() {
+        builder = builder.domain(domain);
+    }
+
+    if state.config.enable_tls {
+        builder = builder.secure(true);
+    }
+
+    builder.build().to_string()
 }

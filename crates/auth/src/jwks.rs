@@ -8,7 +8,7 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use base64::Engine;
+use jsonwebtoken::jwk::JwkSet;
 use jsonwebtoken::DecodingKey;
 use tokio::sync::RwLock;
 use tracing::{info, warn};
@@ -84,7 +84,7 @@ async fn fetch_jwks(client: &reqwest::Client, api_url: &str) -> Vec<JwksKey> {
         }
     };
 
-    let jwks: serde_json::Value = match resp.json().await {
+    let jwk_set: JwkSet = match resp.json().await {
         Ok(j) => j,
         Err(e) => {
             warn!(error = %e, "failed to parse JWKS response");
@@ -92,45 +92,19 @@ async fn fetch_jwks(client: &reqwest::Client, api_url: &str) -> Vec<JwksKey> {
         }
     };
 
-    let Some(keys_array) = jwks.get("keys").and_then(|k| k.as_array()) else {
-        warn!("JWKS response missing 'keys' array");
-        return Vec::default();
-    };
-
-    let decoder = base64::engine::general_purpose::URL_SAFE_NO_PAD;
     let mut result = Vec::default();
 
-    for key_entry in keys_array {
-        let kid = key_entry
-            .get("kid")
-            .and_then(|v| v.as_str())
-            .map(String::from);
-        let x = match key_entry.get("x").and_then(|v| v.as_str()) {
-            Some(v) => v,
-            None => continue,
-        };
-        let y = match key_entry.get("y").and_then(|v| v.as_str()) {
-            Some(v) => v,
-            None => continue,
+    for jwk in &jwk_set.keys {
+        let kid = jwk.common.key_id.clone();
+        let key = match DecodingKey::from_jwk(jwk) {
+            Ok(k) => k,
+            Err(e) => {
+                warn!(error = %e, "failed to parse JWK entry, skipping");
+                continue;
+            }
         };
 
-        let x_bytes = match decoder.decode(x) {
-            Ok(b) => b,
-            Err(_) => continue,
-        };
-        let y_bytes = match decoder.decode(y) {
-            Ok(b) => b,
-            Err(_) => continue,
-        };
-
-        let mut point = vec![0x04];
-        point.extend_from_slice(&x_bytes);
-        point.extend_from_slice(&y_bytes);
-
-        result.push(JwksKey {
-            kid,
-            key: DecodingKey::from_ec_der(&point),
-        });
+        result.push(JwksKey { kid, key });
     }
 
     if !result.is_empty() {

@@ -120,26 +120,19 @@ pub async fn list_objects(
     prefix: &str,
 ) -> anyhow::Result<Vec<String>> {
     let mut keys = Vec::default();
-    let mut continuation_token: Option<String> = None;
+    let mut paginator = client
+        .list_objects_v2()
+        .bucket(bucket)
+        .prefix(prefix)
+        .into_paginator()
+        .send();
 
-    loop {
-        let mut req = client.list_objects_v2().bucket(bucket).prefix(prefix);
-
-        if let Some(token) = &continuation_token {
-            req = req.continuation_token(token);
-        }
-
-        let output = req.send().await?;
-
+    while let Some(output) = paginator.next().await {
+        let output = output?;
         for obj in output.contents() {
             if let Some(key) = obj.key() {
                 keys.push(key.to_owned());
             }
-        }
-
-        match output.next_continuation_token() {
-            Some(token) => continuation_token = Some(token.to_owned()),
-            None => break,
         }
     }
 

@@ -11,6 +11,7 @@
 		"noFallthroughCasesInSwitch": true,
 		"forceConsistentCasingInFileNames": true,
 		"incremental": true,
+		"rootDir": "..",
 		"outDir": "../dist/out-tsc",
 		"noEmit": true,
 		"allowImportingTsExtensions": true,

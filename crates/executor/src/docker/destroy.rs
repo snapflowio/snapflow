@@ -13,9 +13,7 @@ use tracing::{debug, error, warn};
 
 use crate::models::SandboxState;
 
-use super::{
-    DEFAULT_BASE_DELAY, DEFAULT_MAX_DELAY, DEFAULT_MAX_RETRIES, DockerClient, is_docker_not_found,
-};
+use super::{DockerClient, is_docker_not_found};
 
 impl DockerClient {
     pub async fn destroy(&self, container_id: &str) -> Result<()> {
@@ -98,28 +96,21 @@ impl DockerClient {
         let cid = container_id.to_owned();
         let api = self.api_client.clone();
         let result = self
-            .retry_with_backoff(
-                "remove",
-                container_id,
-                DEFAULT_MAX_RETRIES,
-                DEFAULT_BASE_DELAY,
-                DEFAULT_MAX_DELAY,
-                || {
-                    let cid = cid.clone();
-                    let api = api.clone();
-                    async move {
-                        api.remove_container(
-                            &cid,
-                            Some(RemoveContainerOptions {
-                                force: true,
-                                ..Default::default()
-                            }),
-                        )
-                        .await
-                        .map_err(|e| anyhow::Error::from(e))
-                    }
-                },
-            )
+            .retryable("remove", container_id, || {
+                let cid = cid.clone();
+                let api = api.clone();
+                async move {
+                    api.remove_container(
+                        &cid,
+                        Some(RemoveContainerOptions {
+                            force: true,
+                            ..Default::default()
+                        }),
+                    )
+                    .await
+                    .map_err(anyhow::Error::from)
+                }
+            })
             .await;
 
         if let Err(e) = result {

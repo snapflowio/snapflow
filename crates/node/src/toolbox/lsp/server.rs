@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: AGPL-3.0
 
 use super::client::LspClient;
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use std::io::BufReader;
 use std::process::{Child, Command, Stdio};
 use std::sync::{Arc, Mutex, atomic::AtomicI64};

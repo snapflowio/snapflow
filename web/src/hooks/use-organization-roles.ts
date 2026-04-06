@@ -22,8 +22,13 @@ export function useOrganizationRoles() {
 
 	const fetchRoles = useCallback(
 		async (showTableLoadingState = true) => {
-			if (!selectedOrganization) return;
-			if (showTableLoadingState) setLoadingRoles(true);
+			if (!selectedOrganization) {
+				return;
+			}
+
+			if (showTableLoadingState) {
+				setLoadingRoles(true);
+			}
 
 			try {
 				const response = await organizationsApi.listOrganizationRoles(
@@ -36,7 +41,7 @@ export function useOrganizationRoles() {
 				setLoadingRoles(false);
 			}
 		},
-		[organizationsApi, selectedOrganization]
+		[selectedOrganization]
 	);
 
 	useEffect(() => {

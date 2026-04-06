@@ -7,10 +7,11 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import * as LabelPrimitive from "@radix-ui/react-label";
-import { cn } from "@/lib/utils";
+import * as LabelPrimitive from '@radix-ui/react-label';
+import { cn } from '@/lib/utils';
 
-export interface LabelProps extends React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> {}
+export interface LabelProps
+	extends React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> {}
 
 /**
  * EMCN Label component built on Radix UI Label primitive.
@@ -29,15 +30,15 @@ export interface LabelProps extends React.ComponentPropsWithoutRef<typeof LabelP
  * ```
  */
 function Label({ className, ...props }: LabelProps) {
-  return (
-    <LabelPrimitive.Root
-      className={cn(
-        "inline-flex items-center font-medium text-(--text-primary) text-[13px] leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
-        className
-      )}
-      {...props}
-    />
-  );
+	return (
+		<LabelPrimitive.Root
+			className={cn(
+				'inline-flex items-center font-medium text-text-primary text-[13px] leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-50',
+				className
+			)}
+			{...props}
+		/>
+	);
 }
 
 Label.displayName = LabelPrimitive.Root.displayName;

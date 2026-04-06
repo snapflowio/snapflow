@@ -8,7 +8,7 @@
 use std::os::unix::fs::PermissionsExt;
 
 use super::types::{FolderQuery, validate_path};
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use axum::{extract::Query, http::StatusCode, response::IntoResponse};
 
 #[utoipa::path(

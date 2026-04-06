@@ -7,27 +7,27 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { OrganizationRolePermissionsEnum } from "@snapflow/api-client";
-import { Navigate } from "react-router";
-import { Path } from "@/constants/paths";
-import { useSelectedOrganization } from "@/hooks/use-selected-organization";
+import type { OrganizationRolePermissionsEnum } from '@snapflow/api-client';
+import { Navigate } from 'react-router';
+import { Path } from '@/constants/paths';
+import { useSelectedOrganization } from '@/hooks/use-selected-organization';
 
 export function OrganizationPageWrapper({
-  children,
-  requiredPermissions,
+	children,
+	requiredPermissions,
 }: {
-  children: React.ReactNode;
-  requiredPermissions: OrganizationRolePermissionsEnum[];
+	children: React.ReactNode;
+	requiredPermissions: OrganizationRolePermissionsEnum[];
 }) {
-  const { authenticatedUserHasPermission } = useSelectedOrganization();
+	const { authenticatedUserHasPermission } = useSelectedOrganization();
 
-  const hasPermission = requiredPermissions.every((permission) =>
-    authenticatedUserHasPermission(permission)
-  );
+	const hasPermission = requiredPermissions.every((permission) =>
+		authenticatedUserHasPermission(permission)
+	);
 
-  if (!hasPermission) {
-    return <Navigate to={Path.DASHBOARD} replace />;
-  }
+	if (!hasPermission) {
+		return <Navigate to={Path.DASHBOARD} replace={true} />;
+	}
 
-  return children;
+	return children;
 }

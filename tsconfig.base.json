@@ -1,23 +1,18 @@
 {
 	"compileOnSave": false,
 	"compilerOptions": {
-		"rootDir": ".",
 		"sourceMap": true,
 		"declaration": false,
-		"moduleResolution": "node",
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
+		"moduleResolution": "bundler",
 		"importHelpers": false,
 		"target": "ES2022",
-		"module": "commonjs",
+		"module": "esnext",
 		"lib": ["es2022", "dom"],
 		"skipLibCheck": true,
 		"skipDefaultLibCheck": true,
-		"baseUrl": ".",
 		"paths": {
 			"@snapflow/api-client": ["./clients/api-client-ts/src/index.ts"],
-			"@snapflow/toolbox-client": ["./clients/toolbox-client-ts/src/index.ts"],
-			"@snapflow/sdk": ["./sdk/typescript-sdk/src/index.ts"]
+			"@snapflow/toolbox-client": ["./clients/toolbox-client-ts/src/index.ts"]
 		}
 	},
 	"exclude": ["node_modules", "tmp"]

@@ -17,6 +17,4 @@ export function handleApiError(error: unknown, message: string) {
 		: 'Something went wrong. Please try again later.';
 
 	toast.error(`${message}: ${description}`);
-
-	if (!isSnapflowError) console.error(message, error);
 }

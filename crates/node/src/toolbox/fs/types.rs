@@ -10,7 +10,7 @@ use std::path::{Component, Path, PathBuf};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 
 const DEFAULT_ROOT: &str = "/";
 

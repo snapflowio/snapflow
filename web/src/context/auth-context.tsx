@@ -7,23 +7,23 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { createContext } from "react";
-import { User } from "@snapflow/api-client";
+import type { User } from '@snapflow/api-client';
+import { createContext } from 'react';
 
-export interface IAuthContext {
-  user: User | null;
-  token: string | null;
-  isPending: boolean;
-  signIn: (email: string, password: string) => Promise<{ error?: string }>;
-  signUp: (
-    name: string,
-    email: string,
-    password: string
-  ) => Promise<{ error?: string; success?: boolean }>;
-  signOut: () => Promise<void>;
-  updateUser: (name: string) => Promise<{ error?: string }>;
-  changePassword: (currentPassword: string, newPassword: string) => Promise<{ error?: string }>;
-  sendVerificationEmail: (email: string) => Promise<{ error?: string }>;
+export interface AuthContextImplementation {
+	user: User | null;
+	token: string | null;
+	isPending: boolean;
+	signIn: (email: string, password: string) => Promise<{ error?: string }>;
+	signUp: (
+		name: string,
+		email: string,
+		password: string
+	) => Promise<{ error?: string; success?: boolean }>;
+	signOut: () => Promise<void>;
+	updateUser: (name: string) => Promise<{ error?: string }>;
 }
 
-export const AuthContext = createContext<IAuthContext | undefined>(undefined);
+export const AuthContext = createContext<AuthContextImplementation | undefined>(
+	undefined
+);

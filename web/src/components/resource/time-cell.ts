@@ -28,7 +28,9 @@ function formatFullDate(date: Date): string {
 export function timeCell(
 	dateValue: string | Date | null | undefined
 ): ResourceCell {
-	if (!dateValue) return { label: null };
+	if (!dateValue) {
+		return { label: null };
+	}
 
 	const date = dateValue instanceof Date ? dateValue : new Date(dateValue);
 	const now = new Date();
@@ -36,7 +38,10 @@ export function timeCell(
 	const absDiff = Math.abs(diff);
 	const isPast = diff > 0;
 
-	if (absDiff < MINUTE) return { label: 'Now' };
+	if (absDiff < MINUTE) {
+		return { label: 'Now' };
+	}
+
 	if (absDiff < HOUR) {
 		const minutes = Math.floor(absDiff / MINUTE);
 		return {
@@ -45,6 +50,7 @@ export function timeCell(
 				: pluralize(minutes, 'minute'),
 		};
 	}
+
 	if (absDiff < DAY) {
 		const hours = Math.floor(absDiff / HOUR);
 		return {
@@ -53,6 +59,7 @@ export function timeCell(
 				: pluralize(hours, 'hour'),
 		};
 	}
+
 	if (absDiff < 2 * DAY) {
 		const days = Math.floor(absDiff / DAY);
 		return {

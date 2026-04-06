@@ -7,19 +7,25 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { OrganizationUserRoleEnum } from "@snapflow/api-client";
-import { Navigate } from "react-router";
-import { Path } from "@/constants/paths";
-import { useSelectedOrganization } from "@/hooks/use-selected-organization";
+import { OrganizationUserRoleEnum } from '@snapflow/api-client';
+import { Navigate } from 'react-router';
+import { Path } from '@/constants/paths';
+import { useSelectedOrganization } from '@/hooks/use-selected-organization';
 
-export function OrganizationOwnerPageWrapper({ children }: { children: React.ReactNode }) {
-  const { authenticatedUserOrganizationMember } = useSelectedOrganization();
+export function OrganizationOwnerPageWrapper({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
+	const { authenticatedUserOrganizationMember } = useSelectedOrganization();
 
-  const isOwner = authenticatedUserOrganizationMember?.role === OrganizationUserRoleEnum.OWNER;
+	const isOwner =
+		authenticatedUserOrganizationMember?.role ===
+		OrganizationUserRoleEnum.OWNER;
 
-  if (!isOwner) {
-    return <Navigate to={Path.DASHBOARD} replace />;
-  }
+	if (!isOwner) {
+		return <Navigate to={Path.DASHBOARD} replace={true} />;
+	}
 
-  return children;
+	return children;
 }

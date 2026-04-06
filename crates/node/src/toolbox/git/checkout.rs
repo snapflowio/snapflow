@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: AGPL-3.0
 
 use super::{helpers::git, types::GitCheckoutRequest};
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use axum::{Json, http::StatusCode, response::IntoResponse};
 
 #[utoipa::path(

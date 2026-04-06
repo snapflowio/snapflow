@@ -66,6 +66,7 @@ sha2 = "0.10"
 hmac = "0.12"
 md5 = "0.7"
 hex = "0.4"
+subtle = "2"
 jsonwebtoken = "9"
 
 # Redis

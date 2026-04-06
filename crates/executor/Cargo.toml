@@ -62,6 +62,7 @@ aws-types = "1"
 # OS and system
 nix = { workspace = true }
 tempfile = { workspace = true }
+backon = "1"
 rust-embed = { workspace = true }
 sysinfo = "0.33"
 tar = "0.4"

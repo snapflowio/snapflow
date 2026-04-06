@@ -7,22 +7,24 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { createContext } from "react";
-import {
-  Organization,
-  OrganizationRolePermissionsEnum,
-  OrganizationUser,
-} from "@snapflow/api-client";
+import type {
+	Organization,
+	OrganizationRolePermissionsEnum,
+	OrganizationUser,
+} from '@snapflow/api-client';
+import { createContext } from 'react';
 
-export interface ISelectedOrganizationContext {
-  selectedOrganization: Organization | null;
-  organizationMembers: OrganizationUser[];
-  refreshOrganizationMembers: () => Promise<OrganizationUser[]>;
-  authenticatedUserOrganizationMember: OrganizationUser | null;
-  authenticatedUserHasPermission: (permission: OrganizationRolePermissionsEnum) => boolean;
-  onSelectOrganization: (organizationId: string) => Promise<boolean>;
+export interface SelectedOrganizationContextImplementation {
+	selectedOrganization: Organization | null;
+	organizationMembers: OrganizationUser[];
+	refreshOrganizationMembers: () => Promise<OrganizationUser[]>;
+	authenticatedUserOrganizationMember: OrganizationUser | null;
+	authenticatedUserHasPermission: (
+		permission: OrganizationRolePermissionsEnum
+	) => boolean;
+	onSelectOrganization: (organizationId: string) => Promise<boolean>;
 }
 
-export const SelectedOrganizationContext = createContext<ISelectedOrganizationContext | undefined>(
-  undefined
-);
+export const SelectedOrganizationContext = createContext<
+	SelectedOrganizationContextImplementation | undefined
+>(undefined);

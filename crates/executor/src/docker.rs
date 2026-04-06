@@ -23,10 +23,12 @@ pub mod stop;
 use std::collections::HashMap;
 use std::future::Future;
 use std::path::PathBuf;
+use std::pin::Pin;
 use std::sync::Arc;
 use std::time::Duration;
 
 use anyhow::Result;
+use backon::{ExponentialBuilder, Retryable, Sleeper};
 use bollard::container::ListContainersOptions;
 use dashmap::DashMap;
 use tokio::sync::{Mutex, OnceCell, Semaphore};
@@ -34,6 +36,22 @@ use tokio_util::sync::CancellationToken;
 
 use crate::cache::ExecutorCache;
 use crate::netrules::NetRulesManager;
+
+struct CancelSleeper(CancellationToken);
+
+impl Sleeper for CancelSleeper {
+    type Sleep = Pin<Box<dyn Future<Output = ()> + Send>>;
+
+    fn sleep(&self, dur: Duration) -> Self::Sleep {
+        let token = self.0.clone();
+        Box::pin(async move {
+            tokio::select! {
+                _ = tokio::time::sleep(dur) => {}
+                _ = token.cancelled() => {}
+            }
+        })
+    }
+}
 
 pub fn is_docker_not_found(err: &bollard::errors::Error) -> bool {
     matches!(
@@ -174,67 +192,33 @@ impl DockerClient {
             .map_err(|e| anyhow::anyhow!("failed to list containers: {e}"))
     }
 
-    pub async fn retry_with_backoff<F, Fut>(
+    pub async fn retryable<F, Fut>(
         &self,
         operation_name: &str,
         container_id: &str,
-        max_retries: u32,
-        base_delay: Duration,
-        max_delay: Duration,
-        operation_fn: F,
+        operation: F,
     ) -> Result<()>
     where
-        F: Fn() -> Fut,
-        Fut: Future<Output = Result<()>>,
+        F: Fn() -> Fut + Send,
+        Fut: Future<Output = Result<()>> + Send,
     {
-        let max_retries = if max_retries <= 1 {
-            DEFAULT_MAX_RETRIES
-        } else {
-            max_retries
-        };
+        let backoff = ExponentialBuilder::default()
+            .with_min_delay(DEFAULT_BASE_DELAY)
+            .with_max_delay(DEFAULT_MAX_DELAY)
+            .with_max_times(DEFAULT_MAX_RETRIES as usize);
 
-        let mut last_err = None;
-
-        for attempt in 0..max_retries {
-            match operation_fn().await {
-                Ok(()) => return Ok(()),
-                Err(err) => {
-                    if attempt < max_retries - 1 {
-                        let delay = base_delay.saturating_mul(1 << attempt).min(max_delay);
-
-                        tracing::warn!(
-                            "Failed to {} sandbox {} (attempt {}/{}): {}. Retrying in {:?}...",
-                            operation_name,
-                            container_id,
-                            attempt + 1,
-                            max_retries,
-                            err,
-                            delay,
-                        );
-
-                        tokio::select! {
-                            _ = tokio::time::sleep(delay) => continue,
-                            _ = self.cancel_token.cancelled() => {
-                                tracing::debug!(
-                                    "Retry cancelled for {} sandbox {}",
-                                    operation_name,
-                                    container_id,
-                                );
-                                return Err(anyhow::anyhow!("operation cancelled"));
-                            }
-                        }
-                    }
-
-                    last_err = Some(err);
-                }
-            }
-        }
-
-        Err(anyhow::anyhow!(
-            "failed to {} sandbox after {} attempts: {}",
-            operation_name,
-            max_retries,
-            last_err.as_ref().map(|e| e.to_string()).unwrap_or_default(),
-        ))
+        operation
+            .retry(backoff)
+            .sleep(CancelSleeper(self.cancel_token.clone()))
+            .notify(|err, delay| {
+                tracing::warn!(
+                    "Failed to {} sandbox {}: {}. Retrying in {:?}...",
+                    operation_name,
+                    container_id,
+                    err,
+                    delay,
+                );
+            })
+            .await
     }
 }

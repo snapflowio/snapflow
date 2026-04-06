@@ -7,26 +7,28 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { ReactNode } from "react";
-import { PostHogProvider } from "posthog-js/react";
-import { env } from "@/env";
+import { PostHogProvider } from 'posthog-js/react';
+import type { ReactNode } from 'react';
+import { env } from '@/env';
 
 export function PosthogProvider({ children }: { children: ReactNode }) {
-  if (import.meta.env.DEV) return <>{children}</>;
+	if (import.meta.env.DEV) {
+		return <>{children}</>;
+	}
 
-  return (
-    <PostHogProvider
-      apiKey={env.VITE_POSTHOG_KEY}
-      options={{
-        api_host: env.VITE_POSTHOG_HOST,
-        person_profiles: "always",
-        autocapture: false,
-        capture_pageview: false,
-        capture_pageleave: true,
-        capture_performance: true,
-      }}
-    >
-      {children}
-    </PostHogProvider>
-  );
+	return (
+		<PostHogProvider
+			apiKey={env.VITE_POSTHOG_KEY}
+			options={{
+				api_host: env.VITE_POSTHOG_HOST,
+				person_profiles: 'always',
+				autocapture: false,
+				capture_pageview: false,
+				capture_pageleave: true,
+				capture_performance: true,
+			}}
+		>
+			{children}
+		</PostHogProvider>
+	);
 }

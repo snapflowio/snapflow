@@ -14,7 +14,7 @@ use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use futures_util::{SinkExt, StreamExt};
 
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use crate::toolbox::AppState;
 
 use super::session::resize_session;

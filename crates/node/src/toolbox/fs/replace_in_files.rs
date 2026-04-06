@@ -6,8 +6,8 @@
 // SPDX-License-Identifier: AGPL-3.0
 
 use super::types::{ReplaceRequest, ReplaceResult, validate_path};
-use crate::common::errors::AppError;
 use axum::Json;
+use snapflow_errors::AppError;
 
 #[utoipa::path(
     post,
@@ -33,7 +33,7 @@ pub async fn replace_in_files(
                     results.push(ReplaceResult {
                         file: file_path.clone(),
                         success: false,
-                        error: Some(e.message),
+                        error: Some(e.to_string()),
                     });
                     continue;
                 }

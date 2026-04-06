@@ -7,36 +7,38 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
-import { Loading } from "@/components/loading";
-import { Path } from "@/constants/paths";
-import { useAuth } from "@/hooks/use-auth";
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
+import { Loading } from '@/components/loading';
+import { Path } from '@/constants/paths';
+import { useAuth } from '@/hooks/use-auth';
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { user, isPending } = useAuth();
-  const navigate = useNavigate();
-  const [showLoader, setShowLoader] = useState(true);
+	const { user, isPending } = useAuth();
+	const navigate = useNavigate();
+	const [showLoader, setShowLoader] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowLoader(false);
-    }, 1000);
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setShowLoader(false);
+		}, 1000);
 
-    return () => clearTimeout(timer);
-  }, []);
+		return () => clearTimeout(timer);
+	}, []);
 
-  useEffect(() => {
-    if (!isPending && !user) navigate(Path.LOGIN, { replace: true });
-  }, [user, isPending, navigate]);
+	useEffect(() => {
+		if (!isPending && !user) {
+			navigate(Path.LOGIN, { replace: true });
+		}
+	}, [user, isPending, navigate]);
 
-  if (isPending || showLoader) {
-    return <Loading />;
-  }
+	if (isPending || showLoader) {
+		return <Loading />;
+	}
 
-  if (!user) {
-    return null;
-  }
+	if (!user) {
+		return null;
+	}
 
-  return <>{children}</>;
+	return <>{children}</>;
 }

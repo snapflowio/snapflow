@@ -1,0 +1,17 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"rootDir": "../../",
+		"outDir": "./dist",
+		"module": "NodeNext",
+		"moduleResolution": "nodenext",
+		"declaration": true,
+		"target": "ES2022",
+		"resolveJsonModule": true
+	},
+	"include": [
+		"src/**/*.ts",
+		"../../clients/api-client-ts/src/**/*.ts",
+		"../../clients/toolbox-client-ts/src/**/*.ts"
+	]
+}

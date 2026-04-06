@@ -16,7 +16,6 @@
 		"allowImportingTsExtensions": true,
 		"resolveJsonModule": true,
 		"isolatedModules": true,
-		"baseUrl": ".",
 		"paths": {
 			"@/.source/*": ["./.source/*"],
 			"@/*": ["./src/*"],

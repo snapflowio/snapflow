@@ -11,6 +11,8 @@ use validator::Validate;
 
 #[derive(Debug, Deserialize, Validate, ToSchema)]
 #[schema(as = ChangePassword)]
+#[serde(rename_all = "camelCase")]
+
 pub struct ChangePasswordDto {
     pub current_password: String,
     #[validate(length(min = 8, max = 72))]
@@ -21,6 +23,7 @@ pub struct ChangePasswordDto {
 
 #[derive(Debug, Serialize, ToSchema)]
 #[schema(as = ChangePasswordResponse)]
+#[serde(rename_all = "camelCase")]
 pub struct ChangePasswordResponseDto {
     pub status: bool,
 }

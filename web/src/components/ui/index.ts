@@ -121,26 +121,6 @@ export {
 	PopoverTrigger,
 	usePopoverContext,
 } from './popover';
-export {
-	SModal,
-	SModalClose,
-	SModalContent,
-	SModalMain,
-	SModalMainBody,
-	SModalMainHeader,
-	SModalSidebar,
-	SModalSidebarHeader,
-	SModalSidebarItem,
-	type SModalSidebarItemProps,
-	SModalSidebarSection,
-	SModalSidebarSectionTitle,
-	SModalTabs,
-	SModalTabsBody,
-	SModalTabsContent,
-	SModalTabsList,
-	SModalTabsTrigger,
-	SModalTrigger,
-} from './s-modal';
 export { Skeleton } from './skeleton';
 export { Slider, type SliderProps } from './slider';
 export { Switch } from './switch';
@@ -154,16 +134,6 @@ export {
 	TableHeader,
 	TableRow,
 } from './table';
-export {
-	type FileInputOptions,
-	Tag,
-	TagInput,
-	type TagInputProps,
-	type TagItem,
-	type TagProps,
-	tagInputVariants,
-	tagVariants,
-} from './tag-input';
 export { Textarea } from './textarea';
 export {
 	TimePicker,

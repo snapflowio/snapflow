@@ -28,6 +28,7 @@ export enum Path {
 	MEMBERS = '/dashboard/members',
 	ROLES = '/dashboard/roles',
 	SETTINGS = '/dashboard/settings',
+	ACCOUNT = '/dashboard/account',
 }
 
 export const getRouteSubPath = (path: Path): string => {

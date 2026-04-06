@@ -7,20 +7,26 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { Checkbox, Label } from "@/components/ui";
+import { Checkbox, Label } from '@/components/ui';
 
 export function ViewerCheckbox() {
-  return (
-    <div className="flex items-start space-x-3">
-      <Checkbox id="role-viewer" checked disabled className="mt-0.5" />
-      <div className="space-y-0.5">
-        <Label htmlFor="role-viewer" className="font-medium text-sm">
-          Viewer
-        </Label>
-        <p className="text-text-muted text-xs">
-          Grants read access to sandboxes, images, and registries in the organization
-        </p>
-      </div>
-    </div>
-  );
+	return (
+		<div className="flex items-start space-x-3">
+			<Checkbox
+				id="role-viewer"
+				checked={true}
+				disabled={true}
+				className="mt-0.5"
+			/>
+			<div className="space-y-0.5">
+				<Label htmlFor="role-viewer" className="font-medium text-sm">
+					Viewer
+				</Label>
+				<p className="text-text-muted text-xs">
+					Grants read access to sandboxes, images, and registries in the
+					organization
+				</p>
+			</div>
+		</div>
+	);
 }

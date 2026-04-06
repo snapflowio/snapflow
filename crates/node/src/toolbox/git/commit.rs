@@ -9,7 +9,7 @@ use super::{
     helpers::git,
     types::{GitCommitRequest, GitCommitResponse},
 };
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use axum::Json;
 
 #[utoipa::path(

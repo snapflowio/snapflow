@@ -9,7 +9,7 @@ use super::{
     client::LspClient,
     server::{self, LspServerInstance},
 };
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use base64::Engine;
 use dashmap::DashMap;
 use std::sync::Arc;

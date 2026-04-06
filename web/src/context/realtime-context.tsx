@@ -7,11 +7,13 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { createContext } from "react";
-import { Socket } from "socket.io-client";
+import { createContext } from 'react';
+import type { Socket } from 'socket.io-client';
 
-export interface IRealtimeContext {
-  realtimeSocket: Socket | null;
+export interface RealtimeContextImplementation {
+	realtimeSocket: Socket | null;
 }
 
-export const RealtimeContext = createContext<IRealtimeContext | undefined>(undefined);
+export const RealtimeContext = createContext<
+	RealtimeContextImplementation | undefined
+>(undefined);

@@ -8,7 +8,7 @@
 use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
 
-use crate::common::errors::AppError;
+use snapflow_errors::AppError;
 use tempfile::NamedTempFile;
 use tokio::process::Command;
 
