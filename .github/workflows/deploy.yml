@@ -58,7 +58,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Docker metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: snapflowio/api
           tags: |
@@ -86,7 +86,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Docker metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: snapflowio/proxy
           tags: |
@@ -114,7 +114,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Docker metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: snapflowio/executor
           tags: |
@@ -142,7 +142,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Docker metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: snapflowio/web
           tags: |
