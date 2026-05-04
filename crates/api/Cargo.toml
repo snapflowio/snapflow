@@ -88,7 +88,7 @@ governor = { version = "0.10", features = ["dashmap", "std"] }
 backon = "1"
 
 # Realtime
-socketioxide = { version = "0.18.2", features = ["state"] }
+socketioxide = { version = "0.18.3", features = ["state"] }
 
 # Caching
 redis = { workspace = true, features = ["connection-manager"] }
