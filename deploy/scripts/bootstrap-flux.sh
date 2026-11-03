@@ -25,7 +25,7 @@ readonly github_app_secret="flux-system"
 # Public identifiers of the snapflowio-automation GitHub App; its private key
 # is read from SNAPFLOW_AUTOMATION_PRIVATE_KEY_FILE and only stored in the cluster.
 readonly github_app_id="5586776"
-readonly github_app_installation_id="177985582"
+readonly github_app_installation_id="178044091"
 readonly seal_namespace="openbao"
 readonly seal_secret="openbao-seal"
 readonly seal_key_bytes=32
