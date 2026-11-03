@@ -3,8 +3,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      cache_from:
-        - ghcr.io/snapflowio/snapflow-devcontainer:latest
     command: sleep infinity
     privileged: true
     cgroup: host
