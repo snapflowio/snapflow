@@ -1,0 +1,98 @@
+{{- $root := . -}}
+{{- $public := required "domains.public is required" .Values.domains.public -}}
+{{- $registry := required "domains.registry is required" .Values.domains.registry -}}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: snapflow-public
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "ingress") | nindent 4 }}
+spec:
+  secretName: snapflow-public-tls
+  dnsNames:
+    - {{ $public }}
+  issuerRef:
+    kind: ClusterIssuer
+    name: {{ .Values.clusterIssuer }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: snapflow-dashboard-prefix
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "dashboard") | nindent 4 }}
+spec:
+  stripPrefix:
+    prefixes:
+      - /dashboard
+{{- range $route := list (dict "component" "marketing" "path" "/" "port" 8080) (dict "component" "api" "path" "/api" "port" 3001) (dict "component" "dashboard" "path" "/dashboard" "port" 8080) }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ printf "snapflow-%s" $route.component }}
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" $route.component) | nindent 4 }}
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    {{- if eq $route.component "dashboard" }}
+    traefik.ingress.kubernetes.io/router.middlewares: {{ printf "%s-snapflow-dashboard-prefix@kubernetescrd" $root.Release.Namespace }}
+    {{- end }}
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - {{ $public }}
+      secretName: snapflow-public-tls
+  rules:
+    - host: {{ $public }}
+      http:
+        paths:
+          - path: {{ $route.path }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ printf "snapflow-%s" $route.component }}
+                port:
+                  number: {{ $route.port }}
+{{- end }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: snapflow-registry
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "snapshot-manager") | nindent 4 }}
+spec:
+  secretName: snapflow-registry-tls
+  dnsNames:
+    - {{ $registry }}
+  issuerRef:
+    kind: ClusterIssuer
+    name: {{ .Values.clusterIssuer }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: snapflow-snapshot-manager
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "snapshot-manager") | nindent 4 }}
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - {{ $registry }}
+      secretName: snapflow-registry-tls
+  rules:
+    - host: {{ $registry }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: snapflow-snapshot-manager
+                port:
+                  number: 5000

@@ -1,0 +1,19 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"rootDir": "src",
+		"outDir": "../../dist/libs/sdk-typescript",
+		"paths": {
+			"@snapflow/api-client": ["../../dist/libs/api-client/src/index.d.ts"],
+			"@snapflow/api-client/client": [
+				"../../dist/libs/api-client/src/client/index.d.ts"
+			],
+			"@snapflow/toolbox-api-client": [
+				"../../dist/libs/toolbox-api-client/src/index.d.ts"
+			],
+			"@snapflow/toolbox-api-client/client": [
+				"../../dist/libs/toolbox-api-client/src/client/index.d.ts"
+			]
+		}
+	}
+}

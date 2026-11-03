@@ -1,0 +1,20 @@
+{
+	"recommendations": [
+		"moonrepo.moon-console",
+		"biomejs.biome",
+		"EditorConfig.EditorConfig",
+		"redhat.vscode-yaml",
+		"ms-kubernetes-tools.vscode-kubernetes-tools",
+		"GitHub.vscode-github-actions",
+		"ms-vsliveshare.vsliveshare",
+		"mikestead.dotenv",
+		"astro-build.astro-vscode",
+		"svelte.svelte-vscode",
+		"bradlc.vscode-tailwindcss",
+		"vitest.explorer",
+		"golang.go",
+		"tamasfe.even-better-toml",
+		"ms-azuretools.vscode-docker",
+		"timonwong.shellcheck"
+	]
+}

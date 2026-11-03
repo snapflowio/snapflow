@@ -1,0 +1,23 @@
+layer: "tool"
+stack: "systems"
+tags: ["scope-images", "image-platform-desktop"]
+
+tasks:
+  oci-image:
+    script: >-
+      target_arch="${ARCH:-$(go env GOHOSTARCH)}";
+      buildctl build
+      --frontend dockerfile.v0
+      --local context=.
+      --local dockerfile=.
+      --opt filename=images/platform/desktop-extension/Dockerfile
+      --opt "platform=linux/${target_arch}"
+      --opt "build-arg:TARGETARCH=${target_arch}"
+      --output "type=image,name=${IMAGE_REFERENCE:-snapflowio/platform:desktop-extension-${VERSION:-0.0.0-dev}-${target_arch}},push=${PUSH:-false},oci-mediatypes=true,compression=zstd"
+    inputs:
+      - "**/*"
+      - "/libs/common-go/**/*"
+      - "/libs/computer-use/**/*"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false

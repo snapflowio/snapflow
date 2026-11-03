@@ -1,0 +1,117 @@
+# Flux reports every failed reconciliation to Discord, and the result of each
+# synced commit to GitHub as a commit status.
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: flux-discord
+  namespace: flux-system
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: openbao
+  target:
+    name: flux-discord
+    creationPolicy: Owner
+  data:
+    - secretKey: address
+      remoteRef:
+        key: snapflow/alerts
+        property: discord-webhook-url
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Provider
+metadata:
+  name: discord
+  namespace: flux-system
+spec:
+  type: discord
+  secretRef:
+    name: flux-discord
+---
+# Every namespace that holds Flux objects is listed: an Alert selects by
+# namespace, so a new namespace with Flux objects must be added here.
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Alert
+metadata:
+  name: flux-errors
+  namespace: flux-system
+spec:
+  providerRef:
+    name: discord
+  eventSeverity: error
+  eventSources:
+    - kind: GitRepository
+      name: "*"
+    - kind: OCIRepository
+      name: "*"
+    - kind: Kustomization
+      name: "*"
+    - kind: ImageRepository
+      name: "*"
+    - kind: ImagePolicy
+      name: "*"
+    - kind: ImageUpdateAutomation
+      name: "*"
+    - kind: HelmRelease
+      name: "*"
+    - kind: HelmRelease
+      name: "*"
+      namespace: cert-manager
+    - kind: HelmRelease
+      name: "*"
+      namespace: cnpg-system
+    - kind: HelmRelease
+      name: "*"
+      namespace: external-secrets
+    - kind: HelmRelease
+      name: "*"
+      namespace: openbao
+    - kind: HelmRelease
+      name: "*"
+      namespace: reloader
+    - kind: HelmRelease
+      name: "*"
+      namespace: snapflow
+    - kind: HelmRepository
+      name: "*"
+      namespace: cert-manager
+    - kind: HelmRepository
+      name: "*"
+      namespace: cnpg-system
+    - kind: HelmRepository
+      name: "*"
+      namespace: external-secrets
+    - kind: HelmRepository
+      name: "*"
+      namespace: openbao
+    - kind: HelmRepository
+      name: "*"
+      namespace: reloader
+---
+# Commit statuses are posted as the snapflowio-automation GitHub App, from the
+# flux-system secret deploy/scripts/bootstrap-flux.sh creates; the App needs
+# the "Commit statuses: read and write" permission.
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Provider
+metadata:
+  name: github
+  namespace: flux-system
+spec:
+  type: github
+  address: https://github.com/snapflowio/snapflow
+  secretRef:
+    name: flux-system
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Alert
+metadata:
+  name: github-commit-status
+  namespace: flux-system
+spec:
+  providerRef:
+    name: github
+  eventSeverity: info
+  eventSources:
+    - kind: Kustomization
+      name: "*"

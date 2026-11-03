@@ -1,0 +1,671 @@
+version: "2"
+
+run:
+  allow-parallel-runners: true
+  modules-download-mode: readonly
+
+linters:
+  enable:
+    - contextcheck
+    - depguard
+    - dupl
+    - errcheck
+    - errorlint
+    - forcetypeassert
+    - funlen
+    - gochecknoglobals
+    - gochecknoinits
+    - gocognit
+    - gocyclo
+    - govet
+    - maintidx
+    - mnd
+    - nestif
+    - noctx
+    - revive
+    - staticcheck
+  settings:
+    staticcheck:
+      checks:
+        - all
+        - -ST1000
+        - -ST1003
+        - -ST1016
+        - -ST1020
+        - -ST1021
+        - -ST1022
+    revive:
+      rules:
+        - name: exported
+          disabled: true
+        - name: package-comments
+          disabled: true
+    gocognit:
+      min-complexity: 15
+    gocyclo:
+      min-complexity: 15
+    nestif:
+      min-complexity: 5
+    funlen:
+      lines: 80
+      statements: 50
+    maintidx:
+      under: 20
+    dupl:
+      threshold: 150
+    depguard:
+      rules:
+        snapflow-self-contained:
+          list-mode: lax
+          files:
+            - "**/apps/snapflow/internal/release/**"
+            - "**/apps/snapflow/internal/state/**"
+            - "**/apps/snapflow/internal/inventory/**"
+            - "**/apps/snapflow/internal/runtime/*.go"
+            - "**/apps/snapflow/internal/tunnel/plan/**"
+            - "**/apps/snapflow/internal/installscript/**"
+          deny:
+            - pkg: "github.com/snapflowio/snapflow/internal"
+              desc: "self-contained packages import nothing internal"
+        snapflow-tuf:
+          list-mode: lax
+          files:
+            - "**/apps/snapflow/internal/tuf/**"
+          allow:
+            - "github.com/snapflowio/snapflow/internal/release$"
+          deny:
+            - pkg: "github.com/snapflowio/snapflow/internal"
+              desc: "the TUF repository depends only on the release bundle format"
+        snapflow-readiness-contract:
+          list-mode: lax
+          files:
+            - "**/apps/snapflow/internal/readiness/**"
+            - "**/apps/snapflow/internal/telemetry/**"
+          allow:
+            - "github.com/snapflowio/snapflow/internal/readiness"
+            - "github.com/snapflowio/snapflow/internal/runtime$"
+          deny:
+            - pkg: "github.com/snapflowio/snapflow/internal"
+              desc: "readiness metrics depend only on the runtime contracts"
+        snapflow-leaf:
+          list-mode: lax
+          files:
+            - "**/apps/snapflow/internal/config/**"
+            - "**/apps/snapflow/internal/workload/**"
+            - "**/apps/snapflow/internal/cli/**"
+          deny:
+            - &snapflow-control
+              pkg: "github.com/snapflowio/snapflow/internal/control"
+              desc: "leaf packages must not depend on the control-plane client"
+            - &snapflow-install
+              pkg: "github.com/snapflowio/snapflow/internal/install"
+              desc: "only products and their tooling install releases"
+            - &snapflow-guestrelease
+              pkg: "github.com/snapflowio/snapflow/internal/guestrelease"
+              desc: "guest releases are resolved by the microVM runtime and published by the release toolchain"
+            - &snapflow-telemetry
+              pkg: "github.com/snapflowio/snapflow/internal/telemetry"
+              desc: "leaf packages must not depend on telemetry"
+            - &snapflow-inventory
+              pkg: "github.com/snapflowio/snapflow/internal/inventory"
+              desc: "host inventory is wired by the daemon"
+            - &snapflow-microvm
+              pkg: "github.com/snapflowio/snapflow/internal/runtime/microvm"
+              desc: "only the daemon opens the microVM runtime; everything else uses the internal/runtime contracts"
+            - &snapflow-sandbox
+              pkg: "github.com/snapflowio/snapflow/internal/sandbox$"
+              desc: "daemon components are composed only by the daemon"
+            - &snapflow-meter
+              pkg: "github.com/snapflowio/snapflow/internal/meter$"
+              desc: "daemon components are composed only by the daemon"
+            - &snapflow-snapshot
+              pkg: "github.com/snapflowio/snapflow/internal/snapshot$"
+              desc: "daemon components are composed only by the daemon"
+            - &snapflow-tunnel
+              pkg: "github.com/snapflowio/snapflow/internal/tunnel$"
+              desc: "daemon components are composed only by the daemon"
+            - &snapflow-sshgateway
+              pkg: "github.com/snapflowio/snapflow/internal/sshgateway$"
+              desc: "daemon components are composed only by the daemon"
+            - &snapflow-localapi
+              pkg: "github.com/snapflowio/snapflow/internal/localapi$"
+              desc: "daemon components are composed only by the daemon"
+            - &snapflow-health
+              pkg: "github.com/snapflowio/snapflow/internal/health$"
+              desc: "daemon components are composed only by the daemon"
+            - &snapflow-jobs
+              pkg: "github.com/snapflowio/snapflow/internal/jobs"
+              desc: "daemon components are composed only by the daemon"
+            - &snapflow-daemon
+              pkg: "github.com/snapflowio/snapflow/internal/daemon"
+              desc: "only snapflowd and the daemon test harness depend on the daemon product"
+            - &snapflow-console
+              pkg: "github.com/snapflowio/snapflow/internal/console"
+              desc: "only snapflow and the console subtree depend on the console product"
+            - &snapflow-releaser
+              pkg: "github.com/snapflowio/snapflow/internal/releaser"
+              desc: "only snapflow-release and the releaser subtree depend on the release toolchain"
+        snapflow-platform:
+          list-mode: lax
+          files:
+            - "**/apps/snapflow/internal/control/**"
+            - "**/apps/snapflow/internal/install/**"
+            - "**/apps/snapflow/internal/guestrelease/**"
+            - "**/apps/snapflow/internal/runtime/microvm/**"
+            - "!$test"
+          deny:
+            - *snapflow-sandbox
+            - *snapflow-meter
+            - *snapflow-snapshot
+            - *snapflow-tunnel
+            - *snapflow-sshgateway
+            - *snapflow-localapi
+            - *snapflow-health
+            - *snapflow-jobs
+            - *snapflow-daemon
+            - *snapflow-console
+            - *snapflow-releaser
+        snapflow-components:
+          list-mode: lax
+          files:
+            - "**/apps/snapflow/internal/sandbox/**"
+            - "**/apps/snapflow/internal/meter/**"
+            - "**/apps/snapflow/internal/snapshot/**"
+            - "**/apps/snapflow/internal/jobs/**"
+            - "**/apps/snapflow/internal/tunnel/**"
+            - "**/apps/snapflow/internal/sshgateway/**"
+            - "**/apps/snapflow/internal/localapi/**"
+            - "**/apps/snapflow/internal/health/**"
+          deny:
+            - *snapflow-install
+            - *snapflow-microvm
+            - *snapflow-daemon
+            - *snapflow-console
+            - *snapflow-releaser
+        snapflow-component-peers:
+          list-mode: lax
+          files:
+            - "**/apps/snapflow/internal/sandbox/**"
+            - "**/apps/snapflow/internal/meter/**"
+            - "**/apps/snapflow/internal/snapshot/**"
+            - "**/apps/snapflow/internal/tunnel/**"
+            - "**/apps/snapflow/internal/sshgateway/**"
+            - "**/apps/snapflow/internal/localapi/**"
+            - "**/apps/snapflow/internal/health/**"
+          deny:
+            - *snapflow-sandbox
+            - *snapflow-meter
+            - *snapflow-snapshot
+            - *snapflow-tunnel
+            - *snapflow-sshgateway
+            - *snapflow-localapi
+            - *snapflow-health
+            - *snapflow-jobs
+        snapflow-jobs:
+          list-mode: lax
+          files:
+            - "**/apps/snapflow/internal/jobs/**"
+          deny:
+            - *snapflow-meter
+            - *snapflow-snapshot
+            - *snapflow-tunnel
+            - *snapflow-sshgateway
+            - *snapflow-localapi
+            - *snapflow-health
+        snapflow-microvm-engine:
+          list-mode: lax
+          files:
+            - "**/apps/snapflow/**"
+            - "!**/apps/snapflow/internal/runtime/microvm/**"
+          deny:
+            - pkg: "github.com/snapflowio/microvm-go$"
+              desc: "the microVM engine is reached only through internal/runtime/microvm"
+            - pkg: "github.com/snapflowio/microvm-go/hypervisor/"
+              desc: "hypervisor backends are wired only by internal/runtime/microvm"
+        snapflow-microvm:
+          list-mode: lax
+          files:
+            - "**/apps/snapflow/internal/**"
+            - "!**/apps/snapflow/internal/daemon/**"
+            - "!**/apps/snapflow/internal/runtime/microvm/**"
+          deny:
+            - *snapflow-microvm
+        snapflow-daemon-product:
+          list-mode: lax
+          files:
+            - "**/apps/snapflow/internal/**"
+            - "!**/apps/snapflow/internal/daemon/**"
+          deny:
+            - *snapflow-daemon
+            - &snapflow-cmd
+              pkg: "github.com/snapflowio/snapflow/cmd"
+              desc: "commands are the top layer"
+        snapflow-console-product:
+          list-mode: lax
+          files:
+            - "**/apps/snapflow/internal/**"
+            - "!**/apps/snapflow/internal/console/**"
+          deny:
+            - *snapflow-console
+        snapflow-releaser-product:
+          list-mode: lax
+          files:
+            - "**/apps/snapflow/internal/**"
+            - "!**/apps/snapflow/internal/releaser/**"
+          deny:
+            - *snapflow-releaser
+        snapflow-tunnel-plan:
+          list-mode: lax
+          files:
+            - "**/apps/snapflow/internal/**"
+            - "!**/apps/snapflow/internal/tunnel/**"
+            - "!**/apps/snapflow/internal/daemon/daemontest/**"
+          deny:
+            - pkg: "github.com/snapflowio/snapflow/internal/tunnel/plan"
+              desc: "the tunnel plan format belongs to the tunnel component"
+        snapflow-test-support:
+          list-mode: lax
+          files:
+            - "**/apps/snapflow/**"
+            - "!$test"
+            - "!**/apps/snapflow/internal/**/*test/*.go"
+          deny:
+            - pkg: "github.com/snapflowio/snapflow/internal/daemon/daemontest"
+              desc: "test support packages are imported only by tests"
+            - pkg: "github.com/snapflowio/snapflow/internal/console/consoletest"
+              desc: "test support packages are imported only by tests"
+            - pkg: "github.com/snapflowio/snapflow/internal/releaser/releasertest"
+              desc: "test support packages are imported only by tests"
+            - pkg: "github.com/snapflowio/snapflow/internal/control/controltest"
+              desc: "test support packages are imported only by tests"
+            - pkg: "github.com/snapflowio/snapflow/internal/cli/clitest"
+              desc: "test support packages are imported only by tests"
+        edge-leaf:
+          list-mode: lax
+          files:
+            - "**/apps/edge/internal/certs/**"
+            - "**/apps/edge/internal/sockets/**"
+            - "**/apps/edge/internal/statefile/**"
+            - "**/apps/edge/internal/traffic/**"
+            - "**/apps/edge/internal/telemetry/**"
+            - "**/apps/edge/internal/speedtest/**"
+          deny:
+            - pkg: "github.com/snapflowio/edge/internal"
+              desc: "leaf packages import nothing internal"
+        edge-model:
+          list-mode: lax
+          files:
+            - "**/apps/edge/internal/routes/**"
+            - "**/apps/edge/internal/identity/**"
+          deny:
+            - &edge-proxy
+              pkg: "github.com/snapflowio/edge/internal/proxy"
+              desc: "only the composition root and the frontends depend on the proxy"
+            - &edge-access
+              pkg: "github.com/snapflowio/edge/internal/access"
+              desc: "protected access is used only by the HTTP frontend and the composition root"
+            - &edge-admit
+              pkg: "github.com/snapflowio/edge/internal/admit"
+              desc: "admission is used only by the frontends and the composition root"
+            - &edge-tunnel
+              pkg: "github.com/snapflowio/edge/internal/tunnel"
+              desc: "Machine tunnels are reached through consumer interfaces"
+            - &edge-web
+              pkg: "github.com/snapflowio/edge/internal/web"
+              desc: "web policy belongs to the HTTP edge"
+            - &edge-control
+              pkg: "github.com/snapflowio/edge/internal/control"
+              desc: "the model and the data plane must not depend on the control plane"
+            - &edge-meter
+              pkg: "github.com/snapflowio/edge/internal/meter"
+              desc: "the model and the data plane must not depend on usage metering"
+            - &edge-telemetry
+              pkg: "github.com/snapflowio/edge/internal/telemetry"
+              desc: "telemetry is fed by the composition root"
+            - &edge-speedtest
+              pkg: "github.com/snapflowio/edge/internal/speedtest"
+              desc: "only the composition root wires the speedtest"
+            - &edge-certs
+              pkg: "github.com/snapflowio/edge/internal/certs"
+              desc: "only the composition root loads certificates"
+        edge-data-plane:
+          list-mode: lax
+          files:
+            - "**/apps/edge/internal/web/**"
+            - "**/apps/edge/internal/admit/**"
+            - "**/apps/edge/internal/tunnel/**"
+            - "**/apps/edge/internal/access/**"
+            - "**/apps/edge/internal/proxy/**"
+          deny:
+            - *edge-control
+            - *edge-meter
+            - *edge-telemetry
+            - *edge-speedtest
+            - *edge-certs
+            - pkg: "github.com/snapflowio/edge/internal/identity"
+              desc: "the data plane must not depend on the Edge identity"
+        edge-services:
+          list-mode: lax
+          files:
+            - "**/apps/edge/internal/web/**"
+            - "**/apps/edge/internal/admit/**"
+            - "**/apps/edge/internal/tunnel/**"
+            - "**/apps/edge/internal/access/**"
+          deny:
+            - *edge-proxy
+            - *edge-tunnel
+            - *edge-admit
+        edge-web:
+          list-mode: lax
+          files:
+            - "**/apps/edge/internal/web/**"
+          deny:
+            - *edge-access
+        edge-proxy:
+          list-mode: lax
+          files:
+            - "**/apps/edge/internal/proxy/**"
+          deny:
+            - *edge-tunnel
+        edge-proxy-core:
+          list-mode: lax
+          files:
+            - "**/apps/edge/internal/proxy/*.go"
+          deny:
+            - pkg: "github.com/snapflowio/edge/internal/proxy/"
+              desc: "the proxy core must not depend on a frontend"
+            - *edge-access
+            - *edge-admit
+            - *edge-web
+        edge-control-plane:
+          list-mode: lax
+          files:
+            - "**/apps/edge/internal/control/**"
+            - "**/apps/edge/internal/meter/**"
+          deny:
+            - *edge-proxy
+            - *edge-access
+            - *edge-admit
+            - *edge-tunnel
+            - *edge-web
+            - *edge-speedtest
+            - *edge-certs
+        edge-control:
+          list-mode: lax
+          files:
+            - "**/apps/edge/internal/control/**"
+            - "!**/apps/edge/internal/control/controltest/**"
+          deny:
+            - *edge-meter
+        edge-test-support:
+          list-mode: lax
+          files:
+            - "**/apps/edge/**"
+            - "!$test"
+            - "!**/apps/edge/internal/**/*test/*.go"
+          deny:
+            - pkg: "github.com/snapflowio/edge/internal/edge/edgetest"
+              desc: "test support packages are imported only by tests"
+            - pkg: "github.com/snapflowio/edge/internal/control/controltest"
+              desc: "test support packages are imported only by tests"
+            - pkg: "github.com/snapflowio/edge/internal/access/accesstest"
+              desc: "test support packages are imported only by tests"
+            - pkg: "github.com/snapflowio/edge/internal/web/webtest"
+              desc: "test support packages are imported only by tests"
+        edge-composition:
+          list-mode: lax
+          files:
+            - "**/apps/edge/internal/**"
+            - "!**/apps/edge/internal/edge/**"
+          deny:
+            - pkg: "github.com/snapflowio/edge/cmd"
+              desc: "the command is the top layer"
+            - pkg: "github.com/snapflowio/edge/internal/edge"
+              desc: "only the command and the edge test harness depend on the Server"
+        snapshot-manager-access:
+          list-mode: lax
+          files:
+            - "**/apps/snapshot-manager/internal/access/**"
+            - "!$test"
+          deny:
+            - pkg: "github.com/snapflowio/snapshot-manager/internal"
+              desc: "access control imports nothing internal"
+        snapshot-manager-buildcache:
+          list-mode: lax
+          files:
+            - "**/apps/snapshot-manager/internal/buildcache/**"
+          deny:
+            - pkg: "github.com/snapflowio/snapshot-manager/internal"
+              desc: "build cache retention imports nothing internal"
+        snapshot-manager-registry:
+          list-mode: lax
+          files:
+            - "**/apps/snapshot-manager/internal/registry/**"
+          deny:
+            - pkg: "github.com/snapflowio/snapshot-manager/internal/manager"
+              desc: "the registry component must not depend on the composition root"
+        snapshot-manager-test-support:
+          list-mode: lax
+          files:
+            - "**/apps/snapshot-manager/**"
+            - "!$test"
+            - "!**/apps/snapshot-manager/internal/**/*test/*.go"
+          deny:
+            - pkg: "github.com/snapflowio/snapshot-manager/internal/manager/managertest"
+              desc: "test support packages are imported only by tests"
+        snapshot-manager-composition:
+          list-mode: lax
+          files:
+            - "**/apps/snapshot-manager/internal/**"
+            - "!**/apps/snapshot-manager/internal/manager/**"
+          deny:
+            - pkg: "github.com/snapflowio/snapshot-manager/cmd"
+              desc: "the command is the top layer"
+            - pkg: "github.com/snapflowio/snapshot-manager/internal/manager"
+              desc: "only the command and the manager test harness depend on the Server"
+        guest-domain:
+          list-mode: lax
+          files:
+            - "**/apps/guest/internal/**"
+            - "!**/apps/guest/internal/toolbox/**"
+          deny:
+            - pkg: "github.com/snapflowio/guest/internal/toolbox"
+              desc: "domain packages and servers must not depend on the toolbox HTTP layer"
+        guest-components:
+          list-mode: lax
+          files:
+            - "**/apps/guest/internal/**"
+          deny:
+            - pkg: "github.com/snapflowio/guest/cmd"
+              desc: "the command is the top layer"
+            - pkg: "github.com/snapflowio/guest/internal/toolbox$"
+              desc: "only the command composes the toolbox server"
+            - pkg: "github.com/snapflowio/guest/internal/ssh$"
+              desc: "only the command composes the SSH server"
+            - pkg: "github.com/snapflowio/guest/internal/terminal$"
+              desc: "only the command composes the terminal server"
+            - pkg: "github.com/snapflowio/guest/internal/lifecycle$"
+              desc: "only the command composes the lifecycle server"
+        guest-toolbox-handlers:
+          list-mode: lax
+          files:
+            - "**/apps/guest/internal/toolbox/*/**"
+            - "!**/apps/guest/internal/toolbox/computeruse/**"
+          deny:
+            - pkg: "github.com/snapflowio/guest/internal/toolbox/computeruse"
+              desc: "toolbox handler packages must not depend on each other"
+            - pkg: "github.com/snapflowio/guest/internal/toolbox/fs"
+              desc: "toolbox handler packages must not depend on each other"
+            - pkg: "github.com/snapflowio/guest/internal/toolbox/git"
+              desc: "toolbox handler packages must not depend on each other"
+            - pkg: "github.com/snapflowio/guest/internal/toolbox/lsp"
+              desc: "toolbox handler packages must not depend on each other"
+            - pkg: "github.com/snapflowio/guest/internal/toolbox/port"
+              desc: "toolbox handler packages must not depend on each other"
+            - pkg: "github.com/snapflowio/guest/internal/toolbox/proxy"
+              desc: "toolbox handler packages must not depend on each other"
+        libs-independent-of-apps:
+          list-mode: lax
+          files:
+            - "**/libs/**"
+          deny:
+            - pkg: "github.com/snapflowio/snapflow/cmd"
+              desc: "libraries must not depend on applications"
+            - pkg: "github.com/snapflowio/snapflow/internal"
+              desc: "libraries must not depend on applications"
+            - pkg: "github.com/snapflowio/edge"
+              desc: "libraries must not depend on applications"
+            - pkg: "github.com/snapflowio/snapshot-manager"
+              desc: "libraries must not depend on applications"
+            - pkg: "github.com/snapflowio/guest"
+              desc: "libraries must not depend on applications"
+        common-go-foundation:
+          list-mode: lax
+          files:
+            - "**/libs/common-go/**"
+          deny:
+            - &lib-microvm
+              pkg: "github.com/snapflowio/microvm-go"
+              desc: "the microVM engine is a standalone library"
+            - &lib-tunnel
+              pkg: "github.com/snapflowio/tunnel-go"
+              desc: "the tunnel protocol is a standalone library"
+            - &lib-computer-use
+              pkg: "github.com/snapflowio/computer-use"
+              desc: "the computer-use plugin is a standalone library"
+            - &lib-machine-proto
+              pkg: "github.com/snapflowio/snapflow/libs/machine-proto"
+              desc: "the machine wire contract is consumed by applications only"
+            - &lib-api-client
+              pkg: "github.com/snapflowio/snapflow/libs/api-client-go"
+              desc: "the API client is consumed by applications only"
+        microvm-go-standalone:
+          list-mode: lax
+          files:
+            - "**/libs/microvm-go/**"
+          deny:
+            - pkg: "github.com/snapflowio/common-go"
+              desc: "the microVM engine is a standalone library"
+            - *lib-tunnel
+            - *lib-computer-use
+            - *lib-machine-proto
+            - *lib-api-client
+        tunnel-go-standalone:
+          list-mode: lax
+          files:
+            - "**/libs/tunnel-go/**"
+          deny:
+            - *lib-microvm
+            - *lib-computer-use
+            - *lib-machine-proto
+            - *lib-api-client
+        computer-use-standalone:
+          list-mode: lax
+          files:
+            - "**/libs/computer-use/**"
+          deny:
+            - *lib-microvm
+            - *lib-tunnel
+            - *lib-machine-proto
+            - *lib-api-client
+        microvm-go-leaf:
+          list-mode: lax
+          files:
+            - "**/libs/microvm-go/layout/**"
+            - "**/libs/microvm-go/types/**"
+            - "**/libs/microvm-go/guest/**"
+            - "**/libs/microvm-go/restartpolicy/**"
+            - "**/libs/microvm-go/healthcheck/**"
+          deny:
+            - &microvm-root
+              pkg: "github.com/snapflowio/microvm-go$"
+              desc: "only commands and applications compose the engine"
+            - &microvm-runtime
+              pkg: "github.com/snapflowio/microvm-go/internal/runtime$"
+              desc: "only the engine root composes the runtime backend"
+            - &microvm-hypervisor
+              pkg: "github.com/snapflowio/microvm-go/hypervisor"
+              desc: "hypervisor backends are wired by the runtime"
+            - &microvm-network
+              pkg: "github.com/snapflowio/microvm-go/network"
+              desc: "host networking is wired by the runtime"
+            - &microvm-host
+              pkg: "github.com/snapflowio/microvm-go/host"
+              desc: "host preflight is wired by the runtime"
+            - &microvm-imagecache
+              pkg: "github.com/snapflowio/microvm-go/imagecache"
+              desc: "the image cache is wired by the runtime"
+            - &microvm-builds
+              pkg: "github.com/snapflowio/microvm-go/builds"
+              desc: "image builds are wired by the runtime"
+            - &microvm-volumes
+              pkg: "github.com/snapflowio/microvm-go/volumes"
+              desc: "volumes are wired by the runtime"
+            - &microvm-devices
+              pkg: "github.com/snapflowio/microvm-go/devices"
+              desc: "devices are wired by the runtime"
+        microvm-go-hypervisor-contract:
+          list-mode: lax
+          files:
+            - "**/libs/microvm-go/hypervisor/*.go"
+          deny:
+            - pkg: "github.com/snapflowio/microvm-go/hypervisor/"
+              desc: "the hypervisor contract must not depend on a backend"
+        microvm-go-host:
+          list-mode: lax
+          files:
+            - "**/libs/microvm-go/host/**"
+          deny:
+            - *microvm-root
+            - *microvm-runtime
+            - *microvm-imagecache
+            - *microvm-builds
+            - *microvm-volumes
+            - *microvm-network
+        microvm-go-runtime-owner:
+          list-mode: lax
+          files:
+            - "**/libs/microvm-go/**"
+            - "!**/libs/microvm-go/*.go"
+            - "!**/libs/microvm-go/internal/runtime/**"
+          deny:
+            - *microvm-runtime
+        snapflow-console:
+          list-mode: lax
+          files:
+            - "**/apps/snapflow/internal/console/**"
+          deny:
+            - *snapflow-localapi
+            - *snapflow-health
+            - *snapflow-telemetry
+        snapflow-cli:
+          list-mode: lax
+          files:
+            - "**/apps/snapflow/internal/cli/**"
+          deny:
+            - pkg: "github.com/snapflowio/snapflow/internal/state"
+              desc: "the CLI layer must not depend on daemon state"
+  exclusions:
+    generated: lax
+    presets:
+      - std-error-handling
+    rules:
+      - linters:
+          - staticcheck
+        text: "QF1003:"
+      - linters:
+          - dupl
+          - funlen
+          - gocognit
+          - mnd
+        path: "(_test\\.go|/[a-z]+test/[^/]+\\.go)$"
+
+formatters:
+  enable:
+    - gofumpt
+  settings:
+    gofumpt:
+      extra:
+        group-params: true
+  exclusions:
+    generated: lax

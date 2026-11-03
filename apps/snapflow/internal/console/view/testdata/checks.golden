@@ -1,0 +1,7 @@
+  ✓ KVM virtualization        /dev/kvm is readable and writable
+  ✗ Filesystem tools          mkfs.ext4 not found
+    → install the filesystem tools
+  ! Copy-on-write clones      checked once the runtime data directory exists
+    → use XFS or Btrfs
+
+✗ 1 required check failed

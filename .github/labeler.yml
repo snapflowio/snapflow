@@ -1,0 +1,66 @@
+"marketing":
+  - changed-files:
+      - any-glob-to-any-file: "apps/marketing/**/*"
+
+"dashboard":
+  - changed-files:
+      - any-glob-to-any-file: "apps/dashboard/**/*"
+
+"go":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.go"
+          - "**/go.mod"
+          - "**/go.sum"
+          - ".golangci.yml"
+          - "go.work"
+          - "go.work.sum"
+          - "scripts/go-workspace.sh"
+
+"sdk":
+  - changed-files:
+      - any-glob-to-any-file: "libs/sdk-typescript/**/*"
+
+"libs":
+  - changed-files:
+      - any-glob-to-any-file: "libs/**/*"
+
+"docker":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "Dockerfile"
+          - "docker-compose.yml"
+          - ".dockerignore"
+          - ".devcontainer/Dockerfile"
+          - "apps/*/Dockerfile"
+          - "images/**/Dockerfile"
+
+"documentation":
+  - changed-files:
+      - any-glob-to-any-file: "**/*.md"
+
+"dependencies":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "package.json"
+          - "pnpm-lock.yaml"
+          - "pnpm-workspace.yaml"
+          - "go.work"
+          - "go.work.sum"
+          - "**/go.mod"
+          - "**/go.sum"
+          - "**/package.json"
+
+"github-actions":
+  - changed-files:
+      - any-glob-to-any-file: ".github/workflows/**/*"
+
+"database":
+  - changed-files:
+      - any-glob-to-any-file: "apps/api/src/migrations/**/*"
+
+"devcontainer":
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".devcontainer/**/*"
+          - ".vscode/**/*"

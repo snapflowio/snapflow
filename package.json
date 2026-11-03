@@ -1,0 +1,59 @@
+{
+	"name": "snapflow",
+	"version": "0.0.0-dev",
+	"license": "AGPL-3.0",
+	"private": true,
+	"packageManager": "pnpm@11.17.0",
+	"engines": {
+		"node": ">=22.22.3 <23",
+		"pnpm": "11.17.0"
+	},
+	"scripts": {
+		"prepare": "husky || true",
+		"cleanup": "bash scripts/cleanup.sh",
+		"format": "biome check . --write",
+		"lint": "biome ci . --error-on-warnings",
+		"typecheck": "moon run :typecheck --concurrency=4",
+		"test": "moon run :test --affected",
+		"test:e2e": "moon run :test-e2e --affected",
+		"build": "moon run :build --concurrency=8",
+		"build:production": "moon run :build api:build-production --concurrency=8",
+		"oci:production": "moon run :oci-image --concurrency=4",
+		"serve": "moon run :serve --concurrency=8",
+		"dev:api": "moon run api:serve",
+		"dev:dashboard": "moon run dashboard:serve",
+		"dev:edge": "moon run edge:serve",
+		"dev:snapflow": "moon run snapflow:serve",
+		"dev:snapshot-manager": "moon run snapshot-manager:serve",
+		"generate:api-client": "moon run :generate-api-client --concurrency=4",
+		"migration:generate:init": "moon run api:migration-generate-init",
+		"migration:generate:pre-deploy": "moon run api:migration-generate-pre-deploy",
+		"migration:generate:post-deploy": "moon run api:migration-generate-post-deploy",
+		"migration:run:init": "moon run api:migrate-init",
+		"migration:run:pre-deploy": "moon run api:migrate-pre-deploy",
+		"migration:run:post-deploy": "moon run api:migrate-post-deploy",
+		"migration:revert": "moon run api:migrate-revert",
+		"dev:t3-code": "moon run workspace:t3-code",
+		"dev:t3-code:pair": "moon run workspace:t3-code-pair",
+		"dev:database:reset": "moon run workspace:reset-local-database && moon run api:migrate-init"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.5.15",
+		"@bufbuild/protoc-gen-es": "^2.11.0",
+		"@commitlint/cli": "^21.0.0",
+		"@commitlint/config-conventional": "^21.0.0",
+		"@hey-api/openapi-ts": "0.99.0",
+		"@moonrepo/cli": "catalog:",
+		"@types/node": "catalog:",
+		"husky": "^9.1.7",
+		"lint-staged": "^17.0.3",
+		"node-gyp": "catalog:",
+		"t3": "catalog:",
+		"tsx": "catalog:",
+		"typescript": "catalog:"
+	},
+	"lint-staged": {
+		"*.go": "gofumpt -extra -w",
+		"*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,json,jsonc,css,html,astro,svelte}": "biome check --write --no-errors-on-unmatched --error-on-warnings"
+	}
+}

@@ -1,0 +1,4 @@
+self-hosted-runner:
+  labels:
+    - snapflow-kvm
+    - blacksmith-4vcpu-ubuntu-2404

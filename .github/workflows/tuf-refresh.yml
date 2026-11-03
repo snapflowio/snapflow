@@ -1,0 +1,75 @@
+name: TUF refresh
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    name: Refresh online TUF metadata
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: snapflow-release
+    concurrency:
+      group: snapflow-tuf
+      cancel-in-progress: false
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.work
+          cache: false
+      - name: Build the release tool
+        run: go build -trimpath -o "${RUNNER_TEMP}/snapflow-release" ./apps/snapflow/cmd/snapflow-release
+      - uses: ./.github/actions/tuf-repository
+        with:
+          mode: download
+          directory: ${{ runner.temp }}/tuf-repository
+          account-id: ${{ secrets.SNAPFLOW_RELEASE_R2_ACCOUNT_ID }}
+          access-key-id: ${{ secrets.SNAPFLOW_RELEASE_R2_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.SNAPFLOW_RELEASE_R2_SECRET_ACCESS_KEY }}
+          bucket: ${{ secrets.SNAPFLOW_RELEASE_R2_BUCKET }}
+      - name: Re-sign timestamp, snapshot and the beta channel when due
+        env:
+          BETA_KEY: ${{ secrets.SNAPFLOW_TUF_BETA_KEY }}
+          SNAPSHOT_KEY: ${{ secrets.SNAPFLOW_TUF_SNAPSHOT_KEY }}
+          TIMESTAMP_KEY: ${{ secrets.SNAPFLOW_TUF_TIMESTAMP_KEY }}
+        run: |
+          keys="${RUNNER_TEMP}/tuf-keys"
+          install -d -m 0700 "$keys"
+          (
+            umask 077
+            printf '%s\n' "$BETA_KEY" >"$keys/beta.pem"
+            printf '%s\n' "$SNAPSHOT_KEY" >"$keys/snapshot.pem"
+            printf '%s\n' "$TIMESTAMP_KEY" >"$keys/timestamp.pem"
+          )
+          "${RUNNER_TEMP}/snapflow-release" tuf refresh \
+            --repository "${RUNNER_TEMP}/tuf-repository" \
+            --channel-key "beta=$keys/beta.pem" \
+            --snapshot-key "$keys/snapshot.pem" \
+            --timestamp-key "$keys/timestamp.pem"
+      - name: Remove the signing keys
+        if: always()
+        run: rm -rf -- "${RUNNER_TEMP}/tuf-keys"
+      - uses: ./.github/actions/tuf-repository
+        with:
+          mode: upload
+          directory: ${{ runner.temp }}/tuf-repository
+          account-id: ${{ secrets.SNAPFLOW_RELEASE_R2_ACCOUNT_ID }}
+          access-key-id: ${{ secrets.SNAPFLOW_RELEASE_R2_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.SNAPFLOW_RELEASE_R2_SECRET_ACCESS_KEY }}
+          bucket: ${{ secrets.SNAPFLOW_RELEASE_R2_BUCKET }}
+      - name: Fail when offline-signed metadata expires within 30 days
+        run: >-
+          "${RUNNER_TEMP}/snapflow-release" tuf check-expiry
+          --repository "${RUNNER_TEMP}/tuf-repository"
+          --within 720h

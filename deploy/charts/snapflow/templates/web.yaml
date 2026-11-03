@@ -1,0 +1,73 @@
+{{- $root := . -}}
+{{- range $component := list "dashboard" "marketing" }}
+{{- $values := index $root.Values $component }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ printf "snapflow-%s" $component }}
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" $component) | nindent 4 }}
+spec:
+  replicas: {{ $values.replicas }}
+  selector:
+    matchLabels:
+      {{- include "snapflow.selectorLabels" (dict "root" $root "component" $component) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "snapflow.selectorLabels" (dict "root" $root "component" $component) | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        {{- include "snapflow.podSecurityContext" $root | nindent 8 }}
+      containers:
+        - name: {{ $component }}
+          image: {{ include "snapflow.image" (dict "root" $root "key" $component "name" $component) }}
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 20
+          securityContext:
+            {{- include "snapflow.containerSecurityContext" $root | nindent 12 }}
+          resources:
+            {{- toYaml $values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: data
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: config
+          emptyDir: {}
+        - name: data
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ printf "snapflow-%s" $component }}
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" $component) | nindent 4 }}
+spec:
+  selector:
+    {{- include "snapflow.selectorLabels" (dict "root" $root "component" $component) | nindent 4 }}
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+{{- end }}

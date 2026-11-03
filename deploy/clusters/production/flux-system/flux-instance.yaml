@@ -1,0 +1,35 @@
+# Flux itself, run by the Flux Operator. It syncs this cluster from main as the
+# snapflowio-automation GitHub App (provider: github, credentials in the
+# flux-system secret that deploy/scripts/bootstrap-flux.sh creates), so no
+# deploy key exists. Image automation pushes image pins through the same
+# GitRepository, and the App is the only actor the main ruleset lets push.
+apiVersion: fluxcd.controlplane.io/v1
+kind: FluxInstance
+metadata:
+  name: flux
+  namespace: flux-system
+  annotations:
+    fluxcd.controlplane.io/reconcileEvery: "1h"
+spec:
+  distribution:
+    version: "2.9.x"
+    registry: ghcr.io/fluxcd
+  components:
+    - source-controller
+    - kustomize-controller
+    - helm-controller
+    - notification-controller
+    - image-reflector-controller
+    - image-automation-controller
+  cluster:
+    type: kubernetes
+    multitenant: false
+    networkPolicy: true
+    domain: cluster.local
+  sync:
+    kind: GitRepository
+    url: https://github.com/snapflowio/snapflow.git
+    ref: refs/heads/main
+    path: deploy/clusters/production
+    pullSecret: flux-system
+    provider: github

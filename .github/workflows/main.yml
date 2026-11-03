@@ -1,0 +1,71 @@
+name: Main
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+      # ci.yml's suite selection reads pull request files; on push it runs everything.
+      pull-requests: read
+
+  release-please:
+    name: Release PR
+    needs: ci
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    concurrency:
+      group: release-please
+      cancel-in-progress: false
+    # The App key is an environment secret only main may use, so no workflow
+    # run from another branch can mint an App token.
+    environment: snapflow-automation
+    permissions:
+      contents: read
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag: ${{ steps.release.outputs.tag_name }}
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      # release-please acts as the snapflowio-automation App: its pull request
+      # starts CI like any other, and only the App may create release tags.
+      - id: token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.SNAPFLOW_AUTOMATION_CLIENT_ID }}
+          private-key: ${{ secrets.SNAPFLOW_AUTOMATION_PRIVATE_KEY }}
+          permission-contents: write
+          permission-issues: write
+          permission-pull-requests: write
+      - id: release
+        uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4.4.1
+        with:
+          token: ${{ steps.token.outputs.token }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  sync-dev:
+    name: Merge main into dev
+    uses: ./.github/workflows/sync-dev.yml
+    permissions:
+      contents: read
+
+  release:
+    name: Release
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    uses: ./.github/workflows/release.yml
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+      attestations: write
+    with:
+      tag: ${{ needs.release-please.outputs.tag }}
+      version: ${{ needs.release-please.outputs.version }}

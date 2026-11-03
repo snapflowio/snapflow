@@ -1,0 +1,219 @@
+packages:
+  - apps/api
+  - apps/dashboard
+  - apps/marketing
+  - libs/api-client
+  - libs/machine-proto
+  - libs/organization-access
+  - libs/sdk-typescript
+  - libs/toolbox-api-client
+
+nodeLinker: hoisted
+catalogMode: prefer
+cleanupUnusedCatalogs: true
+autoInstallPeers: false
+verifyDepsBeforeRun: error
+strictDepBuilds: true
+minimumReleaseAge: 2880
+
+overrides:
+  vite: 8.3.4
+  '@nestjs-modules/ioredis@2.2.2>@nestjs/terminus': '-'
+  'body-parser@<1.20.6': 1.20.6
+  'body-parser@>=2.0.0 <2.4.0': 2.4.0
+  'brace-expansion@<1.1.18': 1.1.18
+  'brace-expansion@>=2.0.0 <2.1.4': 2.1.4
+  'brace-expansion@>=3.0.0 <3.0.6': 3.0.6
+  'brace-expansion@>=5.0.0 <5.0.12': 5.0.12
+  'css-loader@^6.4.0': 7.1.4
+  'devalue@<5.9.3': 5.9.3
+  'dompurify@<3.4.13': 3.4.13
+  '@electron/rebuild@<4.0.0': 4.2.0
+  'engine.io@>=6.6.0 <6.6.10': 6.6.10
+  'fast-copy@>=4.0.0 <4.1.0': 4.1.0
+  'fast-uri@>=3.0.0 <3.1.9': 3.1.9
+  'glob@>=13.0.0 <14.0.2': 14.0.2
+  '@grpc/grpc-js@>=1.14.0 <1.14.5': 1.14.5
+  'hono@<4.12.34': 4.13.0
+  'ip-address@<=10.3.0': 10.4.0
+  'js-yaml@>=4.0.0 <4.3.2': 4.3.2
+  'js-yaml@>=5.0.0 <5.2.1': 5.2.1
+  'less@<4.8.1': 4.8.1
+  'minimatch@>=10.0.0 <11.0.1': 11.0.1
+  'multer@<2.5.0': 2.5.0
+  'nanoid@>=3.0.0 <3.3.18': 3.3.18
+  'node-forge@<1.4.1': 1.4.1
+  'postcss@<8.5.26': 8.5.26
+  'protobufjs@>=7.5.0 <7.6.5': 7.6.5
+  'protobufjs@>=8.0.0 <8.8.0': 8.8.0
+  'proxy-addr@>=1.1.0 <2.0.8': 2.0.8
+  'qs@>=6.7.0 <6.16.1': 6.16.1
+  'sharp@<0.35.0': 0.35.3
+  'shell-quote@<1.11.0': 1.11.0
+  'smol-toml@<1.9.1': 1.9.1
+  'socket.io-parser@>=4.0.0 <4.2.7': 4.2.7
+  'source-map-js@>=1.0.0 <1.2.2': 1.2.2
+  'svgo@>=4.0.0 <4.0.2': 4.0.2
+  'toml@<5.0.1': 5.0.1
+  'undici@>=6.0.0 <6.29.1': 6.29.1
+  'undici@>=7.0.0 <7.29.0': 7.29.0
+  'undici@>=8.0.0 <8.12.2': 8.12.2
+  'uuid@<11.1.1': 11.1.1
+  'ws@>=8.0.0 <8.21.0': 8.21.0
+
+allowBuilds:
+  '@parcel/watcher': true
+  '@scarf/scarf': false
+  '@swc/core': true
+  bufferutil: false
+  core-js: false
+  cpu-features: false
+  esbuild: true
+  electron: true
+  electron-winstaller: true
+  less: false
+  msgpackr-extract: true
+  node-pty: true
+  protobufjs: false
+  sharp: true
+  ssh2: false
+  sqlite3: true
+  unrs-resolver: true
+  utf-8-validate: false
+
+minimumReleaseAgeExclude:
+  - '@mikro-orm/cli@7.2.0'
+  - '@mikro-orm/core@7.2.0'
+  - '@mikro-orm/decorators@7.2.0'
+  - '@mikro-orm/migrations@7.2.0'
+  - '@mikro-orm/postgresql@7.2.0'
+  - '@mikro-orm/sql@7.2.0'
+  - '@nestjs/terminus@12.0.0-next.0'
+  - '@moonrepo/cli@2.4.6'
+  - '@moonrepo/core-linux-arm64-gnu@2.4.6'
+  - '@moonrepo/core-linux-arm64-musl@2.4.6'
+  - '@moonrepo/core-linux-x64-gnu@2.4.6'
+  - '@moonrepo/core-linux-x64-musl@2.4.6'
+  - '@moonrepo/core-macos-arm64@2.4.6'
+  - '@moonrepo/core-macos-x64@2.4.6'
+  - '@moonrepo/core-windows-x64-msvc@2.4.6'
+  - '@astrojs/markdown-satteri@0.3.8'
+  - 'astro@7.2.6'
+  - 'mikro-orm@7.2.0'
+
+peerDependencyRules:
+  allowedVersions:
+    typescript: ^6.0.0
+    'use-sync-external-store>react': ^19.0.0
+    '@nest-lab/throttler-storage-redis@1.2.0>@nestjs/common': ^12.0.0
+    '@nest-lab/throttler-storage-redis@1.2.0>@nestjs/core': ^12.0.0
+    '@nestjs/throttler@6.5.0>@nestjs/common': ^12.0.0
+    '@nestjs/throttler@6.5.0>@nestjs/core': ^12.0.0
+    'nestjs-pino@4.6.1>@nestjs/common': ^12.0.0
+
+catalog:
+  '@mikro-orm/cli': 7.2.0
+  '@mikro-orm/core': 7.2.0
+  '@mikro-orm/decorators': 7.2.0
+  '@mikro-orm/migrations': 7.2.0
+  '@mikro-orm/nestjs': 7.1.0
+  '@mikro-orm/postgresql': 7.2.0
+  '@better-auth/passkey': 1.7.7
+  '@arethetypeswrong/cli': 0.18.5
+  '@moonrepo/cli': 2.4.6
+  '@nestjs/common': ^12.0.1
+  '@nestjs/core': ^12.0.1
+  '@nestjs/platform-express': ^12.0.1
+  '@nestjs/platform-socket.io': ^12.0.1
+  '@nestjs/swagger': ^12.0.1
+  '@nestjs/websockets': ^12.0.1
+  cloudflare: 7.0.0
+  '@react-three/fiber': ^9.7.0
+  '@socket.io/redis-adapter': ^8.3.0
+  '@stripe/connect-js': ^3.4.6
+  '@stripe/stripe-js': ^10.0.0
+  '@tailwindcss/vite': ^4.3.3
+  '@tanstack/svelte-form': 1.33.5
+  '@tanstack/svelte-query': 6.3.4
+  '@tanstack/svelte-table': 9.3.1
+  '@tanstack/svelte-virtual': 3.13.47
+  '@sveltejs/adapter-static': 4.0.0
+  '@sveltejs/kit': 3.1.0
+  '@sveltejs/vite-plugin-svelte': 7.3.1
+  '@internationalized/date': 3.12.4
+  '@types/hast': 3.0.5
+  '@types/qrcode': 1.5.6
+  qrcode: 1.5.4
+  bits-ui: 2.19.5
+  paneforge: 1.0.2
+  remark-parse: 11.0.0
+  remark-rehype: 11.1.2
+  runed: 0.37.1
+  '@lucide/svelte': 1.59.0
+  shiki: 4.5.0
+  '@shikijs/langs': 4.5.0
+  '@shikijs/themes': 4.5.0
+  svelte: 5.57.2
+  svelte-check: 4.7.7
+  unified: 11.0.5
+  '@types/node': ^22.13.4
+  '@types/react': ^19.2.17
+  '@types/react-dom': ^19.2.3
+  tldts: 6.1.86
+  '@types/three': ^0.185.4
+  '@better-auth/api-key': 1.7.7
+  '@better-auth/core': 1.7.7
+  '@better-auth/utils': 0.4.2
+  '@better-fetch/fetch': 1.3.2
+  better-call: 1.4.0
+  better-auth: 1.7.7
+  class-variance-authority: ^0.7.1
+  clsx: ^2.1.1
+  jose: 6.2.10
+  kysely: 0.29.5
+  nanostores: 1.5.2
+  node-gyp: 12.4.0
+  react: ^19.2.8
+  react-dom: ^19.2.8
+  remark-gfm: ^4.0.1
+  socket.io-client: ^4.8.3
+  socket.io: ^4.8.1
+  t3: 0.0.31
+  tailwind-merge: 3.6.0
+  tailwindcss: ^4.3.3
+  tw-animate-css: ^1.4.0
+  three: ^0.185.1
+  tsx: ^4.20.6
+  typescript: ~6.0.3
+  vite: 8.3.4
+  vitest: ^4.1.12
+  zod: ^4.6.6
+  '@aws-sdk/s3-request-presigner': ^3.1121.0
+  '@opentelemetry/api': ^1.9.1
+  '@opentelemetry/exporter-trace-otlp-http': ^0.222.0
+  '@opentelemetry/instrumentation-express': ^0.70.0
+  '@opentelemetry/instrumentation-http': ^0.222.0
+  '@opentelemetry/instrumentation-ioredis': ^0.70.0
+  '@opentelemetry/instrumentation-nestjs-core': ^0.68.0
+  '@opentelemetry/instrumentation-pg': ^0.74.0
+  '@opentelemetry/instrumentation-pino': ^0.68.0
+  '@opentelemetry/resources': ^2.11.0
+  '@opentelemetry/sdk-node': ^0.222.0
+  '@opentelemetry/sdk-trace-base': ^2.11.0
+  '@opentelemetry/semantic-conventions': ^1.43.0
+  '@astrojs/react': ^7.0.0
+  '@astrojs/sitemap': ^3.7.4
+  astro: ^7.3.5
+  echarts: ^6.1.0
+  motion: ^14.0.0
+  nest-commander: 3.21.0
+  '@types/inquirer': 8.2.12
+  '@nestjs/cli': 12.0.8
+  webpack-node-externals: 3.0.0
+  tsconfig-paths-webpack-plugin: 4.2.0
+  '@types/webpack-node-externals': ^3.0.4
+  stripe: ^23.0.0
+  react-email: 6.11.3
+  '@react-email/ui': 6.11.3
+  resend: 6.34.1
+  maxmind: ^5.0.7

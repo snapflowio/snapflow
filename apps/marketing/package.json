@@ -1,0 +1,25 @@
+{
+	"name": "@snapflow/marketing",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"dependencies": {
+		"@astrojs/react": "catalog:",
+		"@astrojs/sitemap": "catalog:",
+		"@react-three/fiber": "catalog:",
+		"astro": "catalog:",
+		"cookie": "2.0.1",
+		"react": "catalog:",
+		"react-dom": "catalog:",
+		"three": "catalog:"
+	},
+	"devDependencies": {
+		"@astrojs/check": "^0.9.10",
+		"@tailwindcss/vite": "catalog:",
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"@types/three": "catalog:",
+		"tailwindcss": "catalog:",
+		"typescript": "catalog:"
+	}
+}

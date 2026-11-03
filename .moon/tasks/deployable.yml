@@ -1,0 +1,23 @@
+inheritedBy:
+  tag: "deployable"
+
+tasks:
+  image:
+    description: "Builds the application image from docker-bake.hcl into the local Docker engine"
+    command: "bash"
+    args: ["deploy/scripts/image.sh", "build"]
+    options:
+      cache: false
+      runFromWorkspaceRoot: true
+
+  publish:
+    description: "Builds and pushes the build-<sha>-<timestamp> image of a dev commit that Flux pins on dev"
+    command: "bash"
+    args: ["deploy/scripts/image.sh", "publish"]
+    deps:
+      - "~:typecheck"
+      - "~:lint"
+      - "deploy:validate"
+    options:
+      cache: false
+      runFromWorkspaceRoot: true

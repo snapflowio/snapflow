@@ -1,0 +1,303 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, dev]
+  workflow_call:
+  # Re-runs CI on a branch by hand.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  CI: true
+  MOON_TOOLCHAIN_FORCE_GLOBALS: true
+
+jobs:
+  # Pull requests run only the suites their changes can affect
+  # (.github/filters/ci.yml); every other event runs them all.
+  changes:
+    name: Select suites
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      go: ${{ github.event_name != 'pull_request' || steps.filter.outputs.go == 'true' }}
+      typescript: ${{ github.event_name != 'pull_request' || steps.filter.outputs.typescript == 'true' }}
+      deploy: ${{ github.event_name != 'pull_request' || steps.filter.outputs.deploy == 'true' }}
+      database: ${{ github.event_name != 'pull_request' || steps.filter.outputs.database == 'true' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        if: github.event_name == 'pull_request'
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/filters
+      - id: filter
+        if: github.event_name == 'pull_request'
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4
+        with:
+          filters: .github/filters/ci.yml
+
+  license:
+    name: License headers
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Check license headers
+        uses: apache/skywalking-eyes/header@a196742f472feaffafea537ce5a2a4c3c53a8de4 # v0.9.0
+        with:
+          config: .licenserc.yaml
+          mode: check
+          token: ""
+
+  typescript:
+    name: pnpm, Biome, and Moon
+    needs: changes
+    if: needs.changes.outputs.typescript == 'true'
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          filter: blob:none
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          run_install: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.work
+          cache: false
+      - run: pnpm install --frozen-lockfile
+      - name: Validate the Moon project graph
+        run: pnpm exec moon projects
+      - name: Check formatting and lint with Biome
+        run: pnpm run lint
+      # The Go projects' typecheck (go vet) runs in the Go job. moon run's
+      # --query does not narrow :typecheck, so the targets come from moon query.
+      - name: Typecheck the TypeScript projects
+        run: |
+          mapfile -t targets < <(pnpm exec moon query tasks "task=typecheck && taskToolchain!=go" | grep -oE '[a-z0-9-]+:typecheck' | sort -u)
+          if [ "${#targets[@]}" -eq 0 ]; then
+            echo "::error::moon found no TypeScript typecheck tasks"
+            exit 1
+          fi
+          pnpm exec moon run "${targets[@]}" --concurrency=4
+      - name: Run behavior-bearing TypeScript tests
+        run: >-
+          pnpm exec moon run
+          api:test
+          sdk-typescript:test
+          --concurrency=4
+      - name: Build the API
+        run: pnpm exec moon run api:build-production
+      - name: Verify the generated environment documentation is current
+        run: pnpm exec moon run api:env-docs-check
+      - name: Build the dashboard
+        run: pnpm exec moon run dashboard:build
+      - name: Build the marketing website
+        env:
+          # The same public origin the image build bakes in (docker-bake.hcl).
+          PUBLIC_SITE_URL: https://snapflow.io
+        run: pnpm exec moon run marketing:build
+      - name: Verify generated API clients are current
+        run: |
+          pnpm exec moon run api-client:generate-api-client api-client-go:generate-api-client --concurrency=2
+          changes="$(git status --porcelain --untracked-files=all -- libs/api-client/src libs/api-client-go)"
+          test -z "$changes" || { printf '%s\n' "$changes"; exit 1; }
+      - name: Verify generated local API documents are current
+        run: |
+          pnpm exec moon run snapflow:openapi guest:openapi --concurrency=2
+          changes="$(git status --porcelain --untracked-files=all -- apps/snapflow/internal/localapi apps/guest/internal/toolbox)"
+          test -z "$changes" || { printf '%s\n' "$changes"; exit 1; }
+
+  deploy:
+    name: Kubernetes deployment
+    needs: changes
+    if: needs.changes.outputs.deploy == 'true'
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          filter: blob:none
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          run_install: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/deploy-tools
+      - name: Validate the chart, Flux stages and deploy scripts
+        run: pnpm exec moon run deploy:validate
+
+  postgres-schema:
+    name: PostgreSQL schema
+    needs: changes
+    if: needs.changes.outputs.database == 'true'
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17.11-alpine3.24
+        env:
+          POSTGRES_USER: snapflow
+          POSTGRES_PASSWORD: snapflow
+          POSTGRES_DB: snapflow
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready --username=snapflow --dbname=snapflow"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      SNAPFLOW_ENVIRONMENT: development
+      DATABASE_URL: postgresql://snapflow:snapflow@127.0.0.1:5432/snapflow
+      DATABASE_POOL_MAX: "10"
+      DATABASE_POOL_IDLE_TIMEOUT_MS: "30000"
+      DATABASE_CONNECTION_TIMEOUT_MS: "30000"
+      SQL_LOG_LEVEL: trace
+      NODE_OPTIONS: --trace-warnings
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          filter: blob:none
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          run_install: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.work
+          cache: false
+      - run: pnpm install --frozen-lockfile
+      - name: Apply the complete schema to an empty database
+        run: pnpm exec moon run api:migrate-init
+      - name: Reject entity and migration snapshot drift
+        run: pnpm exec moon run api:migration-check
+
+  go:
+    name: Go workspace
+    needs: changes
+    if: needs.changes.outputs.go == 'true'
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.work
+          cache-dependency-path: |
+            go.work.sum
+            apps/*/go.sum
+            libs/*/go.sum
+      - uses: ./.github/actions/go-workspace
+      # The image conversion tests need mkfs.erofs 1.9.4+, newer than Ubuntu
+      # ships; this is the same build the release pipeline uses.
+      - name: Build mkfs.erofs
+        run: | # zizmor: ignore[github-env]
+          docker buildx build --file images/erofs-utils/Dockerfile --output "type=local,dest=${RUNNER_TEMP}/erofs-utils" .
+          test -x "${RUNNER_TEMP}/erofs-utils/mkfs.erofs"
+          echo "${RUNNER_TEMP}/erofs-utils" >>"${GITHUB_PATH}"
+      # The prebuilt, checksum-verified binary instead of compiling it on every
+      # run, and its analysis cache kept between runs.
+      - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
+        with:
+          version: v2.15.0
+          install-mode: binary
+          install-only: true
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/golangci-lint
+          key: golangci-lint-${{ runner.os }}-${{ hashFiles('.golangci.yml', 'go.work.sum', 'apps/*/go.sum', 'libs/*/go.sum') }}
+          restore-keys: golangci-lint-${{ runner.os }}-
+      - name: Lint and check formatting of each Go module
+        run: bash scripts/go-workspace.sh golangci-lint run ./...
+      - name: Build each Go module
+        run: bash scripts/go-workspace.sh go build ./...
+      - name: Test each Go module
+        run: bash scripts/go-workspace.sh go test ./...
+      - name: Race-test Edge, Snapflow, and the shared tunnel protocol
+        run: |
+          go test -race ./apps/edge/...
+          go test -race ./apps/snapflow/...
+          go test -race ./libs/tunnel-go/...
+      - name: Validate GitHub workflows
+        run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
+      - name: Audit GitHub workflows with zizmor
+        uses: zizmorcore/zizmor-action@53290badfa369cb0bf7ad16342cb62c2fa47ac7b # v0.8.0
+        with:
+          version: 1.31.1
+          persona: regular
+          min-severity: medium
+          advanced-security: false
+          annotations: true
+
+  # The one check the branch rulesets require, so adding a job never needs a
+  # ruleset change.
+  passed:
+    name: CI passed
+    if: always()
+    needs: [changes, license, typescript, deploy, postgres-schema, go]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      # main is the default branch, so new pull requests open against it. Only
+      # dev promotions, the release-please pull request and hotfixes may merge
+      # there; sync-dev.yml carries the last two back into dev.
+      - name: Require pull requests into main to come from dev
+        if: github.event_name == 'pull_request' && github.base_ref == 'main'
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          case "$HEAD_REF" in
+            dev | release-please--* | hotfix/*) ;;
+            *)
+              echo "::error::pull requests into main come only from dev (or hotfix/*); retarget this one to dev"
+              exit 1
+              ;;
+          esac
+      # A suite the changes job skipped counts; a failed or cancelled one does not.
+      - name: Require every CI job to succeed or be skipped
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          for result in $RESULTS; do
+            case "$result" in
+              success | skipped) ;;
+              *)
+                echo "::error::a CI job finished with ${result}"
+                exit 1
+                ;;
+            esac
+          done

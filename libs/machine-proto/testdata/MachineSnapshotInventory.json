@@ -1,0 +1,26 @@
+{
+	"desiredStateRevision": "42",
+	"snapshots": [
+		{
+			"ref": "registry.example.com/snapflow/base:1.0",
+			"state": "SNAPSHOT_INVENTORY_STATE_PRESENT",
+			"digest": "sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+			"sizeBytes": "1073741824",
+			"template": {
+				"key": "7d865e959b2466918c9863afca942d0fb89d7c9ac0c99bafc3749504ded97730",
+				"cpuQuota": 1,
+				"memoryQuota": 2,
+				"storageQuota": 5
+			}
+		},
+		{
+			"ref": "registry.example.com/snapflow/backup-contract:1",
+			"state": "SNAPSHOT_INVENTORY_STATE_PULLING"
+		},
+		{
+			"ref": "registry.example.com/snapflow/missing:1",
+			"state": "SNAPSHOT_INVENTORY_STATE_FAILED",
+			"errorReason": "manifest unknown"
+		}
+	]
+}

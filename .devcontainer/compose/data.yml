@@ -1,0 +1,67 @@
+services:
+  postgres:
+    image: postgres:17.10-alpine3.23@sha256:8189a1f6e40904781fc9e2612687877791d21679866db58b1de996b31fc312e4
+    mem_limit: 768m
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ../dev/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    environment:
+      POSTGRES_USER: snapflow
+      POSTGRES_PASSWORD: snapflow
+      POSTGRES_DB: snapflow
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "PGPASSWORD=$$POSTGRES_PASSWORD psql --host=127.0.0.1 --username=$$POSTGRES_USER --dbname=$$POSTGRES_DB --command='select 1' --quiet --no-align --tuples-only >/dev/null",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  redis:
+    image: redis:8.8.0-alpine3.23@sha256:9d317178eceac8454a2284a9e6df2466b93c745529947f0cd42a0fa9609d7005
+    mem_limit: 384m
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    tmpfs:
+      - /data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  rustfs:
+    image: rustfs/rustfs:1.0.3@sha256:9ca9559533b537d10482fe923288b676ad08f92a7069d9a17327fbae3cab688b
+    mem_limit: 256m
+    environment:
+      RUSTFS_ACCESS_KEY: snapflow-test
+      RUSTFS_SECRET_KEY: snapflow-test-secret
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_OBS_LOG_DIRECTORY: ""
+    tmpfs:
+      - /data:uid=10001,gid=10001
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "--output", "/dev/null", "http://127.0.0.1:9000/health/ready"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  rustfs-init:
+    image: rclone/rclone:1.75.2@sha256:2687085f718d3c628f7fdfb77c52a1d344332aed543110bb88088f2c70d43eb5
+    command: ["mkdir", ":s3:snapflow"]
+    environment:
+      RCLONE_S3_PROVIDER: Other
+      RCLONE_S3_ENDPOINT: http://rustfs:9000
+      RCLONE_S3_ACCESS_KEY_ID: snapflow-test
+      RCLONE_S3_SECRET_ACCESS_KEY: snapflow-test-secret
+    depends_on:
+      rustfs:
+        condition: service_healthy
+    restart: "no"
+
+volumes:
+  postgres-data:

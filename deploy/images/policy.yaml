@@ -1,0 +1,129 @@
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: snapflow-api
+  namespace: flux-system
+spec:
+  interval: 5m
+  image: ghcr.io/snapflowio/snapflow/api
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: snapflow-api
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: snapflow-api
+  digestReflectionPolicy: Always
+  interval: 5m
+  filterTags:
+    pattern: '^build-[a-f0-9]{40}-(?P<timestamp>[0-9]+)$'
+    extract: '$timestamp'
+  policy:
+    numerical:
+      order: asc
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: snapflow-dashboard
+  namespace: flux-system
+spec:
+  interval: 5m
+  image: ghcr.io/snapflowio/snapflow/dashboard
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: snapflow-dashboard
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: snapflow-dashboard
+  digestReflectionPolicy: Always
+  interval: 5m
+  filterTags:
+    pattern: '^build-[a-f0-9]{40}-(?P<timestamp>[0-9]+)$'
+    extract: '$timestamp'
+  policy:
+    numerical:
+      order: asc
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: snapflow-marketing
+  namespace: flux-system
+spec:
+  interval: 5m
+  image: ghcr.io/snapflowio/snapflow/marketing
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: snapflow-marketing
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: snapflow-marketing
+  digestReflectionPolicy: Always
+  interval: 5m
+  filterTags:
+    pattern: '^build-[a-f0-9]{40}-(?P<timestamp>[0-9]+)$'
+    extract: '$timestamp'
+  policy:
+    numerical:
+      order: asc
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: snapflow-snapshot-manager
+  namespace: flux-system
+spec:
+  interval: 5m
+  image: ghcr.io/snapflowio/snapflow/snapshot-manager
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: snapflow-snapshot-manager
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: snapflow-snapshot-manager
+  digestReflectionPolicy: Always
+  interval: 5m
+  filterTags:
+    pattern: '^build-[a-f0-9]{40}-(?P<timestamp>[0-9]+)$'
+    extract: '$timestamp'
+  policy:
+    numerical:
+      order: asc
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: snapflow-edge
+  namespace: flux-system
+spec:
+  interval: 5m
+  image: ghcr.io/snapflowio/snapflow/edge
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: snapflow-edge
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: snapflow-edge
+  digestReflectionPolicy: Always
+  interval: 5m
+  filterTags:
+    pattern: '^build-[a-f0-9]{40}-(?P<timestamp>[0-9]+)$'
+    extract: '$timestamp'
+  policy:
+    numerical:
+      order: asc

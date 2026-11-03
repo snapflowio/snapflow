@@ -1,0 +1,557 @@
+name: Release
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: Release tag (vX.Y.Z) of the draft release created by release-please
+        required: true
+        type: string
+      version:
+        description: Release version (X.Y.Z)
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag (vX.Y.Z) of an existing release to build, publish and verify again
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ inputs.tag }}
+  cancel-in-progress: false
+
+env:
+  RELEASE_TAG: ${{ inputs.tag }}
+  BUILDKIT_VERSION: v0.31.1
+  BUILDKIT_ADDRESS: unix:///run/snapflow-buildkit/buildkitd.sock
+  BUILDKIT_SBOM_SCANNER: docker.io/docker/buildkit-syft-scanner@sha256:ae4f3b554449e7e25548e7d8ccc029d17357348e30c6e3df01b92bc93654d6a9
+  GUEST_REPOSITORY: ghcr.io/snapflowio/platform
+  SIGNER_IDENTITY: ^https://github\.com/snapflowio/snapflow/\.github/workflows/release\.yml@refs/heads/main$
+  SIGNER_ISSUER: https://token.actions.githubusercontent.com
+
+jobs:
+  prepare:
+    name: Prepare ${{ inputs.tag }}
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.release.outputs.version }}
+      revision: ${{ steps.release.outputs.revision }}
+      source-date-epoch: ${{ steps.release.outputs.source-date-epoch }}
+      built-at: ${{ steps.release.outputs.built-at }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+      - id: release
+        name: Resolve the release commit and check the production trust root
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "::error::release tag must look like vX.Y.Z, got ${RELEASE_TAG}"
+            exit 1
+          fi
+          version="${RELEASE_TAG#v}"
+          if [ -n "$INPUT_VERSION" ] && [ "$INPUT_VERSION" != "$version" ]; then
+            echo "::error::version ${INPUT_VERSION} does not match tag ${RELEASE_TAG}"
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor HEAD origin/main; then
+            echo "::error::${RELEASE_TAG} is not on main"
+            exit 1
+          fi
+          if ! jq --exit-status '.signed._type == "root"' apps/snapflow/internal/tuf/trust/root.json >/dev/null; then
+            echo "::error::apps/snapflow/internal/tuf/trust/root.json must hold the production TUF root (see docs/releases.md)"
+            exit 1
+          fi
+          epoch="$(git show -s --format=%ct HEAD)"
+          {
+            echo "version=${version}"
+            echo "revision=$(git rev-parse HEAD)"
+            echo "source-date-epoch=${epoch}"
+            echo "built-at=$(date -u -d "@${epoch}" +%Y-%m-%dT%H:%M:%SZ)"
+          } >>"$GITHUB_OUTPUT"
+
+  erofs-utils:
+    name: mkfs.erofs ${{ matrix.arch }}
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.prepare.outputs.revision }}
+          persist-credentials: false
+      - name: Build mkfs.erofs
+        env:
+          TARGET_ARCH: ${{ matrix.arch }}
+        run: |
+          docker buildx build --file images/erofs-utils/Dockerfile --platform "linux/${TARGET_ARCH}" --output "type=local,dest=${RUNNER_TEMP}/erofs-utils" .
+          test -x "${RUNNER_TEMP}/erofs-utils/mkfs.erofs"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: mkfs-erofs-${{ matrix.arch }}
+          path: ${{ runner.temp }}/erofs-utils/mkfs.erofs
+          if-no-files-found: error
+          retention-days: 7
+
+  guest-platform:
+    name: Guest platform ${{ matrix.arch }}
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.prepare.outputs.revision }}
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.work
+          cache: false
+      - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build guest platform children with SBOM and provenance
+        env:
+          TARGET_ARCH: ${{ matrix.arch }}
+          RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          go install "github.com/moby/buildkit/cmd/buildkitd@${BUILDKIT_VERSION}"
+          go install "github.com/moby/buildkit/cmd/buildctl@${BUILDKIT_VERSION}"
+          sudo mkdir -p /run/snapflow-buildkit /var/lib/snapflow-buildkit
+          sudo "$(go env GOPATH)/bin/buildkitd" --addr "$BUILDKIT_ADDRESS" --root /var/lib/snapflow-buildkit &
+          for attempt in $(seq 1 30); do
+            if "$(go env GOPATH)/bin/buildctl" --addr "$BUILDKIT_ADDRESS" debug workers; then
+              break
+            fi
+            test "$attempt" -lt 30
+            sleep 1
+          done
+          for component in core desktop-extension benchmark; do
+            "$(go env GOPATH)/bin/buildctl" --addr "$BUILDKIT_ADDRESS" build \
+              --frontend dockerfile.v0 \
+              --local context=. \
+              --local dockerfile=. \
+              --opt "filename=images/platform/${component}/Dockerfile" \
+              --opt "platform=linux/${TARGET_ARCH}" \
+              --opt "build-arg:TARGETARCH=${TARGET_ARCH}" \
+              --opt "build-arg:VERSION=${RELEASE_VERSION}" \
+              --opt "attest:provenance=mode=max" \
+              --opt "attest:sbom=generator=${BUILDKIT_SBOM_SCANNER}" \
+              --output "type=image,name=${GUEST_REPOSITORY}:${component}-${RELEASE_VERSION}-${TARGET_ARCH},push=true,oci-mediatypes=true,compression=zstd"
+          done
+
+  guest-release:
+    name: Guest release index
+    needs:
+      - prepare
+      - erofs-utils
+      - guest-platform
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    outputs:
+      reference: ${{ steps.release.outputs.reference }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.prepare.outputs.revision }}
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.work
+          cache: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: mkfs-erofs-amd64
+          path: ${{ runner.temp }}/erofs-utils
+      - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+      - id: release
+        name: Build disk artifacts and create and sign the immutable guest release
+        env:
+          RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+          RELEASE_REVISION: ${{ needs.prepare.outputs.revision }}
+        run: |
+          chmod 0755 "${RUNNER_TEMP}/erofs-utils/mkfs.erofs"
+          reference="$(go run ./apps/snapflow/cmd/snapflow-release guest --repository "$GUEST_REPOSITORY" --revision "$RELEASE_REVISION" --version "$RELEASE_VERSION" --mkfs-erofs "${RUNNER_TEMP}/erofs-utils/mkfs.erofs")"
+          cosign sign --yes "$reference"
+          echo "reference=$reference" >>"$GITHUB_OUTPUT"
+
+  bundle:
+    name: Runtime bundle ${{ matrix.arch }}
+    needs:
+      - prepare
+      - erofs-utils
+      - guest-release
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+    env:
+      TARGET_ARCH: ${{ matrix.arch }}
+      RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+      RELEASE_REVISION: ${{ needs.prepare.outputs.revision }}
+      SOURCE_DATE_EPOCH: ${{ needs.prepare.outputs.source-date-epoch }}
+      BUILT_AT: ${{ needs.prepare.outputs.built-at }}
+      GUEST_RELEASE: ${{ needs.guest-release.outputs.reference }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.prepare.outputs.revision }}
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.work
+          cache: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: mkfs-erofs-${{ matrix.arch }}
+          path: ${{ runner.temp }}/erofs-utils
+      - name: Build the binaries and assemble the runtime bundle
+        run: |
+          stage="${RUNNER_TEMP}/stage"
+          output="${RUNNER_TEMP}/release"
+          mkdir -p "$stage/assets" "$output"
+          install -m 0755 "${RUNNER_TEMP}/erofs-utils/mkfs.erofs" "$stage/mkfs.erofs"
+          CGO_ENABLED=0 GOOS=linux GOARCH="$TARGET_ARCH" go build -trimpath -ldflags "-s -w -buildid= -X main.version=${RELEASE_VERSION}" -o "$stage/snapflow" ./apps/snapflow/cmd/snapflow
+          CGO_ENABLED=0 GOOS=linux GOARCH="$TARGET_ARCH" go build -trimpath -ldflags "-s -w -buildid= -X main.version=${RELEASE_VERSION}" -o "$stage/snapflowd" ./apps/snapflow/cmd/snapflowd
+          CGO_ENABLED=0 GOOS=linux GOARCH="$TARGET_ARCH" go build -trimpath -ldflags "-s -w -buildid=" -o "$stage/guest-init" ./libs/microvm-go/cmd/guest-init
+          go run ./libs/microvm-go/cmd/build-initrd --init "$stage/guest-init" --output "$stage/initrd"
+          go run ./apps/snapflow/cmd/snapflow-release fetch-assets --architecture "$TARGET_ARCH" --output "$stage/assets"
+          go run ./apps/snapflow/cmd/snapflow-release bundle \
+            --version "$RELEASE_VERSION" \
+            --revision "$RELEASE_REVISION" \
+            --built-at "$BUILT_AT" \
+            --architecture "$TARGET_ARCH" \
+            --guest-release "$GUEST_RELEASE" \
+            --snapflow "$stage/snapflow" \
+            --snapflowd "$stage/snapflowd" \
+            --firecracker "$stage/assets/firecracker" \
+            --cloud-hypervisor "$stage/assets/cloud-hypervisor" \
+            --mkfs-erofs "$stage/mkfs.erofs" \
+            --kernel "$stage/assets/kernel" \
+            --initrd "$stage/initrd" \
+            --notices apps/snapflow/packaging/THIRD_PARTY_NOTICES.md \
+            --output-directory "$output"
+          test -s "$output/snapflow-runtime-${RELEASE_VERSION}-linux-${TARGET_ARCH}.tar.zst"
+      - name: Package the CLI reproducibly
+        run: |
+          cli="${RUNNER_TEMP}/cli"
+          mkdir -p "$cli"
+          install -m 0755 "${RUNNER_TEMP}/stage/snapflow" "$cli/snapflow"
+          install -m 0644 apps/snapflow/packaging/THIRD_PARTY_NOTICES.md "$cli/THIRD_PARTY_NOTICES.md"
+          tar --sort=name --mtime="@${SOURCE_DATE_EPOCH}" --owner=0 --group=0 --numeric-owner \
+            -C "$cli" -cf - snapflow THIRD_PARTY_NOTICES.md |
+            gzip -n -9 >"${RUNNER_TEMP}/release/snapflow-${RELEASE_VERSION}-linux-${TARGET_ARCH}.tar.gz"
+      - name: Generate the runtime bundle SBOM
+        uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0.24.3
+        with:
+          path: ${{ runner.temp }}/stage
+          format: spdx-json
+          output-file: ${{ runner.temp }}/release/snapflow-runtime-${{ needs.prepare.outputs.version }}-linux-${{ matrix.arch }}.spdx.json
+          upload-artifact: false
+          upload-release-assets: false
+          syft-version: v1.51.0
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: release-${{ matrix.arch }}
+          path: ${{ runner.temp }}/release/*
+          if-no-files-found: error
+          retention-days: 14
+
+  kvm-canary:
+    name: KVM canary ${{ matrix.arch }}
+    needs:
+      - prepare
+      - bundle
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner_architecture: X64
+          - arch: arm64
+            runner_architecture: ARM64
+    runs-on: [self-hosted, linux, "${{ matrix.runner_architecture }}", snapflow-kvm]
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.prepare.outputs.revision }}
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.work
+          cache: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: release-${{ matrix.arch }}
+          path: dist/canary
+      - name: Verify and boot the exact candidate bundle
+        env:
+          TARGET_ARCH: ${{ matrix.arch }}
+          RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+          SNAPFLOW_GUEST_REGISTRY_URL: https://ghcr.io
+          SNAPFLOW_PLATFORM_KVM_INTEGRATION: "1"
+          SNAPFLOW_CANARY_SNAPSHOT: docker.io/library/alpine@sha256:48b0309ca019d89d40f670aa1bc06e426dc0931948452e8491e3d65087abc07d
+        run: |
+          test -c /dev/kvm
+          go build -trimpath -o "${RUNNER_TEMP}/snapflow-release" ./apps/snapflow/cmd/snapflow-release
+          bundle="dist/canary/snapflow-runtime-${RELEASE_VERSION}-linux-${TARGET_ARCH}.tar.zst"
+          test -s "$bundle"
+          bundle_digest="sha256:$(sha256sum "$bundle" | cut -d ' ' -f 1)"
+          canary_root="$(sudo mktemp -d /opt/snapflow-canary-XXXXXX)"
+          release_root="${canary_root}/release"
+          cleanup_canary_root() {
+            case "$canary_root" in
+              /opt/snapflow-canary-*) sudo find "$canary_root" -depth -delete ;;
+              *) echo "refusing unexpected canary cleanup path: $canary_root" >&2; exit 1 ;;
+            esac
+          }
+          trap cleanup_canary_root EXIT
+          sudo "${RUNNER_TEMP}/snapflow-release" verify-bundle --bundle "$bundle" --output "$release_root"
+          sudo env \
+            "PATH=$PATH" \
+            "SNAPFLOW_GUEST_REGISTRY_URL=$SNAPFLOW_GUEST_REGISTRY_URL" \
+            "SNAPFLOW_PLATFORM_KVM_INTEGRATION=$SNAPFLOW_PLATFORM_KVM_INTEGRATION" \
+            "SNAPFLOW_CANARY_SNAPSHOT=$SNAPFLOW_CANARY_SNAPSHOT" \
+            "SNAPFLOW_RELEASE_ROOT=$release_root" \
+            "SNAPFLOW_RELEASE_DIGEST=$bundle_digest" \
+            go test -run '^TestSnapflowReleaseKVMCanary$' -count=1 -timeout 30m -v ./apps/snapflow/internal/runtime/microvm
+
+  publish:
+    name: Publish ${{ inputs.tag }}
+    needs:
+      - prepare
+      - kvm-canary
+    runs-on: ubuntu-24.04
+    environment: snapflow-release
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+      - id: state
+        name: Check that the release is still a draft
+        run: |
+          draft="$(gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft)"
+          echo "draft=${draft}" >>"$GITHUB_OUTPUT"
+          if [ "$draft" != true ]; then
+            echo "::notice::${RELEASE_TAG} is already published; its assets are immutable and are only verified"
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        if: steps.state.outputs.draft == 'true'
+        with:
+          ref: ${{ needs.prepare.outputs.revision }}
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        if: steps.state.outputs.draft == 'true'
+        with:
+          pattern: release-*
+          merge-multiple: true
+          path: ${{ runner.temp }}/release
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+        if: steps.state.outputs.draft == 'true'
+      - name: Write and sign SHA256SUMS
+        if: steps.state.outputs.draft == 'true'
+        working-directory: ${{ runner.temp }}/release
+        run: |
+          install -m 0755 "${GITHUB_WORKSPACE}/apps/snapflow/packaging/install.sh" install.sh
+          assets=(install.sh)
+          for arch in amd64 arm64; do
+            assets+=(
+              "snapflow-${RELEASE_VERSION}-linux-${arch}.tar.gz"
+              "snapflow-runtime-${RELEASE_VERSION}-linux-${arch}.tar.zst"
+              "snapflow-runtime-${RELEASE_VERSION}-linux-${arch}.spdx.json"
+            )
+          done
+          for asset in "${assets[@]}"; do
+            test -s "$asset"
+          done
+          test "$(find . -maxdepth 1 -type f | wc -l)" -eq "${#assets[@]}"
+          sha256sum -- "${assets[@]}" >SHA256SUMS
+          cosign sign-blob --yes --bundle SHA256SUMS.sigstore.json SHA256SUMS
+      - name: Attest build provenance
+        if: steps.state.outputs.draft == 'true'
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-checksums: ${{ runner.temp }}/release/SHA256SUMS
+      - name: Upload the assets and publish the release as a prerelease
+        if: steps.state.outputs.draft == 'true'
+        working-directory: ${{ runner.temp }}/release
+        run: |
+          mapfile -t assets < <(awk '{print $2}' SHA256SUMS)
+          gh release upload "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --clobber -- "${assets[@]}" SHA256SUMS SHA256SUMS.sigstore.json
+          gh release edit "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --draft=false --prerelease --latest=false
+
+  verify:
+    name: Verify ${{ inputs.tag }}
+    needs:
+      - prepare
+      - publish
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      attestations: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+      - name: Download the published assets anonymously
+        run: |
+          directory="${RUNNER_TEMP}/verify"
+          base="https://github.com/${GITHUB_REPOSITORY}/releases/download/${RELEASE_TAG}"
+          mkdir -p "$directory"
+          cd "$directory"
+          for file in SHA256SUMS SHA256SUMS.sigstore.json; do
+            curl -fsSL --retry 5 --retry-all-errors -o "$file" "${base}/${file}"
+          done
+          awk '{print $2}' SHA256SUMS | while read -r asset; do
+            curl -fsSL --retry 5 --retry-all-errors -o "$asset" "${base}/${asset}"
+          done
+      - name: Verify checksums, signature, provenance and the release attestation
+        working-directory: ${{ runner.temp }}/verify
+        run: |
+          sha256sum --check --strict SHA256SUMS
+          cosign verify-blob \
+            --bundle SHA256SUMS.sigstore.json \
+            --certificate-identity-regexp "$SIGNER_IDENTITY" \
+            --certificate-oidc-issuer "$SIGNER_ISSUER" \
+            SHA256SUMS
+          gh release verify "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY"
+          awk '{print $2}' SHA256SUMS | while read -r asset; do
+            gh attestation verify "$asset" \
+              --repo "$GITHUB_REPOSITORY" \
+              --signer-workflow "${GITHUB_REPOSITORY}/.github/workflows/release.yml" \
+              --source-ref refs/heads/main
+            gh release verify-asset "$RELEASE_TAG" "$asset" --repo "$GITHUB_REPOSITORY"
+          done
+
+  tuf-beta:
+    name: Publish the beta channel
+    needs:
+      - prepare
+      - verify
+    runs-on: ubuntu-24.04
+    environment: snapflow-release
+    concurrency:
+      group: snapflow-tuf
+      cancel-in-progress: false
+    permissions:
+      contents: read
+    env:
+      RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.prepare.outputs.revision }}
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.work
+          cache: false
+      - name: Build the release tool
+        run: go build -trimpath -o "${RUNNER_TEMP}/snapflow-release" ./apps/snapflow/cmd/snapflow-release
+      - name: Download the published runtime bundles
+        run: |
+          directory="${RUNNER_TEMP}/bundles"
+          base="https://github.com/${GITHUB_REPOSITORY}/releases/download/${RELEASE_TAG}"
+          mkdir -p "$directory"
+          cd "$directory"
+          curl -fsSL --retry 5 --retry-all-errors -o SHA256SUMS "${base}/SHA256SUMS"
+          for arch in amd64 arm64; do
+            bundle="snapflow-runtime-${RELEASE_VERSION}-linux-${arch}.tar.zst"
+            curl -fsSL --retry 5 --retry-all-errors -o "$bundle" "${base}/${bundle}"
+          done
+          sha256sum --check --strict --ignore-missing SHA256SUMS
+      - uses: ./.github/actions/tuf-repository
+        with:
+          mode: download
+          directory: ${{ runner.temp }}/tuf-repository
+          account-id: ${{ secrets.SNAPFLOW_RELEASE_R2_ACCOUNT_ID }}
+          access-key-id: ${{ secrets.SNAPFLOW_RELEASE_R2_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.SNAPFLOW_RELEASE_R2_SECRET_ACCESS_KEY }}
+          bucket: ${{ secrets.SNAPFLOW_RELEASE_R2_BUCKET }}
+      - name: Sign the beta channel
+        env:
+          BETA_KEY: ${{ secrets.SNAPFLOW_TUF_BETA_KEY }}
+          SNAPSHOT_KEY: ${{ secrets.SNAPFLOW_TUF_SNAPSHOT_KEY }}
+          TIMESTAMP_KEY: ${{ secrets.SNAPFLOW_TUF_TIMESTAMP_KEY }}
+        run: |
+          keys="${RUNNER_TEMP}/tuf-keys"
+          install -d -m 0700 "$keys"
+          (
+            umask 077
+            printf '%s\n' "$BETA_KEY" >"$keys/beta.pem"
+            printf '%s\n' "$SNAPSHOT_KEY" >"$keys/snapshot.pem"
+            printf '%s\n' "$TIMESTAMP_KEY" >"$keys/timestamp.pem"
+          )
+          "${RUNNER_TEMP}/snapflow-release" tuf publish \
+            --repository "${RUNNER_TEMP}/tuf-repository" \
+            --channel beta \
+            --bundle "${RUNNER_TEMP}/bundles/snapflow-runtime-${RELEASE_VERSION}-linux-amd64.tar.zst" \
+            --bundle "${RUNNER_TEMP}/bundles/snapflow-runtime-${RELEASE_VERSION}-linux-arm64.tar.zst" \
+            --role-key "$keys/beta.pem" \
+            --snapshot-key "$keys/snapshot.pem" \
+            --timestamp-key "$keys/timestamp.pem"
+      - name: Remove the signing keys
+        if: always()
+        run: rm -rf -- "${RUNNER_TEMP}/tuf-keys"
+      - uses: ./.github/actions/tuf-repository
+        with:
+          mode: upload
+          directory: ${{ runner.temp }}/tuf-repository
+          account-id: ${{ secrets.SNAPFLOW_RELEASE_R2_ACCOUNT_ID }}
+          access-key-id: ${{ secrets.SNAPFLOW_RELEASE_R2_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.SNAPFLOW_RELEASE_R2_SECRET_ACCESS_KEY }}
+          bucket: ${{ secrets.SNAPFLOW_RELEASE_R2_BUCKET }}

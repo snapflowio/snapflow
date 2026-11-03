@@ -1,0 +1,15 @@
+◆ snapflow  Machine setup · production
+
+  ✓ Inspecting this machine
+  ✗ Checking machine requirements
+    ✗ KVM virtualization        access /dev/kvm: no such file or directory
+      → enable hardware virtualization (Intel VT-x or AMD-V) in the firmware and load KVM
+    ✓ IPv4 forwarding           net.ipv4.ip_forward=1 lets sandbox traffic reach the uplink
+  ○ Installing the verified Snapflow release
+  ○ Approving this machine
+  ○ Starting the Snapflow service
+  ○ Waiting for the machine to come online
+
+✗ Setup stopped: this machine does not meet Snapflow's requirements
+  → Fix the items above, then rerun sudo snapflow setup
+

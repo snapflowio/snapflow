@@ -1,0 +1,38 @@
+{
+	"desiredStateRevision": "42",
+	"statuses": [
+		{
+			"sandboxId": "7b0c6f63-3c71-4b6e-9a0d-2f4f6d1c8e01",
+			"assignmentGeneration": 3,
+			"observedSpecGeneration": 5,
+			"state": "SANDBOX_RUNTIME_STATE_STARTED",
+			"observedAt": "2026-10-04T12:00:05Z",
+			"daemonVersion": "1.4.2",
+			"result": {
+				"phase": "guest_readiness",
+				"errorCode": "MACHINE_ERROR_CODE_NONE",
+				"runtimeIdentity": "cloud-hypervisor:44.0",
+				"releaseIdentity": "machine:2026.10.1",
+				"timingsMs": { "boot": 800, "create": 1200 },
+				"evidence": { "hypervisor": "cloud-hypervisor" }
+			}
+		},
+		{
+			"sandboxId": "0f2d8c4a-5b6e-4f7a-8b9c-1d2e3f4a5b6c",
+			"assignmentGeneration": 1,
+			"observedSpecGeneration": 1,
+			"state": "SANDBOX_RUNTIME_STATE_ERROR",
+			"errorReason": "no space left on device",
+			"recoverable": true,
+			"observedAt": "2026-10-04T12:00:06Z",
+			"result": {
+				"phase": "storage",
+				"errorCode": "MACHINE_ERROR_CODE_HOST_IO_FAILED",
+				"retryable": true,
+				"diagnostic": "the sandbox disk is full",
+				"runtimeIdentity": "cloud-hypervisor:44.0",
+				"releaseIdentity": "machine:2026.10.1"
+			}
+		}
+	]
+}

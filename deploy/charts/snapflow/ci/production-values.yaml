@@ -1,0 +1,27 @@
+imageNamespace: snapflowio/snapflow
+domains:
+  public: snapflow.io
+  storage: storage.snapflow.io
+  registry: registry.snapflow.io
+  platform: snapflow.run
+email:
+  from: Snapflow <noreply@mail.snapflow.io>
+images:
+  api:
+    tag: main-0123456789abcdef0123456789abcdef01234567-1760000000
+    digest: sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+  dashboard:
+    tag: main-0123456789abcdef0123456789abcdef01234567-1760000000
+    digest: sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+  marketing:
+    tag: main-0123456789abcdef0123456789abcdef01234567-1760000000
+    digest: sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+  snapshotManager:
+    tag: main-0123456789abcdef0123456789abcdef01234567-1760000000
+    digest: sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+  edge:
+    tag: main-0123456789abcdef0123456789abcdef01234567-1760000000
+    digest: sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+edges:
+  - name: home
+    node: snapflow-home

@@ -1,0 +1,25 @@
+layer: "library"
+stack: "systems"
+tags: ["scope-runtime", "generated", "language-go"]
+
+fileGroups:
+  production: ["**/*", "!**/*_test.go", "!testdata/**/*"]
+
+tasks:
+  generate:
+    script: |
+      set -eo pipefail
+      buf lint
+      buf generate
+    inputs:
+      - "proto/**/*.proto"
+      - "buf.yaml"
+      - "buf.gen.yaml"
+    outputs:
+      - "gen/ts"
+      - "gen/go"
+
+  build:
+    command: "go"
+    args: ["build", "./..."]
+    inputs: ["@group(production)"]

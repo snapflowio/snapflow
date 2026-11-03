@@ -1,0 +1,27 @@
+{
+	"$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+	"packages": {
+		".": {
+			"release-type": "go",
+			"component": "snapflow",
+			"include-component-in-tag": false,
+			"draft": true,
+			"force-tag-creation": true,
+			"changelog-path": "apps/snapflow/CHANGELOG.md",
+			"bump-minor-pre-major": true,
+			"exclude-paths": [
+				"apps/api",
+				"apps/dashboard",
+				"apps/edge",
+				"apps/marketing",
+				"apps/snapshot-manager",
+				"libs/api-client",
+				"libs/organization-access",
+				"libs/sdk-typescript",
+				"libs/toolbox-api-client",
+				"images/sandbox",
+				"deploy"
+			]
+		}
+	}
+}

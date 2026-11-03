@@ -1,0 +1,29 @@
+# The Flux Operator installs, upgrades and configures Flux from the
+# FluxInstance next to it. deploy/scripts/bootstrap-flux.sh installs this same
+# chart version once; from then on Flux manages the operator through this
+# HelmRelease, so a version change here upgrades it.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: flux-operator
+  namespace: flux-system
+spec:
+  interval: 12h
+  url: oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator
+  ref:
+    tag: 0.62.1
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: flux-operator
+  namespace: flux-system
+spec:
+  interval: 1h
+  releaseName: flux-operator
+  chartRef:
+    kind: OCIRepository
+    name: flux-operator

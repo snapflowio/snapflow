@@ -1,0 +1,28 @@
+{
+	"compileOnSave": false,
+	"compilerOptions": {
+		"rootDir": ".",
+		"sourceMap": true,
+		"declaration": false,
+		"moduleResolution": "Node16",
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"target": "ES2022",
+		"module": "Node16",
+		"lib": ["es2022", "dom"],
+		"skipLibCheck": true,
+		"skipDefaultLibCheck": true,
+		"paths": {
+			"@snapflow/api-client": ["./libs/api-client/src/index.ts"],
+			"@snapflow/organization-access": [
+				"./libs/organization-access/src/index.ts"
+			],
+			"@snapflow/sdk": ["./libs/sdk-typescript/src/index.ts"],
+			"@snapflow/toolbox-api-client": [
+				"./libs/toolbox-api-client/src/index.ts"
+			],
+			"@snapflow/machine-proto": ["./libs/machine-proto/index.ts"]
+		}
+	},
+	"exclude": ["node_modules", "tmp"]
+}

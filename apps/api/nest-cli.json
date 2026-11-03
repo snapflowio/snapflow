@@ -1,0 +1,13 @@
+{
+	"$schema": "https://json.schemastore.org/nest-cli",
+	"sourceRoot": "src",
+	"entryFile": "main.mjs",
+	"compilerOptions": {
+		"builder": {
+			"type": "rspack",
+			"options": { "configPath": "rspack.config.mjs" }
+		},
+		"tsConfigPath": "tsconfig.app.json",
+		"deleteOutDir": false
+	}
+}

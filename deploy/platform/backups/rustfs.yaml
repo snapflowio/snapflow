@@ -1,0 +1,108 @@
+# RustFS holds volume backups and sandbox snapshots that cannot be regenerated.
+# Both buckets are mirrored to R2 daily; an object the mirror would delete or
+# overwrite is first moved under rustfs-changes/<date>, kept for 30 days, so a
+# deletion in RustFS is never lost the same night.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: snapflow-backups-rclone
+  namespace: snapflow
+data:
+  BACKUP_BUCKETS: snapflow snapflow-snapshots
+  BACKUP_DESTINATION: r2:${BACKUP_S3_BUCKET}/rustfs
+  BACKUP_CHANGES: r2:${BACKUP_S3_BUCKET}/rustfs-changes
+  BACKUP_RETENTION: 30d
+  RCLONE_CONFIG_R2_TYPE: s3
+  RCLONE_CONFIG_R2_PROVIDER: Cloudflare
+  RCLONE_CONFIG_R2_ENDPOINT: ${BACKUP_S3_ENDPOINT}
+  RCLONE_CONFIG_R2_NO_CHECK_BUCKET: "true"
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: snapflow-backups-rclone
+  namespace: snapflow
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: openbao
+  target:
+    name: snapflow-backups-rclone
+    creationPolicy: Owner
+  data:
+    - secretKey: RCLONE_CONFIG_R2_ACCESS_KEY_ID
+      remoteRef:
+        key: snapflow/backups
+        property: access-key-id
+    - secretKey: RCLONE_CONFIG_R2_SECRET_ACCESS_KEY
+      remoteRef:
+        key: snapflow/backups
+        property: secret-access-key
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: snapflow-object-storage-backup
+  namespace: snapflow
+spec:
+  schedule: "0 4 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        spec:
+          restartPolicy: OnFailure
+          automountServiceAccountToken: false
+          enableServiceLinks: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            runAsGroup: 65534
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            # Shell variables are written $$ so Flux substitution leaves them
+            # to the shell.
+            - name: mirror
+              image: docker.io/rclone/rclone:1.75.2@sha256:2687085f718d3c628f7fdfb77c52a1d344332aed543110bb88088f2c70d43eb5
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  set -eu
+                  stamp="$$(date -u +%Y%m%dT%H%M%SZ)"
+                  for bucket in $${BACKUP_BUCKETS}; do
+                    rclone sync "rustfs:$${bucket}" "$${BACKUP_DESTINATION}/$${bucket}" \
+                      --backup-dir "$${BACKUP_CHANGES}/$${stamp}/$${bucket}"
+                  done
+                  rclone delete --min-age "$${BACKUP_RETENTION}" "$${BACKUP_CHANGES}"
+              envFrom:
+                - configMapRef:
+                    name: snapflow-rustfs-rclone
+                - secretRef:
+                    name: snapflow-rustfs-rclone
+                - configMapRef:
+                    name: snapflow-backups-rclone
+                - secretRef:
+                    name: snapflow-backups-rclone
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 64Mi
+                limits:
+                  memory: 512Mi
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: tmp
+              emptyDir: {}

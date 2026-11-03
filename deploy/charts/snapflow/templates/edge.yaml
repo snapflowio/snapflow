@@ -1,0 +1,187 @@
+{{- $root := . -}}
+{{- if .Values.edges }}
+{{- $platform := required "domains.platform is required" .Values.domains.platform -}}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: snapflow-edge
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "edge") | nindent 4 }}
+spec:
+  secretName: snapflow-edge-tls
+  dnsNames:
+    - {{ $platform | quote }}
+    - {{ printf "*.%s" $platform | quote }}
+  issuerRef:
+    kind: ClusterIssuer
+    name: {{ .Values.clusterIssuer }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: snapflow-edge-origin-trust
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "edge") | nindent 4 }}
+data:
+  origin-client-ca.pem: |
+    {{- .Files.Get "files/cloudflare-origin-pull-ca.pem" | nindent 4 }}
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: snapflow-edge-trust
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "edge") | nindent 4 }}
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: {{ .Values.secretStore }}
+  target:
+    name: snapflow-edge-trust
+    creationPolicy: Owner
+  data:
+    - secretKey: tunnel-client-ca.pem
+      remoteRef:
+        key: snapflow/edge/tunnel-client-ca
+        property: certificate
+{{- range $edge := .Values.edges }}
+{{- $name := printf "snapflow-edge-%s" (required "edges[].name is required" $edge.name) }}
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "edge") | nindent 4 }}
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: {{ $root.Values.secretStore }}
+  target:
+    name: {{ $name }}
+    creationPolicy: Owner
+  data:
+    - secretKey: id
+      remoteRef:
+        key: {{ printf "snapflow/edges/%s" $edge.name }}
+        property: id
+    - secretKey: enrollment-secret
+      remoteRef:
+        key: {{ printf "snapflow/edges/%s" $edge.name }}
+        property: enrollment-secret
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "edge") | nindent 4 }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "snapflow.selectorLabels" (dict "root" $root "component" $name) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "snapflow.selectorLabels" (dict "root" $root "component" $name) | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      terminationGracePeriodSeconds: 45
+      nodeSelector:
+        kubernetes.io/hostname: {{ required "edges[].node is required" $edge.node }}
+      tolerations:
+        - key: snapflow.io/edge
+          operator: Exists
+          effect: NoSchedule
+      securityContext:
+        {{- include "snapflow.podSecurityContext" $root | nindent 8 }}
+        runAsUser: 65532
+        runAsGroup: 65532
+      containers:
+        - name: edge
+          image: {{ include "snapflow.image" (dict "root" $root "key" "edge" "name" "edge") }}
+          env:
+            - name: SNAPFLOW_EDGE_API_URL
+              value: {{ printf "%s/api" (include "snapflow.https" (dict "root" $root "key" "public")) | quote }}
+            - name: SNAPFLOW_EDGE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $name }}
+                  key: id
+            - name: SNAPFLOW_EDGE_ENROLLMENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $name }}
+                  key: enrollment-secret
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+            - name: tunnel
+              containerPort: 8443
+              protocol: TCP
+            - name: tunnel-quic
+              containerPort: 8443
+              protocol: UDP
+          startupProbe:
+            exec:
+              command: ["/usr/local/bin/snapflow-edge", "--check-health"]
+            periodSeconds: 2
+            failureThreshold: 60
+          readinessProbe:
+            exec:
+              command: ["/usr/local/bin/snapflow-edge", "--check-health"]
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command: ["/usr/local/bin/snapflow-edge", "--check-health"]
+            periodSeconds: 20
+            failureThreshold: 3
+          securityContext:
+            {{- include "snapflow.containerSecurityContext" $root | nindent 12 }}
+          resources:
+            {{- toYaml $root.Values.edge.resources | nindent 12 }}
+          volumeMounts:
+            - name: state
+              mountPath: /var/lib/snapflow-edge
+            - name: tls
+              mountPath: /etc/snapflow/tls
+              readOnly: true
+            - name: trust
+              mountPath: /etc/snapflow/trust
+              readOnly: true
+      volumes:
+        - name: state
+          hostPath:
+            path: {{ $root.Values.edge.stateDirectory }}
+            type: Directory
+        - name: tls
+          secret:
+            secretName: snapflow-edge-tls
+            items:
+              - key: tls.crt
+                path: fullchain.pem
+              - key: tls.key
+                path: private-key.pem
+        - name: trust
+          projected:
+            sources:
+              - configMap:
+                  name: snapflow-edge-origin-trust
+              - secret:
+                  name: snapflow-edge-trust
+{{- end }}
+{{- end }}

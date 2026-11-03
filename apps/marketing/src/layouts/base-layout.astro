@@ -1,0 +1,116 @@
+---
+import '@/styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+	canonicalPath?: string;
+	noIndex?: boolean;
+	ogType?: 'website' | 'article';
+	structuredData?: Record<string, unknown>;
+}
+
+const {
+	title = 'Snapflow - Sandboxes Powered by Many',
+	description = 'Run apps, development environments, and compute jobs in sandboxes on independent CPU and GPU machines. Compare prices and choose where they run.',
+	canonicalPath = '/',
+	noIndex = false,
+	ogType = 'website',
+	structuredData,
+} = Astro.props;
+const normalizedCanonicalPath = canonicalPath.endsWith('/')
+	? canonicalPath
+	: `${canonicalPath}/`;
+const canonical = new URL(normalizedCanonicalPath, Astro.site);
+const socialImage = new URL('/assets/snapflow-social.svg', Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content={description}>
+		{noIndex && <meta name="robots" content="noindex, nofollow" />}
+		<meta property="og:type" content={ogType}>
+		<meta property="og:title" content={title}>
+		<meta property="og:description" content={description}>
+		<meta property="og:url" content={canonical}>
+		<meta property="og:image" content={socialImage}>
+		<meta property="og:image:width" content="1200">
+		<meta property="og:image:height" content="630">
+		<meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:title" content={title}>
+		<meta name="twitter:description" content={description}>
+		<meta name="twitter:image" content={socialImage}>
+		<link rel="canonical" href={canonical}>
+		<link rel="sitemap" href="/sitemap-index.xml">
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+		<link
+			rel="preload"
+			href="/fonts/chalet_londonnineteensixty.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin="anonymous"
+		>
+		<link
+			rel="preload"
+			href="/fonts/GeistPixel-Square.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin="anonymous"
+		>
+		<link
+			rel="preload"
+			href="/fonts/InstrumentSans-latin.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin="anonymous"
+		>
+		<link
+			rel="preload"
+			href="/fonts/ChivoMono-latin.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin="anonymous"
+		>
+		{structuredData && (
+			<script
+				is:inline
+				type="application/ld+json"
+				set:html={JSON.stringify(structuredData)}
+			/>
+		)}
+		<title>{title}</title>
+	</head>
+	<body>
+		<slot />
+		<svg width="0" height="0" aria-hidden="true" class="absolute hidden">
+			<filter id="grainy" x="0" y="0" width="100%" height="100%">
+				<feTurbulence
+					type="fractalNoise"
+					baseFrequency="0.4"
+					numOctaves="4"
+					stitchTiles="stitch"
+					seed="0"
+				></feTurbulence>
+				<feColorMatrix
+					type="matrix"
+					values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1 0 0 0 0"
+				></feColorMatrix>
+			</filter>
+		</svg>
+		<div
+			class="pointer-events-none fixed inset-0 z-10002 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,var(--snapflow-scanline)_2px,var(--snapflow-scanline)_4px)]"
+			aria-hidden="true"
+		></div>
+		<div
+			class="pointer-events-none fixed inset-0 z-10001 opacity-[.08] filter-[url(#grainy)]"
+			aria-hidden="true"
+		></div>
+		<div
+			class="pointer-events-none fixed inset-0 z-10003 bg-[linear-gradient(90deg,var(--snapflow-static-purple),var(--snapflow-static-blue),var(--snapflow-static-purple))] bg-size-[3px_100%]"
+			aria-hidden="true"
+		></div>
+	</body>
+</html>

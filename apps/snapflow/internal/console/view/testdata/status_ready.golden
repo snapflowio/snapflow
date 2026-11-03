@@ -1,0 +1,19 @@
+◆ snapflow  rack-04 · production
+
+  State         ✓ Online
+  Location      Frankfurt am Main, DE
+  Scheduling    Accepting new sandboxes
+  Sandboxes     3 running
+  CPU           ███░░░░░░░  32% · 6 of 16 vCPU allocated
+  Memory        ████████░░  81% · 24 of 64 GiB allocated
+  Disk          █████████░  93% · 120 of 1000 GiB allocated
+  Health        ✓ edge-tunnel, ✓ runtime
+  Daemon        ✓ snapflowd 1.4.2 answering
+  Service       ✓ active · starts on boot
+  Release       1.4.2 · ✓ verified
+  Updates       idle · stable channel · maintenance window 04:00-06:00 UTC
+  Earnings      earnings are in the dashboard · https://snapflow.io/dashboard/machines
+  Payouts       ready; earnings are paid out weekly
+  Marketplace   Community tier · listed · public
+  Benchmark     ✓ passed
+  Pricing and listing are managed in the dashboard

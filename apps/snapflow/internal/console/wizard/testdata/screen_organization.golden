@@ -1,0 +1,18 @@
+◆ snapflow  Machine setup · production
+
+  ✓ Inspecting this machine
+  ✓ Checking machine requirements
+  ✓ Installing the verified Snapflow release
+  ⠋ Approving this machine
+
+  ┃ Which organization should own this machine?                                   
+  ┃ Earnings and the machine itself belong to the organization you choose.        
+  ┃ › Garage (garage) · active                                                    
+  ┃   Acme Compute (acme)                                                         
+  
+  ↑ up • ↓ down • / filter • enter submit
+  ○ Starting the Snapflow service
+  ○ Waiting for the machine to come online
+
+  ctrl+c to cancel
+

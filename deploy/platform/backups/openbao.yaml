@@ -1,0 +1,154 @@
+# A daily OpenBao raft snapshot, kept in R2 for 30 days. Restoring one needs
+# the openbao-seal key too (docs/deployment.md, "Restore").
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: openbao-backup
+  namespace: openbao
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openbao-backup
+  namespace: openbao
+data:
+  HOME: /tmp
+  BAO_ADDR: http://openbao.openbao.svc:8200
+  BACKUP_LOGIN_ROLE: snapflow-openbao-backup
+  BACKUP_SNAPSHOT_DIRECTORY: /backup
+  BACKUP_DESTINATION: r2:${BACKUP_S3_BUCKET}/openbao
+  BACKUP_RETENTION: 30d
+  RCLONE_CONFIG_R2_TYPE: s3
+  RCLONE_CONFIG_R2_PROVIDER: Cloudflare
+  RCLONE_CONFIG_R2_ENDPOINT: ${BACKUP_S3_ENDPOINT}
+  RCLONE_CONFIG_R2_NO_CHECK_BUCKET: "true"
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: openbao-backup
+  namespace: openbao
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: openbao
+  target:
+    name: openbao-backup
+    creationPolicy: Owner
+  data:
+    - secretKey: RCLONE_CONFIG_R2_ACCESS_KEY_ID
+      remoteRef:
+        key: snapflow/backups
+        property: access-key-id
+    - secretKey: RCLONE_CONFIG_R2_SECRET_ACCESS_KEY
+      remoteRef:
+        key: snapflow/backups
+        property: secret-access-key
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: openbao-backup
+  namespace: openbao
+spec:
+  schedule: "30 3 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: openbao-backup
+          automountServiceAccountToken: false
+          enableServiceLinks: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 100
+            runAsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+            # The snapshot is taken with a token limited to
+            # sys/storage/raft/snapshot (configure.sh). Shell variables are
+            # written $$ so Flux substitution leaves them to the shell.
+            - name: snapshot
+              image: quay.io/openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  set -eu
+                  BAO_TOKEN="$$(bao write -field=token auth/kubernetes/login role="$${BACKUP_LOGIN_ROLE}" jwt="$$(cat /var/run/secrets/openbao/token)")"
+                  export BAO_TOKEN
+                  bao operator raft snapshot save "$${BACKUP_SNAPSHOT_DIRECTORY}/openbao-$$(date -u +%Y%m%dT%H%M%SZ).snap"
+              envFrom:
+                - configMapRef:
+                    name: openbao-backup
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 128Mi
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                - name: token
+                  mountPath: /var/run/secrets/openbao
+                  readOnly: true
+                - name: tmp
+                  mountPath: /tmp
+          containers:
+            - name: upload
+              image: docker.io/rclone/rclone:1.75.2@sha256:2687085f718d3c628f7fdfb77c52a1d344332aed543110bb88088f2c70d43eb5
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  set -eu
+                  rclone copy "$${BACKUP_SNAPSHOT_DIRECTORY}" "$${BACKUP_DESTINATION}"
+                  rclone delete --min-age "$${BACKUP_RETENTION}" "$${BACKUP_DESTINATION}"
+              envFrom:
+                - configMapRef:
+                    name: openbao-backup
+                - secretRef:
+                    name: openbao-backup
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 256Mi
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                  readOnly: true
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: backup
+              emptyDir: {}
+            - name: tmp
+              emptyDir: {}
+            - name: token
+              projected:
+                sources:
+                  - serviceAccountToken:
+                      path: token
+                      audience: openbao
+                      expirationSeconds: 3600

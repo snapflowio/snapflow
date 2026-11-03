@@ -1,0 +1,68 @@
+layer: "application"
+stack: "frontend"
+tags:
+  - "scope-frontend"
+  - "app-dashboard"
+  - "deployable"
+
+dependsOn:
+  - "api-client"
+  - "organization-access"
+
+fileGroups:
+  production:
+    - "static/**/*"
+    - "src/**/*"
+    - "package.json"
+    - "tsconfig*.json"
+    - "vite.config.ts"
+
+tasks:
+  serve:
+    command: "vite"
+    args:
+      - "dev"
+    deps:
+      - "api-client:build"
+      - "organization-access:build"
+    preset: "server"
+    inputs:
+      - "@group(production)"
+
+  build:
+    command: "vite"
+    args:
+      - "build"
+    deps:
+      - "api-client:build"
+      - "organization-access:build"
+    env:
+      NODE_ENV: "production"
+    inputs:
+      - "@group(production)"
+    outputs:
+      - "/dist/apps/dashboard"
+
+  typecheck:
+    script: "svelte-kit sync && svelte-check --tsconfig ./tsconfig.app.json --fail-on-warnings && tsc -p tsconfig.node.json --noEmit"
+    deps:
+      - "api-client:build"
+      - "organization-access:build"
+    inputs:
+      - "@group(production)"
+
+  lint:
+    command: "biome"
+    args:
+      - "ci"
+      - "."
+      - "--error-on-warnings"
+
+  format:
+    command: "biome"
+    args:
+      - "check"
+      - "."
+      - "--write"
+    options:
+      cache: false

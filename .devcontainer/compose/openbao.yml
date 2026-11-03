@@ -1,0 +1,86 @@
+x-openbao-image: &openbao-image openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf
+
+services:
+  openbao:
+    image: *openbao-image
+    mem_limit: 512m
+    cap_add:
+      - IPC_LOCK
+    environment:
+      BAO_ADDR: http://127.0.0.1:8200
+    volumes:
+      - ../dev/openbao/openbao.hcl:/openbao/config/openbao.hcl:ro
+      - openbao-data:/openbao/file
+    command: ["server"]
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "-T",
+          "2",
+          "-O",
+          "/dev/null",
+          "http://127.0.0.1:8200/v1/sys/health?uninitcode=200&sealedcode=200&standbycode=200",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+  openbao-init:
+    image: *openbao-image
+    user: root
+    environment:
+      BAO_ADDR: http://openbao:8200
+    volumes:
+      - ../dev/openbao/init.sh:/usr/local/bin/snapflow-openbao-init:ro
+      - openbao-init-keys:/openbao/init
+      - openbao-proxy-auth:/run/snapflow-openbao
+      - type: bind
+        source: ../.tmp/openbao
+        target: /export
+        bind:
+          create_host_path: true
+    depends_on:
+      openbao:
+        condition: service_healthy
+        restart: true
+    entrypoint: ["/bin/sh", "/usr/local/bin/snapflow-openbao-init"]
+    restart: "no"
+
+  openbao-proxy:
+    image: *openbao-image
+    mem_limit: 128m
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ../dev/openbao/proxy.hcl:/etc/openbao/proxy.hcl:ro
+      - openbao-proxy-auth:/run/snapflow-openbao:ro
+    depends_on:
+      openbao-init:
+        condition: service_completed_successfully
+        restart: true
+    command: ["proxy", "-config=/etc/openbao/proxy.hcl"]
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "-T",
+          "2",
+          "--spider",
+          "--header=X-Vault-Request:true",
+          "http://127.0.0.1:8201/v1/sys/health",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  openbao-data:
+  openbao-init-keys:
+  openbao-proxy-auth:

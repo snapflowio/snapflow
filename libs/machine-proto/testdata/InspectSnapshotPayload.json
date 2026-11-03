@@ -1,0 +1,4 @@
+{
+	"registry": { "url": "https://registry.example.com", "project": "snapflow" },
+	"snapshot": "docker.io/library/alpine:3.20"
+}

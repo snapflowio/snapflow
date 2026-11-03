@@ -1,0 +1,82 @@
+layer: "library"
+stack: "backend"
+tags:
+  - "scope-sdk"
+  - "sdk-typescript"
+
+dependsOn:
+  - "api-client"
+  - "toolbox-api-client"
+
+fileGroups:
+  production:
+    - "src/**/*"
+    - "package.json"
+    - "README.md"
+    - "LICENSE"
+    - "tsconfig*.json"
+
+tasks:
+  build:
+    script: |
+      set -eo pipefail
+      rm -rf ../../dist/libs/sdk-typescript
+      pnpm exec tsc -p tsconfig.build.json
+      node scripts/post-build.js ../../dist/libs/sdk-typescript ../.. .
+      pnpm exec attw --pack --profile esm-only ../../dist/libs/sdk-typescript
+    deps:
+      - "api-client:build"
+      - "toolbox-api-client:build"
+    inputs:
+      - "@group(production)"
+      - "scripts/post-build.js"
+      - "/dist/libs/api-client/**/*"
+      - "/dist/libs/toolbox-api-client/**/*"
+    outputs:
+      - "/dist/libs/sdk-typescript"
+
+  typecheck:
+    command: "tsc"
+    args:
+      - "-p"
+      - "tsconfig.json"
+      - "--noEmit"
+    deps:
+      - "api-client:build"
+      - "toolbox-api-client:build"
+
+  test:
+    command: "vitest"
+    args:
+      - "run"
+      - "--project"
+      - "unit"
+    deps:
+      - "api-client:build"
+      - "toolbox-api-client:build"
+
+  test-e2e:
+    command: "vitest"
+    args:
+      - "run"
+      - "--project"
+      - "e2e"
+    deps:
+      - "api-client:build"
+      - "toolbox-api-client:build"
+
+  lint:
+    command: "biome"
+    args:
+      - "ci"
+      - "."
+      - "--error-on-warnings"
+
+  format:
+    command: "biome"
+    args:
+      - "check"
+      - "."
+      - "--write"
+    options:
+      cache: false

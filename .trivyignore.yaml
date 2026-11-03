@@ -1,0 +1,10 @@
+# Vulnerabilities accepted for published images (deploy/scripts/image.sh).
+# Fixable CRITICAL and HIGH findings block a publish unless listed here with a
+# statement explaining why it is safe and an expiry date, after which it blocks
+# again. Example:
+#
+# vulnerabilities:
+#   - id: CVE-2026-00000
+#     statement: Only reachable through a feature the image does not enable.
+#     expired_at: 2026-12-31
+vulnerabilities: []

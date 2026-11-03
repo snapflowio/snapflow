@@ -1,0 +1,7 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"tsBuildInfoFile": "./.tmp/tsc/tsconfig.app.tsbuildinfo"
+	},
+	"include": ["src/**/*.ts", "src/**/*.svelte"]
+}

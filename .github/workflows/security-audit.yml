@@ -1,0 +1,76 @@
+name: Security Audit
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  pull_request:
+    branches: [main, dev]
+    paths:
+      - "go.work"
+      - "go.work.sum"
+      - "**/go.mod"
+      - "**/go.sum"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "package.json"
+      - "**/package.json"
+      - ".github/workflows/security-audit.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-audit-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  govulncheck:
+    name: Go dependencies
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.work
+          cache-dependency-path: |
+            go.work.sum
+            apps/*/go.sum
+            libs/*/go.sum
+      - uses: ./.github/actions/go-workspace
+      - run: go install golang.org/x/vuln/cmd/govulncheck@v1.5.0
+      - name: Audit each Go module
+        run: |
+          go work edit -json | jq -r '.Use[].DiskPath' | while IFS= read -r module; do
+            (cd "$module" && govulncheck ./...)
+          done
+
+  pnpm-audit:
+    name: JavaScript dependencies
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm audit --audit-level moderate
+
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0

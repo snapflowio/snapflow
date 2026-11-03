@@ -1,0 +1,320 @@
+---
+import type { BlogPost } from '@/data/blog-posts';
+
+interface Props {
+	post: BlogPost;
+	content: string;
+}
+
+const { post, content } = Astro.props;
+---
+
+<article
+	class="mx-auto max-w-180 px-6 py-16 text-snapflow-paper max-sm:px-4 max-sm:py-12"
+	itemscope
+	itemtype="https://schema.org/BlogPosting"
+>
+	<header class="mb-12 border-snapflow-paper/10 border-b pb-8">
+		<h1
+			class="m-0 mb-3 font-['Chalet',sans-serif] text-[clamp(2rem,5vw,3rem)] leading-[1.15] tracking-[-.02em]"
+			itemprop="headline"
+		>
+			{post.title}
+		</h1>
+		<div
+			class="flex items-center gap-2 font-['Chivo_Mono',monospace] text-[.8rem] text-snapflow-paper/40 uppercase tracking-widest"
+		>
+			<address
+				class="not-italic"
+				itemprop="author"
+				itemscope
+				itemtype="https://schema.org/Person"
+			>
+				<span>By </span><span itemprop="name">{post.author}</span>
+			</address>
+			<span aria-hidden="true">·</span>
+			<time itemprop="datePublished" datetime={post.isoDate}
+				>{post.displayDate}</time
+			>
+		</div>
+	</header>
+
+	<div
+		class="blog-prose text-[1.0625rem] leading-[1.75] text-snapflow-paper/60"
+	>
+		<p
+			class="mb-10 border-snapflow-paper/10 border-b pb-8 text-[1.2rem] leading-[1.6] text-snapflow-paper/60"
+			itemprop="description"
+		>
+			{post.description}
+		</p>
+		<div itemprop="articleBody" set:html={content} />
+	</div>
+
+	<footer class="mt-12 border-snapflow-paper/10 border-t pt-6">
+		<a
+			href="/blog"
+			class="group inline-flex items-center gap-2 font-['Chivo_Mono',monospace] text-[.8rem] text-snapflow-paper/40 uppercase tracking-widest no-underline transition-colors hover:text-snapflow-paper"
+		>
+			<svg class="size-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+				<path
+					d="M6 12h2v2h10V4h2v12H8v2H6v-2H4v-2h2Zm2-2h2v2H8Zm0 8h2v2H8Z"
+				></path>
+			</svg>
+			Back to Blog
+		</a>
+	</footer>
+</article>
+
+<aside class="mx-auto mb-24 max-w-180 px-6 max-sm:px-4">
+	<h2 class="mb-6 font-['Chalet',sans-serif] text-[2rem] tracking-[-.02em]">
+		Stay Up to Date on Snapflow
+	</h2>
+	<p class="my-2 text-snapflow-paper/40">
+		We're building a local-first AI coding platform.
+	</p>
+	<p class="my-2 text-snapflow-paper/40">Get notified when we launch.</p>
+	<a
+		href="/#early-access"
+		class="mt-8 inline-flex bg-snapflow-purple px-8 py-4 font-['Chivo_Mono',monospace] text-[.8rem] font-bold text-snapflow-ink uppercase tracking-[.06em] transition-all hover:shadow-[4px_4px_0_var(--snapflow-blue)] focus-visible:outline-2 focus-visible:outline-snapflow-purple focus-visible:outline-offset-2 [clip-path:polygon(14px_0,100%_0,100%_calc(100%-14px),calc(100%-14px)_100%,0_100%,0_14px)]"
+	>
+		Get Early Access
+	</a>
+</aside>
+
+<style is:global>
+.blog-prose p {
+	margin: 0 0 1.5rem;
+}
+
+.blog-prose h2 {
+	margin: 3rem 0 1rem;
+	color: var(--snapflow-paper);
+	font-family: Chalet, sans-serif;
+	font-size: 1.75rem;
+	line-height: 1.25;
+	letter-spacing: -0.01em;
+}
+
+.blog-prose h3 {
+	margin: 2.5rem 0 0.75rem;
+	color: var(--snapflow-paper);
+	font-family: Chalet, sans-serif;
+	font-size: 1.35rem;
+	line-height: 1.3;
+}
+
+.blog-prose h4 {
+	margin: 2rem 0 0.5rem;
+	color: var(--snapflow-paper);
+	font-size: 1.1rem;
+	font-weight: 600;
+}
+
+.blog-prose a {
+	color: var(--snapflow-purple);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	transition: color 0.15s;
+}
+
+.blog-prose a:hover,
+.blog-prose strong {
+	color: var(--snapflow-paper);
+}
+
+.blog-prose strong {
+	font-weight: 600;
+}
+
+.blog-prose ul,
+.blog-prose ol {
+	margin: 0 0 1.5rem;
+	padding-left: 1.5rem;
+}
+
+.blog-prose ul {
+	list-style: disc;
+}
+
+.blog-prose ol {
+	list-style: decimal;
+}
+
+.blog-prose li {
+	margin-bottom: 0.5rem;
+}
+
+.blog-prose li::marker {
+	color: color-mix(in srgb, var(--snapflow-paper) 40%, transparent);
+}
+
+.blog-prose blockquote {
+	margin: 2rem 0;
+	border-left: 3px solid var(--snapflow-purple);
+	padding: 0.75rem 1.25rem;
+	color: color-mix(in srgb, var(--snapflow-paper) 50%, transparent);
+	font-style: italic;
+}
+
+.blog-prose blockquote p:last-child {
+	margin-bottom: 0;
+}
+
+.blog-prose code {
+	border-radius: 4px;
+	background: color-mix(in srgb, var(--snapflow-paper) 6%, transparent);
+	padding: 0.15em 0.4em;
+	font-family: "Chivo Mono", monospace;
+	font-size: 0.875em;
+}
+
+.blog-prose pre {
+	margin: 2rem 0;
+	overflow-x: auto;
+	border: 1px solid color-mix(in srgb, var(--snapflow-paper) 10%, transparent);
+	border-radius: 6px;
+	background: color-mix(in srgb, var(--snapflow-paper) 4%, transparent);
+	padding: 1.25rem 1.5rem;
+	line-height: 1.5;
+}
+
+.blog-prose pre code {
+	background: none;
+	padding: 0;
+	font-size: 0.85rem;
+}
+
+.blog-prose img {
+	max-width: 100%;
+	height: auto;
+	margin: 2rem 0;
+	border-radius: 6px;
+}
+
+.blog-prose hr {
+	margin: 3rem 0;
+	border: 0;
+	border-top: 1px solid
+		color-mix(in srgb, var(--snapflow-paper) 10%, transparent);
+}
+
+.blog-flow {
+	position: relative;
+	margin: 2.5rem 0;
+	overflow: hidden;
+	border: 1px solid color-mix(in srgb, var(--snapflow-purple) 35%, transparent);
+	background:
+		linear-gradient(
+			color-mix(in srgb, var(--snapflow-purple) 4%, transparent),
+			color-mix(in srgb, var(--snapflow-purple) 1%, transparent)
+		),
+		repeating-linear-gradient(
+			0deg,
+			transparent 0 23px,
+			color-mix(in srgb, var(--snapflow-paper) 4%, transparent) 24px
+		),
+		repeating-linear-gradient(
+			90deg,
+			transparent 0 23px,
+			color-mix(in srgb, var(--snapflow-paper) 4%, transparent) 24px
+		);
+	padding: 1.25rem;
+	box-shadow: inset 0 0 50px
+		color-mix(in srgb, var(--snapflow-purple) 6%, transparent);
+}
+
+.blog-flow::before,
+.blog-flow::after {
+	position: absolute;
+	width: 14px;
+	height: 14px;
+	border-color: var(--snapflow-purple);
+	content: "";
+}
+
+.blog-flow::before {
+	top: -1px;
+	left: -1px;
+	border-top: 2px solid;
+	border-left: 2px solid;
+}
+
+.blog-flow::after {
+	right: -1px;
+	bottom: -1px;
+	border-right: 2px solid;
+	border-bottom: 2px solid;
+}
+
+.blog-flow-label {
+	margin-bottom: 1rem;
+	font-family: "Chivo Mono", monospace;
+	font-size: 0.67rem;
+	color: var(--snapflow-purple);
+	letter-spacing: 0.15em;
+}
+
+.blog-flow-grid {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+}
+
+.blog-flow-step {
+	display: grid;
+	grid-template-columns: 2.5rem 1fr;
+	gap: 0.15rem 0.75rem;
+	border: 1px solid color-mix(in srgb, var(--snapflow-paper) 12%, transparent);
+	background: color-mix(in srgb, var(--snapflow-ink) 82%, transparent);
+	padding: 0.85rem 1rem;
+}
+
+.blog-flow-step span {
+	grid-row: 1 / 3;
+	align-self: center;
+	font-family: "Chivo Mono", monospace;
+	font-size: 0.67rem;
+	color: var(--snapflow-purple);
+}
+
+.blog-flow-step strong {
+	font-family: "Chivo Mono", monospace;
+	font-size: 0.78rem;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.blog-flow-step small {
+	color: color-mix(in srgb, var(--snapflow-paper) 40%, transparent);
+	font-size: 0.74rem;
+	line-height: 1.4;
+}
+
+.blog-flow-output {
+	border-color: color-mix(in srgb, var(--snapflow-purple) 45%, transparent);
+	box-shadow: inset 0 0 24px
+		color-mix(in srgb, var(--snapflow-purple) 8%, transparent);
+}
+
+.blog-flow-arrow {
+	height: 1.6rem;
+	font-family: "Chivo Mono", monospace;
+	font-size: 0.8rem;
+	line-height: 1.6rem;
+	text-align: center;
+	color: color-mix(in srgb, var(--snapflow-purple) 70%, transparent);
+}
+
+.blog-flow-split {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0.75rem;
+}
+
+@media (max-width: 540px) {
+	.blog-flow-split {
+		grid-template-columns: 1fr;
+	}
+}
+</style>

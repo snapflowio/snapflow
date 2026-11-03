@@ -1,0 +1,19 @@
+{
+  "name": "@snapflow/toolbox-api-client",
+  "version": "0.0.0-dev",
+  "description": "Snapflow sandbox toolbox API client",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/snapflowio/snapflow.git"
+  },
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./client": "./src/client/index.js",
+    "./client.gen": "./src/client.gen.js"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}

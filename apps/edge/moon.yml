@@ -1,0 +1,51 @@
+layer: "application"
+stack: "backend"
+tags:
+  - "scope-data-plane"
+  - "app-edge"
+  - "deployable"
+dependsOn:
+  - "api-client-go"
+  - "common-go"
+  - "tunnel-go"
+
+fileGroups:
+  production:
+    - "**/*"
+    - "!**/*_test.go"
+
+tasks:
+  prepare-development-tls:
+    command: "bash"
+    args:
+      - "../../scripts/prepare-local-edge-tls.sh"
+    options:
+      cache: false
+
+  build:
+    script: "mkdir -p ../../dist/apps/edge && go build -o ../../dist/apps/edge/edge ./cmd/edge"
+    inputs:
+      - "@group(production)"
+    outputs:
+      - "/dist/apps/edge"
+
+  serve:
+    command: "go"
+    args:
+      - "run"
+      - "./cmd/edge"
+      - "--profile"
+      - "development"
+    preset: "server"
+    deps:
+      - "prepare-development-tls"
+    options:
+      envFile: ".env"
+
+  speed:
+    script: |
+      set -euo pipefail
+      go test -run '^$' -bench '^BenchmarkTransport' -benchmem -benchtime=1s -count=5 ../../libs/tunnel-go/transport
+      go test -run '^$' -bench '^BenchmarkDatagramCodecAndReassembly$' -benchmem -benchtime=1s -count=5 ../../libs/tunnel-go/protocol
+    options:
+      cache: false

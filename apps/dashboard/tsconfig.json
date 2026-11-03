@@ -1,0 +1,28 @@
+{
+	"extends": "$app/tsconfig",
+	"compilerOptions": {
+		"customConditions": ["browser"],
+		"strict": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noUncheckedIndexedAccess": true,
+		"rootDir": "../..",
+		"paths": {
+			"@snapflow/api-client": ["../../libs/api-client/src/index.ts"],
+			"@snapflow/organization-access": [
+				"../../libs/organization-access/src/index.ts"
+			],
+			"@snapflow/toolbox-api-client": [
+				"../../libs/toolbox-api-client/src/index.ts"
+			]
+		}
+	},
+	"files": [],
+	"include": [],
+	"references": [
+		{ "path": "./tsconfig.app.json" },
+		{ "path": "./tsconfig.node.json" }
+	]
+}

@@ -1,0 +1,26 @@
+◆ snapflow  rack-04 · production
+
+  State         ○ Starting up · qualification challenge pending
+  Location      Frankfurt am Main, DE
+  Scheduling    Not yet schedulable — qualification in progress
+  Sandboxes     3 running
+  CPU           ███░░░░░░░  32% · 6 of 16 vCPU allocated
+  Memory        ████████░░  81% · 24 of 64 GiB allocated
+  Disk          █████████░  93% · 120 of 1000 GiB allocated
+  Health        ✗ edge-tunnel · tunnel handshake timed out, ✓ runtime
+  Daemon        ✗ not reachable · connection refused
+  Service       ✗ not running
+  Release       1.4.2 · ✓ verified
+  Updates       idle · stable channel · maintenance window 04:00-06:00 UTC
+  Earnings      earnings are in the dashboard · https://snapflow.io/dashboard/machines
+  Payouts       not set up; open Billing → Payouts in the dashboard to get paid
+  Marketplace   Private tier · draft · private
+  Benchmark     ○ in progress
+  Tier notes    listing_not_public, kyc_incomplete
+  Pricing and listing are managed in the dashboard
+
+  Recent service errors
+  • level=ERROR msg="edge tunnel closed"
+
+  Needs attention
+  ✗ the Snapflow service is not active and enabled

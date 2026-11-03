@@ -1,0 +1,16 @@
+name: Prepare the Go workspace
+description: Installs the X11 headers computer-use links against and generates the gitignored guest terminal assets, so every workspace module compiles
+
+runs:
+  using: composite
+  steps:
+    - name: Install the X11 development headers
+      shell: bash
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq --no-install-recommends \
+          libx11-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxtst-dev
+    - name: Generate the guest terminal assets
+      shell: bash
+      working-directory: apps/guest
+      run: go run ./tools/terminal_assets.go

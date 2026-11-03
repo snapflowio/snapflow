@@ -1,0 +1,42 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: snapflow
+  namespace: snapflow
+spec:
+  interval: 10m
+  timeout: 15m
+  chart:
+    spec:
+      chart: ./deploy/charts/snapflow
+      reconcileStrategy: Revision
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  values:
+    imageNamespace: snapflowio/snapflow
+    domains:
+      public: ${PUBLIC_DOMAIN}
+      storage: ${STORAGE_DOMAIN}
+      registry: ${REGISTRY_DOMAIN}
+      platform: ${PLATFORM_DOMAIN}
+    email:
+      from: Snapflow <noreply@${EMAIL_DOMAIN}>
+    images:
+      api:
+        tag: "" # {"$imagepolicy": "flux-system:snapflow-api:tag"}
+        digest: "" # {"$imagepolicy": "flux-system:snapflow-api:digest"}
+      dashboard:
+        tag: "" # {"$imagepolicy": "flux-system:snapflow-dashboard:tag"}
+        digest: "" # {"$imagepolicy": "flux-system:snapflow-dashboard:digest"}
+      marketing:
+        tag: "" # {"$imagepolicy": "flux-system:snapflow-marketing:tag"}
+        digest: "" # {"$imagepolicy": "flux-system:snapflow-marketing:digest"}
+      snapshotManager:
+        tag: "" # {"$imagepolicy": "flux-system:snapflow-snapshot-manager:tag"}
+        digest: "" # {"$imagepolicy": "flux-system:snapflow-snapshot-manager:digest"}
+      edge:
+        tag: "" # {"$imagepolicy": "flux-system:snapflow-edge:tag"}
+        digest: "" # {"$imagepolicy": "flux-system:snapflow-edge:digest"}
+    edges: []

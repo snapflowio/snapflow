@@ -1,0 +1,16 @@
+{
+	"benchmarkId": "d4e5f6a7-b8c9-4d0e-8f1a-2b3c4d5e6f7a",
+	"nonce": "6a09e667f3bcc908bb67ae8584caa73b3c6ef372fe94f82ba54ff53a5f1d36f1",
+	"suiteVersion": 2,
+	"profile": "BENCHMARK_PROFILE_REGISTRATION",
+	"shape": {
+		"cpu": 8,
+		"memoryGib": 64,
+		"diskGib": 200,
+		"gpu": 1
+	},
+	"speedtestUrl": "https://edge.example.com/_snapflow/speedtest",
+	"speedtestToken": "c3BlZWR0ZXN0LXRva2Vu",
+	"issuedAt": "2026-10-13T12:00:00Z",
+	"expiresAt": "2026-10-13T13:00:00Z"
+}

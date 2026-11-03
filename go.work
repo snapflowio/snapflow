@@ -1,0 +1,14 @@
+go 1.27.3
+
+use (
+	./apps/edge
+	./apps/guest
+	./apps/snapflow
+	./apps/snapshot-manager
+	./libs/api-client-go
+	./libs/common-go
+	./libs/computer-use
+	./libs/machine-proto
+	./libs/microvm-go
+	./libs/tunnel-go
+)

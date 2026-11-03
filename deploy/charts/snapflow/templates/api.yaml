@@ -1,0 +1,155 @@
+{{- $root := . -}}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: snapflow-api
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "api") | nindent 4 }}
+automountServiceAccountToken: false
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: snapflow-api
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "api") | nindent 4 }}
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: {{ .Values.secretStore }}
+  target:
+    name: snapflow-api
+    creationPolicy: Owner
+  dataFrom:
+    - extract:
+        key: snapflow/api
+{{- range $role := list "api" "worker" }}
+{{- $values := index $root.Values $role }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ printf "snapflow-%s" $role }}
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" $role) | nindent 4 }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: {{ $values.replicas }}
+  selector:
+    matchLabels:
+      {{- include "snapflow.selectorLabels" (dict "root" $root "component" $role) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "snapflow.selectorLabels" (dict "root" $root "component" $role) | nindent 8 }}
+    spec:
+      serviceAccountName: snapflow-api
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        {{- include "snapflow.podSecurityContext" $root | nindent 8 }}
+      initContainers:
+        - name: openbao-proxy
+          image: {{ $root.Values.openbao.image }}
+          restartPolicy: Always
+          args: ["proxy", "-config=/etc/openbao/proxy.hcl"]
+          securityContext:
+            {{- include "snapflow.containerSecurityContext" $root | nindent 12 }}
+            runAsUser: {{ $root.Values.openbao.userId }}
+            runAsGroup: {{ $root.Values.openbao.groupId }}
+          startupProbe:
+            exec:
+              command: ["bao", "status", "-address=http://127.0.0.1:8100"]
+            periodSeconds: 2
+            failureThreshold: 60
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+          volumeMounts:
+            - name: openbao-proxy
+              mountPath: /etc/openbao
+              readOnly: true
+            - name: openbao-token
+              mountPath: /var/run/secrets/openbao
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      containers:
+        - name: {{ $role }}
+          image: {{ include "snapflow.image" (dict "root" $root "key" "api" "name" "api") }}
+          env:
+            {{- include "snapflow.apiEnvironment" (dict "root" $root "role" $role) | nindent 12 }}
+          envFrom:
+            - secretRef:
+                name: snapflow-api
+          {{- if eq $role "api" }}
+          ports:
+            - name: http
+              containerPort: 3001
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 2
+            failureThreshold: 90
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 20
+            failureThreshold: 3
+          {{- end }}
+          securityContext:
+            {{- include "snapflow.containerSecurityContext" $root | nindent 12 }}
+          resources:
+            {{- toYaml $values.resources | nindent 12 }}
+          volumeMounts:
+            - name: postgres-ca
+              mountPath: /etc/snapflow/postgres
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: openbao-proxy
+          configMap:
+            name: snapflow-openbao-proxy
+        - name: openbao-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  path: token
+                  audience: {{ $root.Values.openbao.tokenAudience }}
+                  expirationSeconds: 3600
+        - name: postgres-ca
+          secret:
+            secretName: {{ printf "%s-ca" $root.Values.database.cluster }}
+            items:
+              - key: ca.crt
+                path: ca.crt
+        - name: tmp
+          emptyDir: {}
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: snapflow-api
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "api") | nindent 4 }}
+spec:
+  selector:
+    {{- include "snapflow.selectorLabels" (dict "root" $root "component" "api") | nindent 4 }}
+  ports:
+    - name: http
+      port: 3001
+      targetPort: http

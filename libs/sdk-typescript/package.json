@@ -1,0 +1,67 @@
+{
+	"name": "@snapflow/sdk",
+	"version": "0.0.0-dev",
+	"description": "Snapflow TypeScript SDK for sandbox management and code execution",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./index.d.ts",
+			"default": "./index.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"browser": {
+		"node:crypto": false,
+		"node:fs": false,
+		"node:os": false,
+		"tar": false,
+		"fast-glob": false,
+		"@iarna/toml": false,
+		"busboy": false,
+		"@aws-sdk/client-s3": false,
+		"@aws-sdk/lib-storage": false
+	},
+	"files": [
+		"**/*.js",
+		"**/*.js.map",
+		"**/*.d.ts"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/snapflowio/snapflow.git"
+	},
+	"author": "Snapflow Platforms Inc.",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/snapflowio/snapflow/issues"
+	},
+	"homepage": "https://www.snapflow.io/docs",
+	"keywords": [
+		"snapflow",
+		"sandbox",
+		"typescript",
+		"sdk"
+	],
+	"dependencies": {
+		"@aws-sdk/client-s3": "^3.787.0",
+		"@aws-sdk/lib-storage": "^3.798.0",
+		"@iarna/toml": "^2.2.5",
+		"@snapflow/api-client": "workspace:*",
+		"@snapflow/toolbox-api-client": "workspace:*",
+		"busboy": "^1.0.0",
+		"fast-glob": "^3.3.0",
+		"isomorphic-ws": "^5.0.0",
+		"pathe": "^2.0.3",
+		"shell-quote": "^1.8.2",
+		"tar": "^7.5.11",
+		"ws": "^8.18.3"
+	},
+	"devDependencies": {
+		"@arethetypeswrong/cli": "catalog:",
+		"@types/busboy": "^1.0.0",
+		"@types/node": "catalog:",
+		"@types/ws": "^8.18.1",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	}
+}

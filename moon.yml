@@ -1,0 +1,55 @@
+layer: "tool"
+stack: "infrastructure"
+tags:
+  - "scope-workspace"
+
+toolchains:
+  go: false
+
+tasks:
+  reset-local-database:
+    command: "node"
+    args:
+      - "--env-file-if-exists=apps/api/.env"
+      - "dist/apps/api/cli.mjs"
+      - "reset-local-database"
+    deps:
+      - "api:build-production"
+    preset: "utility"
+    options:
+      cache: false
+
+  t3-code:
+    command: "pnpm"
+    args:
+      - "exec"
+      - "t3"
+      - "serve"
+      - "--mode"
+      - "web"
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "3773"
+      - "--base-dir"
+      - "/home/vscode/.t3"
+      - "--no-browser"
+      - "--auto-bootstrap-project-from-cwd"
+      - "/workspaces/snapflow"
+    preset: "server"
+
+  t3-code-pair:
+    command: "pnpm"
+    args:
+      - "exec"
+      - "t3"
+      - "auth"
+      - "pairing"
+      - "create"
+      - "--base-dir"
+      - "/home/vscode/.t3"
+      - "--base-url"
+      - "http://0.0.0.0:3774"
+      - "--label"
+      - "Snapflow"
+    preset: "utility"

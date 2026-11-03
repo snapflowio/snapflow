@@ -1,0 +1,38 @@
+name: Dev
+
+# Images are built once, here, from the commit that passed CI on dev. Flux
+# image automation pins their digests in deploy/apps/production on dev, and
+# promoting dev to main deploys exactly those images.
+
+on:
+  push:
+    branches: [dev]
+    # Flux's digest pins change only these manifests; the promotion pull
+    # request validates them, so they neither rerun CI nor rebuild images.
+    paths-ignore:
+      - "deploy/apps/production/**"
+
+permissions: {}
+
+concurrency:
+  group: dev-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+      # ci.yml's suite selection reads pull request files; on push it runs everything.
+      pull-requests: read
+
+  images:
+    name: Images
+    needs: ci
+    uses: ./.github/workflows/images.yml
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write

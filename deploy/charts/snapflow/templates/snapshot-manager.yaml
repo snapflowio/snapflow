@@ -1,0 +1,106 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: snapflow-snapshot-manager
+  labels:
+    {{- include "snapflow.labels" (dict "root" . "component" "snapshot-manager") | nindent 4 }}
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: {{ .Values.secretStore }}
+  target:
+    name: snapflow-snapshot-manager
+    creationPolicy: Owner
+  data:
+    - secretKey: http-secret
+      remoteRef:
+        key: snapflow/platform/snapshot-manager
+        property: http-secret
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snapflow-snapshot-manager
+  labels:
+    {{- include "snapflow.labels" (dict "root" . "component" "snapshot-manager") | nindent 4 }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: {{ .Values.snapshotManager.replicas }}
+  selector:
+    matchLabels:
+      {{- include "snapflow.selectorLabels" (dict "root" . "component" "snapshot-manager") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "snapflow.selectorLabels" (dict "root" . "component" "snapshot-manager") | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        {{- include "snapflow.podSecurityContext" . | nindent 8 }}
+      containers:
+        - name: snapshot-manager
+          image: {{ include "snapflow.image" (dict "root" . "key" "snapshotManager" "name" "snapshot-manager") }}
+          env:
+            - name: SNAPSHOT_MANAGER_STORAGE_S3_REGION
+              value: {{ .Values.objectStorage.region | quote }}
+            - name: SNAPSHOT_MANAGER_STORAGE_S3_BUCKET
+              value: {{ .Values.objectStorage.snapshotBucket | quote }}
+            - name: SNAPSHOT_MANAGER_STORAGE_S3_REGIONENDPOINT
+              value: {{ printf "http://%s:9000" .Values.objectStorage.service | quote }}
+            - name: SNAPSHOT_MANAGER_AUTH_JWKS_URL
+              value: "http://snapflow-api:3001/api/registry-tokens/jwks"
+            - name: SNAPSHOT_MANAGER_HTTP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: snapflow-snapshot-manager
+                  key: http-secret
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.objectStorage.secret }}
+                  key: access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.objectStorage.secret }}
+                  key: secret-key
+          ports:
+            - name: http
+              containerPort: 5000
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 20
+          securityContext:
+            {{- include "snapflow.containerSecurityContext" . | nindent 12 }}
+          resources:
+            {{- toYaml .Values.snapshotManager.resources | nindent 12 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: snapflow-snapshot-manager
+  labels:
+    {{- include "snapflow.labels" (dict "root" . "component" "snapshot-manager") | nindent 4 }}
+spec:
+  selector:
+    {{- include "snapflow.selectorLabels" (dict "root" . "component" "snapshot-manager") | nindent 4 }}
+  ports:
+    - name: http
+      port: 5000
+      targetPort: http

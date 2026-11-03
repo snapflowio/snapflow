@@ -1,0 +1,93 @@
+services:
+  devcontainer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      cache_from:
+        - ghcr.io/snapflowio/snapflow-devcontainer:latest
+    command: sleep infinity
+    privileged: true
+    cgroup: host
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ulimits:
+      nofile:
+        soft: 1048576
+        hard: 1048576
+      memlock:
+        soft: -1
+        hard: -1
+    tmpfs:
+      - /run:exec,size=256m
+    ports:
+      - "127.0.0.1:5173:5173/tcp"
+      - "3774:3773/tcp"
+      - "127.0.0.1:4443:4443/tcp"
+      - "127.0.0.1:4443:4443/udp"
+      # The edge is published by Docker, not VS Code port forwarding: the VS Code
+      # forwarder drops fresh TLS connections mid-handshake, which broke browser
+      # WebSockets such as the desktop viewer.
+      - "127.0.0.1:8082:8082/tcp"
+      - "127.0.0.1:8444:8444/tcp"
+      - "127.0.0.1:23000-23031:23000-23031/tcp"
+      - "127.0.0.1:23000-23031:23000-23031/udp"
+    environment:
+      TMPDIR: /home/vscode/.cache/tmp
+      GOTMPDIR: /home/vscode/.cache/go-tmp
+      XDG_CACHE_HOME: /home/vscode/.cache
+      XDG_STATE_HOME: /home/vscode/.local/state
+      COREPACK_HOME: /home/vscode/.cache/node/corepack
+      NPM_CONFIG_CACHE: /home/vscode/.cache/npm
+      PNPM_HOME: /home/vscode/.local/share/pnpm
+      PNPM_STORE_PATH: /home/vscode/.local/share/pnpm/store
+      GOPATH: /home/vscode/go
+      GOMODCACHE: /home/vscode/go/pkg/mod
+      GOBIN: /home/vscode/.local/bin
+      MOON_TOOLCHAIN_FORCE_GLOBALS: "true"
+      MOON_CONCURRENCY: "8"
+      ROLLDOWN_WORKER_THREADS: "8"
+      BUILDKIT_HOST: tcp://buildkit:1234
+      SNAPFLOW_REQUIRE_NVIDIA_GPU: "false"
+    volumes:
+      - type: bind
+        source: ..
+        target: /workspaces/snapflow
+      - type: bind
+        source: ./docker-daemon.json
+        target: /etc/docker/daemon.json
+        read_only: true
+      - pnpm-store:/home/vscode/.local/share/pnpm/store
+      - go-mod-cache:/home/vscode/go/pkg/mod
+      - dev-cache:/home/vscode/.cache
+      - snapflow-state:/home/vscode/.local/state/snapflow
+      - snapflow-install:/opt/snapflow-development
+      - snapflow-release-state:/var/lib/snapflow/releases-development
+      - snapflow-machine-credentials:/var/lib/systemd
+      - snapflow-workloads:/var/lib/snapflow-development
+      - t3-code-state:/home/vscode/.t3
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      registry:
+        condition: service_healthy
+      buildkit:
+        condition: service_healthy
+      rustfs-init:
+        condition: service_completed_successfully
+      openbao-proxy:
+        condition: service_healthy
+      resend:
+        condition: service_healthy
+
+volumes:
+  pnpm-store:
+  go-mod-cache:
+  dev-cache:
+  snapflow-state:
+  snapflow-install:
+  snapflow-release-state:
+  snapflow-machine-credentials:
+  snapflow-workloads:
+  t3-code-state:

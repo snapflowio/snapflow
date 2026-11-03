@@ -1,0 +1,24 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "dependencies, caches and build output (gitignored, never committed)"
+paths = [
+  '''(^|/)node_modules/''',
+  '''(^|/)\.pnpm-store/''',
+  '''(^|/)\.git/''',
+  '''(^|/)\.tmp/''',
+  '''(^|/)\.moon/cache/''',
+  '''(^|/)\.svelte-kit/''',
+  '''(^|/)\.astro/''',
+  '''(^|/)dist/''',
+]
+
+[[allowlists]]
+description = "test files and fixtures"
+paths = [
+  '''_test\.go$''',
+  '''\.test\.ts$''',
+  '''(^|/)testdata/''',
+  '''(^|/)testing/[^/]+\.fixtures\.ts$''',
+]

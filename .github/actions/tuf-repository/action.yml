@@ -1,0 +1,71 @@
+name: TUF repository
+description: Downloads the Snapflow TUF repository from Cloudflare R2, or uploads it with immutable files first and metadata/timestamp.json last
+
+inputs:
+  mode:
+    description: download or upload
+    required: true
+  directory:
+    description: Local repository directory holding metadata/ and targets/
+    required: true
+  account-id:
+    description: Cloudflare account ID
+    required: true
+  access-key-id:
+    description: R2 access key ID
+    required: true
+  secret-access-key:
+    description: R2 secret access key
+    required: true
+  bucket:
+    description: R2 bucket served at https://releases.snapflow.io
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Install rclone
+      shell: bash
+      run: |
+        set -euo pipefail
+        if ! command -v rclone >/dev/null; then
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends rclone
+        fi
+    - name: Synchronize the repository with R2
+      shell: bash
+      env:
+        MODE: ${{ inputs.mode }}
+        REPOSITORY: ${{ inputs.directory }}
+        R2_BUCKET: ${{ inputs.bucket }}
+        RCLONE_CONFIG_R2_TYPE: s3
+        RCLONE_CONFIG_R2_PROVIDER: Cloudflare
+        RCLONE_CONFIG_R2_ACCESS_KEY_ID: ${{ inputs.access-key-id }}
+        RCLONE_CONFIG_R2_SECRET_ACCESS_KEY: ${{ inputs.secret-access-key }}
+        RCLONE_CONFIG_R2_ENDPOINT: https://${{ inputs.account-id }}.r2.cloudflarestorage.com
+        RCLONE_CONFIG_R2_NO_CHECK_BUCKET: "true"
+      run: |
+        set -euo pipefail
+        remote="r2:${R2_BUCKET}"
+        immutable="Cache-Control: public, max-age=31536000, immutable"
+        case "$MODE" in
+        download)
+          mkdir -p "$REPOSITORY/metadata" "$REPOSITORY/targets"
+          rclone copy --checksum --include "/metadata/**" --include "/targets/**" "$remote" "$REPOSITORY"
+          test -s "$REPOSITORY/metadata/timestamp.json"
+          ;;
+        upload)
+          unexpected="$(find "$REPOSITORY/metadata" -maxdepth 1 -type f ! -name '[0-9]*.*.json' ! -name timestamp.json)"
+          if [ -n "$unexpected" ]; then
+            echo "unexpected unversioned metadata: $unexpected" >&2
+            exit 1
+          fi
+          rclone copy --checksum --immutable --header-upload "$immutable" "$REPOSITORY/targets" "$remote/targets"
+          rclone copy --checksum --immutable --header-upload "$immutable" --exclude /timestamp.json "$REPOSITORY/metadata" "$remote/metadata"
+          rclone copyto --checksum --header-upload "Cache-Control: no-store" "$REPOSITORY/metadata/timestamp.json" "$remote/metadata/timestamp.json"
+          ;;
+        *)
+          echo "unknown mode: $MODE" >&2
+          exit 1
+          ;;
+        esac

@@ -1,0 +1,317 @@
+// Copyright (c) 2026 Snapflow. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+package machine.v1alpha1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/snapflowio/snapflow/libs/machine-proto/gen/go/machine/v1alpha1;machinev1alpha1";
+
+message Registry {
+  string          url      = 1;
+  optional string username = 2;
+  optional string password = 3;
+  optional string project  = 4;
+}
+
+// VolumeBackupObject is one encrypted backup object (a manifest or a pack of
+// volume blocks) and the data key that opens it.
+message VolumeBackupObject {
+  string artifact_id  = 1;
+  string download_url = 2;
+  string data_key     = 3;
+}
+
+// RestoreVolumeBackup locates a backup manifest and every pack it references;
+// the restoring machine rebuilds the volume block by block.
+message RestoreVolumeBackup {
+  VolumeBackupObject          manifest                   = 1;
+  repeated VolumeBackupObject packs                      = 2;
+  int64                       expected_volume_size_bytes = 3;
+}
+
+message VolumeAttachment {
+  string                       volume_id     = 1;
+  string                       name          = 2;
+  uint32                       size_gi_b     = 3;
+  string                       filesystem    = 4;
+  string                       mount_path    = 5;
+  optional string              subpath       = 6;
+  bool                         read_only     = 7;
+  uint32                       generation    = 8;
+  string                       fencing_token = 9;
+  optional RestoreVolumeBackup restore       = 10;
+}
+
+message SnapshotSandboxPayload {
+  string   name                  = 1;
+  Registry registry              = 2;
+  uint32   assignment_generation = 3;
+}
+
+// VolumeBackupRequest uploads the blocks that changed since base, the previous
+// backup's manifest, into a new pack. Without base every block is uploaded.
+message VolumeBackupRequest {
+  string                      volume_id             = 1;
+  string                      artifact_id           = 2;
+  string                      pack_upload_url       = 3;
+  string                      manifest_upload_url   = 4;
+  string                      data_key              = 5;
+  uint32                      attachment_generation = 6;
+  string                      fencing_token         = 7;
+  uint32                      backup_generation     = 8;
+  optional VolumeBackupObject base                  = 9;
+}
+
+// BackupVolumesPayload backs up the volumes of a sandbox, running or not,
+// without snapshotting the sandbox itself.
+message BackupVolumesPayload {
+  repeated VolumeBackupRequest volume_backups        = 1;
+  uint32                       assignment_generation = 2;
+}
+
+message CreateBackupPayload {
+  Registry                     registry              = 1;
+  string                       snapshot              = 2;
+  repeated VolumeBackupRequest volume_backups        = 3;
+  uint32                       assignment_generation = 4;
+}
+
+message TemplatePreparation {
+  int32           cpu_quota     = 1;
+  int32           memory_quota  = 2;
+  int32           storage_quota = 3;
+  repeated string capabilities  = 4;
+}
+
+message BuildContext {
+  string hash         = 1;
+  string download_url = 2;
+}
+
+message BuildSnapshotPayload {
+  repeated BuildContext contexts                  = 1;
+  string                dockerfile                = 2;
+  string                owner_id                  = 3;
+  bool                  push_to_internal_registry = 4;
+  optional Registry     registry                  = 5;
+  string                snapshot                  = 6;
+  repeated Registry     source_registries         = 7;
+  string                build_log_upload_url      = 8;
+  Registry              cache_registry            = 9;
+}
+
+message PublishSnapshotPayload {
+  string            source_ref           = 1;
+  optional Registry source_registry      = 2;
+  string            destination_ref      = 3;
+  Registry          destination_registry = 4;
+}
+
+message InspectSnapshotPayload {
+  optional Registry registry = 1;
+  string            snapshot = 2;
+}
+
+message ResizeVolumePayload {
+  uint32 target_size_gi_b = 1;
+}
+
+message RestoreVolumePayload {
+  string              name              = 1;
+  uint32              size_gi_b         = 2;
+  string              filesystem        = 3;
+  uint32              backup_generation = 4;
+  RestoreVolumeBackup backup            = 5;
+}
+
+message PreparedTemplate {
+  string          key           = 1;
+  int32           cpu_quota     = 2;
+  int32           memory_quota  = 3;
+  int32           storage_quota = 4;
+  repeated string capabilities  = 5;
+}
+
+message SnapshotInfoResult {
+  string          name       = 1;
+  double          size_gb    = 2 [json_name = "sizeGB"];
+  repeated string entrypoint = 3;
+  repeated string cmd        = 4;
+  string          hash       = 5;
+}
+
+message SnapshotDigestResult {
+  string hash    = 1;
+  double size_gb = 2 [json_name = "sizeGB"];
+}
+
+message SnapshotSandboxResult {
+  string          ref        = 1;
+  string          hash       = 2;
+  double          size_gb    = 3 [json_name = "sizeGB"];
+  repeated string entrypoint = 4;
+  repeated string cmd        = 5;
+}
+
+message VolumeBackupResult {
+  string          volume_id               = 1;
+  string          artifact_id             = 2;
+  uint32          backup_generation       = 3;
+  int64           pack_size_bytes         = 4;
+  int64           manifest_size_bytes     = 5;
+  int64           changed_bytes           = 6;
+  repeated string referenced_artifact_ids = 7;
+}
+
+message CreateBackupResult {
+  repeated VolumeBackupResult volume_backups = 1;
+}
+
+message BackupVolumesResult {
+  repeated VolumeBackupResult volume_backups = 1;
+}
+
+enum FingerprintKind {
+  FINGERPRINT_KIND_UNSPECIFIED  = 0;
+  FINGERPRINT_KIND_SMBIOS_UUID  = 1;
+  FINGERPRINT_KIND_BOARD_SERIAL = 2;
+  FINGERPRINT_KIND_DISK_SERIAL  = 3;
+  FINGERPRINT_KIND_GPU_UUID     = 4;
+}
+
+enum SpeedtestDirection {
+  SPEEDTEST_DIRECTION_UNSPECIFIED = 0;
+  SPEEDTEST_DIRECTION_DOWNLOAD    = 1;
+  SPEEDTEST_DIRECTION_UPLOAD      = 2;
+}
+
+enum BenchmarkProfile {
+  BENCHMARK_PROFILE_UNSPECIFIED  = 0;
+  BENCHMARK_PROFILE_REGISTRATION = 1;
+  BENCHMARK_PROFILE_SPOT_CHECK   = 2;
+}
+
+message BenchmarkShape {
+  uint32 cpu        = 1;
+  uint32 memory_gib = 2;
+  uint32 disk_gib   = 3;
+  uint32 gpu        = 4;
+}
+
+message BenchmarkMachinePayload {
+  string                    benchmark_id    = 1;
+  string                    nonce           = 2;
+  uint32                    suite_version   = 3;
+  BenchmarkProfile          profile         = 4;
+  BenchmarkShape            shape           = 5;
+  string                    speedtest_url   = 6;
+  string                    speedtest_token = 7;
+  google.protobuf.Timestamp issued_at       = 8;
+  google.protobuf.Timestamp expires_at      = 9;
+}
+
+message FingerprintComponent {
+  FingerprintKind kind         = 1;
+  string          value_digest = 2;
+}
+
+message HostInventory {
+  repeated FingerprintComponent components       = 1;
+  string                        inventory_digest = 2;
+  string                        cpu_model        = 3;
+}
+
+message MerkleSample {
+  uint64         index = 1;
+  bytes          leaf  = 2;
+  repeated bytes path  = 3;
+}
+
+message CpuMeasurement {
+  uint32                threads               = 1;
+  uint64                iterations_per_thread = 2;
+  bytes                 root                  = 3;
+  repeated MerkleSample samples               = 4;
+  uint64                work_millis           = 5;
+  uint32                single_thread_score   = 6;
+  uint32                multi_thread_score    = 7;
+}
+
+message MemoryMeasurement {
+  uint64 bytes                  = 1;
+  uint32 bandwidth_mibps        = 2;
+  uint32 latency_ns             = 3;
+  uint32 page_touch_p999_micros = 4;
+}
+
+message DiskMeasurement {
+  uint32 random_read_iops         = 1;
+  uint32 sequential_read_mibps    = 2;
+  uint32 sequential_write_mibps   = 3;
+  uint32 read_latency_p99_micros  = 4;
+  uint32 fsync_latency_p99_micros = 5;
+}
+
+message SpeedtestReceipt {
+  SpeedtestDirection        direction              = 1;
+  uint64                    bytes                  = 2;
+  google.protobuf.Timestamp started_at             = 3;
+  google.protobuf.Timestamp finished_at            = 4;
+  uint64                    measured_bytes         = 5;
+  google.protobuf.Timestamp measured_started_at    = 6;
+  uint32                    min_rtt_micros         = 7;
+  uint32                    smoothed_rtt_micros    = 8;
+  uint32                    rtt_variance_micros    = 9;
+  uint64                    retransmitted_segments = 10;
+  uint64                    sent_segments          = 11;
+  string                    edge_key_id            = 12;
+  bytes                     signature              = 13;
+}
+
+message GpuMeasurement {
+  string                pci_device_id          = 1;
+  string                uuid                   = 2;
+  uint32                memory_gib             = 3;
+  uint64                vram_bytes             = 4;
+  bytes                 gemm_root              = 5;
+  repeated MerkleSample gemm_samples           = 6;
+  uint32                tflops                 = 7;
+  uint32                pcie_current_speed_mts = 8;
+  uint32                pcie_max_speed_mts     = 9;
+  uint32                pcie_current_width     = 10;
+  uint32                pcie_max_width         = 11;
+  uint64                uncorrected_ecc_errors = 12;
+  bool                  retired_pages_pending  = 13;
+}
+
+message BenchmarkMeasurements {
+  CpuMeasurement            cpu        = 1;
+  MemoryMeasurement         memory     = 2;
+  DiskMeasurement           disk       = 3;
+  repeated SpeedtestReceipt speedtests = 4;
+  repeated GpuMeasurement   gpus       = 5;
+}
+
+message BenchmarkMachineResult {
+  string                    benchmark_id   = 1;
+  BenchmarkMeasurements     measurements   = 2;
+  HostInventory             host_inventory = 3;
+  string                    machine_key_id = 4;
+  google.protobuf.Timestamp signed_at       = 5;
+  bytes                     signature       = 6;
+  string                    benchmark_image = 7;
+}

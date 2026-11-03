@@ -1,0 +1,42 @@
+◆ snapflow  Machine setup · production
+
+  ✓ Inspecting this machine
+  ✓ Checking machine requirements
+    ✓ KVM virtualization        /dev/kvm is readable and writable
+    ✓ nftables network policy   nftables is available for sandbox network isolation
+    ✓ Disk space                412.3 GiB free on /var/lib
+  ✓ Installing the verified Snapflow release · already installed and verified
+  ⠋ Approving this machine
+
+  ╭───────────────────────────────────────────────────────────────────────────╮
+  │  Approve this machine                                                     │
+  │                                                                           │
+  │  Open              https://snapflow.io/dashboard/machines?code=XKHM-R59E  │
+  │  Confirm the code  XKHM-R59E                                              │
+  │                                                                           │
+  │  █████████████████████████████████                                        │
+  │  ██ ▄▄▄▄▄ ██▀▀ ▄▀  ███ ▀█ ▄▄▄▄▄ ██                                        │
+  │  ██ █   █ █▄██  █▀▄██▀▀▄█ █   █ ██                                        │
+  │  ██ █▄▄▄█ ██ █▀▀██ ▀ ▄ ██ █▄▄▄█ ██                                        │
+  │  ██▄▄▄▄▄▄▄█ ▀ ▀ ▀ ▀▄▀▄▀ █▄▄▄▄▄▄▄██                                        │
+  │  ██   █  ▄▄▄▀█▄▄▄ ▄  ██   ██▀▄█▀██                                        │
+  │  ██ ▄▀▄▄▀▄ █▀▀▀▀ ▀▀▄ ▄█▀  ▀▄█▄ ▄██                                        │
+  │  ███▀▀ ▀█▄█▄█▄   █▄ ▄█▄▄  ▄█ █▄ ██                                        │
+  │  ██▄▀▄ ▄▄▄█▀▄▀▀▄  ██ ▀█▀ █ ▄ █ ▄██                                        │
+  │  ███▄▀▄▀█▄ ███  ▄██  █▄   ██ ▀▄ ██                                        │
+  │  ██▄▀▀▀ █▄█▄▀███ ▀▀█▀ ▀█▄▀█▀▀█ ▄██                                        │
+  │  ██▄██▄▄▄▄▄▀██   ██  ▀  ▄▄▄ █▀▀▀██                                        │
+  │  ██ ▄▄▄▄▄ █ ▄█▀▄▀█▀▀ ▄▄ █▄█  █▄▄██                                        │
+  │  ██ █   █ █▄█▄ ▀ █▄  █▀ ▄▄  █▀▄ ██                                        │
+  │  ██ █▄▄▄█ █ ▄▀▀▀▀▀█▀▀█ ▀▄█▄ ▄█▀▄██                                        │
+  │  ██▄▄▄▄▄▄▄█▄▄▄▄█▄▄▄▄▄▄█▄▄██▄▄█▄▄██                                        │
+  │  █████████████████████████████████                                        │
+  │  or scan with your phone                                                  │
+  │                                                                           │
+  │  Waiting for approval… · expires in 10m0s · opened in your browser        │
+  ╰───────────────────────────────────────────────────────────────────────────╯
+  ○ Starting the Snapflow service
+  ○ Waiting for the machine to come online
+
+  ctrl+c to cancel
+

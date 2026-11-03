@@ -1,0 +1,67 @@
+---
+import BlogArticle from '@/components/blog/blog-article.astro';
+import { SiteFooter } from '@/components/layout/site-footer';
+import { SiteHeader } from '@/components/layout/site-header';
+import { SITE_CONFIG } from '@/config/site';
+import { BLOG_POSTS, type BlogPost } from '@/data/blog-posts';
+import BaseLayout from '@/layouts/base-layout.astro';
+
+const articles = import.meta.glob('../../content/blog/*.html', {
+	eager: true,
+	query: '?raw',
+	import: 'default',
+}) as Record<string, string>;
+
+export function getStaticPaths() {
+	return BLOG_POSTS.map((post) => ({
+		params: { slug: post.slug },
+		props: { post },
+	}));
+}
+
+interface Props {
+	post: BlogPost;
+}
+
+const { post } = Astro.props;
+const content = articles[`../../content/blog/${post.slug}.html`];
+
+if (!content) {
+	throw new Error(`Missing blog content for ${post.slug}`);
+}
+
+const canonicalPath = `/blog/${post.slug}`;
+const structuredData = {
+	'@context': 'https://schema.org',
+	'@type': 'BlogPosting',
+	headline: post.title,
+	description: post.description,
+	datePublished: post.isoDate,
+	author: {
+		'@type': 'Person',
+		name: post.author,
+	},
+	publisher: {
+		'@type': 'Organization',
+		name: 'Snapflow',
+		url: SITE_CONFIG.URL,
+	},
+	mainEntityOfPage: new URL(`${canonicalPath}/`, Astro.site).href,
+};
+---
+
+<BaseLayout
+	title={`${post.title} | Snapflow`}
+	description={post.description}
+	canonicalPath={canonicalPath}
+	ogType="article"
+	structuredData={structuredData}
+>
+	<div class="min-h-screen bg-snapflow-ink text-snapflow-paper">
+		<SiteHeader variant="default" client:load />
+		<main>
+			<BlogArticle post={post} content={content} />
+		</main>
+		<SiteFooter />
+	</div>
+</BaseLayout>

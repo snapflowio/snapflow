@@ -1,0 +1,316 @@
+/*
+ * Copyright (c) 2026 Snapflow. All rights reserved.
+ *
+ * Snapflow is licensed under the GNU Affero General Public License v3.0.
+ * You may obtain a copy of the license at https://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * SPDX-License-Identifier: AGPL-3.0
+ */
+
+@import "tailwindcss";
+@source "../";
+
+:root {
+	--snapflow-purple: #9b5de5;
+	--snapflow-purple-hero: #ad5cf6;
+	--snapflow-purple-glow: rgb(155 93 229 / 40%);
+	--snapflow-blue: #2b4fff;
+	--snapflow-green: #22c55e;
+	--snapflow-ink: #0a0a0a;
+	--snapflow-paper: #f0ede6;
+	--snapflow-paper-dim: rgb(240 237 230 / 75%);
+	--snapflow-border: rgb(240 237 230 / 14%);
+	--snapflow-space: #030405;
+	--snapflow-space-deep: #040014;
+	--snapflow-space-purple: #12072d;
+	--snapflow-space-violet: #21103f;
+	--snapflow-terminal: #050505;
+	--snapflow-surface-muted: #0d0d0d;
+	--snapflow-surface: #111111;
+	--snapflow-surface-raised: #1a1a1a;
+	--snapflow-card: #0f0f0f;
+	--snapflow-card-hover: #100c14;
+	--snapflow-shadow: rgb(0 0 0 / 50%);
+	--snapflow-shadow-soft: rgb(0 0 0 / 40%);
+	--snapflow-scanline: rgb(0 0 0 / 8%);
+	--snapflow-static-purple: rgb(155 93 229 / 2%);
+	--snapflow-static-blue: rgb(43 79 255 / 2%);
+	--snapflow-chamfer: 14px;
+}
+
+@theme inline {
+	--color-snapflow-purple: var(--snapflow-purple);
+	--color-snapflow-purple-hero: var(--snapflow-purple-hero);
+	--color-snapflow-purple-glow: var(--snapflow-purple-glow);
+	--color-snapflow-blue: var(--snapflow-blue);
+	--color-snapflow-green: var(--snapflow-green);
+	--color-snapflow-ink: var(--snapflow-ink);
+	--color-snapflow-paper: var(--snapflow-paper);
+	--color-snapflow-paper-dim: var(--snapflow-paper-dim);
+	--color-snapflow-border: var(--snapflow-border);
+	--color-snapflow-space: var(--snapflow-space);
+	--color-snapflow-space-deep: var(--snapflow-space-deep);
+	--color-snapflow-space-purple: var(--snapflow-space-purple);
+	--color-snapflow-space-violet: var(--snapflow-space-violet);
+	--color-snapflow-terminal: var(--snapflow-terminal);
+	--color-snapflow-surface-muted: var(--snapflow-surface-muted);
+	--color-snapflow-surface: var(--snapflow-surface);
+	--color-snapflow-surface-raised: var(--snapflow-surface-raised);
+	--color-snapflow-card: var(--snapflow-card);
+	--color-snapflow-card-hover: var(--snapflow-card-hover);
+}
+
+@font-face {
+	font-family: Chalet;
+	src: url("/fonts/chalet_londonnineteensixty.woff2") format("woff2");
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Instrument Sans";
+	src: url("/fonts/InstrumentSans-latin.woff2") format("woff2");
+	font-display: swap;
+	font-style: normal;
+	font-weight: 400 700;
+}
+
+@font-face {
+	font-family: "Chivo Mono";
+	src: url("/fonts/ChivoMono-latin.woff2") format("woff2");
+	font-display: swap;
+	font-style: normal;
+	font-weight: 400 800;
+}
+
+@font-face {
+	font-family: "Geist Pixel Square";
+	src: url("/fonts/GeistPixel-Square.woff2") format("woff2");
+	font-display: swap;
+}
+
+html {
+	min-height: 100%;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	background: var(--snapflow-ink);
+	scroll-behavior: smooth;
+	touch-action: pan-y;
+}
+
+body {
+	min-height: 100%;
+	margin: 0;
+	overflow-x: hidden;
+	background: var(--snapflow-ink);
+	color: var(--snapflow-paper);
+	font-family: "Instrument Sans", system-ui, sans-serif;
+	line-height: normal;
+	touch-action: pan-y;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+@keyframes snapflow-pulse {
+	0%,
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+	50% {
+		opacity: 0.35;
+		transform: scale(1.7);
+	}
+}
+
+@keyframes snapflow-ticker {
+	from {
+		transform: translate3d(0, 0, 0);
+	}
+	to {
+		transform: translate3d(-25%, 0, 0);
+	}
+}
+@keyframes snapflow-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+@keyframes snapflow-spin-reverse {
+	to {
+		transform: rotate(-360deg);
+	}
+}
+@keyframes snapflow-progress {
+	from {
+		height: 0%;
+	}
+	to {
+		height: 100%;
+	}
+}
+@keyframes snapflow-cursor {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0;
+	}
+}
+@keyframes snapflow-float {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-8px);
+	}
+}
+@keyframes snapflow-grid-drift {
+	to {
+		background-position: 48px 48px;
+	}
+}
+@keyframes snapflow-glitch {
+	0%,
+	90%,
+	100% {
+		transform: translateY(-50%);
+		filter: none;
+	}
+	92% {
+		transform: translate(7px, calc(-50% - 2px));
+		filter: hue-rotate(90deg);
+	}
+	94% {
+		transform: translate(-5px, calc(-50% + 2px));
+	}
+}
+
+@keyframes snapflow-button-glitch {
+	0%,
+	100% {
+		transform: translate(0);
+		text-shadow: none;
+		opacity: 1;
+	}
+	12% {
+		transform: translate(-1px, 0.5px);
+		text-shadow:
+			-1.5px 0 color-mix(in srgb, var(--snapflow-blue) 40%, transparent),
+			1.5px 0 var(--snapflow-purple-glow);
+		opacity: 0.8;
+	}
+	28% {
+		transform: translate(1px, -0.5px);
+		text-shadow:
+			1px 0 color-mix(in srgb, var(--snapflow-blue) 35%, transparent),
+			-1px 0 color-mix(in srgb, var(--snapflow-purple) 35%, transparent);
+		opacity: 1;
+	}
+	45% {
+		transform: translate(-0.5px, 0);
+		text-shadow: none;
+	}
+}
+
+@keyframes snapflow-glow-pulse {
+	0%,
+	100% {
+		opacity: 0.4;
+		filter: blur(8px);
+	}
+	50% {
+		opacity: 0.8;
+		filter: blur(12px);
+	}
+}
+
+@keyframes snapflow-space-stars {
+	0% {
+		rotate: 0deg;
+		scale: 1.02;
+	}
+	50% {
+		scale: 1.1;
+	}
+	100% {
+		rotate: -360deg;
+		scale: 1.02;
+	}
+}
+
+@keyframes snapflow-space-rocks {
+	0% {
+		rotate: -4deg;
+		scale: 1;
+	}
+	35% {
+		scale: 1.08;
+	}
+	70% {
+		scale: 0.96;
+	}
+	100% {
+		rotate: 4deg;
+		scale: 1.06;
+	}
+}
+
+@keyframes snapflow-space-clouds {
+	0% {
+		rotate: 0deg;
+		scale: 1;
+	}
+	50% {
+		scale: 1.06;
+	}
+	100% {
+		rotate: 360deg;
+		scale: 1;
+	}
+}
+
+@keyframes snapflow-space-clouds-secondary {
+	0% {
+		rotate: -18deg;
+		scale: 0.96;
+	}
+	50% {
+		scale: 1.05;
+	}
+	100% {
+		rotate: 342deg;
+		scale: 0.96;
+	}
+}
+
+@keyframes snapflow-card-in {
+	from {
+		opacity: 0;
+		transform: translateY(4px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes snapflow-terminal-line {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+}

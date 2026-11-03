@@ -1,0 +1,35 @@
+services:
+  registry:
+    image: registry:2@sha256:a3d8aaa63ed8681a604f1dea0aa03f100d5895b6a58ace528858a7b332415373
+    mem_limit: 256m
+    volumes:
+      - registry-data:/var/lib/registry
+      - ../dev/registry/config.yml:/etc/docker/registry/config.yml:ro
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5000/v2/"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  buildkit:
+    image: moby/buildkit:v0.32.2@sha256:28a898719c18a33f4e8000685287fa36fd0dd9560c6440227d3a732d79bb41d8
+    privileged: true
+    command:
+      ["--addr", "tcp://0.0.0.0:1234", "--config", "/etc/buildkit/buildkitd.toml"]
+    volumes:
+      - buildkit-data:/var/lib/buildkit
+      - ../dev/buildkit/buildkitd.toml:/etc/buildkit/buildkitd.toml:ro
+    depends_on:
+      registry:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "buildctl", "--addr", "tcp://127.0.0.1:1234", "debug", "workers"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  registry-data:
+  buildkit-data:

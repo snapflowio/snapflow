@@ -1,0 +1,53 @@
+# Which CI suites a pull request needs, by the files it changes. Pushes to dev
+# and main, manual runs and the main workflow always run every suite. A change
+# under .github/ runs every suite, because it can change how any of them run.
+
+go:
+  - ".github/**"
+  - "**/*.go"
+  - "**/go.mod"
+  - "**/go.sum"
+  - "go.work"
+  - "go.work.sum"
+  - ".golangci.yml"
+  - "scripts/go-workspace.sh"
+  - "images/erofs-utils/**"
+  - ".devcontainer/scripts/build-erofs-utils.sh"
+  - "apps/guest/tools/**"
+
+# The TypeScript suite also regenerates the API clients (from the API) and the
+# local API documents (from the snapflow and guest Go sources).
+typescript:
+  - ".github/**"
+  - "apps/api/**"
+  - "apps/dashboard/**"
+  - "apps/marketing/**"
+  - "apps/snapflow/**"
+  - "apps/guest/**"
+  - "libs/**"
+  - "package.json"
+  - "pnpm-lock.yaml"
+  - "pnpm-workspace.yaml"
+  - "biome.json"
+  - "tsconfig*.json"
+  - "moon.yml"
+  - ".moon/**"
+  - "**/*.{ts,tsx,mts,cts,js,mjs,cjs,json,jsonc,css,svelte,astro,html}"
+
+deploy:
+  - ".github/**"
+  - "deploy/**"
+  - "package.json"
+  - "pnpm-lock.yaml"
+  - "moon.yml"
+  - ".moon/**"
+
+database:
+  - ".github/**"
+  - "apps/api/**"
+  - "libs/machine-proto/**"
+  - "package.json"
+  - "pnpm-lock.yaml"
+  - "pnpm-workspace.yaml"
+  - "moon.yml"
+  - ".moon/**"

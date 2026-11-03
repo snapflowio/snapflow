@@ -1,0 +1,105 @@
+name: Promote to stable
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Published beta release to promote to stable, or the current stable version to re-sign it (X.Y.Z)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  RELEASE_VERSION: ${{ inputs.version }}
+
+jobs:
+  tuf-stable:
+    name: Promote ${{ inputs.version }} in TUF
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: snapflow-stable
+    concurrency:
+      group: snapflow-tuf
+      cancel-in-progress: false
+    permissions:
+      contents: read
+    steps:
+      - name: Check that the version is a published release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [[ ! "$RELEASE_VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "::error::version must look like X.Y.Z, got ${RELEASE_VERSION}"
+            exit 1
+          fi
+          draft="$(gh release view "v${RELEASE_VERSION}" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft)"
+          if [ "$draft" != false ]; then
+            echo "::error::v${RELEASE_VERSION} is not a published release"
+            exit 1
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.work
+          cache: false
+      - name: Build the release tool
+        run: go build -trimpath -o "${RUNNER_TEMP}/snapflow-release" ./apps/snapflow/cmd/snapflow-release
+      - uses: ./.github/actions/tuf-repository
+        with:
+          mode: download
+          directory: ${{ runner.temp }}/tuf-repository
+          account-id: ${{ secrets.SNAPFLOW_RELEASE_R2_ACCOUNT_ID }}
+          access-key-id: ${{ secrets.SNAPFLOW_RELEASE_R2_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.SNAPFLOW_RELEASE_R2_SECRET_ACCESS_KEY }}
+          bucket: ${{ secrets.SNAPFLOW_RELEASE_R2_BUCKET }}
+      - name: Point the stable channel at the beta release
+        env:
+          STABLE_KEY: ${{ secrets.SNAPFLOW_TUF_STABLE_KEY }}
+          SNAPSHOT_KEY: ${{ secrets.SNAPFLOW_TUF_SNAPSHOT_KEY }}
+          TIMESTAMP_KEY: ${{ secrets.SNAPFLOW_TUF_TIMESTAMP_KEY }}
+        run: |
+          keys="${RUNNER_TEMP}/tuf-keys"
+          install -d -m 0700 "$keys"
+          (
+            umask 077
+            printf '%s\n' "$STABLE_KEY" >"$keys/stable.pem"
+            printf '%s\n' "$SNAPSHOT_KEY" >"$keys/snapshot.pem"
+            printf '%s\n' "$TIMESTAMP_KEY" >"$keys/timestamp.pem"
+          )
+          "${RUNNER_TEMP}/snapflow-release" tuf promote \
+            --repository "${RUNNER_TEMP}/tuf-repository" \
+            --from beta \
+            --to stable \
+            --version "$RELEASE_VERSION" \
+            --role-key "$keys/stable.pem" \
+            --snapshot-key "$keys/snapshot.pem" \
+            --timestamp-key "$keys/timestamp.pem"
+      - name: Remove the signing keys
+        if: always()
+        run: rm -rf -- "${RUNNER_TEMP}/tuf-keys"
+      - uses: ./.github/actions/tuf-repository
+        with:
+          mode: upload
+          directory: ${{ runner.temp }}/tuf-repository
+          account-id: ${{ secrets.SNAPFLOW_RELEASE_R2_ACCOUNT_ID }}
+          access-key-id: ${{ secrets.SNAPFLOW_RELEASE_R2_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.SNAPFLOW_RELEASE_R2_SECRET_ACCESS_KEY }}
+          bucket: ${{ secrets.SNAPFLOW_RELEASE_R2_BUCKET }}
+
+  github-release:
+    name: Mark v${{ inputs.version }} as the latest release
+    needs: tuf-stable
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Mark the release as stable and latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release edit "v${RELEASE_VERSION}" --repo "$GITHUB_REPOSITORY" --prerelease=false --latest

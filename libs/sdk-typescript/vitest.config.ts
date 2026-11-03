@@ -1,0 +1,73 @@
+/*
+ * Copyright (c) 2026 Snapflow. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { fileURLToPath } from 'node:url';
+import { configDefaults, defineConfig } from 'vitest/config';
+
+const E2E_TEST_PATTERN = 'src/**/*.e2e.test.ts';
+const E2E_TEST_TIMEOUT_MILLISECONDS = 120_000;
+
+const local = (relativePath: string) =>
+	fileURLToPath(new URL(relativePath, import.meta.url));
+
+export default defineConfig({
+	resolve: {
+		alias: [
+			{
+				find: /^@snapflow\/api-client$/,
+				replacement: local('../api-client/src/index.ts'),
+			},
+			{
+				find: /^@snapflow\/api-client\/client$/,
+				replacement: local('../api-client/src/client/index.ts'),
+			},
+			{
+				find: /^@snapflow\/toolbox-api-client$/,
+				replacement: local('../toolbox-api-client/src/index.ts'),
+			},
+			{
+				find: /^@snapflow\/toolbox-api-client\/client$/,
+				replacement: local('../toolbox-api-client/src/client/index.ts'),
+			},
+			{
+				find: /^@snapflow\/sdk$/,
+				replacement: local('src/index.ts'),
+			},
+		],
+	},
+	test: {
+		globals: true,
+		environment: 'node',
+		projects: [
+			{
+				extends: true,
+				test: {
+					name: 'unit',
+					include: ['src/**/*.test.ts'],
+					exclude: [...configDefaults.exclude, E2E_TEST_PATTERN],
+				},
+			},
+			{
+				extends: true,
+				test: {
+					name: 'e2e',
+					include: [E2E_TEST_PATTERN],
+					testTimeout: E2E_TEST_TIMEOUT_MILLISECONDS,
+				},
+			},
+		],
+	},
+});

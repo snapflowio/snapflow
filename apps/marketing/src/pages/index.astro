@@ -1,0 +1,48 @@
+---
+import {
+	ApproachSection,
+	NetworkIntroSection,
+} from '@/components/landing/sections/approach-section';
+import { CapabilitiesSection } from '@/components/landing/sections/capabilities-section';
+import { ClosingSection } from '@/components/landing/sections/closing-section';
+import { HeroSection } from '@/components/landing/sections/hero-section';
+import { HostsSection } from '@/components/landing/sections/hosts-section';
+import { ProblemSection } from '@/components/landing/sections/problem-section';
+import { TerminalSection } from '@/components/landing/sections/terminal-section';
+import { SiteHeader } from '@/components/layout/site-header';
+import BaseLayout from '@/layouts/base-layout.astro';
+import { SECTION_DIVIDER } from '@/lib/marketing-styles';
+---
+
+<BaseLayout>
+	<div
+		class="min-h-screen overflow-x-clip bg-snapflow-ink text-snapflow-paper selection:bg-snapflow-purple selection:text-snapflow-paper"
+	>
+		<div class="relative z-10000 bg-snapflow-purple-hero">
+			<SiteHeader client:load />
+			<HeroSection />
+		</div>
+		<div
+			class="pointer-events-none fixed inset-0 z-9999 before:absolute before:inset-y-0 before:left-[calc(50%-600px)] before:w-px before:bg-snapflow-border after:absolute after:inset-y-0 after:right-[calc(50%-600px)] after:w-px after:bg-snapflow-border max-[1281px]:before:left-[5%] max-[1281px]:after:right-[5%] max-md:before:left-5 max-md:after:right-5"
+			aria-hidden="true"
+		></div>
+		<main class="bg-snapflow-ink">
+			<div class="relative h-16.25">
+				<div class={`${SECTION_DIVIDER} absolute inset-x-0 bottom-0`}></div>
+			</div>
+			<ProblemSection client:load />
+			<div class={SECTION_DIVIDER}></div>
+			<NetworkIntroSection client:visible={{ rootMargin: '200px' }} />
+			<div class={SECTION_DIVIDER}></div>
+			<CapabilitiesSection client:visible={{ rootMargin: '200px' }} />
+			<div class={SECTION_DIVIDER}></div>
+			<ApproachSection client:visible={{ rootMargin: '200px' }} />
+			<div class={SECTION_DIVIDER}></div>
+			<HostsSection client:visible={{ rootMargin: '200px' }} />
+			<div class={SECTION_DIVIDER}></div>
+			<TerminalSection client:visible={{ rootMargin: '200px' }} />
+			<div class={SECTION_DIVIDER}></div>
+			<ClosingSection client:visible={{ rootMargin: '200px' }} />
+		</main>
+	</div>
+</BaseLayout>

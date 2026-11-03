@@ -1,0 +1,19 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"outDir": "../../dist/apps/api-development",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"resolvePackageJsonExports": true,
+		"isolatedModules": true,
+		"strict": true,
+		"strictPropertyInitialization": false,
+		"types": ["node", "@rspack/core/module"],
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"jsx": "react-jsx",
+		"target": "ES2023"
+	},
+	"include": ["src/**/*.ts", "src/**/*.tsx"],
+	"exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
+}

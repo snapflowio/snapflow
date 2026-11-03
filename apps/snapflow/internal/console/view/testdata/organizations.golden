@@ -1,0 +1,5 @@
+  Your organizations
+    • Garage (garage)
+    • Acme Compute (acme) · active
+  This machine registers into Acme Compute (acme)
+  → rerun with --organization <slug-or-id> to register into another organization

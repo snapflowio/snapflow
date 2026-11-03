@@ -1,0 +1,53 @@
+[Unit]
+Description=Snapflow Service
+Documentation=https://github.com/snapflowio/snapflow
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/var/lib/snapflow/workloads
+StateDirectory=snapflow/machine snapflow/workloads
+StateDirectoryMode=0700
+CacheDirectory=snapflow
+CacheDirectoryMode=0700
+RuntimeDirectory=snapflow
+RuntimeDirectoryMode=0750
+RuntimeDirectoryPreserve=yes
+LogsDirectory=snapflow
+LogsDirectoryMode=0750
+UMask=0077
+
+ExecStart=/opt/snapflow/current/bin/snapflowd --profile production
+
+# Stop policy
+# Shutdown drains job intake (in-flight results get up to 60s), publishes
+# DRAINING (10s), stops Edge tunnels and the local API (10s), then revokes the
+# session (10s) and flushes telemetry (10s); the 90s default is too short.
+TimeoutStopSec=150s
+
+# Restart policy
+Restart=on-failure
+RestartSec=5s
+
+# Security hardening
+# The daemon builds every sandbox's network namespace and VM jail in the
+# host's mount namespace, so it runs without ProtectSystem, ProtectHome or
+# PrivateTmp: those would hide /run/netns from the host and from the next
+# daemon after a restart. Each VMM is confined by its own jail and scope.
+NoNewPrivileges=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=snapflow
+
+[Install]
+WantedBy=multi-user.target

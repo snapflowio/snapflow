@@ -1,0 +1,6 @@
+apiVersion: v2
+name: snapflow
+description: Snapflow control plane and edge workloads
+type: application
+version: 1.0.0
+kubeVersion: ">=1.33.0-0"

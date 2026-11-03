@@ -1,0 +1,19 @@
+[Unit]
+Description=Stage and apply a verified Snapflow update
+Documentation=https://github.com/snapflowio/snapflow
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+UMask=0077
+ExecStart=/usr/local/bin/snapflow update --profile production --yes
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/opt/snapflow /var/lib/snapflow/releases /run/snapflow /etc/systemd/system /etc/tmpfiles.d /etc/sysctl.d
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+

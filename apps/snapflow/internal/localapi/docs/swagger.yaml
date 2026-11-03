@@ -1,0 +1,98 @@
+definitions:
+  MachineHealth:
+    properties:
+      status:
+        type: string
+      version:
+        type: string
+    required:
+    - status
+    - version
+    type: object
+  MachineInfoResponseDTO:
+    properties:
+      appVersion:
+        type: string
+      metrics:
+        $ref: '#/definitions/MachineMetrics'
+      serviceHealth:
+        items:
+          $ref: '#/definitions/MachineServiceInfo'
+        type: array
+    type: object
+  MachineMetrics:
+    properties:
+      currentAllocatedCpu:
+        type: number
+      currentAllocatedDiskGiB:
+        type: number
+      currentAllocatedMemoryGiB:
+        type: number
+      currentCpuLoadAverage:
+        type: number
+      currentCpuUsagePercentage:
+        type: number
+      currentDiskUsagePercentage:
+        type: number
+      currentMemoryUsagePercentage:
+        type: number
+      currentSnapshotCount:
+        type: integer
+      currentStartedSandboxes:
+        type: integer
+    type: object
+  MachineServiceInfo:
+    properties:
+      errorReason:
+        type: string
+      healthy:
+        type: boolean
+      serviceName:
+        type: string
+    required:
+    - healthy
+    - serviceName
+    type: object
+info:
+  contact: {}
+  description: Snapflow local API
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  title: Snapflow local API
+  version: v0.0.0-dev
+paths:
+  /:
+    get:
+      description: Health check
+      operationId: HealthCheck
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/MachineHealth'
+      summary: Health check
+  /info:
+    get:
+      description: Machine info with system metrics
+      operationId: MachineInfo
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/MachineInfoResponseDTO'
+      summary: Machine info
+security:
+- Bearer: []
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and a session-scoped connection
+      token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

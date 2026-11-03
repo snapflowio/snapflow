@@ -1,0 +1,36 @@
+name: AI Moderator
+
+on:
+  issues:
+    types: [opened, edited]
+  issue_comment: # zizmor: ignore[dangerous-triggers]
+    types: [created, edited]
+  pull_request:
+    types: [opened, edited]
+  pull_request_review:
+    types: [submitted, edited]
+  pull_request_review_comment:
+    types: [created, edited]
+  discussion:
+    types: [created, edited]
+  discussion_comment:
+    types: [created, edited]
+
+permissions:
+  models: read
+  issues: write
+  pull-requests: write
+  discussions: write
+
+jobs:
+  moderate:
+    # Bots (Renovate, release-please, github-actions) write no spam, and
+    # moderating every bot comment only burns runner time.
+    if: ${{ !endsWith(github.actor, '[bot]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: AI Moderator
+        uses: github/ai-moderator@81159c370785e295c97461ade67d7c33576e9319 # v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

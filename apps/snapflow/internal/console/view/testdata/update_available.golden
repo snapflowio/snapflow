@@ -1,0 +1,8 @@
+◆ snapflow  Updates · production
+
+  Channel       stable
+  Installed     1.4.2
+  Available     1.5.0
+
+! Update available
+  → run `sudo snapflow update`

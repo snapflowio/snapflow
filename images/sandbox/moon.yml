@@ -1,0 +1,32 @@
+layer: "tool"
+stack: "systems"
+tags: ["scope-images", "image-sandbox"]
+
+tasks:
+  oci-image:
+    script: >-
+      target_arch="${ARCH:-$(go env GOHOSTARCH)}";
+      buildctl build --frontend dockerfile.v0
+      --local context=. --local dockerfile=.
+      --opt filename=images/sandbox/Dockerfile
+      --opt "platform=linux/${target_arch}"
+      --output "type=image,name=${IMAGE_REFERENCE:-snapflowio/sandbox:${VERSION:-dev}-${target_arch}},push=${PUSH:-false},oci-mediatypes=true,compression=zstd"
+    inputs:
+      - "**/*"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false
+
+  dev-publish:
+    description: "Builds the sandbox image and pushes it to the development registry, where the dev default snapshot pulls it"
+    script: >-
+      docker_config="$(mktemp -d)";
+      trap 'rm -r "$docker_config"' EXIT;
+      DOCKER_CONFIG="$docker_config" buildctl build --frontend dockerfile.v0
+      --local context=. --local dockerfile=.
+      --opt filename=images/sandbox/Dockerfile
+      --opt "platform=linux/$(go env GOHOSTARCH)"
+      --output "type=image,name=registry:5000/snapflowio/sandbox:dev,push=true,registry.insecure=true,oci-mediatypes=true,compression=zstd"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false

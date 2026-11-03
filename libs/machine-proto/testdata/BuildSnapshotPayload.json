@@ -1,0 +1,27 @@
+{
+	"contexts": [
+		{
+			"hash": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+			"downloadUrl": "https://storage.example.com/context"
+		}
+	],
+	"dockerfile": "FROM alpine:3.20",
+	"ownerId": "c0ffee00-0000-4000-8000-000000000001",
+	"pushToInternalRegistry": true,
+	"registry": {
+		"url": "https://registry.example.com",
+		"username": "robot",
+		"password": "registry-password",
+		"project": "snapflow"
+	},
+	"snapshot": "snapflow-build:contract",
+	"sourceRegistries": [
+		{
+			"url": "https://registry.example.com",
+			"username": "robot",
+			"password": "registry-password",
+			"project": "snapflow"
+		}
+	],
+	"buildLogUploadUrl": "https://storage.example.com/log"
+}

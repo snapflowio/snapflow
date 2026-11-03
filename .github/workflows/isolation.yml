@@ -1,0 +1,64 @@
+name: Isolation
+
+# No pull_request trigger: GitHub runs a pull request's own copy of this file,
+# so a fork could drop any guard and reach the root-capable KVM runner. The
+# suite runs after merge (push) or on demand instead.
+on:
+  push:
+    branches: [main, dev]
+    paths:
+      - libs/microvm-go/**
+      - apps/snapflow/**
+      - .github/workflows/isolation.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: isolation-${{ github.workflow }}-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  escape-suite:
+    name: Sandbox escape suite ${{ matrix.runner_architecture }}
+    # Runs only on the architectures listed in the repository variable
+    # SNAPFLOW_KVM_RUNNER_ARCHITECTURES (for example ["X64"]), so a missing
+    # runner never leaves a job queued forever.
+    if: vars.SNAPFLOW_KVM_RUNNER_ARCHITECTURES != ''
+    strategy:
+      fail-fast: false
+      matrix:
+        runner_architecture: ${{ fromJSON(vars.SNAPFLOW_KVM_RUNNER_ARCHITECTURES || '["X64"]') }}
+    runs-on: [self-hosted, linux, "${{ matrix.runner_architecture }}", snapflow-kvm]
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: libs/microvm-go
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: go.work
+          cache: false
+      - name: Compile the network and jail test binaries
+        run: |
+          go test -c -o "${RUNNER_TEMP}/isolation/network.test" ./network/
+          go test -c -o "${RUNNER_TEMP}/isolation/jail.test" ./jail/
+      - name: Prove namespace and jail isolation as root
+        env:
+          SNAPFLOW_ISOLATION_TEST: "1"
+        run: |
+          for package in network jail; do
+            log="${RUNNER_TEMP}/isolation/${package}.log"
+            (cd "$package" && sudo env "SNAPFLOW_ISOLATION_TEST=$SNAPFLOW_ISOLATION_TEST" \
+              "${RUNNER_TEMP}/isolation/${package}.test" -test.run 'Isolat|Jail' -test.count=1 -test.v) | tee "$log"
+            if grep -q -- '--- SKIP' "$log" || ! grep -q -- '--- PASS' "$log"; then
+              echo "::error::the ${package} isolation suite skipped instead of running as root"
+              exit 1
+            fi
+          done

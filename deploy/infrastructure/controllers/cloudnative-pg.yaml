@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cnpg-system
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: cloudnative-pg
+  namespace: cnpg-system
+spec:
+  interval: 24h
+  url: https://cloudnative-pg.github.io/charts
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cloudnative-pg
+  namespace: cnpg-system
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: cloudnative-pg
+      version: 0.29.1
+      sourceRef:
+        kind: HelmRepository
+        name: cloudnative-pg
+---
+# Backs Postgres up to object storage through CNPG-I; it replaces the in-tree
+# barmanObjectStore support, deprecated since CloudNativePG 1.26.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: plugin-barman-cloud
+  namespace: cnpg-system
+spec:
+  interval: 1h
+  dependsOn:
+    - name: cloudnative-pg
+    - name: cert-manager
+      namespace: cert-manager
+  chart:
+    spec:
+      chart: plugin-barman-cloud
+      version: 0.8.1
+      sourceRef:
+        kind: HelmRepository
+        name: cloudnative-pg

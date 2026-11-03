@@ -1,0 +1,27 @@
+---
+import BaseLayout from '@/layouts/base-layout.astro';
+---
+
+<BaseLayout title="Page not found | Snapflow" canonicalPath="/404" noIndex>
+	<main
+		class="flex min-h-screen items-center justify-center bg-snapflow-ink px-6 text-center text-snapflow-paper"
+	>
+		<div>
+			<p
+				class="font-['Chivo_Mono',monospace] text-xs uppercase tracking-[.2em] text-snapflow-purple"
+			>
+				404 // Signal lost
+			</p>
+			<h1
+				class="mt-6 font-['Chalet',sans-serif] font-bold text-[clamp(4rem,12vw,9rem)] leading-[.85]"
+			>
+				Page not found.
+			</h1>
+			<a
+				href="/"
+				class="mt-10 inline-flex bg-snapflow-purple px-8 py-4 font-['Chivo_Mono',monospace] text-sm font-bold text-snapflow-ink [clip-path:polygon(14px_0,100%_0,100%_calc(100%-14px),calc(100%-14px)_100%,0_100%,0_14px)]"
+				>Return home</a
+			>
+		</div>
+	</main>
+</BaseLayout>

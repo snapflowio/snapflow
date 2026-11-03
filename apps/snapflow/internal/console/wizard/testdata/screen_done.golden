@@ -1,0 +1,23 @@
+◆ snapflow  Machine setup · production
+
+  ✓ Inspecting this machine
+  ✓ Checking machine requirements
+  ✓ Installing the verified Snapflow release · already installed and verified
+  ✓ Approving this machine
+  ✓ Starting the Snapflow service
+  ✓ Waiting for the machine to come online
+
+✓ Your machine is live and accepting sandboxes
+
+  Machine       f2a749e8-7f31-4ad3-8e12-8de345be5e3b
+  Profile       production
+  Dashboard     https://snapflow.io/dashboard/machines
+  Location      DE
+  Payouts       not set up; open Billing → Payouts in the dashboard to get paid
+
+  Next steps
+  sudo snapflow status --watch    watch it work
+  sudo snapflow logs --follow     follow the service logs
+
+  Pricing and listing are managed in the dashboard
+

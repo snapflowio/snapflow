@@ -1,0 +1,8 @@
+* text=auto eol=lf
+
+apps/guest/internal/toolbox/docs/** linguist-generated=true
+apps/snapflow/internal/localapi/docs/** linguist-generated=true
+libs/api-client/** linguist-generated=true
+libs/api-client-go/client.gen.go linguist-generated=true
+libs/machine-proto/gen/** linguist-generated=true
+libs/toolbox-api-client/** linguist-generated=true

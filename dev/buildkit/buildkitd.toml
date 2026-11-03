@@ -1,0 +1,4 @@
+debug = false
+
+[registry."registry:5000"]
+  http = true

@@ -1,0 +1,235 @@
+layer: "application"
+stack: "backend"
+tags:
+  - "scope-api"
+  - "app-api"
+  - "deployable"
+
+dependsOn:
+  - "organization-access"
+
+fileGroups:
+  production:
+    - "src/**/*"
+    - "rspack.config.mjs"
+    - "nest-cli.json"
+    - "tsconfig*.json"
+
+tasks:
+  test:
+    script: "pnpm --filter @snapflow/api test"
+    deps:
+      - "organization-access:build"
+    inputs:
+      - "src/**/*.test.ts"
+      - "src/**/*.ts"
+      - "tsconfig*.json"
+    options:
+      runFromWorkspaceRoot: true
+
+  build:
+    script: "pnpm --filter @snapflow/api build"
+    deps:
+      - "organization-access:build"
+      - "platform-benchmark-image:tool"
+    inputs:
+      - "@group(production)"
+    outputs:
+      - "/dist/apps/api-development"
+    options:
+      runFromWorkspaceRoot: true
+
+  build-production:
+    script: "pnpm --filter @snapflow/api build:production"
+    deps:
+      - "organization-access:build"
+      - "platform-benchmark-image:tool"
+    inputs:
+      - "@group(production)"
+    outputs:
+      - "/dist/apps/api"
+    options:
+      runFromWorkspaceRoot: true
+
+  openapi:
+    command: "node"
+    args:
+      - "dist/apps/api/generate-openapi.mjs"
+    deps:
+      - "build-production"
+    env:
+      SNAPFLOW_ENVIRONMENT: "development"
+      SNAPFLOW_PROCESS_ROLE: "api"
+    inputs:
+      - "@group(production)"
+    outputs:
+      - "/dist/apps/api/openapi.json"
+      - "/dist/apps/api/openapi.3.1.0.json"
+    options:
+      runFromWorkspaceRoot: true
+
+  env-docs:
+    command: "node"
+    args:
+      - "dist/apps/api/cli.mjs"
+      - "env-docs"
+    deps:
+      - "build-production"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false
+
+  env-docs-check:
+    command: "node"
+    args:
+      - "dist/apps/api/cli.mjs"
+      - "env-docs"
+      - "--check"
+    deps:
+      - "build-production"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false
+
+  email-preview:
+    description: "Serves the React Email preview of every transactional email template on port 3002"
+    script: "pnpm --filter @snapflow/api exec email dev --dir src/infra/email/templates --port 3002"
+    preset: "server"
+    options:
+      runFromWorkspaceRoot: true
+
+  serve:
+    script: "exec env SNAPFLOW_PROCESS_ROLE=all pnpm --filter @snapflow/api dev"
+    deps:
+      - "migrate-init"
+    preset: "server"
+    options:
+      runFromWorkspaceRoot: true
+
+  stripe-listen:
+    description: "Forwards Stripe test-mode thin events to the local platform and Connect webhook routes"
+    script: >-
+      STRIPE_API_KEY="$STRIPE_SECRET_KEY"
+      exec stripe listen --all-thin
+      --forward-to "http://localhost:$PORT/api/stripe/webhooks/platform"
+      --forward-connect-to "http://localhost:$PORT/api/stripe/webhooks/connect"
+    preset: "server"
+    options:
+      envFile: ".env"
+
+  stripe-listen-secret:
+    description: "Prints the signing secret stripe-listen uses; set both Stripe webhook secrets in apps/api/.env to it"
+    script: 'STRIPE_API_KEY="$STRIPE_SECRET_KEY" exec stripe listen --print-secret'
+    options:
+      envFile: ".env"
+      cache: false
+      runInCI: false
+
+  serve-production:
+    script: >-
+      exec env SNAPFLOW_PROCESS_ROLE=all
+      node --env-file-if-exists=apps/api/.env dist/apps/api/main.mjs
+    deps:
+      - "build-production"
+    preset: "server"
+    options:
+      runFromWorkspaceRoot: true
+
+  create-admin:
+    command: "node"
+    args:
+      - "--env-file-if-exists=apps/api/.env"
+      - "dist/apps/api/cli.mjs"
+      - "create-admin"
+    env:
+      SNAPFLOW_PROCESS_ROLE: "api"
+    deps:
+      - "build-production"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false
+      runInCI: false
+
+  migrate-init:
+    script: "pnpm --filter @snapflow/api migration:run:init"
+    deps:
+      - "build-production"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false
+
+  migration-check:
+    script: >-
+      pnpm --filter @snapflow/api exec node --env-file-if-exists=.env
+      ../../node_modules/@mikro-orm/cli/cli.js migration:check
+      --config ../../dist/apps/api/migrations/data-source.mjs
+    deps:
+      - "build-production"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false
+
+  migrate-pre-deploy:
+    script: "pnpm --filter @snapflow/api migration:run:pre-deploy"
+    deps:
+      - "build-production"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false
+
+  migrate-post-deploy:
+    script: "pnpm --filter @snapflow/api migration:run:post-deploy"
+    deps:
+      - "build-production"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false
+
+  migrate-revert:
+    script: "pnpm --filter @snapflow/api migration:revert"
+    deps:
+      - "build-production"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false
+
+  migration-generate-init:
+    script: "pnpm --filter @snapflow/api migration:generate:init"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false
+
+  migration-generate-pre-deploy:
+    script: "pnpm --filter @snapflow/api migration:generate:pre-deploy"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false
+
+  migration-generate-post-deploy:
+    script: "pnpm --filter @snapflow/api migration:generate:post-deploy"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false
+
+  typecheck:
+    script: "pnpm exec tsc -p apps/api/tsconfig.app.json --noEmit --pretty false"
+    deps:
+      - "organization-access:build"
+    inputs:
+      - "@group(production)"
+    options:
+      runFromWorkspaceRoot: true
+
+  lint:
+    script: "pnpm exec biome ci apps/api --error-on-warnings"
+    options:
+      runFromWorkspaceRoot: true
+
+  format:
+    command: "biome"
+    args:
+      - "check"
+      - "."
+      - "--write"
+    options:
+      cache: false

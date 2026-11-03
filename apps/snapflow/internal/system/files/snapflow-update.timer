@@ -1,0 +1,12 @@
+[Unit]
+Description=Check for verified Snapflow updates
+Documentation=https://github.com/snapflowio/snapflow
+
+[Timer]
+OnCalendar=*-*-* 04:00:00 UTC
+RandomizedDelaySec=2h
+Persistent=true
+Unit=snapflow-update.service
+
+[Install]
+WantedBy=timers.target

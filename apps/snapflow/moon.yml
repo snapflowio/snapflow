@@ -1,0 +1,153 @@
+layer: "application"
+stack: "systems"
+tags:
+  - "scope-runtime"
+  - "app-snapflow"
+
+dependsOn:
+  - "api-client-go"
+  - "common-go"
+  - "microvm-go"
+  - "tunnel-go"
+
+fileGroups:
+  production:
+    - "**/*"
+    - "!**/*_test.go"
+
+tasks:
+  lint:
+    script: |
+      set -eo pipefail
+      golangci-lint run ./...
+      shellcheck --shell=sh packaging/install.sh
+    inputs:
+      - "**/*.go"
+      - "go.mod"
+      - "go.sum"
+      - "packaging/install.sh"
+      - "/.golangci.yml"
+
+  build:
+    script: 'mkdir -p ../../dist/apps && go build -ldflags "-X main.version=${VERSION:-dev}" -o ../../dist/apps/snapflowd ./cmd/snapflowd'
+    inputs:
+      - "@group(production)"
+    outputs:
+      - "/dist/apps/snapflowd"
+
+  serve:
+    description: "Runs snapflowd on the development stack; installs the development release first when it is missing and enrolls the machine itself"
+    script: >-
+      if [ ! -x /opt/snapflow-development/current/bin/snapflowd ]; then
+      moon run snapflow:dev-bootstrap;
+      fi;
+      exec sudo env
+      SSL_CERT_FILE="$(cd ../.. && pwd -P)/.tmp/edge/tls/edge-server-ca.pem"
+      SNAPFLOW_DEVELOPMENT_MACHINE_ENROLLMENT_SECRET="$SNAPFLOW_DEVELOPMENT_MACHINE_ENROLLMENT_SECRET"
+      SNAPFLOW_OFFERED_VCPUS=8
+      SNAPFLOW_OFFERED_MEMORY_GIB=10
+      SNAPFLOW_OFFERED_DISK_GIB=56
+      /opt/snapflow-development/current/bin/snapflowd
+      --profile development
+    preset: "server"
+    deps:
+      - "edge:prepare-development-tls"
+    options:
+      envFile: ".env"
+
+  status:
+    script: >-
+      exec sudo env PATH="/usr/local/go/bin:$PATH"
+      "$(command -v go)" run ./cmd/snapflow status
+      --profile development
+    preset: "utility"
+    options:
+      cache: false
+
+  doctor:
+    script: >-
+      exec sudo env PATH="/usr/local/go/bin:$PATH"
+      "$(command -v go)" run ./cmd/snapflow doctor
+      --profile development
+    preset: "utility"
+    options:
+      cache: false
+
+  dev-bootstrap:
+    script: >-
+      exec "$(command -v go)" run ./cmd/snapflow-release development prepare
+      --workspace-root "$(cd ../.. && pwd -P)"
+      --release-state-home "${XDG_STATE_HOME:-$HOME/.local/state}"
+    deps:
+      - "third-party-notices"
+    preset: "utility"
+    options:
+      cache: false
+
+  runtime-reset-development:
+    script: >-
+      exec "$(command -v go)" run ./cmd/snapflow-release development reset
+      --workspace-root "$(cd ../.. && pwd -P)"
+      --release-state-home "${XDG_STATE_HOME:-$HOME/.local/state}"
+      --confirm remove-development-runtime
+    preset: "utility"
+    options:
+      cache: false
+
+  release-verify:
+    script: >-
+      exec sudo "$(command -v go)" run ./cmd/snapflow release verify --profile development
+    preset: "utility"
+    options:
+      cache: false
+
+  release-status:
+    script: >-
+      exec sudo "$(command -v go)" run ./cmd/snapflow release status --profile development
+    preset: "utility"
+    options:
+      cache: false
+
+  release-gc:
+    script: >-
+      exec sudo "$(command -v go)" run ./cmd/snapflow release gc --profile development
+    preset: "utility"
+    options:
+      cache: false
+
+  runtime-speed-test:
+    script: >-
+      exec sudo env PATH="/usr/local/go/bin:$PATH"
+      "$(command -v go)" run ./cmd/snapflow benchmark
+      --profile development
+      --samples 20
+    preset: "utility"
+    options:
+      cache: false
+
+  openapi:
+    script: |
+      set -eo pipefail
+      cd internal/localapi
+      go tool swag fmt
+      go tool swag init --parseDependency --parseInternal --parseDepth 1 -o docs -g server.go
+      pnpm exec biome format docs --write --no-errors-on-unmatched
+    outputs:
+      - "internal/localapi/docs/**/*"
+
+  third-party-notices:
+    script: >-
+      exec "$(command -v go)" run ./cmd/snapflow-release notices
+      --workspace-root "$(cd ../.. && pwd -P)"
+      --template packaging/notices/upstream.md
+      --output packaging/THIRD_PARTY_NOTICES.md
+    inputs:
+      - "packaging/notices/upstream.md"
+      - "internal/releaser/notices.go"
+      - "internal/releaser/notices/**/*.go"
+      - "go.mod"
+      - "go.sum"
+      - "/libs/microvm-go/go.mod"
+      - "/libs/microvm-go/go.sum"
+    outputs:
+      - "packaging/THIRD_PARTY_NOTICES.md"

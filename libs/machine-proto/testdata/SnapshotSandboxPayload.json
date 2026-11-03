@@ -1,0 +1,5 @@
+{
+	"name": "snapflow-contract:1",
+	"registry": { "url": "https://registry.example.com", "project": "snapflow" },
+	"assignmentGeneration": 3
+}

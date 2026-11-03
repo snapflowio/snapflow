@@ -1,0 +1,57 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: snapflow-migrate
+  labels:
+    {{- include "snapflow.labels" (dict "root" . "component" "migrate") | nindent 4 }}
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "0"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 600
+  template:
+    metadata:
+      labels:
+        {{- include "snapflow.selectorLabels" (dict "root" . "component" "migrate") | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        {{- include "snapflow.podSecurityContext" . | nindent 8 }}
+      containers:
+        - name: migrate
+          image: {{ include "snapflow.image" (dict "root" . "key" "api" "name" "api") }}
+          command:
+            - node
+            - node_modules/@mikro-orm/cli/cli.js
+            - migration:up
+            - --config
+            - dist/apps/api/migrations/data-source.mjs
+          env:
+            {{- include "snapflow.databaseEnvironment" . | nindent 12 }}
+          securityContext:
+            {{- include "snapflow.containerSecurityContext" . | nindent 12 }}
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+          volumeMounts:
+            - name: postgres-ca
+              mountPath: /etc/snapflow/postgres
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: postgres-ca
+          secret:
+            secretName: {{ printf "%s-ca" .Values.database.cluster }}
+            items:
+              - key: ca.crt
+                path: ca.crt
+        - name: tmp
+          emptyDir: {}

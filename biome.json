@@ -1,0 +1,616 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true,
+		"defaultBranch": "main"
+	},
+	"files": {
+		"includes": [
+			"**/*.{js,mjs,cjs,jsx,ts,tsx,mts,cts,json,jsonc,css,html,astro,svelte}",
+			"!**/*.generated.*",
+			"!**/src/generated",
+			"!**/src/**/generated",
+			"!libs/*api-client*",
+			"!libs/machine-proto/gen",
+			"!apps/api/src/migrations/*-migration.ts",
+			"!apps/api/src/migrations/snapflow.json",
+			"!apps/guest/internal/toolbox/docs",
+			"!**/*-lock.json"
+		],
+		"ignoreUnknown": true
+	},
+	"formatter": {
+		"indentStyle": "tab"
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "single",
+			"semicolons": "always",
+			"trailingCommas": "es5"
+		}
+	},
+	"json": {
+		"parser": { "allowComments": true }
+	},
+	"css": {
+		"parser": { "tailwindDirectives": true }
+	},
+	"html": {
+		"experimentalFullSupportEnabled": true,
+		"formatter": { "enabled": true }
+	},
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"preset": "recommended",
+			"a11y": {
+				"noLabelWithoutControl": "off",
+				"noStaticElementInteractions": "off",
+				"useKeyWithClickEvents": "off",
+				"useSemanticElements": "off",
+				"noSvgWithoutTitle": "off"
+			},
+			"complexity": {
+				"noExcessiveCognitiveComplexity": "error"
+			},
+			"correctness": {
+				"noUnusedImports": "error",
+				"noUnusedFunctionParameters": "warn",
+				"noUndeclaredDependencies": "error"
+			},
+			"style": {
+				"useConst": "error",
+				"useImportType": "error",
+				"useExportType": "error",
+				"useConsistentArrayType": "error",
+				"useForOf": "error",
+				"useExponentiationOperator": "error",
+				"useNumberNamespace": "error",
+				"useSingleVarDeclarator": "error",
+				"useDefaultParameterLast": "error",
+				"noRestrictedGlobals": "error",
+				"useCollapsedElseIf": "warn",
+				"useTemplate": "warn",
+				"noUnusedTemplateLiteral": "warn",
+				"noShoutyConstants": "warn",
+				"noParameterAssign": "warn",
+				"noMagicNumbers": "error",
+				"noProcessEnv": "error",
+				"noDefaultExport": "error",
+				"useFilenamingConvention": {
+					"level": "error",
+					"options": {
+						"filenameCases": ["kebab-case"],
+						"requireAscii": true
+					}
+				}
+			},
+			"suspicious": {
+				"noConsole": "error",
+				"noExplicitAny": "error",
+				"noImportCycles": "error",
+				"noSkippedTests": "warn",
+				"useAwait": "off"
+			},
+			"performance": {
+				"noAccumulatingSpread": "warn",
+				"noNamespaceImport": "off"
+			},
+			"nursery": {
+				"noFloatingPromises": "error",
+				"noMisusedPromises": "error",
+				"useAwaitThenable": "error",
+				"useExhaustiveSwitchCases": "error"
+			}
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["apps/api/**"],
+			"javascript": {
+				"parser": {
+					"unsafeParameterDecoratorsEnabled": true
+				}
+			},
+			"linter": {
+				"rules": {
+					"correctness": {
+						"useHookAtTopLevel": "off",
+						"noUnusedPrivateClassMembers": "off"
+					},
+					"complexity": {
+						"noStaticOnlyClass": "off"
+					},
+					"style": {
+						"useImportType": "off",
+						"useExportType": "off",
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"@nestjs/schedule": {
+										"importNames": ["Cron", "Interval", "Timeout"],
+										"message": "Use @ScheduledJob in a scheduler/jobs/*.job.ts trigger: raw @Cron, @Interval and @Timeout ignore the maintenance mode."
+									},
+									"@nestjs/common": {
+										"importNames": ["forwardRef"],
+										"message": "Module and provider cycles are not allowed: move the shared code into the module both depend on, or use domain events."
+									},
+									"@nestjs/config": {
+										"importNames": ["ConditionalModule"],
+										"message": "Process roots in app/ decide which modules load; do not gate modules at runtime."
+									}
+								},
+								"patterns": [
+									{
+										"group": ["**/common/decorators/scheduled-job.decorator"],
+										"message": "@ScheduledJob belongs on scheduler/jobs/*.job.ts triggers registered in the feature's scheduler/scheduler.module.ts."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"apps/api/src/*/scheduler/jobs/*.job.ts",
+				"apps/api/src/**/*.test.ts"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"@nestjs/schedule": {
+										"importNames": ["Cron", "Interval", "Timeout"],
+										"message": "Use @ScheduledJob in a scheduler/jobs/*.job.ts trigger: raw @Cron, @Interval and @Timeout ignore the maintenance mode."
+									},
+									"@nestjs/common": {
+										"importNames": ["forwardRef"],
+										"message": "Module and provider cycles are not allowed: move the shared code into the module both depend on, or use domain events."
+									},
+									"@nestjs/config": {
+										"importNames": ["ConditionalModule"],
+										"message": "Process roots in app/ decide which modules load; do not gate modules at runtime."
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["apps/api/src/**/*.controller.ts"],
+			"javascript": {
+				"parser": {
+					"unsafeParameterDecoratorsEnabled": true
+				}
+			},
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"@nestjs/schedule": {
+										"importNames": ["Cron", "Interval", "Timeout"],
+										"message": "Use @ScheduledJob in a scheduler/jobs/*.job.ts trigger: raw @Cron, @Interval and @Timeout ignore the maintenance mode."
+									},
+									"@nestjs/common": {
+										"importNames": ["forwardRef"],
+										"message": "Module and provider cycles are not allowed: move the shared code into the module both depend on, or use domain events."
+									},
+									"@nestjs/config": {
+										"importNames": ["ConditionalModule"],
+										"message": "Process roots in app/ decide which modules load; do not gate modules at runtime."
+									}
+								},
+								"patterns": [
+									{
+										"group": ["**/*.controller", "**/*.controller.ts"],
+										"message": "Controllers delegate to services and actions; never import another controller."
+									},
+									{
+										"group": ["**/common/decorators/scheduled-job.decorator"],
+										"message": "@ScheduledJob belongs on scheduler/jobs/*.job.ts triggers registered in the feature's scheduler/scheduler.module.ts."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["apps/api/src/common/decorators/scheduled-job.decorator.ts"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["**/*.entity.ts"],
+			"linter": {
+				"rules": {
+					"suspicious": { "noImportCycles": "off" }
+				}
+			}
+		},
+		{
+			"includes": ["apps/dashboard/**"],
+			"linter": {
+				"rules": {
+					"a11y": {
+						"noLabelWithoutControl": "on",
+						"noStaticElementInteractions": "on",
+						"useKeyWithClickEvents": "on",
+						"useSemanticElements": "on",
+						"noSvgWithoutTitle": "on"
+					},
+					"complexity": {
+						"useLiteralKeys": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"apps/dashboard/**",
+				"!apps/dashboard/src/lib/config/zod-config.ts"
+			],
+			"linter": {
+				"rules": {
+					"performance": {
+						"noBarrelFile": "error",
+						"noReExportAll": "error"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["apps/dashboard/src/routes/**"],
+			"linter": {
+				"rules": {
+					"style": { "useFilenamingConvention": "off" }
+				}
+			}
+		},
+		{
+			"includes": ["apps/dashboard/src/**", "!apps/dashboard/src/lib/api/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"@snapflow/api-client/svelte-query": {
+										"message": "Only lib/api talks to the backend: add a query or mutation options function to lib/api/<domain>.ts and import that."
+									},
+									"#lib/api/auth/client.ts": {
+										"message": "Only lib/api talks to the backend: call an auth function from lib/api/auth/ instead of the raw auth client."
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["apps/dashboard/src/lib/features/auth/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"@snapflow/api-client/svelte-query": {
+										"message": "Only lib/api talks to the backend: add a query or mutation options function to lib/api/<domain>.ts and import that."
+									},
+									"#lib/api/auth/client.ts": {
+										"message": "Only lib/api talks to the backend: call an auth function from lib/api/auth/ instead of the raw auth client."
+									}
+								},
+								"patterns": [
+									{
+										"group": ["#lib/features/organizations/**"],
+										"message": "Organizations depend on auth, never the reverse: move shared code to lib/api, lib/components or lib/utils."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["apps/dashboard/src/lib/api/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": ["#lib/components/**", "#lib/features/**"],
+										"message": "API files hold server access only: return API data and let components, routes or features own UI concerns. Toasts go through MutationCache meta in api/client/query-client.ts."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"apps/dashboard/src/lib/api/client/query-client.ts",
+				"apps/dashboard/src/lib/api/errors/show-api-error.ts"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": [
+											"#lib/components/**",
+											"!#lib/components/ui/toast/toasts.svelte.ts"
+										],
+										"message": "The MutationCache bridge may only use the toast store from lib/components."
+									},
+									{
+										"group": ["#lib/features/**"],
+										"message": "API files must not import lib/features."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["apps/dashboard/src/lib/components/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"@snapflow/api-client/svelte-query": {
+										"message": "Only lib/api talks to the backend: add a query or mutation options function to lib/api/<domain>.ts and import that."
+									}
+								},
+								"patterns": [
+									{
+										"group": ["#lib/features/**"],
+										"message": "Generic components must not depend on domain features: pass data and snippets in as props."
+									},
+									{
+										"group": [
+											"#lib/api/**",
+											"!#lib/api/errors/**",
+											"!#lib/api/public-config.ts"
+										],
+										"message": "Generic components must not call resource APIs: pass data in as props."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["apps/dashboard/src/lib/integrations/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"@snapflow/api-client/svelte-query": {
+										"message": "Only lib/api talks to the backend: add a query or mutation options function to lib/api/<domain>.ts and import that."
+									},
+									"#lib/api/auth/client.ts": {
+										"message": "Only lib/api talks to the backend: call an auth function from lib/api/auth/ instead of the raw auth client."
+									}
+								},
+								"patterns": [
+									{
+										"group": ["#lib/features/**", "#lib/components/**"],
+										"message": "Integrations stay domain-free and UI-free: expose handlers and let features or routes react to events."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"apps/dashboard/src/lib/utils/**",
+				"apps/dashboard/src/lib/config/**",
+				"apps/dashboard/src/lib/routing/**"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"@snapflow/api-client/svelte-query": {
+										"message": "Only lib/api talks to the backend: add a query or mutation options function to lib/api/<domain>.ts and import that."
+									}
+								},
+								"patterns": [
+									{
+										"group": [
+											"#lib/api/**",
+											"#lib/components/**",
+											"#lib/features/**"
+										],
+										"message": "Utilities, config and routing sit at the bottom of the dependency graph."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["apps/dashboard/src/routes/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"@snapflow/api-client/svelte-query": {
+										"message": "Only lib/api talks to the backend: add a query or mutation options function to lib/api/<domain>.ts and import that."
+									},
+									"#lib/api/auth/client.ts": {
+										"message": "Only lib/api talks to the backend: call an auth function from lib/api/auth/ instead of the raw auth client."
+									}
+								},
+								"patterns": [
+									{
+										"group": ["./*", "../**", "!./$types", "!./$types.js"],
+										"message": "Routes hold only SvelteKit + files: put components, state and logic in lib/features/<domain>/ and import them via #lib."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["**/*.constants.ts"],
+			"linter": {
+				"rules": {
+					"style": { "noMagicNumbers": "off" }
+				}
+			}
+		},
+		{
+			"includes": [
+				"apps/api/src/migrations/**/data-source.ts",
+				"apps/api/src/infra/email/templates/*.tsx"
+			],
+			"linter": {
+				"rules": {
+					"style": { "noDefaultExport": "off" }
+				}
+			}
+		},
+		{
+			"includes": ["apps/marketing/**"],
+			"linter": {
+				"rules": {
+					"style": { "noMagicNumbers": "off" }
+				}
+			}
+		},
+		{
+			"includes": ["libs/sdk-typescript/src/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"useNodejsImportProtocol": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"apps/api/src/config/environment/registry.environment.ts",
+				"apps/api/src/config/environment/utils/read-environment.util.ts",
+				"apps/api/src/config/configuration.config.ts",
+				"apps/api/src/config/utils/current-process.util.ts",
+				"apps/api/src/migrations/**",
+				"apps/api/src/cli/**",
+				"apps/api/src/common/testing/integration-database.util.ts",
+				"libs/sdk-typescript/src/utils/runtime.ts",
+				"scripts/**"
+			],
+			"linter": {
+				"rules": {
+					"style": { "noProcessEnv": "off" }
+				}
+			}
+		},
+		{
+			"includes": [
+				"apps/api/src/cli/**",
+				"apps/api/src/cli.ts",
+				"apps/api/src/generate-openapi.ts",
+				"libs/sdk-typescript/scripts/**",
+				"scripts/**"
+			],
+			"linter": {
+				"rules": {
+					"suspicious": { "noConsole": "off" }
+				}
+			}
+		},
+		{
+			"includes": [
+				"**/*.{test,spec}.{js,ts,jsx,tsx}",
+				"**/__tests__/**",
+				"**/test/**",
+				"**/tests/**"
+			],
+			"linter": {
+				"domains": { "test": "recommended" },
+				"rules": {
+					"suspicious": { "noConsole": "off" },
+					"style": { "noImplicitBoolean": "off", "noMagicNumbers": "off" }
+				}
+			}
+		},
+		{
+			"includes": ["**/*.config.{js,ts,mjs,cjs,mts,cts}", "!**/src/**"],
+			"linter": {
+				"rules": {
+					"style": { "noDefaultExport": "off", "noProcessEnv": "off" },
+					"suspicious": { "noConsole": "off" }
+				}
+			}
+		},
+		{
+			"includes": ["**/package.json"],
+			"json": { "parser": { "allowComments": false } }
+		}
+	]
+}

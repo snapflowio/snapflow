@@ -1,0 +1,91 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: snapflow-object-storage-buckets
+  namespace: snapflow
+spec:
+  backoffLimit: 6
+  template:
+    spec:
+      restartPolicy: OnFailure
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: platform-bucket
+          image: docker.io/rclone/rclone:1.75.2@sha256:2687085f718d3c628f7fdfb77c52a1d344332aed543110bb88088f2c70d43eb5
+          args: ["mkdir", "rustfs:snapflow"]
+          envFrom:
+            - configMapRef:
+                name: snapflow-rustfs-rclone
+            - secretRef:
+                name: snapflow-rustfs-rclone
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      containers:
+        - name: snapshot-bucket
+          image: docker.io/rclone/rclone:1.75.2@sha256:2687085f718d3c628f7fdfb77c52a1d344332aed543110bb88088f2c70d43eb5
+          args: ["mkdir", "rustfs:snapflow-snapshots"]
+          envFrom:
+            - configMapRef:
+                name: snapflow-rustfs-rclone
+            - secretRef:
+                name: snapflow-rustfs-rclone
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: snapflow-rustfs-rclone
+  namespace: snapflow
+data:
+  HOME: /tmp
+  RCLONE_CONFIG_RUSTFS_TYPE: s3
+  RCLONE_CONFIG_RUSTFS_PROVIDER: Other
+  RCLONE_CONFIG_RUSTFS_ENDPOINT: http://snapflow-rustfs:9000
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: snapflow-rustfs-rclone
+  namespace: snapflow
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: openbao
+  target:
+    name: snapflow-rustfs-rclone
+    creationPolicy: Owner
+  data:
+    - secretKey: RCLONE_CONFIG_RUSTFS_ACCESS_KEY_ID
+      remoteRef:
+        key: snapflow/platform/rustfs
+        property: access-key
+    - secretKey: RCLONE_CONFIG_RUSTFS_SECRET_ACCESS_KEY
+      remoteRef:
+        key: snapflow/platform/rustfs
+        property: secret-key

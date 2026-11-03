@@ -1,0 +1,13 @@
+{
+	"acknowledgements": [
+		{
+			"sandboxId": "7b0c6f63-3c71-4b6e-9a0d-2f4f6d1c8e01",
+			"verdict": "SANDBOX_OBSERVED_STATUS_VERDICT_ACCEPTED"
+		},
+		{
+			"sandboxId": "0f2d8c4a-5b6e-4f7a-8b9c-1d2e3f4a5b6c",
+			"verdict": "SANDBOX_OBSERVED_STATUS_VERDICT_STALE",
+			"reason": "The assignment is not active on this machine"
+		}
+	]
+}

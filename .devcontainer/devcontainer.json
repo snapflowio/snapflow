@@ -1,0 +1,99 @@
+{
+	"$schema": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json",
+	"name": "Snapflow",
+	"dockerComposeFile": [
+		"docker-compose.yml",
+		"compose/data.yml",
+		"compose/build.yml",
+		"compose/openbao.yml",
+		"compose/resend.yml",
+		"compose/wslg.yml"
+	],
+	"service": "devcontainer",
+	"workspaceFolder": "/workspaces/snapflow",
+	"remoteUser": "vscode",
+	"updateRemoteUserUID": true,
+	"shutdownAction": "none",
+	"init": true,
+	"hostRequirements": {
+		"gpu": "optional"
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/go:1": {
+			"version": "1.27.3",
+			"golangciLintVersion": "2.15.0"
+		},
+		"ghcr.io/devcontainers/features/node:2": {
+			"version": "22.23.1",
+			"pnpmVersion": "11.17.0"
+		},
+		"ghcr.io/devcontainers/features/docker-in-docker:4": {
+			"version": "28",
+			"moby": false,
+			"dockerDashComposeVersion": "v2",
+			"iptablesSwitchAtRuntime": true
+		}
+	},
+	"forwardPorts": [
+		3000,
+		3001,
+		3002,
+		4321,
+		"postgres:5432",
+		"redis:6379",
+		"registry:5000",
+		"resend:4008",
+		"rustfs:9000",
+		"rustfs:9001"
+	],
+	"portsAttributes": {
+		"3000": { "label": "Dashboard (Vite)" },
+		"3001": { "label": "Snapflow API" },
+		"3002": { "label": "React Email Preview" },
+		"3773": { "label": "T3 Code" },
+		"4321": { "label": "Marketing (Astro)" },
+		"5173": { "label": "Vite Development Server" },
+		"8082": { "label": "Snapflow Edge HTTP Ingress" },
+		"8444": { "label": "Snapflow Edge HTTPS Ingress" },
+		"23000-23031": { "label": "Snapflow Edge Public TCP/UDP Exposures" },
+		"postgres:5432": { "label": "PostgreSQL" },
+		"redis:6379": { "label": "Redis" },
+		"registry:5000": { "label": "Registry" },
+		"resend:4008": { "label": "Resend Emulator Inbox (/inbox)" },
+		"rustfs:9000": { "label": "S3 API (RustFS)" },
+		"rustfs:9001": { "label": "S3 Console (RustFS)" }
+	},
+	"otherPortsAttributes": {
+		"onAutoForward": "ignore"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"moonrepo.moon-console",
+				"biomejs.biome",
+				"EditorConfig.EditorConfig",
+				"redhat.vscode-yaml",
+				"ms-kubernetes-tools.vscode-kubernetes-tools",
+				"GitHub.vscode-github-actions",
+				"ms-vsliveshare.vsliveshare",
+				"mikestead.dotenv",
+				"astro-build.astro-vscode",
+				"svelte.svelte-vscode",
+				"bradlc.vscode-tailwindcss",
+				"vitest.explorer",
+				"golang.go",
+				"tamasfe.even-better-toml",
+				"ms-azuretools.vscode-docker",
+				"timonwong.shellcheck"
+			]
+		}
+	},
+	"initializeCommand": ["bash", ".devcontainer/scripts/initialize.sh"],
+	"onCreateCommand": ["bash", ".devcontainer/scripts/on-create.sh"],
+	"updateContentCommand": {
+		"pnpm": ["pnpm", "install", "--frozen-lockfile"],
+		"go": ["go", "work", "sync"]
+	},
+	"postStartCommand": ["bash", ".devcontainer/scripts/post-start.sh"],
+	"waitFor": "updateContentCommand"
+}

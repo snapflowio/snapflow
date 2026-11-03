@@ -1,0 +1,186 @@
+{
+	"revision": "42",
+	"generatedAt": "2026-10-04T12:00:00Z",
+	"expiresAt": "2026-10-04T13:00:00Z",
+	"digest": "d39aca354aab798c4a525c0f7223328d0634ccaff6c03c7307ee257de61095a9",
+	"sandboxes": [
+		{
+			"sandboxId": "0f2d8c4a-5b6e-4f7a-8b9c-1d2e3f4a5b6c",
+			"assignmentGeneration": 1,
+			"specGeneration": 2,
+			"lifecycle": "SANDBOX_LIFECYCLE_STOPPED",
+			"spec": {
+				"mode": "standard",
+				"capabilities": ["developer_tools"],
+				"name": "contract-sandbox",
+				"userId": "c0ffee00-0000-4000-8000-000000000001",
+				"osUser": "snapflow",
+				"resources": {
+					"cpuQuota": 2,
+					"memoryQuota": 4,
+					"storageQuota": 10
+				},
+				"env": {
+					"LANG": "C.UTF-8"
+				},
+				"volumes": [
+					{
+						"volumeId": "1f9a2b3c-4d5e-4f60-8a7b-9c0d1e2f3a4b",
+						"name": "data",
+						"sizeGiB": 20,
+						"filesystem": "ext4",
+						"mountPath": "/data",
+						"subpath": "projects",
+						"generation": 2,
+						"fencingToken": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d"
+					}
+				],
+				"network": {
+					"blockAll": false,
+					"allowList": "10.0.0.0/8",
+					"domainAllowList": "example.com",
+					"egressBandwidthBps": "1000000"
+				},
+				"labels": {
+					"team": "contract",
+					"sandboxName": "contract-sandbox"
+				},
+				"linkedSandboxId": "0f2d8c4a-5b6e-4f7a-8b9c-1d2e3f4a5b6c",
+				"backup": {
+					"ref": "registry.example.com/snapflow/backup-contract:1"
+				}
+			},
+			"specDigest": "fe7e1e909dc25e010fdff629f708798ba41470ee0f18ad3f3d1683a8d614055f",
+			"directives": {
+				"forceStop": true,
+				"recovery": {
+					"errorReason": "no space left on device"
+				}
+			}
+		},
+		{
+			"sandboxId": "7b0c6f63-3c71-4b6e-9a0d-2f4f6d1c8e01",
+			"assignmentGeneration": 3,
+			"specGeneration": 5,
+			"lifecycle": "SANDBOX_LIFECYCLE_STARTED",
+			"spec": {
+				"mode": "standard",
+				"capabilities": ["developer_tools"],
+				"name": "contract-sandbox",
+				"userId": "c0ffee00-0000-4000-8000-000000000001",
+				"osUser": "snapflow",
+				"resources": {
+					"cpuQuota": 2,
+					"memoryQuota": 4,
+					"storageQuota": 10
+				},
+				"env": {
+					"LANG": "C.UTF-8"
+				},
+				"volumes": [
+					{
+						"volumeId": "1f9a2b3c-4d5e-4f60-8a7b-9c0d1e2f3a4b",
+						"name": "data",
+						"sizeGiB": 20,
+						"filesystem": "ext4",
+						"mountPath": "/data",
+						"subpath": "projects",
+						"generation": 2,
+						"fencingToken": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d"
+					}
+				],
+				"network": {
+					"blockAll": false,
+					"allowList": "10.0.0.0/8",
+					"domainAllowList": "example.com",
+					"egressBandwidthBps": "1000000"
+				},
+				"labels": {
+					"team": "contract",
+					"sandboxName": "contract-sandbox"
+				},
+				"linkedSandboxId": "0f2d8c4a-5b6e-4f7a-8b9c-1d2e3f4a5b6c",
+				"image": {
+					"ref": "registry.example.com/snapflow/base:1.0",
+					"entrypoint": ["sleep", "infinity"]
+				}
+			},
+			"specDigest": "ddeea628326992a21d451b033f27a2a0d4fc9906f1bf37838272786542018e4f",
+			"hasSecrets": true
+		},
+		{
+			"sandboxId": "a3c5e7f9-1b2d-4e6f-8a0b-2c4d6e8f0a1b",
+			"assignmentGeneration": 2,
+			"specGeneration": 1,
+			"lifecycle": "SANDBOX_LIFECYCLE_DESTROYED",
+			"spec": {
+				"mode": "standard",
+				"capabilities": ["developer_tools"],
+				"name": "contract-sandbox",
+				"userId": "c0ffee00-0000-4000-8000-000000000001",
+				"osUser": "snapflow",
+				"resources": {
+					"cpuQuota": 2,
+					"memoryQuota": 4,
+					"storageQuota": 10
+				},
+				"env": {
+					"LANG": "C.UTF-8"
+				},
+				"network": {
+					"blockAll": false,
+					"allowList": "10.0.0.0/8",
+					"domainAllowList": "example.com",
+					"egressBandwidthBps": "1000000"
+				},
+				"labels": {
+					"team": "contract",
+					"sandboxName": "contract-sandbox"
+				},
+				"linkedSandboxId": "0f2d8c4a-5b6e-4f7a-8b9c-1d2e3f4a5b6c",
+				"fork": {
+					"sourceSandboxId": "7b0c6f63-3c71-4b6e-9a0d-2f4f6d1c8e01"
+				}
+			},
+			"specDigest": "c7d2bff50c77a17859dd61013431f77aba4685ea63607ec27b54adcdd3898b40"
+		}
+	],
+	"snapshots": [
+		{
+			"ref": "docker.io/library/alpine@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1",
+			"registry": {},
+			"retention": "SNAPSHOT_RETENTION_REQUIRED"
+		},
+		{
+			"ref": "registry.example.com/snapflow/backup-contract:1",
+			"registry": {
+				"registryId": "8c7b6a59-4e3d-4c2b-9a18-0f9e8d7c6b5a"
+			},
+			"retention": "SNAPSHOT_RETENTION_REQUIRED"
+		},
+		{
+			"ref": "registry.example.com/snapflow/base:1.0",
+			"digest": "sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+			"registry": {
+				"registryId": "5e4d3c2b-1a09-4f8e-9d7c-6b5a4f3e2d1c"
+			},
+			"template": {
+				"cpuQuota": 1,
+				"memoryQuota": 2,
+				"storageQuota": 5
+			},
+			"retention": "SNAPSHOT_RETENTION_PREWARM"
+		},
+		{
+			"ref": "snapflow-9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08:snapflow",
+			"local": {},
+			"template": {
+				"cpuQuota": 2,
+				"memoryQuota": 4,
+				"storageQuota": 10,
+				"capabilities": ["developer_tools"]
+			},
+			"retention": "SNAPSHOT_RETENTION_REQUIRED"
+		}
+	]
+}

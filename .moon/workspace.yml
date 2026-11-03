@@ -1,0 +1,40 @@
+projects:
+  workspace: "."
+  deploy: "deploy"
+  api: "apps/api"
+  dashboard: "apps/dashboard"
+  edge: "apps/edge"
+  guest: "apps/guest"
+  marketing: "apps/marketing"
+  snapflow: "apps/snapflow"
+  snapshot-manager: "apps/snapshot-manager"
+  sandbox-image: "images/sandbox"
+  platform-core-image: "images/platform/core"
+  platform-desktop-image: "images/platform/desktop-extension"
+  platform-benchmark-image: "images/platform/benchmark"
+  api-client: "libs/api-client"
+  organization-access: "libs/organization-access"
+  api-client-go: "libs/api-client-go"
+  common-go: "libs/common-go"
+  computer-use: "libs/computer-use"
+  machine-proto: "libs/machine-proto"
+  microvm-go: "libs/microvm-go"
+  sdk-typescript: "libs/sdk-typescript"
+  toolbox-api-client: "libs/toolbox-api-client"
+  tunnel-go: "libs/tunnel-go"
+
+vcs:
+  client: "git"
+  defaultBranch: "main"
+  provider: "github"
+
+hasher:
+  ignorePatterns:
+    - ".tmp/**/*"
+    - "dist/**/*"
+
+pipeline:
+  killProcessThreshold: 3000
+  logRunningCommand: true
+
+telemetry: false

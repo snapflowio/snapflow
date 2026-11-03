@@ -1,0 +1,56 @@
+# Postgres backups go to Cloudflare R2 through the Barman Cloud plugin: WAL
+# continuously, a base backup every night, kept for a 30-day recovery window.
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: snapflow-backups
+  namespace: snapflow
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: openbao
+  target:
+    name: snapflow-backups
+    creationPolicy: Owner
+  dataFrom:
+    - extract:
+        key: snapflow/backups
+---
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: snapflow-postgres-backups
+  namespace: snapflow
+spec:
+  retentionPolicy: 30d
+  configuration:
+    destinationPath: s3://${BACKUP_S3_BUCKET}/postgres
+    endpointURL: ${BACKUP_S3_ENDPOINT}
+    s3Credentials:
+      accessKeyId:
+        name: snapflow-backups
+        key: access-key-id
+      secretAccessKey:
+        name: snapflow-backups
+        key: secret-access-key
+    wal:
+      compression: gzip
+    data:
+      compression: gzip
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: snapflow-postgres-daily
+  namespace: snapflow
+spec:
+  # Six fields, seconds first: every day at 03:00.
+  schedule: "0 0 3 * * *"
+  immediate: true
+  backupOwnerReference: self
+  cluster:
+    name: snapflow-postgres
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io

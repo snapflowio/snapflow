@@ -1,0 +1,68 @@
+name: Auto Label Issue
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  labeler:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Issue Labeler
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          script: |
+            const { Buffer } = require('node:buffer');
+
+            const { owner, repo } = context.repo;
+            const issue = context.payload.issue;
+            const configPath = '.github/issue-labeler.yml';
+            const config = await github.rest.repos.getContent({
+              owner,
+              repo,
+              path: configPath,
+              ref: context.payload.repository.default_branch,
+            });
+
+            const text = Buffer.from(config.data.content, config.data.encoding).toString('utf8');
+            const patternsByLabel = new Map();
+            let currentLabel = null;
+
+            for (const line of text.split(/\r?\n/)) {
+              const labelMatch = line.match(/^["']?([^"':]+)["']?:\s*$/);
+              if (labelMatch) {
+                currentLabel = labelMatch[1];
+                patternsByLabel.set(currentLabel, []);
+                continue;
+              }
+
+              const patternMatch = line.match(/^\s*-\s*(?:"([^"]*)"|'([^']*)'|(.+))\s*$/);
+              if (currentLabel && patternMatch) {
+                patternsByLabel
+                  .get(currentLabel)
+                  .push(patternMatch[1] ?? patternMatch[2] ?? patternMatch[3].trim());
+              }
+            }
+
+            const target = `${issue.title ?? ''}\n${issue.body ?? ''}`;
+            const labels = [];
+
+            for (const [label, patterns] of patternsByLabel.entries()) {
+              if (patterns.some((pattern) => new RegExp(pattern).test(target))) {
+                labels.push(label);
+              }
+            }
+
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number: issue.number,
+                labels,
+              });
+            }

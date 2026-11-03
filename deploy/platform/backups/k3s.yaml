@@ -1,0 +1,28 @@
+# k3s uploads every etcd snapshot (install-k3s.sh: every six hours, 28 kept)
+# to R2 as well, reading this Secret at each snapshot. Restoring needs the S3
+# settings on the command line instead (docs/deployment.md, "Restore").
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: k3s-etcd-snapshot-s3-config
+  namespace: kube-system
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: openbao
+  target:
+    name: k3s-etcd-snapshot-s3-config
+    creationPolicy: Owner
+    template:
+      type: etcd.k3s.cattle.io/s3-config-secret
+      data:
+        etcd-s3-endpoint: ${BACKUP_S3_ENDPOINT#https://}
+        etcd-s3-bucket: ${BACKUP_S3_BUCKET}
+        etcd-s3-folder: k3s
+        etcd-s3-region: auto
+        etcd-s3-access-key: '{{ index . "access-key-id" }}'
+        etcd-s3-secret-key: '{{ index . "secret-access-key" }}'
+  dataFrom:
+    - extract:
+        key: snapflow/backups

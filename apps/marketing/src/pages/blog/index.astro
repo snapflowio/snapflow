@@ -1,0 +1,66 @@
+---
+import { SiteFooter } from '@/components/layout/site-footer';
+import { SiteHeader } from '@/components/layout/site-header';
+import { BLOG_POSTS } from '@/data/blog-posts';
+import BaseLayout from '@/layouts/base-layout.astro';
+---
+
+<BaseLayout
+	title="Blog | Snapflow"
+	description="Notes from the team building Snapflow."
+	canonicalPath="/blog"
+>
+	<div class="min-h-screen bg-snapflow-ink text-snapflow-paper">
+		<SiteHeader variant="default" client:load />
+		<main class="px-4 py-12 sm:px-6 sm:py-20">
+			<div class="mx-auto max-w-175">
+				<h1
+					class="mb-12 font-['Chalet',sans-serif] text-[clamp(2rem,5vw,3rem)] tracking-[-.02em]"
+				>
+					Blog
+				</h1>
+				{BLOG_POSTS.length > 0 ? (
+					<ul class="m-0 list-none p-0">
+						{BLOG_POSTS.map((post) => (
+							<li class="border-snapflow-paper/15 border-t last:border-b">
+								<a
+									href={`/blog/${post.slug}`}
+									itemscope
+									itemtype="https://schema.org/BlogPosting"
+									class="flex items-baseline gap-10 py-6 text-snapflow-paper no-underline transition-opacity hover:opacity-70 max-sm:flex-col max-sm:gap-1"
+								>
+									<time
+										datetime={post.isoDate}
+										itemprop="datePublished"
+										class="w-30 shrink-0 font-['Chivo_Mono',monospace] text-xs uppercase tracking-[.08em] text-snapflow-paper/40 max-sm:w-auto"
+									>
+										{post.shortDate}
+									</time>
+									<div class="min-w-0 flex-1">
+										<h2
+											itemprop="headline"
+											class="mb-[.35rem] font-['Chalet',sans-serif] text-xl tracking-[-.01em]"
+										>
+											{post.title}
+										</h2>
+										<p
+											itemprop="description"
+											class="text-[.9rem] leading-normal text-snapflow-paper/40"
+										>
+											{post.description}
+										</p>
+									</div>
+								</a>
+							</li>
+						))}
+					</ul>
+				) : (
+					<p class="border-snapflow-paper/15 border-y py-8 font-['Chivo_Mono',monospace] text-sm text-snapflow-paper/60">
+						No posts yet.
+					</p>
+				)}
+			</div>
+		</main>
+		<SiteFooter />
+	</div>
+</BaseLayout>
