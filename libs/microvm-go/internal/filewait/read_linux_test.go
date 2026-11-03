@@ -51,7 +51,13 @@ func TestReadWaitsForAFileCreatedInAMissingDirectory(t *testing.T) {
 	if err := os.MkdirAll(filepath.Dir(path), waitTestDirMode); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(path, []byte("ready"), waitTestFileMode); err != nil {
+	// Writers publish atomically, so Read never sees a half-written file;
+	// os.WriteFile alone would expose the empty file between create and write.
+	staged := path + ".tmp"
+	if err := os.WriteFile(staged, []byte("ready"), waitTestFileMode); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Rename(staged, path); err != nil {
 		t.Fatal(err)
 	}
 	if err := <-result; err != nil {
