@@ -4,10 +4,13 @@ name: Sync dev
 # releases, hotfixes and rollbacks) are merged back into dev through a pull
 # request, so the next dev -> main promotion carries no stale history. The
 # merge is made server-side with the merges API as the snapflowio-automation
-# App, so no token is ever written to disk.
+# App, so no token is ever written to disk. It runs as its own workflow, not
+# one main.yml calls, because a called workflow cannot read the automation
+# environment's secret.
 
 on:
-  workflow_call:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions: {}

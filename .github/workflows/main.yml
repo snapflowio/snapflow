@@ -50,17 +50,14 @@ jobs:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
-  sync-dev:
-    name: Merge main into dev
-    uses: ./.github/workflows/sync-dev.yml
-    permissions:
-      contents: read
-
   release:
     name: Release
     needs: release-please
     if: needs.release-please.outputs.release_created == 'true'
     uses: ./.github/workflows/release.yml
+    # A called workflow sees its jobs' environment secrets (the beta
+    # environment's R2 and TUF keys) only when the caller passes secrets on.
+    secrets: inherit # zizmor: ignore[secrets-inherit]
     permissions:
       contents: write
       packages: write
