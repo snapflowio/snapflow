@@ -84,7 +84,7 @@ Remove Snapflow from a machine with `sudo snapflow uninstall` (see `--purge` in 
 - **beta**: every release, automatically after its canaries pass. GitHub shows these as prereleases.
 - **stable**: a beta release promoted by a person. GitHub's *latest* release is always the stable one.
 
-To promote, run **Actions > Promote to stable** with the version. The job waits for a reviewer of the `snapflow-stable` environment, re-points the TUF `stable` channel at the already published beta release without rebuilding it, and then marks the GitHub release as latest. Machines move channels with `sudo snapflow update --channel beta|stable`.
+To promote, run **Actions > Promote to stable** with the version. The job waits for a reviewer of the `stable` environment, re-points the TUF `stable` channel at the already published beta release without rebuilding it, and then marks the GitHub release as latest. Machines move channels with `sudo snapflow update --channel beta|stable`.
 
 ## One-time setup
 
@@ -92,12 +92,12 @@ To promote, run **Actions > Promote to stable** with the version. The job waits 
    - *Settings > General > Releases*: enable **Immutable Releases**.
    - The `snapflowio-automation` GitHub App runs release-please: it opens the release pull request (which starts CI like any other) and creates the `vX.Y.Z` tag, which the tag ruleset allows no one else to do. Its setup is in [CONTRIBUTING.md](../CONTRIBUTING.md#repository-setup).
    - Branch setup (default branch, merge methods, rulesets) is in [CONTRIBUTING.md](../CONTRIBUTING.md#repository-setup).
-2. **Environments** (*Settings > Environments*), both limited to the `main` branch:
+2. **Environments** (*Settings > Environments*), both limited to the `main` branch. Each is named after the release channel it publishes to, so the repository's deployment history shows every beta release and every promotion to stable:
 
    | Environment | Reviewers | Secrets |
    | --- | --- | --- |
-   | `snapflow-release` | none (the pipeline runs unattended) | `SNAPFLOW_RELEASE_R2_ACCOUNT_ID`, `SNAPFLOW_RELEASE_R2_ACCESS_KEY_ID`, `SNAPFLOW_RELEASE_R2_SECRET_ACCESS_KEY`, `SNAPFLOW_RELEASE_R2_BUCKET`, `SNAPFLOW_TUF_SNAPSHOT_KEY`, `SNAPFLOW_TUF_TIMESTAMP_KEY`, `SNAPFLOW_TUF_BETA_KEY` |
-   | `snapflow-stable` | required reviewers, prevent self-review | the four `SNAPFLOW_RELEASE_R2_*` secrets, `SNAPFLOW_TUF_SNAPSHOT_KEY`, `SNAPFLOW_TUF_TIMESTAMP_KEY`, `SNAPFLOW_TUF_STABLE_KEY` |
+   | `beta` | none (the pipeline runs unattended; `tuf-refresh.yml` also re-signs with it) | `SNAPFLOW_RELEASE_R2_ACCOUNT_ID`, `SNAPFLOW_RELEASE_R2_ACCESS_KEY_ID`, `SNAPFLOW_RELEASE_R2_SECRET_ACCESS_KEY`, `SNAPFLOW_RELEASE_R2_BUCKET`, `SNAPFLOW_TUF_SNAPSHOT_KEY`, `SNAPFLOW_TUF_TIMESTAMP_KEY`, `SNAPFLOW_TUF_BETA_KEY` |
+   | `stable` | required reviewers; turn on *Prevent self-review* once a second maintainer can approve | the four `SNAPFLOW_RELEASE_R2_*` secrets, `SNAPFLOW_TUF_SNAPSHOT_KEY`, `SNAPFLOW_TUF_TIMESTAMP_KEY`, `SNAPFLOW_TUF_STABLE_KEY` |
 
    Key secrets hold the PEM file contents. Jobs write them to mode `0600` files under `$RUNNER_TEMP` and delete them when the step ends.
 3. **Cloudflare R2**: create a bucket, connect the custom domain `releases.snapflow.io` to it, and create an R2 API token with *Object Read & Write* on that bucket only. The bucket holds only `metadata/` and `targets/`; bundles stay on GitHub Releases.

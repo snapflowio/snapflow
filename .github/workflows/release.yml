@@ -372,7 +372,7 @@ jobs:
       - prepare
       - kvm-canary
     runs-on: ubuntu-24.04
-    environment: snapflow-release
+    environment: beta
     permissions:
       contents: write
       id-token: write
@@ -483,7 +483,7 @@ jobs:
       - prepare
       - verify
     runs-on: ubuntu-24.04
-    environment: snapflow-release
+    environment: beta
     concurrency:
       group: snapflow-tuf
       cancel-in-progress: false

@@ -25,7 +25,7 @@ jobs:
       cancel-in-progress: false
     # The App key is an environment secret only main may use, so no workflow
     # run from another branch can mint an App token.
-    environment: snapflow-automation
+    environment: automation
     permissions:
       contents: read
     outputs:
