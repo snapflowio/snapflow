@@ -1,5 +1,11 @@
-# A daily OpenBao raft snapshot, kept in R2 for 30 days. Restoring one needs
-# the openbao-seal key too (docs/deployment.md, "Restore").
+# A daily OpenBao raft snapshot at 03:30, kept in R2 under openbao/ for 30 days.
+#
+# Restore (after k3s, before Postgres and RustFS): on a fresh cluster, create
+# the openbao/openbao-seal secret from the backed-up seal key before OpenBao
+# starts (bootstrap-flux.sh would otherwise generate a new one), copy a
+# snapshot from openbao/ and run `bao operator raft snapshot restore -force
+# <file>` with a root or sufficiently privileged token. Snapshots are encrypted
+# with the seal key, so the original key is required.
 apiVersion: v1
 kind: ServiceAccount
 metadata:

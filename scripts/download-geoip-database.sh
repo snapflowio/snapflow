@@ -8,7 +8,9 @@
 
 # Downloads the DB-IP City Lite database (CC BY 4.0, https://db-ip.com) to the
 # given path. DB-IP publishes one file a month, so the previous month's file is
-# used while the current one is not out yet.
+# used while the current one is not out yet; rebuild the api image at least
+# monthly to keep locations current. The licence requires every page that shows
+# a location derived from it to credit DB-IP with a link to https://db-ip.com.
 
 set -eu
 

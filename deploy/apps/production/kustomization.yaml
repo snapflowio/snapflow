@@ -7,8 +7,10 @@ components:
 patches:
   # The migration hook runs before the upgrade, so rolling the release back
   # would put the previous code on a schema the migration already changed.
-  # A failed upgrade is retried instead; migrations stay backward compatible
-  # with the running release (docs/deployment.md, "Database migrations").
+  # A failed upgrade is retried instead. Every migration must therefore keep
+  # working with the release before it (expand and contract): add columns and
+  # tables in one release, use them in the next, and drop what old code needed
+  # only once no running release uses it.
   - target:
       kind: HelmRelease
       name: snapflow

@@ -7,7 +7,7 @@
 # SPDX-License-Identifier: AGPL-3.0
 
 # Opens the cluster's OpenBao web UI on this machine for managing the operator
-# secrets (docs/deployment.md, "Secrets"). OpenBao is never exposed outside
+# secrets listed below (the message this prints). OpenBao is never exposed outside
 # the cluster: this forwards its port to localhost and logs in through
 # Kubernetes auth as the snapflow-operator role, whose token can edit only the
 # operator secrets and expires after an hour. On exit it asks External Secrets
@@ -61,6 +61,21 @@ OpenBao UI: ${address}/ui/vault/secrets/secret/kv/list/snapflow/
 Sign in with method "Token" and this token (valid for one hour):
 
   ${token}
+
+Secrets you supply, one key per field (Create secret under secret/snapflow/):
+  snapflow/api              BETTER_AUTH_SECRETS RESEND_API_KEY SNAPFLOW_CLOUDFLARE_API_TOKEN
+                            SNAPFLOW_CLOUDFLARE_WEBHOOK_SECRET STRIPE_SECRET_KEY
+                            STRIPE_PUBLISHABLE_KEY STRIPE_PLATFORM_WEBHOOK_SECRET
+                            STRIPE_CONNECT_WEBHOOK_SECRET; optionally HEALTH_CHECK_API_KEY
+                            GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET GITHUB_CLIENT_ID
+                            GITHUB_CLIENT_SECRET (the names apps/api/.env uses)
+  snapflow/alerts           discord-webhook-url
+  snapflow/backups          access-key-id secret-access-key (R2 S3 credentials)
+  snapflow/cloudflare-dns   api-token (Zone:DNS:Edit on the public zone)
+  snapflow/edges/<name>     id enrollment-secret (from the admin API's edge enrollment)
+Read only: snapflow/platform/postgres-readonly (the database tools login).
+Every save is a new version; Version history restores earlier values. A
+missing key shows up as a failing ExternalSecret (kubectl get externalsecrets -A).
 
 Press Ctrl-C when you are done; your changes are then synced to the cluster.
 MESSAGE

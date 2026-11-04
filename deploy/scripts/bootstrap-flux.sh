@@ -9,6 +9,28 @@
 # Installs the Flux Operator and the FluxInstance in deploy/clusters/production/
 # flux-system. Flux syncs this repository as the snapflowio-automation GitHub App,
 # so no deploy key is created; after this, Flux manages the operator and itself.
+#
+# First installation of a production cluster, in order:
+#  1. Cloudflare and Resend records for the domains in
+#     deploy/clusters/production/cluster-settings.env (each is described there),
+#     and a Zone:DNS:Edit API token for certificates and dynamic DNS.
+#  2. Router: a DHCP reservation for the server, and port forwards for TCP 80,
+#     443, 8443 and UDP 8443 (edge) and TCP 9443 (site, registry and storage),
+#     nothing else.
+#  3. On the server: deploy/bootstrap/install-k3s.sh, then
+#     deploy/bootstrap/host-firewall.sh; copy /etc/rancher/k3s/k3s.yaml into
+#     the workstation's kubeconfig with the server's address.
+#  4. SNAPFLOW_AUTOMATION_PRIVATE_KEY_FILE=<app key .pem> moon run deploy:bootstrap
+#     (this script). Back up the printed OpenBao seal key offline.
+#  5. moon run deploy:openbao and create the secrets it lists.
+#  6. Each edge: register it with the admin API (POST /api/admin/edges, then
+#     POST /api/admin/edges/:id/enrollment-secret), store snapflow/edges/<name>
+#     in OpenBao and add {name, node} to edges in deploy/apps/production/snapflow.yaml.
+#  7. After the first image publish, make each ghcr.io/snapflowio/snapflow/*
+#     package public (Package settings > Change visibility), so neither the
+#     cluster nor Flux needs a registry token.
+# Flux retries each stage until its prerequisites exist, so steps 5 to 7 may
+# come in any order. moon run deploy:status shows progress.
 
 set -euo pipefail
 

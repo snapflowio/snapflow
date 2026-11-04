@@ -68,28 +68,18 @@ tasks:
     options:
       runFromWorkspaceRoot: true
 
-  env-docs:
+  env-file:
+    description: "Lays out apps/api/.env with every variable development may set, in schema order"
     command: "node"
     args:
       - "dist/apps/api/cli.mjs"
-      - "env-docs"
+      - "env-file"
     deps:
       - "build-production"
     options:
       runFromWorkspaceRoot: true
       cache: false
-
-  env-docs-check:
-    command: "node"
-    args:
-      - "dist/apps/api/cli.mjs"
-      - "env-docs"
-      - "--check"
-    deps:
-      - "build-production"
-    options:
-      runFromWorkspaceRoot: true
-      cache: false
+      runInCI: false
 
   email-preview:
     description: "Serves the React Email preview of every transactional email template on port 3002"
