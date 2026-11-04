@@ -86,20 +86,12 @@ func acceptBrowserWarning(writer http.ResponseWriter, request *http.Request) {
 		HttpOnly: true,
 		SameSite: http.SameSiteNoneMode,
 	})
-	redirectPath := request.URL.Query().Get("redirect")
-	if !isSafeRelativeRedirect(redirectPath) {
-		redirectPath = "/"
-	}
 	writer.Header().Set(web.CacheControl, web.NoStore)
-	http.Redirect(writer, request, redirectPath, http.StatusSeeOther)
+	http.Redirect(writer, request, sameOriginRedirect(request.URL.Query().Get("redirect")), http.StatusSeeOther)
 }
 
 func (frontend *Frontend) serveBrowserWarning(writer http.ResponseWriter, request *http.Request) {
-	redirectPath := request.URL.RequestURI()
-	if !isSafeRelativeRedirect(redirectPath) {
-		redirectPath = "/"
-	}
-	action := previewWarningAcceptPath + "?redirect=" + url.QueryEscape(redirectPath)
+	action := previewWarningAcceptPath + "?redirect=" + url.QueryEscape(sameOriginRedirect(request.URL.RequestURI()))
 	host := routes.NormalizeHost(request.Host)
 	writer.Header().Set(web.CacheControl, web.NoStore)
 	writer.Header().Set(web.CloudflareCacheControl, web.NoStore)
@@ -148,15 +140,18 @@ func isBrowserNavigation(request *http.Request) bool {
 	return false
 }
 
-func isSafeRelativeRedirect(value string) bool {
-	if value == "" || strings.Contains(value, "\\") {
-		return false
+// sameOriginRedirect returns value as a path on the current host, or "/" when
+// it is not one. The result is rebuilt from only the parsed path and query, so
+// no scheme, host or userinfo in value can reach the Location header, and a
+// leading "//" or backslash, which browsers read as another host, is refused.
+func sameOriginRedirect(value string) string {
+	if !strings.HasPrefix(value, "/") || strings.HasPrefix(value, "//") || strings.Contains(value, "\\") {
+		return "/"
 	}
 	parsed, err := url.Parse(value)
-	return err == nil &&
-		!parsed.IsAbs() &&
-		parsed.Host == "" &&
-		strings.HasPrefix(parsed.Path, "/") &&
-		!strings.HasPrefix(parsed.Path, "//") &&
-		!strings.Contains(parsed.Path, "\\")
+	if err != nil || parsed.IsAbs() || parsed.Host != "" || parsed.User != nil ||
+		!strings.HasPrefix(parsed.Path, "/") || strings.HasPrefix(parsed.Path, "//") {
+		return "/"
+	}
+	return (&url.URL{Path: parsed.Path, RawPath: parsed.RawPath, RawQuery: parsed.RawQuery}).RequestURI()
 }

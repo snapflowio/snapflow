@@ -79,7 +79,10 @@ describe('EmailService', () => {
 		assert.equal(payload.subject, 'Your Snapflow sign-in code');
 		assert.equal(payload.replyTo, 'support@snapflow.test');
 		assert.ok(payload.html?.includes(CODE));
-		assert.ok(payload.html?.includes(`${WEBSITE_URL}/email/snapflow-logo.png`));
+		assert.equal(
+			/<img[^>]*\ssrc="([^"]*)"/.exec(payload.html ?? '')?.[1],
+			`${WEBSITE_URL}/email/snapflow-logo.png`
+		);
 		assert.ok(payload.text?.includes(CODE));
 		assert.ok(!payload.text?.startsWith(WEBSITE_URL));
 		assert.deepEqual(payload.tags, [

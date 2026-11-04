@@ -381,22 +381,3 @@ func safeArchivePath(name string) (string, error) {
 	}
 	return clean, nil
 }
-
-func safeJoin(root, name string) (string, error) {
-	clean := filepath.Clean(name)
-	if clean == "." {
-		return root, nil
-	}
-	if filepath.IsAbs(clean) || strings.HasPrefix(clean, ".."+string(filepath.Separator)) || clean == ".." {
-		return "", fmt.Errorf("unsafe build context path %q", name)
-	}
-	target := filepath.Join(root, clean)
-	rel, err := filepath.Rel(root, target)
-	if err != nil {
-		return "", fmt.Errorf("validate context path: %w", err)
-	}
-	if rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
-		return "", fmt.Errorf("unsafe build context path %q", name)
-	}
-	return target, nil
-}

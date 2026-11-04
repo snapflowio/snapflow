@@ -41,4 +41,23 @@ describe('entrypointFromDockerfile', () => {
 			['second']
 		);
 	});
+
+	it('accepts indented instructions and tab separators', () => {
+		assert.deepEqual(
+			entrypointFromDockerfile('FROM node\n  ENTRYPOINT\t["node"]  \n'),
+			['node']
+		);
+	});
+
+	it('parses long runs of whitespace in linear time', () => {
+		const padding = ' '.repeat(100_000);
+		assert.deepEqual(
+			entrypointFromDockerfile(`FROM node\nENTRYPOINT${padding}`),
+			['sleep', 'infinity']
+		);
+		assert.deepEqual(
+			entrypointFromDockerfile(`FROM node\nENTRYPOINT${padding}run`),
+			['/bin/sh', '-c', 'run']
+		);
+	});
 });

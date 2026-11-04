@@ -30,12 +30,13 @@ const EXPECTED = { uploadBytes: 20n * MEBIBYTE, downloadBytes: 30n * MEBIBYTE };
 
 describe('spot-check network canary', () => {
 	it('picks a secret volume inside the canary range', () => {
-		const smallest = canaryByteCount(Buffer.alloc(8));
-		const largest = canaryByteCount(Buffer.alloc(8, 0xff));
-		assert.equal(smallest, SPOT_CHECK_CANARY.MINIMUM_BYTES);
-		assert.ok(
-			largest < SPOT_CHECK_CANARY.MINIMUM_BYTES + SPOT_CHECK_CANARY.BYTE_SPREAD
-		);
+		for (let draw = 0; draw < 1_000; draw++) {
+			const bytes = canaryByteCount();
+			assert.ok(bytes >= SPOT_CHECK_CANARY.MINIMUM_BYTES);
+			assert.ok(
+				bytes < SPOT_CHECK_CANARY.MINIMUM_BYTES + SPOT_CHECK_CANARY.BYTE_SPREAD
+			);
+		}
 	});
 
 	it('passes a meter within the overhead band', () => {

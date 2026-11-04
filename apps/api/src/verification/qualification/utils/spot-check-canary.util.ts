@@ -7,6 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
+import { randomInt } from 'node:crypto';
 import { fromJsonString } from '@bufbuild/protobuf';
 import {
 	type SpeedtestReceipt,
@@ -52,10 +53,10 @@ export interface CanaryMeasurement {
 	ingressBytes: bigint;
 }
 
-export function canaryByteCount(random: Buffer): bigint {
+export function canaryByteCount(): bigint {
 	return (
 		SPOT_CHECK_CANARY.MINIMUM_BYTES +
-		(random.readBigUInt64BE() % SPOT_CHECK_CANARY.BYTE_SPREAD)
+		BigInt(randomInt(Number(SPOT_CHECK_CANARY.BYTE_SPREAD)))
 	);
 }
 
