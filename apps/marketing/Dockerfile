@@ -38,24 +38,12 @@ RUN cd apps/marketing \
 		"$SNAPFLOW_RELEASE_VERSION" "$SNAPFLOW_SOURCE_REVISION" \
 		> ../../dist/apps/marketing/version.json
 
-FROM caddy:2.10.2-alpine@sha256:4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d AS runtime
+# Chainguard's nginx is rebuilt daily from patched sources and has no shell.
+# It runs as its nonroot user; the site and config stay root-owned and
+# read-only, and nginx writes only to /tmp.
+FROM cgr.dev/chainguard/nginx:latest@sha256:b9debc2fbe5bf256b4c3980d0bbfda8187d46e35b4117c582ace66269dc1de28 AS runtime
 
-RUN addgroup -S -g 10001 snapflow \
-	&& adduser -S -D -H -u 10001 -G snapflow snapflow \
-	&& setcap -r /usr/bin/caddy \
-	&& install -d -m 0755 -o snapflow -g snapflow /srv/snapflow /config /data
-
-COPY --from=builder --chown=snapflow:snapflow /build/dist/apps/marketing/ /srv/snapflow/
-COPY --chown=snapflow:snapflow apps/marketing/Caddyfile /etc/caddy/Caddyfile
-
-ENV XDG_CONFIG_HOME=/config
-ENV XDG_DATA_HOME=/data
-
-USER 10001:10001
+COPY apps/marketing/nginx.conf /etc/nginx/nginx.conf
+COPY --from=builder /build/dist/apps/marketing/ /srv/snapflow/
 
 EXPOSE 8080
-
-HEALTHCHECK --interval=15s --timeout=3s --start-period=5s --retries=3 \
-	CMD wget --quiet --tries=1 --spider http://127.0.0.1:8080/healthz || exit 1
-
-CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]

@@ -15,10 +15,10 @@ const HASH_PLACEHOLDER = '__BOOTSTRAP_SCRIPT_HASH__';
 const INLINE_SCRIPT = /<script\b[^>]*>([\s\S]*?)<\/script\b[^>]*>/gi;
 const EXPECTED_INLINE_SCRIPTS = 1;
 
-const [fallbackPage, caddyfileTemplate, output] = process.argv.slice(2);
-if (!(fallbackPage && caddyfileTemplate && output)) {
+const [fallbackPage, configTemplate, output] = process.argv.slice(2);
+if (!(fallbackPage && configTemplate && output)) {
 	throw new Error(
-		'Usage: render-caddyfile.ts <fallback.html> <Caddyfile> <output>'
+		'Usage: render-nginx-config.ts <fallback.html> <nginx.conf> <output>'
 	);
 }
 
@@ -31,11 +31,9 @@ if (scripts.length !== EXPECTED_INLINE_SCRIPTS || !script?.[1]) {
 }
 
 const hash = createHash('sha256').update(script[1]).digest('base64');
-const template = readFileSync(caddyfileTemplate, 'utf8');
+const template = readFileSync(configTemplate, 'utf8');
 if (!template.includes(HASH_PLACEHOLDER)) {
-	throw new Error(
-		`${caddyfileTemplate} has no ${HASH_PLACEHOLDER} placeholder.`
-	);
+	throw new Error(`${configTemplate} has no ${HASH_PLACEHOLDER} placeholder.`);
 }
 
 writeFileSync(
