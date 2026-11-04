@@ -145,7 +145,7 @@ func isBrowserNavigation(request *http.Request) bool {
 // no scheme, host or userinfo in value can reach the Location header, and a
 // leading "//" or backslash, which browsers read as another host, is refused.
 func sameOriginRedirect(value string) string {
-	if !strings.HasPrefix(value, "/") || strings.HasPrefix(value, "//") || strings.Contains(value, "\\") {
+	if len(value) < 2 || value[0] != '/' || value[1] == '/' || value[1] == '\\' || strings.Contains(value, "\\") {
 		return "/"
 	}
 	parsed, err := url.Parse(value)
