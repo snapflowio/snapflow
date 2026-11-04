@@ -12,7 +12,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import process from 'node:process';
 
 const HASH_PLACEHOLDER = '__BOOTSTRAP_SCRIPT_HASH__';
-const INLINE_SCRIPT = /<script>([\s\S]*?)<\/script>/g;
+const INLINE_SCRIPT = /<script\b[^>]*>([\s\S]*?)<\/script\b[^>]*>/gi;
 const EXPECTED_INLINE_SCRIPTS = 1;
 
 const [fallbackPage, caddyfileTemplate, output] = process.argv.slice(2);

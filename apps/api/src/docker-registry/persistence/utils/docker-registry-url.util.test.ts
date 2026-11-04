@@ -36,4 +36,14 @@ describe('registry URL forms', () => {
 		assert.equal(registryHost('https://ghcr.io/'), 'ghcr.io');
 		assert.equal(registryHost('http://localhost:5001'), 'localhost:5001');
 	});
+
+	it('trims every trailing slash in linear time', () => {
+		assert.equal(registryHost('ghcr.io///'), 'ghcr.io');
+		const slashes = '/'.repeat(100_000);
+		assert.equal(registryHost(`ghcr.io${slashes}`), 'ghcr.io');
+		assert.equal(
+			registryEndpoint(`ghcr.io${slashes}x`),
+			`https://ghcr.io${slashes}x`
+		);
+	});
 });

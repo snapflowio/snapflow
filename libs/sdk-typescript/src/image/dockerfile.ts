@@ -16,7 +16,7 @@
 
 import fastGlob from 'fast-glob';
 import * as pathe from 'pathe';
-import { parse as parseShellQuote } from 'shell-quote';
+import { parse as parseShellQuote, quote as quoteShell } from 'shell-quote';
 import type { Context } from '../image.types.js';
 
 const COPY_INSTRUCTION = 'COPY';
@@ -36,21 +36,24 @@ export function debianSlimDockerfile(pythonVersion: string): string {
 	return `${commands.join('\n')}\n`;
 }
 
+// An argument list is shell-quoted with shell-quote, which escapes every
+// character the shell treats specially, so each element reaches the command as
+// one literal argument.
 export function formatRunCommand(command: string | string[]): string {
 	if (!Array.isArray(command)) {
 		return command;
 	}
-	return command
-		.map((c) => `"${c.replace(/"/g, '\\\\\\"').replace(/'/g, "\\'")}"`)
-		.join(' ');
+	return quoteShell(command);
 }
 
 export function isStringList(value: unknown): value is string[] {
 	return Array.isArray(value) && value.every((x) => typeof x === 'string');
 }
 
+// The exec form is a JSON array, so JSON string encoding escapes quotes and
+// backslashes exactly as Docker's parser expects.
 export function toExecForm(args: string[]): string {
-	return args.map((arg) => `"${arg}"`).join(', ');
+	return args.map((arg) => JSON.stringify(arg)).join(', ');
 }
 
 export function collectCopyContexts(

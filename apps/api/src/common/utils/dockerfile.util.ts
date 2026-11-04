@@ -7,7 +7,9 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-const ENTRYPOINT_INSTRUCTION = /^\s*ENTRYPOINT\s+(.+)$/gim;
+// [ \t] rather than \s keeps every match on one line, and the \S after the
+// separator leaves the regex one way to split a line, so it runs in linear time.
+const ENTRYPOINT_INSTRUCTION = /^[ \t]*ENTRYPOINT[ \t]+(\S.*)$/gim;
 const SHELL_FORM_PREFIX = ['/bin/sh', '-c'] as const;
 const DEFAULT_ENTRYPOINT = ['sleep', 'infinity'] as const;
 

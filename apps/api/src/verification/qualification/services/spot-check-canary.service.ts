@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { randomBytes, randomUUID } from 'node:crypto';
+import { randomUUID } from 'node:crypto';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable, Logger } from '@nestjs/common';
 import { MILLISECONDS_PER_MINUTE } from '../../../common/constants/time.constants';
@@ -81,12 +81,8 @@ export class SpotCheckCanaryService {
 			startedAt,
 			SPOT_CHECK_CANARY.TOKEN_TTL_MINUTES
 		);
-		const uploadBytes = canaryByteCount(
-			randomBytes(SPOT_CHECK_CANARY.RANDOM_BYTES)
-		);
-		const downloadBytes = canaryByteCount(
-			randomBytes(SPOT_CHECK_CANARY.RANDOM_BYTES)
-		);
+		const uploadBytes = canaryByteCount();
+		const downloadBytes = canaryByteCount();
 		const downloadToken = this.tokens.mintExact(
 			{ id: randomUUID(), expiresAt },
 			downloadBytes
