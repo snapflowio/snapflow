@@ -17,12 +17,12 @@ readonly k3s_only_kinds="HelmChartConfig"
 readonly kustomizations=(
 	clusters/production/flux-system
 	infrastructure/controllers
-	infrastructure/configs
 	platform/openbao-configure
 	platform/jobs
 	images
 )
 readonly substituted_kustomizations=(
+	infrastructure/configs
 	platform/data
 	platform/backups
 	apps/production

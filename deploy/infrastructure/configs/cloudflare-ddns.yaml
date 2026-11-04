@@ -1,0 +1,108 @@
+# Keeps the DNS records that point at this home connection on its current
+# public IPv4 address, which the ISP may change. favonia/cloudflare-ddns checks
+# the address every five minutes and on start, before the platform and apps
+# stages deploy, and updates only the records named in DOMAINS: the public
+# site (proxied through Cloudflare) and the registry and storage hosts (DNS
+# only, because Cloudflare's proxy caps request bodies at 100 MB). It uses the
+# same Zone:DNS:Edit token as cert-manager (snapflow/cloudflare-dns in OpenBao)
+# and reports failed updates to the Flux alerts Discord channel.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cloudflare-ddns
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: cloudflare-ddns
+  namespace: cloudflare-ddns
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: openbao
+  target:
+    name: cloudflare-ddns
+    creationPolicy: Owner
+    template:
+      data:
+        api-token: "{{ .apiToken }}"
+        # A Discord webhook URL is https://discord.com/api/webhooks/<id>/<token>;
+        # Shoutrrr's form of it is discord://<token>@<id>.
+        notification-url: >-
+          {{ printf "discord://%s@%s" (index (splitList "/" .webhookUrl) 6) (index (splitList "/" .webhookUrl) 5) }}
+  data:
+    - secretKey: apiToken
+      remoteRef:
+        key: snapflow/cloudflare-dns
+        property: api-token
+    - secretKey: webhookUrl
+      remoteRef:
+        key: snapflow/alerts
+        property: discord-webhook-url
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflare-ddns
+  namespace: cloudflare-ddns
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cloudflare-ddns
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cloudflare-ddns
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: cloudflare-ddns
+          image: favonia/cloudflare-ddns:1.18.0@sha256:345b41895a8846d74c62d30bd27e61101a754f8ab8da10c68115823883803afb
+          env:
+            - name: CLOUDFLARE_API_TOKEN_FILE
+              value: /run/secrets/cloudflare-ddns/api-token
+            - name: SHOUTRRR_FILE
+              value: /run/secrets/cloudflare-ddns/notification-url
+            - name: DOMAINS
+              value: ${PUBLIC_DOMAIN},${REGISTRY_DOMAIN},${STORAGE_DOMAIN}
+            - name: PROXIED
+              value: is(${PUBLIC_DOMAIN})
+            - name: IP6_PROVIDER
+              value: none
+            - name: UPDATE_CRON
+              value: "@every 5m"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              memory: 64Mi
+          volumeMounts:
+            - name: secrets
+              mountPath: /run/secrets/cloudflare-ddns
+              readOnly: true
+      volumes:
+        - name: secrets
+          secret:
+            secretName: cloudflare-ddns
+            defaultMode: 0440

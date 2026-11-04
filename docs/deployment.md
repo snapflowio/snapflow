@@ -73,12 +73,12 @@ Machine releases (the Snapflow runtime, its installer and the TUF repository at 
 
 1. **Cloudflare**
    - `snapflow.io`: an A record to your public IP, proxied (orange cloud). Add an Origin Rule that matches the hostname `snapflow.io` and overrides the destination port to `9443`, set SSL/TLS to *Full (strict)* and turn on *Always Use HTTPS*.
-   - `registry` and `storage`: A records to your public IP, DNS only (grey cloud). Use dynamic DNS if the address changes.
+   - `registry` and `storage`: A records to your public IP, DNS only (grey cloud). These three records are kept on the connection's current address by [dynamic DNS](#dynamic-dns), so a changed home IP needs no action.
    - `snapflow.run`, the sandbox zone from `PLATFORM_DOMAIN`: a separate registrable domain, so code running in a sandbox never shares a browser site with the dashboard or the api (the api refuses to start otherwise). Add an A record for each edge's public host, DNS only. Under *SSL/TLS > Custom Hostnames* set that host as the fallback origin, and turn on *Authenticated Origin Pulls*. The api creates every sandbox CNAME itself.
    - Create an API token with `Zone:DNS:Edit` on both zones for certificates, and give `SNAPFLOW_CLOUDFLARE_API_TOKEN` DNS and custom hostname access to the sandbox zone.
    - Email: add the sending domain from `EMAIL_DOMAIN` in `cluster-settings.env` (`mail.snapflow.io`) under *Domains* in [Resend](https://resend.com/domains) and copy its records into the zone, all DNS only: the DKIM `TXT` record `resend._domainkey.mail`, and the `MX` (priority 10) and SPF `TXT` records on `send.mail` that Resend uses as the bounce (Return-Path) domain. Add a DMARC `TXT` record on `_dmarc` (start with `v=DMARC1; p=none;` and tighten it once reports are clean), then press *Verify* in Resend or run `resend domains verify <id>` with the [Resend CLI](https://resend.com/docs/cli). Create an API key with *Sending access* restricted to that domain for `RESEND_API_KEY`. The api sends from `Snapflow <noreply@${EMAIL_DOMAIN}>` (Helm value `email.from`); set `email.replyTo` in `deploy/apps/production/snapflow.yaml` to route replies to a monitored mailbox.
-2. **Router**: forward TCP 80, 443, 8443 and UDP 8443 (edge), and TCP 9443 (site, registry and storage) to the machine.
-3. **k3s**: `sudo PUBLIC_IP=<public ip> deploy/bootstrap/install-k3s.sh server-edge` (the API is advertised on the address of the default route; set `NODE_IP` to pick another), then copy `/etc/rancher/k3s/k3s.yaml` to your workstation's kubeconfig and replace `127.0.0.1` with the machine's address.
+2. **Router**: give the machine a fixed LAN address (a DHCP reservation), and forward TCP 80, 443, 8443 and UDP 8443 (edge), and TCP 9443 (site, registry and storage) to it. Forward nothing else; SSH and the k3s API stay on the local network.
+3. **k3s**: `sudo PUBLIC_IP=<public ip> deploy/bootstrap/install-k3s.sh server-edge` (the API is advertised on the address of the default route; set `NODE_IP` to pick another), then copy `/etc/rancher/k3s/k3s.yaml` to your workstation's kubeconfig and replace `127.0.0.1` with the machine's address. Then apply the [host firewall](#host-firewall).
 4. **Flux**: `SNAPFLOW_AUTOMATION_PRIVATE_KEY_FILE=<path to the snapflowio-automation App private key> moon run deploy:bootstrap`. It installs the [Flux Operator](https://fluxcd.control-plane.io/operator/), stores the App key in the `flux-system` secret (the only copy outside your password manager), and applies the `FluxInstance` in `deploy/clusters/production/flux-system`, which syncs `main` as the App; no deploy key is created. From then on Flux manages the operator and itself from Git. Back up the printed OpenBao seal key offline; it decrypts everything in OpenBao.
 5. **Secrets**: run `moon run deploy:openbao`, open the printed URL and sign in with method *Token* and the printed token. Under `secret/snapflow/`, create each secret below with *Create secret*, one key per field. Press Ctrl-C in the terminal when you are done, which asks External Secrets to sync the changes now.
 
@@ -90,7 +90,7 @@ Machine releases (the Snapflow runtime, its installer and the TUF repository at 
    | `snapflow/cloudflare-dns` | `api-token` (the `Zone:DNS:Edit` token) |
    | `snapflow/edges/<name>` | `id`, `enrollment-secret` (step 6) |
 
-   Only secrets go in OpenBao; every other api setting comes from the Helm chart. The UI token can create, edit, roll back and delete only these paths and expires after an hour; OpenBao is never exposed outside the cluster. Every save is a new version, so *Version history* shows and restores earlier values. A missing or misspelled key shows up as a failing ExternalSecret (`kubectl get externalsecrets -A`) and a Flux alert. Everything else (api keyrings; Postgres, Redis, RustFS and snapshot-manager credentials; the tunnel CA) is generated in the cluster, and Cloudflare's public origin pull CA ships with the chart. Keep a copy of these values in your password manager.
+   Only secrets go in OpenBao; every other api setting comes from the Helm chart. The UI token can create, edit, roll back and delete only these paths, read the [read-only database login](#querying-the-database), and expires after an hour; OpenBao is never exposed outside the cluster. Every save is a new version, so *Version history* shows and restores earlier values. A missing or misspelled key shows up as a failing ExternalSecret (`kubectl get externalsecrets -A`) and a Flux alert. Everything else (api keyrings; Postgres, Redis, RustFS and snapshot-manager credentials; the tunnel CA) is generated in the cluster, and Cloudflare's public origin pull CA ships with the chart. Keep a copy of these values in your password manager.
 6. **Edge**: register the edge with the admin API (`POST /api/admin/edges`, then `POST /api/admin/edges/:id/enrollment-secret`), store its `id` and `enrollment-secret` at `snapflow/edges/home` in the OpenBao UI, and add `{name: home, node: <k3s node name>}` to `edges` in `deploy/apps/production/snapflow.yaml`.
 
 7. **Public images**: the images are public, like the source, so neither the cluster nor Flux needs a registry token. After the first publish, open each package under the organization's *Packages* (`snapflow/api`, `snapflow/dashboard`, `snapflow/marketing`, `snapflow/snapshot-manager`, `snapflow/edge`) and set *Package settings > Change visibility* to *Public* (the organization must allow public packages under *Settings > Packages*).
@@ -114,11 +114,36 @@ Every sandbox host serves code its owner controls, including the system toolbox,
 
 - **Rotate a secret**: open `moon run deploy:openbao`, edit the secret and save it as a new version, then press Ctrl-C; External Secrets syncs at once and Reloader rolls only the workloads whose secrets changed. To retire an edge, remove it from the chart, then delete `snapflow/edges/<name>` in the UI (*Delete metadata and all versions*).
 - **Roll back an app**: on a `hotfix/<name>` branch from `main`, set the app's `tag` and `digest` in `deploy/apps/production/snapflow.yaml` back to the previous pins (or revert the promotion), and merge it into `main`. Image automation never writes `main`, so the rollback stays until the next promotion, which should carry the fix. Database migrations are forward-only.
-- **Change settings**: edit `deploy/clusters/production/cluster-settings.env` or the chart values in Git; Flux applies the change.
+- **Change settings**: edit `deploy/clusters/production/cluster-settings.env` or the chart values in Git; Flux applies the change. [production-settings.md](reference/production-settings.md) lists where every setting lives.
 - **Upgrade platform components**: bump the pinned chart and image versions in `deploy/` and run `moon run deploy:validate`.
 - **Upgrade k3s**: rerun `install-k3s.sh` with a newer `k3s_version`.
 - **Add an edge server**: install it with `install-k3s.sh edge` (it joins over WireGuard and is tainted for the edge only), then add its OpenBao secret and `edges` entry as in step 6.
 - **Backups and restores**: see [Backups](#backups).
+
+### Host firewall
+
+`deploy/bootstrap/host-firewall.sh` is the server's whole UFW configuration: each run resets UFW and applies the same rules, so running it again changes nothing and removes anything added by hand. The edge ports (TCP 80, 443 and 8443, UDP 8443) and Traefik (TCP 9443) are public; SSH (rate limited) and the k3s API accept only the administrative network, by default the network of the default route, plus Tailscale when the machine runs it; the k3s pod and service networks are allowed as k3s requires. Preview it with `--dry-run`, then apply it on the server:
+
+```sh
+ssh -t <server> 'sudo bash -s' < deploy/bootstrap/host-firewall.sh
+```
+
+Set `ADMIN_CIDR` (for example `sudo ADMIN_CIDR=192.168.40.0/24 bash -s`) to choose the administrative network. Docker-published ports and Kubernetes NodePort, LoadBalancer and host-network ports bypass UFW, so the script ends by listing every such port; only Traefik's 9443 and the edge should appear. The router's port forwards remain the outer boundary.
+
+### Dynamic DNS
+
+`deploy/infrastructure/configs/cloudflare-ddns.yaml` runs [cloudflare-ddns](https://github.com/favonia/cloudflare-ddns), which checks the connection's public IPv4 address every five minutes and on start, and points `PUBLIC_DOMAIN` (proxied), `REGISTRY_DOMAIN` and `STORAGE_DOMAIN` (DNS only) at it. It deploys in the `infrastructure-configs` stage, before the platform and apps, uses the `snapflow/cloudflare-dns` token, and reports failed updates to the alerts Discord channel. Check it with `kubectl -n cloudflare-ddns logs deploy/cloudflare-ddns`.
+
+### Querying the database
+
+Postgres has no public port. Database tools connect as `snapflow_readonly`, a login that can read every table and change nothing (PostgreSQL's `pg_read_all_data`); its password is generated in OpenBao at `snapflow/platform/postgres-readonly`, which the OpenBao UI shows. The `snapflow` owner login is for the api only.
+
+In DataGrip (or any client with an SSH tunnel):
+
+- **SSH/SSL**: tunnel through the server with your SSH key.
+- **Host**: the address of the primary's service, `kubectl -n snapflow get service snapflow-postgres-rw -o jsonpath='{.spec.clusterIP}'` (stable while the cluster exists); **Port** `5432`; **Database** `snapflow`; **User** `snapflow_readonly`.
+
+Without a tunnel, `kubectl -n snapflow port-forward service/snapflow-postgres-rw 5432:5432` serves it on `localhost:5432` while it runs.
 
 ### Alerts
 
