@@ -1,0 +1,9 @@
+# The identity moon run deploy:openbao logs in to OpenBao as, through the
+# snapflow-operator Kubernetes auth role (configure.sh). Only someone who may
+# create tokens for it in this namespace, a cluster administrator, can log in.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: snapflow-openbao-operator
+  namespace: openbao
+automountServiceAccountToken: false

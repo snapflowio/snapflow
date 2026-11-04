@@ -45,7 +45,6 @@ deploy/
   charts/snapflow/               Helm chart for api, worker, dashboard, marketing, snapshot-manager and edges
   components/                    shared kustomize components (HelmRelease defaults)
   scripts/                       scripts behind the moon tasks
-  secrets/production/            your operator secrets, gitignored and pushed with moon run deploy:secrets
 ```
 
 Flux applies the stages in order: `infrastructure-controllers` → `openbao-configure` → `infrastructure-configs` → `platform` → `platform-jobs` → `platform-backups` and `apps`. `images` runs alongside once the secret store is ready.
@@ -58,8 +57,7 @@ Flux applies the stages in order: `infrastructure-controllers` → `openbao-conf
 | `moon run <app>:image` | Builds the app image into the local Docker engine |
 | `moon run <app>:publish` | Typechecks, lints, validates, builds, scans with Trivy, and only then tags `build-<sha>-<timestamp>`; the commit must be on `dev` |
 | `moon run deploy:bootstrap` | Creates the OpenBao seal key if missing and bootstraps Flux |
-| `moon run deploy:secrets` | Checks the secrets files in `deploy/secrets/production/` and writes every changed file to OpenBao |
-| `moon run deploy:openbao` | Opens a shell logged in to OpenBao for inspecting secrets by hand |
+| `moon run deploy:openbao` | Opens the OpenBao web UI on `localhost:18200` and prints a one-hour token for managing the operator secrets |
 | `moon run deploy:reconcile` | Makes Flux pull `main` and apply every stage now |
 | `moon run deploy:status` | Shows every Flux stage, Helm release and image policy |
 
@@ -82,18 +80,18 @@ Machine releases (the Snapflow runtime, its installer and the TUF repository at 
 2. **Router**: forward TCP 80, 443, 8443 and UDP 8443 (edge), and TCP 9443 (site, registry and storage) to the machine.
 3. **k3s**: `sudo PUBLIC_IP=<public ip> deploy/bootstrap/install-k3s.sh server-edge` (the API is advertised on the address of the default route; set `NODE_IP` to pick another), then copy `/etc/rancher/k3s/k3s.yaml` to your workstation's kubeconfig and replace `127.0.0.1` with the machine's address.
 4. **Flux**: `SNAPFLOW_AUTOMATION_PRIVATE_KEY_FILE=<path to the snapflowio-automation App private key> moon run deploy:bootstrap`. It installs the [Flux Operator](https://fluxcd.control-plane.io/operator/), stores the App key in the `flux-system` secret (the only copy outside your password manager), and applies the `FluxInstance` in `deploy/clusters/production/flux-system`, which syncs `main` as the App; no deploy key is created. From then on Flux manages the operator and itself from Git. Back up the printed OpenBao seal key offline; it decrypts everything in OpenBao.
-5. **Secrets**: fill in the files in `deploy/secrets/production/` (gitignored, mode `600`) and run `moon run deploy:secrets`:
+5. **Secrets**: run `moon run deploy:openbao`, open the printed URL and sign in with method *Token* and the printed token. Under `secret/snapflow/`, create each secret below with *Create secret*, one key per field. Press Ctrl-C in the terminal when you are done, which asks External Secrets to sync the changes now.
 
-   | File | OpenBao path | Keys |
-   | --- | --- | --- |
-   | `api.env` | `snapflow/api` | `BETTER_AUTH_SECRETS`, `RESEND_API_KEY`, `SNAPFLOW_CLOUDFLARE_API_TOKEN`, `SNAPFLOW_CLOUDFLARE_WEBHOOK_SECRET`, `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_PLATFORM_WEBHOOK_SECRET`, `STRIPE_CONNECT_WEBHOOK_SECRET`, and optionally `HEALTH_CHECK_API_KEY`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` (same names as `apps/api/.env`) |
-   | `alerts.env` | `snapflow/alerts` | `discord-webhook-url` (a Discord channel webhook, see [Alerts](#alerts)) |
-   | `backups.env` | `snapflow/backups` | `access-key-id`, `secret-access-key` (the R2 S3 credentials, see [Backups](#backups)) |
-   | `cloudflare-dns.env` | `snapflow/cloudflare-dns` | `api-token` (the `Zone:DNS:Edit` token) |
-   | `edges/<name>.env` | `snapflow/edges/<name>` | `id`, `enrollment-secret` (step 6) |
+   | OpenBao path | Keys |
+   | --- | --- |
+   | `snapflow/api` | `BETTER_AUTH_SECRETS`, `RESEND_API_KEY`, `SNAPFLOW_CLOUDFLARE_API_TOKEN`, `SNAPFLOW_CLOUDFLARE_WEBHOOK_SECRET`, `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_PLATFORM_WEBHOOK_SECRET`, `STRIPE_CONNECT_WEBHOOK_SECRET`, and optionally `HEALTH_CHECK_API_KEY`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` (same names as `apps/api/.env`) |
+   | `snapflow/alerts` | `discord-webhook-url` (a Discord channel webhook, see [Alerts](#alerts)) |
+   | `snapflow/backups` | `access-key-id`, `secret-access-key` (the R2 S3 credentials, see [Backups](#backups)) |
+   | `snapflow/cloudflare-dns` | `api-token` (the `Zone:DNS:Edit` token) |
+   | `snapflow/edges/<name>` | `id`, `enrollment-secret` (step 6) |
 
-   Only secrets go in these files; every other api setting comes from the Helm chart. The keys each file accepts are defined in `deploy/scripts/push-secrets.sh`. The directory only ever leaves your machine into OpenBao. The task refuses to push anything if a required key is missing or empty, a key is unknown, a file is readable by other users, or the directory is tracked by git. It never prints values and writes only the files that changed. Everything else (api keyrings; Postgres, Redis, RustFS and snapshot-manager credentials; the tunnel CA) is generated in the cluster, and Cloudflare's public origin pull CA ships with the chart. Keep a copy of the directory in your password manager; OpenBao also keeps earlier versions of every path.
-6. **Edge**: register the edge with the admin API (`POST /api/admin/edges`, then `POST /api/admin/edges/:id/enrollment-secret`), put its `id` and `enrollment-secret` in `deploy/secrets/production/edges/home.env` (mode `600`), run `moon run deploy:secrets`, and add `{name: home, node: <k3s node name>}` to `edges` in `deploy/apps/production/snapflow.yaml`.
+   Only secrets go in OpenBao; every other api setting comes from the Helm chart. The UI token can create, edit, roll back and delete only these paths and expires after an hour; OpenBao is never exposed outside the cluster. Every save is a new version, so *Version history* shows and restores earlier values. A missing or misspelled key shows up as a failing ExternalSecret (`kubectl get externalsecrets -A`) and a Flux alert. Everything else (api keyrings; Postgres, Redis, RustFS and snapshot-manager credentials; the tunnel CA) is generated in the cluster, and Cloudflare's public origin pull CA ships with the chart. Keep a copy of these values in your password manager.
+6. **Edge**: register the edge with the admin API (`POST /api/admin/edges`, then `POST /api/admin/edges/:id/enrollment-secret`), store its `id` and `enrollment-secret` at `snapflow/edges/home` in the OpenBao UI, and add `{name: home, node: <k3s node name>}` to `edges` in `deploy/apps/production/snapflow.yaml`.
 
 7. **Public images**: the images are public, like the source, so neither the cluster nor Flux needs a registry token. After the first publish, open each package under the organization's *Packages* (`snapflow/api`, `snapflow/dashboard`, `snapflow/marketing`, `snapflow/snapshot-manager`, `snapflow/edge`) and set *Package settings > Change visibility* to *Public* (the organization must allow public packages under *Settings > Packages*).
 
@@ -114,17 +112,17 @@ Every sandbox host serves code its owner controls, including the system toolbox,
 
 ## Operations
 
-- **Rotate a secret**: edit its file in `deploy/secrets/production/` and run `moon run deploy:secrets`; External Secrets syncs immediately and Reloader rolls only the workloads whose secrets changed. Removing an edge file does not delete its OpenBao path; delete it with `moon run deploy:openbao` after removing the edge from the chart.
+- **Rotate a secret**: open `moon run deploy:openbao`, edit the secret and save it as a new version, then press Ctrl-C; External Secrets syncs at once and Reloader rolls only the workloads whose secrets changed. To retire an edge, remove it from the chart, then delete `snapflow/edges/<name>` in the UI (*Delete metadata and all versions*).
 - **Roll back an app**: on a `hotfix/<name>` branch from `main`, set the app's `tag` and `digest` in `deploy/apps/production/snapflow.yaml` back to the previous pins (or revert the promotion), and merge it into `main`. Image automation never writes `main`, so the rollback stays until the next promotion, which should carry the fix. Database migrations are forward-only.
 - **Change settings**: edit `deploy/clusters/production/cluster-settings.env` or the chart values in Git; Flux applies the change.
 - **Upgrade platform components**: bump the pinned chart and image versions in `deploy/` and run `moon run deploy:validate`.
 - **Upgrade k3s**: rerun `install-k3s.sh` with a newer `k3s_version`.
-- **Add an edge server**: install it with `install-k3s.sh edge` (it joins over WireGuard and is tainted for the edge only), then add its secrets file and `edges` entry as in step 6.
+- **Add an edge server**: install it with `install-k3s.sh edge` (it joins over WireGuard and is tainted for the edge only), then add its OpenBao secret and `edges` entry as in step 6.
 - **Backups and restores**: see [Backups](#backups).
 
 ### Alerts
 
-Flux reports every failed reconciliation (sources, stages, Helm releases and image automation, in every namespace that holds Flux objects) to Discord, and posts the result of each stage for the synced `main` commit to GitHub as a commit status. Both are in `deploy/infrastructure/configs/notifications.yaml`; a new namespace with Flux objects must be added to its `flux-errors` Alert. The Discord webhook is `alerts.env` (channel settings > Integrations > Webhooks > New Webhook > Copy Webhook URL); rotate it by replacing the webhook and running `moon run deploy:secrets`. Commit statuses are posted as the `snapflowio-automation` GitHub App, which needs the *Commit statuses: Read and write* repository permission.
+Flux reports every failed reconciliation (sources, stages, Helm releases and image automation, in every namespace that holds Flux objects) to Discord, and posts the result of each stage for the synced `main` commit to GitHub as a commit status. Both are in `deploy/infrastructure/configs/notifications.yaml`; a new namespace with Flux objects must be added to its `flux-errors` Alert. The Discord webhook is `discord-webhook-url` in `snapflow/alerts` (channel settings > Integrations > Webhooks > New Webhook > Copy Webhook URL); rotate it by replacing the webhook and saving the new URL in the OpenBao UI. Commit statuses are posted as the `snapflowio-automation` GitHub App, which needs the *Commit statuses: Read and write* repository permission.
 
 ### Backups
 
@@ -137,7 +135,7 @@ Everything that cannot be rebuilt from Git is copied to the Cloudflare R2 bucket
 | RustFS (volume backups, sandbox snapshots) | `rclone sync` of both buckets; objects it would delete or overwrite move to `rustfs-changes/<date>/` | daily at 04:00 | mirror, plus 30 days of changes | `rustfs/`, `rustfs-changes/` |
 | k3s (etcd) | k3s etcd snapshots, uploaded with the local copy | every six hours | 28 snapshots (7 days) | `k3s/` |
 
-Credentials: on the R2 overview page, *Manage API tokens > Create Account API token* with *Object Read & Write* on `snapflow-backups` only. Cloudflare shows the S3 *Access Key ID* and *Secret Access Key* once, on creation; put them in `backups.env` as `access-key-id` and `secret-access-key`. (They can also be derived from the token: the access key ID is the token's ID and the secret access key is the SHA-256 hex digest of the token value.) Keep them, the OpenBao seal key, the k3s server token (`/var/lib/rancher/k3s/server/token`) and `deploy/secrets/production/` in your password manager: no backup can be restored without them. A failed backup Job or a failing WAL archive shows up as a Flux or CloudNativePG error; check `kubectl get backups,scheduledbackups -n snapflow` and the CronJobs after any change.
+Credentials: on the R2 overview page, *Manage API tokens > Create Account API token* with *Object Read & Write* on `snapflow-backups` only. Cloudflare shows the S3 *Access Key ID* and *Secret Access Key* once, on creation; save them in `snapflow/backups` as `access-key-id` and `secret-access-key`. (They can also be derived from the token: the access key ID is the token's ID and the secret access key is the SHA-256 hex digest of the token value.) Keep them, the OpenBao seal key, the k3s server token (`/var/lib/rancher/k3s/server/token`) and the operator secrets from step 5 in your password manager: no backup can be restored without them. A failed backup Job or a failing WAL archive shows up as a Flux or CloudNativePG error; check `kubectl get backups,scheduledbackups -n snapflow` and the CronJobs after any change.
 
 Test a restore every quarter. Restore order after losing the machine: k3s, then OpenBao, then Postgres and RustFS.
 

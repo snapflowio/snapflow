@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: openbao
 resources:
   - job.yaml
+  - operator.yaml
 configMapGenerator:
   - name: snapflow-openbao-configure
     files:
