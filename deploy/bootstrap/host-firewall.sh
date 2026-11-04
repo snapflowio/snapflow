@@ -6,8 +6,8 @@
 #
 # SPDX-License-Identifier: AGPL-3.0
 
-# Applies the host firewall of a k3s server (docs/deployment.md, "Host
-# firewall") with UFW. The rules here are the whole firewall: each run resets
+# Applies the host firewall of a k3s server with UFW, after install-k3s.sh.
+# The rules here are the whole firewall: each run resets
 # UFW and applies exactly this set, so a second run changes nothing and a rule
 # added by hand is removed. The router is the outer wall and forwards only the
 # public ports below; this is the second wall if it ever forwards more.
@@ -18,7 +18,10 @@
 # The k3s pod and service networks are allowed, as k3s requires with UFW.
 #
 # Usage: sudo ADMIN_CIDR=192.168.40.0/24 deploy/bootstrap/host-firewall.sh [--dry-run]
-# ADMIN_CIDR defaults to the network of the default route's interface.
+# ADMIN_CIDR defaults to the network of the default route's interface. From a
+# workstation: ssh -t <server> 'sudo bash -s' < deploy/bootstrap/host-firewall.sh
+# Only Traefik's 9443 and the edge should appear in the closing list of ports
+# that bypass UFW.
 
 set -euo pipefail
 

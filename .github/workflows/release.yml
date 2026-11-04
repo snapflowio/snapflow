@@ -71,7 +71,7 @@ jobs:
             exit 1
           fi
           if ! jq --exit-status '.signed._type == "root"' apps/snapflow/internal/tuf/trust/root.json >/dev/null; then
-            echo "::error::apps/snapflow/internal/tuf/trust/root.json must hold the production TUF root (see docs/releases.md)"
+            echo "::error::apps/snapflow/internal/tuf/trust/root.json must hold the production TUF root (see apps/snapflow/internal/tuf/trust/README.md)"
             exit 1
           fi
           epoch="$(git show -s --format=%ct HEAD)"

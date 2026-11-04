@@ -1,6 +1,22 @@
 # k3s uploads every etcd snapshot (install-k3s.sh: every six hours, 28 kept)
-# to R2 as well, reading this Secret at each snapshot. Restoring needs the S3
-# settings on the command line instead (docs/deployment.md, "Restore").
+# to R2 under k3s/ as well, reading this Secret at each snapshot.
+#
+# Restore, first after losing the machine (then OpenBao, then Postgres and
+# RustFS): install k3s with install-k3s.sh, stop it, put the original server
+# token at /var/lib/rancher/k3s/server/token, and pass the S3 settings on the
+# command line, because this Secret does not exist yet:
+#   k3s server --cluster-reset --etcd-s3 \
+#     --etcd-s3-endpoint=<account>.r2.cloudflarestorage.com --etcd-s3-region=auto \
+#     --etcd-s3-bucket=snapflow-backups --etcd-s3-folder=k3s \
+#     --etcd-s3-access-key=<id> --etcd-s3-secret-key=<secret> \
+#     --cluster-reset-restore-path=<snapshot name>
+# then start k3s again.
+#
+# The R2 credentials are snapflow/backups in OpenBao: an R2 Account API token
+# with Object Read & Write on the bucket only; Cloudflare shows its S3 access
+# key ID and secret once, on creation. Keep them, the OpenBao seal key and the
+# k3s server token in a password manager: no backup restores without them.
+# Test a restore every quarter.
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:

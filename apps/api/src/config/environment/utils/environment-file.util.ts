@@ -7,7 +7,10 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { environmentFileSections } from './environment-docs.util';
+import type { z } from 'zod';
+import { DeploymentEnvironment } from '../../enums/deployment-environment.enum';
+import { ENVIRONMENT_NAMESPACES } from '../registry.environment';
+import { ENVIRONMENT_METADATA } from './environment-variable.util';
 
 const SECTION_PREFIX = '# ';
 const LINE_SEPARATOR = '\n';
@@ -19,6 +22,21 @@ interface EnvironmentFileLayout {
 	content: string;
 	added: string[];
 	unregistered: string[];
+}
+
+function environmentFileSections(): { title: string; names: string[] }[] {
+	return ENVIRONMENT_NAMESPACES.map((namespace) => {
+		const shape: Readonly<Record<string, z.ZodType>> = namespace.schema.shape;
+		return {
+			title: namespace.title,
+			names: Object.keys(shape).filter((name) => {
+				const allowedIn = ENVIRONMENT_METADATA.get(shape[name])?.allowedIn;
+				return (
+					!allowedIn || allowedIn.includes(DeploymentEnvironment.DEVELOPMENT)
+				);
+			}),
+		};
+	});
 }
 
 function variableLines(content: string): Map<string, string> {

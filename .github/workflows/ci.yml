@@ -107,8 +107,6 @@ jobs:
           --concurrency=4
       - name: Build the API
         run: pnpm exec moon run api:build-production
-      - name: Verify the generated environment documentation is current
-        run: pnpm exec moon run api:env-docs-check
       - name: Build the dashboard
         run: pnpm exec moon run dashboard:build
       - name: Build the marketing website

@@ -112,7 +112,7 @@ path "${kv_mount}/data/snapflow/*" {
 }
 POLICY
 
-# The operator (moon run deploy:openbao, docs/deployment.md "Secrets") manages
+# The operator (moon run deploy:openbao) manages
 # only the secrets it supplies: it can browse the snapflow folder and create,
 # edit, roll back and delete these paths, but cannot read the keyrings and
 # platform credentials this job generates or change OpenBao itself.
@@ -128,8 +128,8 @@ POLICY
 		printf 'path "%s/undelete/snapflow/%s" {\n  capabilities = ["update"]\n}\n' "${kv_mount}" "${path}"
 	done
 	set +f
-	# The read-only database login (docs/deployment.md, "Querying the
-	# database") is generated below; the operator may read it, nothing more.
+	# The read-only database login (platform/data/postgres.yaml) is generated
+	# below; the operator may read it, nothing more.
 	printf 'path "%s/metadata/snapflow/platform/" {\n  capabilities = ["list"]\n}\n' "${kv_mount}"
 	printf 'path "%s/data/snapflow/platform/postgres-readonly" {\n  capabilities = ["read"]\n}\n' "${kv_mount}"
 	printf 'path "%s/metadata/snapflow/platform/postgres-readonly" {\n  capabilities = ["read"]\n}\n' "${kv_mount}"

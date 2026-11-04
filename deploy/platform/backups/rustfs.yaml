@@ -2,6 +2,10 @@
 # Both buckets are mirrored to R2 daily; an object the mirror would delete or
 # overwrite is first moved under rustfs-changes/<date>, kept for 30 days, so a
 # deletion in RustFS is never lost the same night.
+#
+# Restore (after OpenBao): `rclone sync r2:snapflow-backups/rustfs/<bucket>
+# rustfs:<bucket>` for snapflow and snapflow-snapshots; an object deleted or
+# overwritten in the last 30 days is under rustfs-changes/<date>/<bucket>/.
 apiVersion: v1
 kind: ConfigMap
 metadata:
