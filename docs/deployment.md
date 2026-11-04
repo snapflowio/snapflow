@@ -114,7 +114,7 @@ Every sandbox host serves code its owner controls, including the system toolbox,
 
 - **Rotate a secret**: open `moon run deploy:openbao`, edit the secret and save it as a new version, then press Ctrl-C; External Secrets syncs at once and Reloader rolls only the workloads whose secrets changed. To retire an edge, remove it from the chart, then delete `snapflow/edges/<name>` in the UI (*Delete metadata and all versions*).
 - **Roll back an app**: on a `hotfix/<name>` branch from `main`, set the app's `tag` and `digest` in `deploy/apps/production/snapflow.yaml` back to the previous pins (or revert the promotion), and merge it into `main`. Image automation never writes `main`, so the rollback stays until the next promotion, which should carry the fix. Database migrations are forward-only.
-- **Change settings**: edit `deploy/clusters/production/cluster-settings.env` or the chart values in Git; Flux applies the change. [production-settings.md](reference/production-settings.md) lists where every setting lives.
+- **Change settings**: edit `deploy/clusters/production/cluster-settings.env` or the chart values in Git; Flux applies the change.
 - **Upgrade platform components**: bump the pinned chart and image versions in `deploy/` and run `moon run deploy:validate`.
 - **Upgrade k3s**: rerun `install-k3s.sh` with a newer `k3s_version`.
 - **Add an edge server**: install it with `install-k3s.sh edge` (it joins over WireGuard and is tainted for the edge only), then add its OpenBao secret and `edges` entry as in step 6.
