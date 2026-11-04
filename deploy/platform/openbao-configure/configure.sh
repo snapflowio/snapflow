@@ -128,6 +128,11 @@ POLICY
 		printf 'path "%s/undelete/snapflow/%s" {\n  capabilities = ["update"]\n}\n' "${kv_mount}" "${path}"
 	done
 	set +f
+	# The read-only database login (docs/deployment.md, "Querying the
+	# database") is generated below; the operator may read it, nothing more.
+	printf 'path "%s/metadata/snapflow/platform/" {\n  capabilities = ["list"]\n}\n' "${kv_mount}"
+	printf 'path "%s/data/snapflow/platform/postgres-readonly" {\n  capabilities = ["read"]\n}\n' "${kv_mount}"
+	printf 'path "%s/metadata/snapflow/platform/postgres-readonly" {\n  capabilities = ["read"]\n}\n' "${kv_mount}"
 } | write_policy snapflow-operator
 
 # The backup CronJob (deploy/platform/backups) may take a raft snapshot and
@@ -160,6 +165,10 @@ fi
 if ! secret_exists snapflow/platform/rustfs; then
 	bao kv put -mount="${kv_mount}" -cas=0 snapflow/platform/rustfs \
 		access-key="$(random_secret)" secret-key="$(random_secret)" >/dev/null
+fi
+if ! secret_exists snapflow/platform/postgres-readonly; then
+	bao kv put -mount="${kv_mount}" -cas=0 snapflow/platform/postgres-readonly \
+		username=snapflow_readonly password="$(random_secret)" >/dev/null
 fi
 if ! secret_exists snapflow/platform/snapshot-manager; then
 	bao kv put -mount="${kv_mount}" -cas=0 snapflow/platform/snapshot-manager \
