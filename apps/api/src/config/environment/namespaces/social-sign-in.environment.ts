@@ -15,7 +15,6 @@ import {
 
 export const socialSignInEnvironment = defineEnvironment(
 	{
-		name: 'social-sign-in',
 		title: 'Social sign-in',
 		description:
 			'OAuth applications for Google and GitHub sign-in; a provider is offered only when both of its variables are set',

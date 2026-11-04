@@ -15,7 +15,6 @@ import {
 
 export const snapshotManagerEnvironment = defineEnvironment(
 	{
-		name: 'snapshot-manager',
 		title: 'Snapshot Manager',
 		description:
 			'The platform registry that stores snapshot images, backups and build caches',

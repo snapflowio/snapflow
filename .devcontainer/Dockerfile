@@ -23,8 +23,6 @@ FROM moby/buildkit:v0.32.2@sha256:28a898719c18a33f4e8000685287fa36fd0dd9560c6440
 
 FROM mcr.microsoft.com/devcontainers/base:bookworm@sha256:bb7b81b6e5be17b5267f92f4ffda534fea37dab1df97b5e86c1f9b91da5c0b5d
 
-LABEL org.opencontainers.image.source="https://github.com/snapflowio/snapflow"
-
 ARG DEBIAN_FRONTEND=noninteractive
 ARG MOON_VERSION=2.4.6
 ARG CODEX_VERSION=0.145.0

@@ -101,7 +101,6 @@ add_entry "./tmp"
 add_entry "./core"
 add_entry "./.pnpm-store"
 add_entry "./.moon/cache"
-add_entry "./.moon/docker"
 
 PRUNE_PATHS=(
   -path './.git' -o

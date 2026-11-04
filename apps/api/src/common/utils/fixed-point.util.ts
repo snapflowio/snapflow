@@ -50,8 +50,3 @@ export function fixed(value: bigint, scale: number): string {
 export function moneyToScaledInteger(value: string): bigint {
 	return parseFixed(value, USAGE_MONEY_SCALE, 'money amount');
 }
-
-export function scaledIntegerToMoney(value: bigint): string {
-	if (value < 0n) throw new Error('Money amount must be nonnegative');
-	return fixed(value, USAGE_MONEY_SCALE);
-}

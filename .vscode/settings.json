@@ -91,8 +91,7 @@
 		"**/reference/**": true,
 		"**/references/**": true,
 		"**/tmp/**": true,
-		"**/coverage/**": true,
-		"**/libs/microvm-go/internal/initrd/static/**": true
+		"**/coverage/**": true
 	},
 	"search.exclude": {
 		"**/.svelte-kit/**": true,
@@ -106,8 +105,7 @@
 		"**/reference/**": true,
 		"**/references/**": true,
 		"**/tmp/**": true,
-		"**/coverage/**": true,
-		"**/libs/microvm-go/internal/initrd/static/**": true
+		"**/coverage/**": true
 	},
 	"git.ignoreLimitWarning": true
 }

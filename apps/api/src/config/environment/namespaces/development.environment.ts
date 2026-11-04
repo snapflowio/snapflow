@@ -22,7 +22,6 @@ const developmentSecret = (description: string) =>
 
 export const developmentEnvironment = defineEnvironment(
 	{
-		name: 'development',
 		title: 'Development',
 		description:
 			'Secrets of the local development stack, shared with its other services',
