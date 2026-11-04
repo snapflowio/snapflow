@@ -35,18 +35,9 @@ target "_common" {
   }
 }
 
-# The Caddy binary the dashboard and marketing images serve with. It is not
-# published on its own; those targets consume it as the "caddy" build context.
-target "caddy" {
-  context    = "."
-  platforms  = ["linux/amd64"]
-  dockerfile = "images/caddy/Dockerfile"
-}
-
 target "marketing" {
   inherits   = ["_common"]
   cache-from = ["type=registry,ref=ghcr.io/${IMAGE_NAMESPACE}/marketing:buildcache"]
-  contexts   = { caddy = "target:caddy" }
   dockerfile = "apps/marketing/Dockerfile"
   tags       = ["ghcr.io/${IMAGE_NAMESPACE}/marketing:${IMAGE_TAG}"]
   labels = {
@@ -60,7 +51,6 @@ target "marketing" {
 target "dashboard" {
   inherits   = ["_common"]
   cache-from = ["type=registry,ref=ghcr.io/${IMAGE_NAMESPACE}/dashboard:buildcache"]
-  contexts   = { caddy = "target:caddy" }
   dockerfile = "apps/dashboard/Dockerfile"
   tags       = ["ghcr.io/${IMAGE_NAMESPACE}/dashboard:${IMAGE_TAG}"]
   labels = {

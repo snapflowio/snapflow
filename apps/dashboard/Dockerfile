@@ -40,28 +40,17 @@ RUN pnpm --filter @snapflow/dashboard exec vite build \
 	&& printf '{"application":"dashboard","release":"%s","revision":"%s"}\n' \
 		"$SNAPFLOW_RELEASE_VERSION" "$SNAPFLOW_SOURCE_REVISION" \
 		> dist/apps/dashboard/version.json \
-	&& node apps/dashboard/scripts/render-caddyfile.ts \
+	&& node apps/dashboard/scripts/render-nginx-config.ts \
 		dist/apps/dashboard/200.html \
-		apps/dashboard/Caddyfile \
-		/build/Caddyfile
+		apps/dashboard/nginx.conf \
+		/build/nginx.conf
 
-FROM cgr.dev/chainguard/static:latest@sha256:fc42af33e643f20d08baf03cddcc1c02ba57052dfb02edb0d79f3fc47bcea8d9 AS runtime
+# Chainguard's nginx is rebuilt daily from patched sources and has no shell.
+# It runs as its nonroot user; the site and config stay root-owned and
+# read-only, and nginx writes only to /tmp.
+FROM cgr.dev/chainguard/nginx:latest@sha256:b9debc2fbe5bf256b4c3980d0bbfda8187d46e35b4117c582ace66269dc1de28 AS runtime
 
-# A shell-less base with only CA certificates; images/caddy (the bake "caddy"
-# context) supplies a Caddy built from source with current dependencies. The
-# site and Caddyfile stay root-owned, so the server cannot rewrite them.
-COPY --from=caddy /caddy /usr/bin/caddy
-COPY --from=caddy /mime.types /etc/mime.types
-COPY --from=caddy --chown=10001:10001 /writable/ /
+COPY --from=builder /build/nginx.conf /etc/nginx/nginx.conf
 COPY --from=builder /build/dist/apps/dashboard/ /srv/snapflow/
-COPY --from=builder /build/Caddyfile /etc/caddy/Caddyfile
-
-ENV XDG_CONFIG_HOME=/config
-ENV XDG_DATA_HOME=/data
-
-USER 10001:10001
 
 EXPOSE 8080
-
-ENTRYPOINT ["/usr/bin/caddy"]
-CMD ["run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]

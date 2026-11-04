@@ -43,17 +43,9 @@ spec:
           resources:
             {{- toYaml $values.resources | nindent 12 }}
           volumeMounts:
-            - name: config
-              mountPath: /config
-            - name: data
-              mountPath: /data
             - name: tmp
               mountPath: /tmp
       volumes:
-        - name: config
-          emptyDir: {}
-        - name: data
-          emptyDir: {}
         - name: tmp
           emptyDir: {}
 ---
