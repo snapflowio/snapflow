@@ -23,10 +23,7 @@ import (
 
 type Kind string
 
-const (
-	KindStopped Kind = "stopped"
-	KindStandby Kind = "standby"
-)
+const KindStopped Kind = "stopped"
 
 type Snapshot struct {
 	ID               string                `json:"id"`

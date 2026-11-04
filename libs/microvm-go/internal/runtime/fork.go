@@ -26,14 +26,12 @@ import (
 	"github.com/google/uuid"
 	mvmerrors "github.com/snapflowio/microvm-go/internal/errors"
 	"github.com/snapflowio/microvm-go/internal/lifecycle"
-	"github.com/snapflowio/microvm-go/internal/snapshot"
 	"github.com/snapflowio/microvm-go/internal/state"
 	"github.com/snapflowio/microvm-go/types"
 )
 
 type forkSource struct {
-	metadata       state.InstanceMetadata
-	snapshotRecord *snapshot.Record
+	metadata state.InstanceMetadata
 }
 
 type forkOptions struct {
@@ -79,7 +77,7 @@ func (b *Backend) forkWithOptions(ctx context.Context, instanceID string, reques
 }
 
 func (b *Backend) forkLocked(ctx context.Context, instanceID string, request types.ForkRequest, options forkOptions) (forkID string, returnErr error) {
-	sourceData, err := b.loadForkSource(instanceID, request.SnapshotID)
+	sourceData, err := b.loadForkSource(instanceID)
 	if err != nil {
 		return "", err
 	}
@@ -132,20 +130,16 @@ func validateForkRequest(instanceID string, sourceData forkSource) error {
 	if err := validateRequestedTransition(lifecycle.OperationFork, source.State); err != nil {
 		return err
 	}
-	if sourceData.snapshotRecord == nil {
-		if err := validateForkSource(source); err != nil {
-			return err
-		}
+	if err := validateForkSource(source); err != nil {
+		return err
 	}
 	if source.ID != instanceID {
 		return stateConflict("snapshot source does not match the requested instance", "MICROVM_SNAPSHOT_SOURCE_MISMATCH")
 	}
-	if forkCapturesMemory(source, sourceData.snapshotRecord) {
-		if err := validateMemorySnapshotPolicy(source); err != nil {
-			return err
-		}
+	if forkCapturesMemory(source) {
+		return validateMemorySnapshotPolicy(source)
 	}
-	return validateForkSnapshotKind(sourceData.snapshotRecord)
+	return nil
 }
 
 func (b *Backend) reserveFork(
@@ -165,9 +159,6 @@ func (b *Backend) reserveFork(
 }
 
 func (b *Backend) prepareForkSnapshotSource(ctx context.Context, sourceData forkSource) (bool, *forkSourceRestorer, error) {
-	if sourceData.snapshotRecord != nil {
-		return sourceData.snapshotRecord.Snapshot.Kind == snapshot.KindStandby, &forkSourceRestorer{}, nil
-	}
 	fastFork, restoreSource, err := b.prepareFastForkSource(ctx, sourceData.metadata)
 	if err != nil {
 		return false, nil, err
@@ -181,7 +172,7 @@ func (b *Backend) materializeForkTarget(transaction *lifecycle.Transaction,
 	options forkOptions,
 ) error {
 	targetDir := b.paths.InstanceDir(forkID)
-	if err := b.materializeForkSourceWithOptions(sourceData, targetDir, forkID, options); err != nil {
+	if err := b.materializeForkSourceWithOptions(sourceData, targetDir, options); err != nil {
 		return errors.Join(
 			fmt.Errorf("materialize instance fork source: %w", err),
 			wrapOptionalError("remove partial fork target", os.RemoveAll(targetDir)),
@@ -324,9 +315,6 @@ func (b *Backend) reconcileExistingFork(ctx context.Context, sourceInstanceID st
 	return request.ID, nil
 }
 
-func forkCapturesMemory(source state.InstanceMetadata, record *snapshot.Record) bool {
-	if record != nil {
-		return record.Snapshot.Kind == snapshot.KindStandby
-	}
+func forkCapturesMemory(source state.InstanceMetadata) bool {
 	return source.State == types.RuntimeStateStarted || source.State == types.RuntimeStateStandby
 }

@@ -131,12 +131,6 @@ func (p Platform) Matches(other Platform) bool {
 	return p.OS == other.OS && p.Architecture == other.Architecture
 }
 
-func (p Platform) RequiresHostEmulation() bool {
-	p = p.Normalize()
-	host := HostPlatform()
-	return p.OS == host.OS && p.Architecture != host.Architecture
-}
-
 func (p Platform) OCI() ocispec.Platform {
 	return ocispec.Platform{
 		OS:           p.OS,

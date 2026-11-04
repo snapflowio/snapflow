@@ -17,7 +17,6 @@ package runtime
 import (
 	"testing"
 
-	"github.com/snapflowio/microvm-go/internal/snapshot"
 	"github.com/snapflowio/microvm-go/internal/state"
 	"github.com/snapflowio/microvm-go/types"
 )
@@ -37,17 +36,14 @@ func TestForkCapturesMemory(t *testing.T) {
 	tests := []struct {
 		name     string
 		state    types.RuntimeState
-		record   *snapshot.Record
 		expected bool
 	}{
 		{name: "running source", state: types.RuntimeStateStarted, expected: true},
 		{name: "stopped source", state: types.RuntimeStateStopped, expected: false},
-		{name: "standby snapshot", state: types.RuntimeStateStopped, record: &snapshot.Record{Snapshot: snapshot.Snapshot{Kind: snapshot.KindStandby}}, expected: true},
-		{name: "stopped snapshot", state: types.RuntimeStateStarted, record: &snapshot.Record{Snapshot: snapshot.Snapshot{Kind: snapshot.KindStopped}}, expected: false},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			actual := forkCapturesMemory(state.InstanceMetadata{State: test.state}, test.record)
+			actual := forkCapturesMemory(state.InstanceMetadata{State: test.state})
 			if actual != test.expected {
 				t.Fatalf("forkCapturesMemory() = %t, want %t", actual, test.expected)
 			}
