@@ -38,15 +38,16 @@ RUN cd apps/marketing \
 		"$SNAPFLOW_RELEASE_VERSION" "$SNAPFLOW_SOURCE_REVISION" \
 		> ../../dist/apps/marketing/version.json
 
-FROM caddy:2.10.2-alpine@sha256:4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d AS runtime
+FROM cgr.dev/chainguard/static:latest@sha256:fc42af33e643f20d08baf03cddcc1c02ba57052dfb02edb0d79f3fc47bcea8d9 AS runtime
 
-RUN addgroup -S -g 10001 snapflow \
-	&& adduser -S -D -H -u 10001 -G snapflow snapflow \
-	&& setcap -r /usr/bin/caddy \
-	&& install -d -m 0755 -o snapflow -g snapflow /srv/snapflow /config /data
-
-COPY --from=builder --chown=snapflow:snapflow /build/dist/apps/marketing/ /srv/snapflow/
-COPY --chown=snapflow:snapflow apps/marketing/Caddyfile /etc/caddy/Caddyfile
+# A shell-less base with only CA certificates; images/caddy (the bake "caddy"
+# context) supplies a Caddy built from source with current dependencies. The
+# site and Caddyfile stay root-owned, so the server cannot rewrite them.
+COPY --from=caddy /caddy /usr/bin/caddy
+COPY --from=caddy /mime.types /etc/mime.types
+COPY --from=caddy --chown=10001:10001 /writable/ /
+COPY --from=builder /build/dist/apps/marketing/ /srv/snapflow/
+COPY apps/marketing/Caddyfile /etc/caddy/Caddyfile
 
 ENV XDG_CONFIG_HOME=/config
 ENV XDG_DATA_HOME=/data
@@ -55,7 +56,5 @@ USER 10001:10001
 
 EXPOSE 8080
 
-HEALTHCHECK --interval=15s --timeout=3s --start-period=5s --retries=3 \
-	CMD wget --quiet --tries=1 --spider http://127.0.0.1:8080/healthz || exit 1
-
-CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+ENTRYPOINT ["/usr/bin/caddy"]
+CMD ["run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]

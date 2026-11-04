@@ -1,5 +1,6 @@
 marketing:
   - "apps/marketing/**"
+  - "images/caddy/**"
   - "docker-bake.hcl"
   - "deploy/scripts/image.sh"
   - ".moon/tasks/deployable.yml"
@@ -13,6 +14,7 @@ marketing:
   - "tsconfig.base.json"
 dashboard:
   - "apps/dashboard/**"
+  - "images/caddy/**"
   - "libs/api-client/**"
   - "libs/organization-access/**"
   - "libs/toolbox-api-client/**"
