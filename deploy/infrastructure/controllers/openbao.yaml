@@ -58,7 +58,10 @@ spec:
           enabled: true
           setNodeId: true
           config: |
-            ui = false
+            # The web UI is how the operator manages secrets. The service is
+            # cluster-internal and reached only by port-forward
+            # (moon run deploy:openbao).
+            ui = true
 
             listener "tcp" {
               tls_disable     = 1

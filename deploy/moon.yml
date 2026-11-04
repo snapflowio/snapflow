@@ -30,21 +30,12 @@ tasks:
       runFromWorkspaceRoot: true
 
   openbao:
-    description: "Opens a shell logged in to the cluster's OpenBao for entering and rotating secrets"
+    description: "Opens the cluster's OpenBao web UI on localhost, signed in for managing the operator secrets"
     command: "bash"
-    args: ["deploy/scripts/openbao-shell.sh"]
+    args: ["deploy/scripts/openbao-ui.sh"]
     options:
       cache: false
       interactive: true
-      runInCI: false
-      runFromWorkspaceRoot: true
-
-  secrets:
-    description: "Validates the secrets files in deploy/secrets/production and writes every changed file to OpenBao"
-    command: "bash"
-    args: ["deploy/scripts/push-secrets.sh"]
-    options:
-      cache: false
       runInCI: false
       runFromWorkspaceRoot: true
 
