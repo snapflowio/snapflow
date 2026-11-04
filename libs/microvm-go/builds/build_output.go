@@ -60,12 +60,21 @@ func imageFromOCITar(tarPath, targetDir string) (imagecache.Image, error) {
 	return image, nil
 }
 
-func extractTar(tarPath, targetDir string) error {
+func extractTar(tarPath, targetDir string) (resultErr error) {
 	file, err := os.Open(tarPath)
 	if err != nil {
 		return fmt.Errorf("open OCI tar: %w", err)
 	}
 	defer file.Close()
+	// Entries are written through an os.Root, so no entry name, ".." component
+	// or symlink can place a file outside the output directory.
+	root, err := os.OpenRoot(targetDir)
+	if err != nil {
+		return fmt.Errorf("open OCI output directory: %w", err)
+	}
+	defer func() {
+		resultErr = errors.Join(resultErr, root.Close())
+	}()
 	reader := tar.NewReader(file)
 	for {
 		header, err := reader.Next()
@@ -75,36 +84,36 @@ func extractTar(tarPath, targetDir string) error {
 		if err != nil {
 			return fmt.Errorf("read OCI tar entry: %w", err)
 		}
-		if err := extractTarEntry(reader, header, targetDir); err != nil {
+		if err := extractTarEntry(reader, header, root); err != nil {
 			return err
 		}
 	}
 }
 
-func extractTarEntry(reader io.Reader, header *tar.Header, targetDir string) error {
-	target, err := safeJoin(targetDir, header.Name)
-	if err != nil {
-		return err
+func extractTarEntry(reader io.Reader, header *tar.Header, root *os.Root) error {
+	target := filepath.Clean(filepath.FromSlash(header.Name))
+	if !filepath.IsLocal(target) {
+		return fmt.Errorf("unsafe OCI tar entry %q", header.Name)
 	}
 	mode := os.FileMode(header.Mode)
 	switch header.Typeflag {
 	case tar.TypeDir:
-		if err := os.MkdirAll(target, mode.Perm()); err != nil {
+		if err := root.MkdirAll(target, mode.Perm()); err != nil {
 			return fmt.Errorf("create OCI directory %s: %w", target, err)
 		}
 		return nil
 	case tar.TypeReg:
-		return writeTarFile(reader, target, mode.Perm(), header.Size)
+		return writeTarFile(reader, root, target, mode.Perm(), header.Size)
 	default:
 		return fmt.Errorf("unsupported OCI tar entry %s type %d", header.Name, header.Typeflag)
 	}
 }
 
-func writeTarFile(reader io.Reader, target string, mode os.FileMode, size int64) error {
-	if err := os.MkdirAll(filepath.Dir(target), ociDirectoryMode); err != nil {
+func writeTarFile(reader io.Reader, root *os.Root, target string, mode os.FileMode, size int64) error {
+	if err := root.MkdirAll(filepath.Dir(target), ociDirectoryMode); err != nil {
 		return fmt.Errorf("create OCI file parent %s: %w", target, err)
 	}
-	out, err := os.OpenFile(target, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, mode)
+	out, err := root.OpenFile(target, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, mode)
 	if err != nil {
 		return fmt.Errorf("create OCI file %s: %w", target, err)
 	}

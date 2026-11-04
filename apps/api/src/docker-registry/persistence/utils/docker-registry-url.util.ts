@@ -12,11 +12,19 @@ import type { DockerRegistry } from '../entities/docker-registry.entity';
 
 const DEFAULT_REGISTRY_PROJECT = 'snapflow';
 const URL_SCHEME_PATTERN = /^https?:\/\//;
-const TRAILING_SLASHES_PATTERN = /\/+$/;
 const PLAINTEXT_REGISTRY_HOST_PREFIXES = ['localhost', '127.0.0.1'] as const;
+const SLASH = '/';
+
+// A /\/+$/ regex backtracks quadratically on long runs of slashes followed by
+// another character, so trailing slashes are trimmed with a linear scan.
+function trimTrailingSlashes(value: string): string {
+	let end = value.length;
+	while (end > 0 && value[end - 1] === SLASH) end--;
+	return value.slice(0, end);
+}
 
 export function registryEndpoint(url: string): string {
-	const trimmed = url.trim().replace(TRAILING_SLASHES_PATTERN, '');
+	const trimmed = trimTrailingSlashes(url.trim());
 	if (URL_SCHEME_PATTERN.test(trimmed)) {
 		return trimmed;
 	}
@@ -29,10 +37,7 @@ export function registryEndpoint(url: string): string {
 }
 
 export function registryHost(url: string): string {
-	return url
-		.trim()
-		.replace(URL_SCHEME_PATTERN, '')
-		.replace(TRAILING_SLASHES_PATTERN, '');
+	return trimTrailingSlashes(url.trim().replace(URL_SCHEME_PATTERN, ''));
 }
 
 export function normalizeRegistryUrl(url: string): string {

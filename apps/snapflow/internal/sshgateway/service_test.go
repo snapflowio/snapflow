@@ -67,6 +67,25 @@ func TestAdmitRejectsConnectionsBeyondTheLimit(t *testing.T) {
 	}
 }
 
+func TestAuthorizeStopsWhenTheGatewayShutsDown(t *testing.T) {
+	service := testService(t, blockingAccess{})
+	ctx, cancel := context.WithCancel(t.Context())
+	result := make(chan error, 1)
+	go func() {
+		_, err := service.authorize(ctx, testGrantToken)
+		result <- err
+	}()
+	cancel()
+	select {
+	case err := <-result:
+		if !errors.Is(err, context.Canceled) {
+			t.Fatalf("authorize() error = %v, want cancellation", err)
+		}
+	case <-time.After(testWaitTimeout):
+		t.Fatal("authorize did not return after shutdown")
+	}
+}
+
 func TestRunClosesLiveConnectionsOnShutdown(t *testing.T) {
 	service := testService(t, blockingAccess{})
 	service.port = 0

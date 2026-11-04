@@ -62,8 +62,11 @@ func (s *Service) handshake(
 }
 
 func (s *Service) authorize(ctx context.Context, token string) (string, error) {
+	// ctx is the gateway's lifetime, shared by every connection, so a
+	// resolution shared through the singleflight group still ends on shutdown
+	// instead of holding Run open for the full access timeout.
 	resolved, err, _ := s.resolutions.Do(token, func() (any, error) {
-		resolveContext, cancel := context.WithTimeout(context.WithoutCancel(ctx), sshAccessTimeout)
+		resolveContext, cancel := context.WithTimeout(ctx, sshAccessTimeout)
 		defer cancel()
 		return s.access.ResolveSSHAccess(resolveContext, token)
 	})

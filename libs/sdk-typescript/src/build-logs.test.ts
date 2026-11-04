@@ -77,7 +77,7 @@ function stubFetch(edgeResponses: Response[]) {
 
 function edgeRequests(fetchMock: MockInstance) {
 	return fetchMock.mock.calls.filter(
-		([input]) => !requestUrl(input).startsWith(API_URL)
+		([input]) => new URL(requestUrl(input)).origin !== new URL(API_URL).origin
 	);
 }
 

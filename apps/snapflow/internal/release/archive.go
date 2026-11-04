@@ -135,7 +135,17 @@ type archiveAdmission struct {
 	expanded int64
 }
 
-func extractEntries(archive *tar.Reader, destination string) error {
+func extractEntries(archive *tar.Reader, destination string) (resultErr error) {
+	// Entries are written through an os.Root, so no entry name, ".." component
+	// or symlink can place a file outside the extraction directory, even if
+	// archiveRelativePath were ever loosened.
+	root, err := os.OpenRoot(destination)
+	if err != nil {
+		return fmt.Errorf("open Snapflow release extraction directory: %w", err)
+	}
+	defer func() {
+		resultErr = errors.Join(resultErr, root.Close())
+	}()
 	admission := archiveAdmission{seen: make(map[string]struct{}, maximumArchiveFiles)}
 	for {
 		header, err := archive.Next()
@@ -149,7 +159,7 @@ func extractEntries(archive *tar.Reader, destination string) error {
 		if err != nil {
 			return err
 		}
-		if err := extractRegularFile(archive, destination, relative, header.Size, mode); err != nil {
+		if err := extractRegularFile(archive, root, relative, header.Size, mode); err != nil {
 			return err
 		}
 	}
@@ -290,12 +300,12 @@ func archiveRelativePath(name string) (string, error) {
 	return relative, nil
 }
 
-func extractRegularFile(archive io.Reader, destination, relative string, size int64, mode os.FileMode) (resultErr error) {
-	target := filepath.Join(destination, filepath.FromSlash(relative))
-	if err := os.MkdirAll(filepath.Dir(target), releaseDirectoryMode); err != nil {
+func extractRegularFile(archive io.Reader, root *os.Root, relative string, size int64, mode os.FileMode) (resultErr error) {
+	target := filepath.FromSlash(relative)
+	if err := root.MkdirAll(filepath.Dir(target), releaseDirectoryMode); err != nil {
 		return fmt.Errorf("create Snapflow release archive directory: %w", err)
 	}
-	file, err := os.OpenFile(target, os.O_CREATE|os.O_EXCL|os.O_WRONLY, mode)
+	file, err := root.OpenFile(target, os.O_CREATE|os.O_EXCL|os.O_WRONLY, mode)
 	if err != nil {
 		return fmt.Errorf("create Snapflow release archive file %q: %w", relative, err)
 	}
