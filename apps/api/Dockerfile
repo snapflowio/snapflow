@@ -84,9 +84,15 @@ ENV PORT=3001
 
 WORKDIR /app
 
+# The API only runs node, so the package managers bundled with the base image
+# (npm, npx, corepack and yarn) are removed; their own dependencies otherwise
+# carry CVEs the publish scan rejects, and nothing at runtime needs them.
 RUN apk upgrade --no-cache \
 	&& apk add --no-cache ca-certificates \
-	&& rm -rf /var/cache/apk/*
+	&& rm -rf /var/cache/apk/* \
+		/usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+		/usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
+		/usr/local/bin/yarn /usr/local/bin/yarnpkg /opt/yarn-*
 
 COPY --chown=root:root apps/api/package.json ./package.json
 COPY --chown=root:root --from=production-dependencies /deploy/node_modules ./node_modules
