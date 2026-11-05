@@ -10,9 +10,9 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { VolumeBackupScheduleManager } from '../../instance/managers/backup/volume-backup-schedule.manager';
-import { VolumeBackupJobName } from '../../volume/constants/volume-backup.constants';
-import { VolumeBackupRetentionManager } from '../../volume/managers/volume-backup-retention.manager';
+import { VolumeBackupJobName } from '../../../volume/constants/volume-backup.constants';
+import { VolumeBackupRetentionManager } from '../../../volume/managers/volume-backup-retention.manager';
+import { VolumeBackupScheduleManager } from '../../managers/backup/volume-backup-schedule.manager';
 
 @Injectable()
 export class VolumeBackupJob {

@@ -16,8 +16,8 @@ import {
 } from '@nestjs/common';
 import { v4 } from 'uuid';
 import { tenantScopedRelationKey } from '../../infra/database/utils/composite-relation-key.util';
-import type { Sandbox } from '../../sandbox/instance/entities/sandbox.entity';
-import type { SandboxPlacement } from '../../sandbox/instance/entities/sandbox-placement.entity';
+import type { Sandbox } from '../../sandbox/entities/sandbox.entity';
+import type { SandboxPlacement } from '../../sandbox/entities/sandbox-placement.entity';
 import {
 	SECRET_DELIVERY_OUTCOME,
 	type SecretDeliveryOutcome,

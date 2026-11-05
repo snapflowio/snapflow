@@ -11,8 +11,8 @@ import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
 import { RedisLockProvider } from '../../../infra/redis/providers/redis-lock.provider';
-import { PaymentsJob } from '../../funds/constants/payments.constants';
-import { EarningsMaturityService } from '../../funds/services/earnings-maturity.service';
+import { PaymentsJob } from '../../constants/payments.constants';
+import { EarningsMaturityService } from '../../services/earnings-maturity.service';
 import { runExclusivePaymentsJob } from '../utils/exclusive-payments-job.util';
 
 @Injectable()

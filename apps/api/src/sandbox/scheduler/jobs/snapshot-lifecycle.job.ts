@@ -10,7 +10,7 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { SnapshotLifecycleManager } from '../../snapshot/managers/snapshot-lifecycle.manager';
+import { SnapshotLifecycleManager } from '../../../snapshot/managers/snapshot-lifecycle.manager';
 
 @Injectable()
 export class SnapshotLifecycleJob {

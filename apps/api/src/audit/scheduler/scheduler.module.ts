@@ -8,11 +8,11 @@
  */
 
 import { Module } from '@nestjs/common';
-import { AuditLogModule } from '../log/log.module';
+import { AuditModule } from '../audit.module';
 import { AuditJob } from './jobs/audit.job';
 
 @Module({
-	imports: [AuditLogModule],
+	imports: [AuditModule],
 	providers: [AuditJob],
 })
 export class AuditSchedulerModule {}

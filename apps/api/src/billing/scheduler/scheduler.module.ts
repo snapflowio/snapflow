@@ -8,13 +8,13 @@
  */
 
 import { Module } from '@nestjs/common';
-import { BillingLedgerModule } from '../ledger/ledger.module';
-import { BillingUsageModule } from '../usage/usage.module';
+import { BillingModule } from '../billing.module';
+import { BillingUsageModule } from '../billing-usage.module';
 import { BillingEvidenceRetentionJob } from './jobs/billing-evidence-retention.job';
 import { UsageReconciliationJob } from './jobs/usage-reconciliation.job';
 
 @Module({
-	imports: [BillingLedgerModule, BillingUsageModule],
+	imports: [BillingModule, BillingUsageModule],
 	providers: [BillingEvidenceRetentionJob, UsageReconciliationJob],
 })
 export class BillingSchedulerModule {}

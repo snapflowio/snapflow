@@ -9,11 +9,11 @@
 
 import { Module } from '@nestjs/common';
 import { DiscoveryModule } from '@nestjs/core';
-import { SettingsPlatformModule } from '../platform/platform.module';
+import { SettingsModule } from '../settings.module';
 import { MaintenanceSchedulerService } from './services/maintenance-scheduler.service';
 
 @Module({
-	imports: [SettingsPlatformModule, DiscoveryModule],
+	imports: [SettingsModule, DiscoveryModule],
 	providers: [MaintenanceSchedulerService],
 })
 export class SettingsSchedulerModule {}

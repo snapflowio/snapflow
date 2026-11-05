@@ -19,7 +19,7 @@ import {
 	PLATFORM_PRINCIPAL_TYPE,
 	type PlatformPrincipalType,
 } from '../../common/types/platform-principal.types';
-import { Sandbox } from '../../sandbox/instance/entities/sandbox.entity';
+import { Sandbox } from '../../sandbox/entities/sandbox.entity';
 import { SECRET_LIMITS } from '../constants/secret.constants';
 import { Secret } from './secret.entity';
 import { SecretVersion } from './secret-version.entity';

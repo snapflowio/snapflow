@@ -19,8 +19,8 @@ import {
 	SCHEDULED_JOB_METADATA,
 	type ScheduledJobMetadata,
 } from '../../../common/constants/scheduled-job.constants';
-import { SettingsEvents } from '../../platform/constants/settings.constants';
-import { SettingsService } from '../../platform/services/settings.service';
+import { SettingsEvents } from '../../constants/settings.constants';
+import { SettingsService } from '../../services/settings.service';
 
 @Injectable()
 export class MaintenanceSchedulerService implements OnApplicationBootstrap {

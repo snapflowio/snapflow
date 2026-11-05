@@ -10,7 +10,7 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { IdempotencyPrunerService } from '../../request/services/idempotency-pruner.service';
+import { IdempotencyPrunerService } from '../../services/idempotency-pruner.service';
 
 @Injectable()
 export class IdempotencyPrunerJob {

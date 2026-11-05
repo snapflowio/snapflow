@@ -21,7 +21,7 @@ import {
 	type PermissionPair,
 	permissionPairs,
 	toPermissionRecord,
-} from '../../organization/tenant/utils/organization-permissions.util';
+} from '../../organization/utils/organization-permissions.util';
 import type { Auth } from '../better-auth/better-auth.config';
 import { InjectBetterAuth } from '../better-auth/better-auth.provider';
 

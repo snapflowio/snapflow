@@ -14,8 +14,8 @@ import { RedisLockProvider } from '../../../infra/redis/providers/redis-lock.pro
 import {
 	PAYOUT_TIME_ZONE,
 	PaymentsJob,
-} from '../../funds/constants/payments.constants';
-import { PayoutService } from '../../funds/services/payout.service';
+} from '../../constants/payments.constants';
+import { PayoutService } from '../../services/payout.service';
 import { runExclusivePaymentsJob } from '../utils/exclusive-payments-job.util';
 
 @Injectable()

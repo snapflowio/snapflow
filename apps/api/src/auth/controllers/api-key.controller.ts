@@ -19,18 +19,18 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
 	Audit,
 	type TypedRequest,
-} from '../../audit/log/decorators/audit.decorator';
-import { AuditAction } from '../../audit/log/enums/audit-action.enum';
-import { AuditTarget } from '../../audit/log/enums/audit-target.enum';
+} from '../../audit/decorators/audit.decorator';
+import { AuditAction } from '../../audit/enums/audit-action.enum';
+import { AuditTarget } from '../../audit/enums/audit-target.enum';
 import { IsOrganizationAuthContext } from '../../common/decorators/auth-context.decorator';
 import { AccessDeniedException } from '../../common/exceptions/access-denied.exception';
 import { AuthenticatedRateLimitGuard } from '../../common/guards/authenticated-rate-limit.guard';
 import type { OrganizationAuthContext } from '../../common/types/organization-auth-context.types';
-import { RequiredOrganizationPermissions } from '../../organization/tenant/decorators/required-organization-permissions.decorator';
+import { RequiredOrganizationPermissions } from '../../organization/decorators/required-organization-permissions.decorator';
 import {
 	permissionPairs,
 	toCredentialPermissions,
-} from '../../organization/tenant/utils/organization-permissions.util';
+} from '../../organization/utils/organization-permissions.util';
 import type { Auth } from '../better-auth/better-auth.config';
 import { InjectBetterAuth } from '../better-auth/better-auth.provider';
 import {

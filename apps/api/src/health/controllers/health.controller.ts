@@ -27,7 +27,7 @@ import { PublicEndpoint } from '../../auth/decorators/public-endpoint.decorator'
 import { AnonymousRateLimitGuard } from '../../common/guards/anonymous-rate-limit.guard';
 import { AuthenticatedRateLimitGuard } from '../../common/guards/authenticated-rate-limit.guard';
 import { BUILD_PROVENANCE } from '../../config/constants/build-provenance.constants';
-import { AvailableInMaintenance } from '../../settings/platform/guards/maintenance.guard';
+import { AvailableInMaintenance } from '../../settings/guards/maintenance.guard';
 import { HealthCheckAuthContextGuard } from '../guards/health-check-auth-context.guard';
 import { RedisHealthIndicator } from '../services/redis-health.service';
 

@@ -11,12 +11,12 @@ import { RequestContext } from '@mikro-orm/core';
 import { MikroORM } from '@mikro-orm/postgresql';
 import { NestFactory } from '@nestjs/core';
 import { Command, CommandRunner, Option } from 'nest-commander';
-import { DEVELOPMENT_ADMINISTRATOR } from '../../app/scheduler/constants/development-seed.constants';
 import {
 	AdministratorBootstrapService,
 	type FirstAdministrator,
 } from '../../auth/services/administrator-bootstrap.service';
 import { readEnvironment } from '../../config/environment/utils/read-environment.util';
+import { DEVELOPMENT_ADMINISTRATOR } from '../../development/constants/development-seed.constants';
 import { writeLine } from '../cli-output.util';
 
 const CLI_LOG_LEVELS = ['warn', 'error'] as const;
@@ -43,7 +43,7 @@ export class CreateAdminCommand extends CommandRunner {
 		const administrator = this.administrator(
 			this.command.opts<CreateAdminOptions>()
 		);
-		const { CliAppModule } = await import('../../app/root/app.module');
+		const { CliAppModule } = await import('../../app.module');
 		const app = await NestFactory.createApplicationContext(CliAppModule, {
 			logger: [...CLI_LOG_LEVELS],
 		});

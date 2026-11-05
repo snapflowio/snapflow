@@ -18,8 +18,8 @@ import {
 import { v4 } from 'uuid';
 import type { HumanPrincipal } from '../../common/types/platform-principal.types';
 import { tenantScopedRelationKey } from '../../infra/database/utils/composite-relation-key.util';
-import { Sandbox } from '../../sandbox/instance/entities/sandbox.entity';
-import { SandboxState } from '../../sandbox/instance/enums/sandbox-state.enum';
+import { Sandbox } from '../../sandbox/entities/sandbox.entity';
+import { SandboxState } from '../../sandbox/enums/sandbox-state.enum';
 import {
 	SECRET_LIMITS,
 	SECRET_PROBLEM_CODE,

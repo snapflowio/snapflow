@@ -10,8 +10,8 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { USAGE_JOB } from '../../metering/constants/usage-lifecycle.constants';
-import { UsageDriftReconcilerService } from '../../metering/services/usage-drift-reconciler.service';
+import { USAGE_JOB } from '../../constants/usage-lifecycle.constants';
+import { UsageDriftReconcilerService } from '../../services/usage-drift-reconciler.service';
 
 @Injectable()
 export class UsageDriftReconcilerJob {

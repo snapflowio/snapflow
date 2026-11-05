@@ -14,8 +14,8 @@ import {
 	ManyToOne,
 	Property,
 } from '@mikro-orm/decorators/legacy';
-import { Organization } from '../../organization/tenant/entities/organization.entity';
-import { Sandbox } from '../../sandbox/instance/entities/sandbox.entity';
+import { Organization } from '../../organization/entities/organization.entity';
+import { Sandbox } from '../../sandbox/entities/sandbox.entity';
 import { SECRET_RESOURCE_VERSION_INITIAL } from '../constants/secret.constants';
 
 @Entity({ tableName: 'sandbox_secret_binding_set' })

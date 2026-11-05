@@ -10,8 +10,8 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { NestFactory } from '@nestjs/core';
-import { createOpenApiDocument } from './app/http/openapi.config';
-import { ApiAppModule } from './app/root/app.module';
+import { ApiAppModule } from './app.module';
+import { createOpenApiDocument } from './http/openapi.config';
 
 const GENERATION_TIMEOUT_MILLISECONDS = 30_000;
 

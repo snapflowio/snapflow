@@ -9,11 +9,11 @@
 
 import type { EventEmitter2 } from '@nestjs/event-emitter';
 import type { BetterAuthOptions } from 'better-auth';
-import type { AuditService } from '../../../audit/log/services/audit.service';
-import { softDeleteOrganization } from '../../../organization/tenant/better-auth/organization-deletion';
-import type { OrganizationService } from '../../../organization/tenant/services/organization.service';
-import type { OrganizationSuspensionService } from '../../../organization/tenant/services/organization-suspension.service';
-import type { PersonalOrganizationService } from '../../../organization/tenant/services/personal-organization.service';
+import type { AuditService } from '../../../audit/services/audit.service';
+import { softDeleteOrganization } from '../../../organization/better-auth/organization-deletion';
+import type { OrganizationService } from '../../../organization/services/organization.service';
+import type { OrganizationSuspensionService } from '../../../organization/services/organization-suspension.service';
+import type { PersonalOrganizationService } from '../../../organization/services/personal-organization.service';
 import { UserEvents } from '../../../user/constants/user-events.constants';
 import { UserBannedEvent } from '../../../user/events/user-banned.event';
 import type { UserService } from '../../../user/services/user.service';

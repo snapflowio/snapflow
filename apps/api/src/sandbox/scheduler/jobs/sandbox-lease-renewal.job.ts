@@ -10,8 +10,8 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { SANDBOX_LEASE_JOB } from '../../instance/constants/sandbox-placement.constants';
-import { SandboxLeaseRenewalManager } from '../../instance/managers/sandbox-lease-renewal.manager';
+import { SANDBOX_LEASE_JOB } from '../../constants/sandbox-placement.constants';
+import { SandboxLeaseRenewalManager } from '../../managers/sandbox-lease-renewal.manager';
 
 @Injectable()
 export class SandboxLeaseRenewalJob {

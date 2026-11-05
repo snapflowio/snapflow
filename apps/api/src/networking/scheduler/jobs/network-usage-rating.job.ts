@@ -10,8 +10,8 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { NETWORK_USAGE_RATING } from '../../usage/constants/network-usage.constants';
-import { NetworkUsageRatingService } from '../../usage/services/network-usage-rating.service';
+import { NETWORK_USAGE_RATING } from '../../../network-usage/constants/network-usage.constants';
+import { NetworkUsageRatingService } from '../../../network-usage/services/network-usage-rating.service';
 
 @Injectable()
 export class NetworkUsageRatingJob {

@@ -10,7 +10,7 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { SandboxActivityService } from '../../instance/services/sandbox/sandbox-activity.service';
+import { SandboxActivityService } from '../../services/sandbox/sandbox-activity.service';
 
 @Injectable()
 export class SandboxActivityJob {

@@ -13,11 +13,11 @@ import {
 	Injectable,
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { softDeleteOrganization } from '../../organization/tenant/better-auth/organization-deletion';
-import { ORGANIZATION_HAS_LIVE_RESOURCES_CODE } from '../../organization/tenant/constants/live-organization-resource.constants';
-import { ORGANIZATION_ERROR } from '../../organization/tenant/constants/organization-errors.constants';
-import { OrganizationService } from '../../organization/tenant/services/organization.service';
-import { OrganizationOwnershipService } from '../../organization/tenant/services/organization-ownership.service';
+import { softDeleteOrganization } from '../../organization/better-auth/organization-deletion';
+import { ORGANIZATION_HAS_LIVE_RESOURCES_CODE } from '../../organization/constants/live-organization-resource.constants';
+import { ORGANIZATION_ERROR } from '../../organization/constants/organization-errors.constants';
+import { OrganizationService } from '../../organization/services/organization.service';
+import { OrganizationOwnershipService } from '../../organization/services/organization-ownership.service';
 import type { Auth } from '../better-auth/better-auth.config';
 import { InjectBetterAuth } from '../better-auth/better-auth.provider';
 

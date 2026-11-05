@@ -10,8 +10,8 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { MARKETPLACE_JOB } from '../../machine/constants/marketplace.constants';
-import { PriceFloorService } from '../../machine/services/price-floor.service';
+import { MARKETPLACE_JOB } from '../../constants/marketplace.constants';
+import { PriceFloorService } from '../../services/price-floor.service';
 
 @Injectable()
 export class PriceFloorJob {

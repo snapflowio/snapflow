@@ -13,8 +13,8 @@ import { after, before, describe, it } from 'node:test';
 import { QueryOrder } from '@mikro-orm/core';
 import { type EntityManager, MikroORM } from '@mikro-orm/postgresql';
 import { ENTITY_MAPPING_OPTIONS } from '../../../infra/database/config/entity-mapping.config';
-import { JOB_MACHINE_API_VERSION } from '../../../sandbox/machine/constants/machine.constants';
-import { Machine } from '../../../sandbox/machine/entities/machine.entity';
+import { JOB_MACHINE_API_VERSION } from '../../../machine/constants/machine.constants';
+import { Machine } from '../../../machine/entities/machine.entity';
 import { integrationDatabaseUrl } from '../../testing/integration-database.util';
 import { findCursorPage } from './cursor-page.util';
 

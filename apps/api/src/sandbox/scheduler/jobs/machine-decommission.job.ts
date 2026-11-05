@@ -10,8 +10,8 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { MACHINE_DECOMMISSION_CHECK } from '../../machine/constants/machine.constants';
-import { MachineDecommissionService } from '../../machine/services/machine-decommission.service';
+import { MACHINE_DECOMMISSION_CHECK } from '../../../machine/constants/machine.constants';
+import { MachineDecommissionService } from '../../../machine/services/machine-decommission.service';
 
 @Injectable()
 export class MachineDecommissionJob {

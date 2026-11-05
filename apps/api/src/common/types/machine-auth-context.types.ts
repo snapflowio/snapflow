@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
+import { Machine } from '../../machine/entities/machine.entity';
 import { BaseAuthContext, isBaseAuthContext } from './base-auth-context.types';
 
 export interface MachineAuthContext extends BaseAuthContext {

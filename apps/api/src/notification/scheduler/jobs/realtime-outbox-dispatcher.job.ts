@@ -9,8 +9,8 @@
 
 import { Injectable } from '@nestjs/common';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { REALTIME_OUTBOX } from '../../dispatch/constants/realtime-outbox.constants';
-import { RealtimeOutboxDispatcherService } from '../../dispatch/services/realtime-outbox-dispatcher.service';
+import { REALTIME_OUTBOX } from '../../constants/realtime-outbox.constants';
+import { RealtimeOutboxDispatcherService } from '../../services/realtime-outbox-dispatcher.service';
 
 @Injectable()
 export class RealtimeOutboxDispatcherJob {

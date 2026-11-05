@@ -13,7 +13,7 @@ import { enabledSocialProviders } from '../../auth/better-auth/plugins/social-pr
 import { PublicEndpoint } from '../../auth/decorators/public-endpoint.decorator';
 import { AnonymousRateLimitGuard } from '../../common/guards/anonymous-rate-limit.guard';
 import { TypedConfigService } from '../../config/services/typed-config.service';
-import { AvailableInMaintenance } from '../../settings/platform/guards/maintenance.guard';
+import { AvailableInMaintenance } from '../../settings/guards/maintenance.guard';
 import { PublicConfigDto } from '../dto/public-config.dto';
 
 @Controller('public-config')

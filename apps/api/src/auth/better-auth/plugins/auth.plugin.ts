@@ -14,7 +14,7 @@ import type { EmailService } from '../../../infra/email/services/email.service';
 import {
 	createOrganizationPlugins,
 	type OrganizationPluginDependencies,
-} from '../../../organization/tenant/better-auth/organization-plugin';
+} from '../../../organization/better-auth/organization-plugin';
 import { createAdminPlugin } from './admin.plugin';
 import { createApiKeyPlugin } from './api-key.plugin';
 import { createDeviceAuthorizationPlugin } from './device-authorization.plugin';

@@ -23,7 +23,7 @@ import {
 import { IsOrganizationAuthContext } from '../../common/decorators/auth-context.decorator';
 import { AuthenticatedRateLimitGuard } from '../../common/guards/authenticated-rate-limit.guard';
 import type { OrganizationAuthContext } from '../../common/types/organization-auth-context.types';
-import { RequiredAnyOrganizationPermissions } from '../../organization/tenant/decorators/required-organization-permissions.decorator';
+import { RequiredAnyOrganizationPermissions } from '../../organization/decorators/required-organization-permissions.decorator';
 import { StorageAccessDto } from '../dto/storage-access.dto';
 import { ObjectStoragePushAccessService } from '../services/object-storage-push-access.service';
 

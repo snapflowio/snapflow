@@ -10,11 +10,11 @@
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
-import { OrganizationEvents } from '../../organization/tenant/constants/organization-events.constants';
-import { OrganizationMembershipChangedEvent } from '../../organization/tenant/events/organization-membership-changed.event';
-import { OrganizationRolesChangedEvent } from '../../organization/tenant/events/organization-roles-changed.event';
-import { OrganizationService } from '../../organization/tenant/services/organization.service';
-import { permissionPairs } from '../../organization/tenant/utils/organization-permissions.util';
+import { OrganizationEvents } from '../../organization/constants/organization-events.constants';
+import { OrganizationMembershipChangedEvent } from '../../organization/events/organization-membership-changed.event';
+import { OrganizationRolesChangedEvent } from '../../organization/events/organization-roles-changed.event';
+import { OrganizationService } from '../../organization/services/organization.service';
+import { permissionPairs } from '../../organization/utils/organization-permissions.util';
 import { AuthEvents } from '../constants/auth-events.constants';
 import { ApiKey } from '../entities/api-key.entity';
 import { ApiKeyRevokedEvent } from '../events/api-key-revoked.event';

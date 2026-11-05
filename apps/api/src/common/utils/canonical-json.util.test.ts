@@ -13,16 +13,16 @@ import { describe, it } from 'node:test';
 import {
 	EXPOSURE_BACKEND_STATE,
 	EXPOSURE_VISIBILITY,
-} from '../../networking/routing/constants/exposure.constants';
+} from '../../networking/constants/exposure.constants';
 import {
 	HTTP_UPSTREAM_PROTOCOL,
 	NETWORK_PROTOCOL,
 	PROXY_PROTOCOL,
-} from '../../networking/routing/constants/networking.constants';
+} from '../../networking/constants/networking.constants';
 import {
 	type EdgeRouteSnapshotContent,
 	edgeRouteSnapshotDigest,
-} from '../../networking/routing/utils/edge/edge-route-snapshot-digest.util';
+} from '../../networking/utils/edge/edge-route-snapshot-digest.util';
 import { canonicalJson } from './canonical-json.util';
 
 const CROSS_LANGUAGE_VECTOR_INPUT = String.raw`{"z":"a&b<c>d e f","é":"ünïcødé 🚀","a":{"nested":[1,-2,9007199254740991,{"y":null,"x":true}],"empty":{}},"path":"/a&b","quote":"\"\/\b\f\n\r\t\u0001\u001f\u007f","￿":"bmp-last","😀":"astral"}`;

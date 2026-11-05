@@ -17,7 +17,7 @@ import {
 	SchedulerRegistry,
 } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { SettingsService } from '../../platform/services/settings.service';
+import { SettingsService } from '../../services/settings.service';
 import { MaintenanceSchedulerService } from './maintenance-scheduler.service';
 
 const JOB_NAME = 'maintenance-scheduler-test-job';

@@ -34,16 +34,16 @@ import {
 	Audit,
 	MASKED_AUDIT_VALUE,
 	TypedRequest,
-} from '../../audit/log/decorators/audit.decorator';
-import { AuditAction } from '../../audit/log/enums/audit-action.enum';
-import { AuditTarget } from '../../audit/log/enums/audit-target.enum';
+} from '../../audit/decorators/audit.decorator';
+import { AuditAction } from '../../audit/enums/audit-action.enum';
+import { AuditTarget } from '../../audit/enums/audit-target.enum';
 import { CustomHeaders } from '../../common/constants/header.constants';
 import { IsOrganizationAuthContext } from '../../common/decorators/auth-context.decorator';
 import { CursorPageQueryDto } from '../../common/dto/cursor-page.dto';
 import type { OrganizationAuthContext } from '../../common/types/organization-auth-context.types';
-import { ApiIdempotentRequestService } from '../../idempotency/request/services/api-idempotent-request.service';
+import { ApiIdempotentRequestService } from '../../idempotency/services/api-idempotent-request.service';
 import { parseRequiredResourceVersion } from '../../infra/database/utils/resource-version.util';
-import { RequiredOrganizationPermissions } from '../../organization/tenant/decorators/required-organization-permissions.decorator';
+import { RequiredOrganizationPermissions } from '../../organization/decorators/required-organization-permissions.decorator';
 import {
 	CreateSecretDto,
 	CreateSecretVersionDto,

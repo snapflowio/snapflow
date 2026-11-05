@@ -10,7 +10,7 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { SnapshotPropagationManager } from '../../snapshot/managers/snapshot-propagation.manager';
+import { SnapshotPropagationManager } from '../../../snapshot/managers/snapshot-propagation.manager';
 
 @Injectable()
 export class SnapshotPropagationJob {
