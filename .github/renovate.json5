@@ -6,7 +6,7 @@
     "helpers:pinGitHubActionDigests",
     "docker:pinDigests",
   ],
-  baseBranchPatterns: ["dev"],
+  baseBranchPatterns: ["main"],
   schedule: ["before 6am on monday"],
   minimumReleaseAge: "7 days",
   prConcurrentLimit: 5,
@@ -25,7 +25,7 @@
       dependencyDashboardApproval: true,
     },
     {
-      description: "Every non-major update in one weekly pull request that squash-merges itself into dev once CI passes; promoting dev to main stays a manual step",
+      description: "Every non-major update in one weekly pull request that squash-merges itself into main once CI passes",
       groupName: "non-major dependencies",
       groupSlug: "non-major",
       matchUpdateTypes: ["minor", "patch", "digest", "pinDigest"],

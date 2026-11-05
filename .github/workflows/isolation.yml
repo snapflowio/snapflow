@@ -5,7 +5,7 @@ name: Isolation
 # suite runs after merge (push) or on demand instead.
 on:
   push:
-    branches: [main, dev]
+    branches: [main]
     paths:
       - libs/microvm-go/**
       - apps/snapflow/**

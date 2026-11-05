@@ -2,7 +2,7 @@ name: CI
 
 on:
   pull_request:
-    branches: [main, dev]
+    branches: [main]
   workflow_call:
   # Re-runs CI on a branch by hand.
   workflow_dispatch:
@@ -270,21 +270,6 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      # main is the default branch, so new pull requests open against it. Only
-      # dev promotions, the release-please pull request and hotfixes may merge
-      # there; sync-dev.yml carries the last two back into dev.
-      - name: Require pull requests into main to come from dev
-        if: github.event_name == 'pull_request' && github.base_ref == 'main'
-        env:
-          HEAD_REF: ${{ github.head_ref }}
-        run: |
-          case "$HEAD_REF" in
-            dev | release-please--* | hotfix/*) ;;
-            *)
-              echo "::error::pull requests into main come only from dev (or hotfix/*); retarget this one to dev"
-              exit 1
-              ;;
-          esac
       # A suite the changes job skipped counts; a failed or cancelled one does not.
       - name: Require every CI job to succeed or be skipped
         env:

@@ -8,23 +8,23 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  # Images are built only from dev, so their digests are pinned on dev and
-  # reach production through the dev -> main promotion. Nothing writes main
-  # directly, which keeps a revert on main in place.
+  # Images are built only from main, so their digests are pinned on main,
+  # which Flux deploys. Main's workflow ignores deploy/apps/production, so a
+  # pin commit neither reruns CI nor rebuilds images.
   git:
     checkout:
       ref:
-        branch: dev
+        branch: main
     commit:
       author:
         name: snapflow-flux
         email: flux@snapflow.io
       messageTemplate: |
-        chore(deploy): pin images built from dev
+        chore(deploy): pin images built from main
 
         {{ range .Changed.Changes }}{{ print .OldValue }} -> {{ println .NewValue }}{{ end }}
     push:
-      branch: dev
+      branch: main
   update:
     path: ./deploy/apps/production
     strategy: Setters
