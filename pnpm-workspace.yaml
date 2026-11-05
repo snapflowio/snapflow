@@ -191,6 +191,7 @@ catalog:
   '@types/inquirer': 8.2.12
   '@nestjs/cli': 12.0.8
   webpack-node-externals: 3.0.0
+  tsconfig-paths-webpack-plugin: 4.2.0
   '@types/webpack-node-externals': ^3.0.4
   stripe: ^23.0.0
   react-email: 6.11.3

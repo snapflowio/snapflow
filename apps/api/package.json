@@ -94,6 +94,7 @@
 		"@types/react": "catalog:",
 		"@types/webpack-node-externals": "catalog:",
 		"pino-pretty": "^13.1.2",
+		"tsconfig-paths-webpack-plugin": "catalog:",
 		"typescript": "catalog:",
 		"webpack-node-externals": "catalog:"
 	},
