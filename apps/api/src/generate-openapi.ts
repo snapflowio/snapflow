@@ -1,5 +1,3 @@
-#!/usr/bin/env tsx
-
 /*
  * Copyright (c) 2026 Snapflow. All rights reserved.
  *

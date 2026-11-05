@@ -1,5 +1,10 @@
 # Flux reports every failed reconciliation to Discord, and the result of each
-# synced commit to GitHub as a commit status.
+# synced commit to GitHub as a commit status. The webhook is
+# discord-webhook-url in snapflow/alerts (channel settings > Integrations >
+# Webhooks > New Webhook > Copy Webhook URL); rotate it by saving a new URL in
+# the OpenBao UI. A new namespace that holds Flux objects must be added to the
+# flux-errors Alert. Commit statuses are posted as the snapflowio-automation
+# GitHub App, which needs the Commit statuses: Read and write permission.
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:

@@ -11,6 +11,23 @@ spec:
     initdb:
       database: snapflow
       owner: snapflow
+  # A login for database tools that can read every table and change nothing;
+  # pg_read_all_data is PostgreSQL's built-in role for that. Its password is
+  # snapflow/platform/postgres-readonly, shown in the OpenBao UI. Postgres has
+  # no public port: in DataGrip, tunnel over SSH through the server and use
+  # host `kubectl -n snapflow get service snapflow-postgres-rw -o
+  # jsonpath='{.spec.clusterIP}'`, port 5432, database snapflow, user
+  # snapflow_readonly. The snapflow owner login is for the api only.
+  managed:
+    roles:
+      - name: snapflow_readonly
+        ensure: present
+        login: true
+        connectionLimit: 5
+        passwordSecret:
+          name: snapflow-postgres-readonly
+        inRoles:
+          - pg_read_all_data
   # WAL is archived continuously and base backups are taken daily
   # (snapflow-postgres-daily), so the database can be restored to any point in
   # the retention window.

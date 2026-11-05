@@ -15,7 +15,6 @@ import {
 
 export const stripeEnvironment = defineEnvironment(
 	{
-		name: 'stripe',
 		title: 'Stripe',
 		description: 'Stripe Connect top-ups, host payouts and webhooks',
 	},

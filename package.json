@@ -49,7 +49,6 @@
 		"lint-staged": "^17.0.3",
 		"node-gyp": "catalog:",
 		"t3": "catalog:",
-		"tsx": "catalog:",
 		"typescript": "catalog:"
 	},
 	"lint-staged": {

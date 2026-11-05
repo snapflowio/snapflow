@@ -63,10 +63,3 @@ export type EnvironmentValues<
 > = UnionToIntersection<
 	Namespace extends RegisteredNamespace ? z.output<Namespace['schema']> : never
 >;
-
-type NamespaceVariableName<Namespace> = Namespace extends RegisteredNamespace
-	? keyof z.input<Namespace['schema']> & string
-	: never;
-
-export type EnvironmentVariableName =
-	NamespaceVariableName<RegisteredNamespace>;

@@ -9,9 +9,6 @@
 	"files": {
 		"includes": [
 			"**/*.{js,mjs,cjs,jsx,ts,tsx,mts,cts,json,jsonc,css,html,astro,svelte}",
-			"!**/*.generated.*",
-			"!**/src/generated",
-			"!**/src/**/generated",
 			"!libs/*api-client*",
 			"!libs/machine-proto/gen",
 			"!apps/api/src/migrations/*-migration.ts",
@@ -554,8 +551,6 @@
 		},
 		{
 			"includes": [
-				"apps/api/src/config/environment/registry.environment.ts",
-				"apps/api/src/config/environment/utils/read-environment.util.ts",
 				"apps/api/src/config/configuration.config.ts",
 				"apps/api/src/config/utils/current-process.util.ts",
 				"apps/api/src/migrations/**",

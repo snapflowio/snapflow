@@ -1,5 +1,18 @@
 # Postgres backups go to Cloudflare R2 through the Barman Cloud plugin: WAL
-# continuously, a base backup every night, kept for a 30-day recovery window.
+# continuously, a base backup every night at 03:00, kept for a 30-day recovery
+# window under postgres/. Check them with
+# `kubectl -n snapflow get backups,scheduledbackups`.
+#
+# Restore (after OpenBao): create a new Cluster that bootstraps from the object
+# store, as in https://cloudnative-pg.io/plugin-barman-cloud/docs/usage/#restoring-a-cluster:
+# bootstrap.recovery.source names an externalClusters entry with
+# plugin.name barman-cloud.cloudnative-pg.io, parameters.barmanObjectName
+# snapflow-postgres-backups and serverName snapflow-postgres, optionally with
+# recoveryTarget.targetTime for a point in time. Write new WAL to a second
+# ObjectStore so the restored cluster does not overwrite the history it came
+# from. If R2 rejects uploads with an x-amz-content-sha256 error, set
+# AWS_REQUEST_CHECKSUM_CALCULATION and AWS_RESPONSE_CHECKSUM_VALIDATION to
+# when_required in the ObjectStore's instanceSidecarConfiguration.env.
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:

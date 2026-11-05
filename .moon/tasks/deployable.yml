@@ -11,7 +11,7 @@ tasks:
       runFromWorkspaceRoot: true
 
   publish:
-    description: "Builds and pushes the build-<sha>-<timestamp> image of a dev commit that Flux pins on dev"
+    description: "Builds and pushes the build-<sha>-<timestamp> image of a main commit that Flux pins on main"
     command: "bash"
     args: ["deploy/scripts/image.sh", "publish"]
     deps:

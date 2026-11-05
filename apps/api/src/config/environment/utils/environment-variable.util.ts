@@ -29,26 +29,20 @@ export function environmentVariable<Schema extends z.ZodType>(
 
 export type EnvironmentShape = Readonly<Record<string, z.ZodType>>;
 
-interface EnvironmentGroup<Name extends string = string> {
-	readonly name: Name;
+interface EnvironmentGroup {
 	readonly title: string;
 	readonly description: string;
 	readonly note?: string;
 }
 
-export interface EnvironmentNamespace<
-	Shape extends EnvironmentShape,
-	Name extends string = string,
-> extends EnvironmentGroup<Name> {
+export interface EnvironmentNamespace<Shape extends EnvironmentShape>
+	extends EnvironmentGroup {
 	readonly schema: z.ZodObject<Shape>;
 }
 
-export function defineEnvironment<
-	const Name extends string,
-	const Shape extends EnvironmentShape,
->(
-	group: EnvironmentGroup<Name>,
+export function defineEnvironment<const Shape extends EnvironmentShape>(
+	group: EnvironmentGroup,
 	variables: Shape
-): EnvironmentNamespace<Shape, Name> {
+): EnvironmentNamespace<Shape> {
 	return { ...group, schema: z.object(variables) };
 }

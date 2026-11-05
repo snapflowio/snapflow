@@ -18,7 +18,6 @@ import {
 
 export const databaseEnvironment = defineEnvironment(
 	{
-		name: 'database',
 		title: 'Database',
 		description:
 			'PostgreSQL; one-off processes (migrations, CLI) use a single connection',

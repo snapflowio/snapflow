@@ -135,12 +135,6 @@ export const StripeDeclineCode = {
 	AUTHENTICATION_REQUIRED: 'authentication_required',
 } as const;
 
-export const StripeDisputeStatus = {
-	WON: 'won',
-	LOST: 'lost',
-	UNDER_REVIEW: 'under_review',
-} as const;
-
 export const StripePaymentIntentStatus = {
 	SUCCEEDED: 'succeeded',
 	REQUIRES_ACTION: 'requires_action',

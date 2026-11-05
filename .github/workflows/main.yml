@@ -1,8 +1,16 @@
 name: Main
 
+# Images are built once, here, from the commit that passed CI on main. Flux
+# image automation then pins their digests in deploy/apps/production on main
+# and deploys exactly those images.
+
 on:
   push:
     branches: [main]
+    # Flux's digest pins change only these manifests and are never release
+    # relevant, so they neither rerun CI nor rebuild images, which would loop.
+    paths-ignore:
+      - "deploy/apps/production/**"
 
 permissions: {}
 
@@ -14,6 +22,16 @@ jobs:
       contents: read
       # ci.yml's suite selection reads pull request files; on push it runs everything.
       pull-requests: read
+
+  images:
+    name: Images
+    needs: ci
+    uses: ./.github/workflows/images.yml
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
 
   release-please:
     name: Release PR

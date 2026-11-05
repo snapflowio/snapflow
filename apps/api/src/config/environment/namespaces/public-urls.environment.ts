@@ -18,7 +18,6 @@ import {
 
 export const publicUrlsEnvironment = defineEnvironment(
 	{
-		name: 'public-urls',
 		title: 'Public URLs & Domain',
 		description:
 			'The public origins of the API, website and dashboard, and the sandbox domain',

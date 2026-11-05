@@ -15,7 +15,6 @@ import {
 
 export const vaultEnvironment = defineEnvironment(
 	{
-		name: 'vault',
 		title: 'Vault',
 		description:
 			'The Vault Proxy that serves the keyrings and signs tunnel certificates',

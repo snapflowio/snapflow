@@ -15,7 +15,6 @@ import {
 
 export const cloudflareEnvironment = defineEnvironment(
 	{
-		name: 'cloudflare',
 		title: 'Cloudflare',
 		description:
 			'Custom domains through the Cloudflare zone of the platform domain',

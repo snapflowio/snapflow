@@ -17,7 +17,6 @@ const LOOPBACK_PROXY_CIDRS = '127.0.0.0/8,::1/128';
 
 export const networkEnvironment = defineEnvironment(
 	{
-		name: 'network',
 		title: 'Network & Proxies',
 		description: 'The HTTP listener and the proxies in front of it',
 	},

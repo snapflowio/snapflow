@@ -23,7 +23,6 @@ import {
 
 export const emailEnvironment = defineEnvironment(
 	{
-		name: 'email',
 		title: 'Email',
 		description: 'Transactional email sent through Resend',
 		note: 'In development, set RESEND_BASE_URL to the devcontainer Resend emulator and any re_ key to capture email locally; without RESEND_API_KEY the API starts but every email send fails.',

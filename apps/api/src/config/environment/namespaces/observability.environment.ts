@@ -26,7 +26,6 @@ export type LogLevel = (typeof LOG_LEVELS)[number];
 
 export const observabilityEnvironment = defineEnvironment(
 	{
-		name: 'observability',
 		title: 'Observability',
 		description: 'Logging and tracing',
 	},

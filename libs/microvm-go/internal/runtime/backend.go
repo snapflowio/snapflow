@@ -56,10 +56,8 @@ type Config struct {
 	InitrdPath          string
 	MkfsErofsPath       string
 	VMMAssets           vmm.HostAssets
-	VolumeBlockStore    volumes.BlockStore
 	Builds              builds.Config
 	Transfers           transferpolicy.Policy
-	GPUDevices          devices.GPUManager
 	GPUQuarantine       *devices.GPUQuarantine
 	Capacity            func() (admission.Resources, error)
 	GuestBundles        []guest.Bundle
@@ -156,9 +154,9 @@ func NewBackend(config Config) (*Backend, error) {
 		vmmBinaries:         vmmBinaries,
 		networks:            networkManager,
 		networkConfig:       networkConfig,
-		gpuDevices:          defaultGPUManager(config.GPUDevices, config.HostGPU, gpuQuarantine(config)),
+		gpuDevices:          defaultGPUManager(config.HostGPU, gpuQuarantine(config)),
 		snapshots:           snapshot.NewStore(config.Paths),
-		volumes:             volumeManager(config.Paths, config.VolumeBlockStore),
+		volumes:             volumes.NewManager(config.Paths),
 		memory:              memoryPolicy,
 		lifecycle:           lifecycle.NewCoordinator(),
 		pendingGPU:          make(map[string][]string),
@@ -245,13 +243,6 @@ func (b *Backend) Recover(ctx context.Context) error {
 	return nil
 }
 
-func volumeManager(paths layout.Paths, store volumes.BlockStore) *volumes.Manager {
-	if store == nil {
-		return volumes.NewManager(paths)
-	}
-	return volumes.NewManager(paths, volumes.WithBlockStore(store))
-}
-
 func cloneRegistry(registry *types.Registry) *types.Registry {
 	if registry == nil {
 		return nil
@@ -264,10 +255,7 @@ func cloneRegistry(registry *types.Registry) *types.Registry {
 	return &cloned
 }
 
-func defaultGPUManager(manager devices.GPUManager, gpuInfo host.HostGPUInfo, quarantine *devices.GPUQuarantine) devices.GPUManager {
-	if manager != nil {
-		return manager
-	}
+func defaultGPUManager(gpuInfo host.HostGPUInfo, quarantine *devices.GPUQuarantine) devices.GPUManager {
 	inventory := make([]devices.GPUInventoryDevice, 0, len(gpuInfo.Devices))
 	for _, device := range gpuInfo.Devices {
 		inventory = append(inventory, devices.GPUInventoryDevice{

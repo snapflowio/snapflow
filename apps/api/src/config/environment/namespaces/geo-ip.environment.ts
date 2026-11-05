@@ -15,7 +15,6 @@ import {
 
 export const geoIpEnvironment = defineEnvironment(
 	{
-		name: 'geo-ip',
 		title: 'IP Geolocation',
 		description:
 			'The IP geolocation database that locates machines and the callers placing sandboxes',

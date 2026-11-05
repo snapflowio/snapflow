@@ -19,7 +19,7 @@
 				"require_code_owner_review": false,
 				"require_last_push_approval": false,
 				"required_review_thread_resolution": false,
-				"allowed_merge_methods": ["merge"]
+				"allowed_merge_methods": ["squash"]
 			}
 		},
 		{
@@ -34,6 +34,11 @@
 		}
 	],
 	"bypass_actors": [
+		{
+			"actor_id": 5586776,
+			"actor_type": "Integration",
+			"bypass_mode": "always"
+		},
 		{
 			"actor_id": 5,
 			"actor_type": "RepositoryRole",

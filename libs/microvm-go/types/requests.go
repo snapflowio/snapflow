@@ -145,7 +145,6 @@ type ExportImageRequest struct {
 
 type ForkRequest struct {
 	ID                   string            `json:"id" validate:"required,uuid"`
-	SnapshotID           string            `json:"snapshotId,omitempty" validate:"omitempty,uuid"`
 	Start                bool              `json:"start,omitempty"`
 	SecretEnv            map[string]string `json:"secretEnv,omitempty"`
 	AssignmentGeneration int               `json:"assignmentGeneration" validate:"min=1"`

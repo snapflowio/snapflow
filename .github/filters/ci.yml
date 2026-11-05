@@ -1,6 +1,6 @@
-# Which CI suites a pull request needs, by the files it changes. Pushes to dev
-# and main, manual runs and the main workflow always run every suite. A change
-# under .github/ runs every suite, because it can change how any of them run.
+# Which CI suites a pull request needs, by the files it changes. Pushes to
+# main and manual runs always run every suite. A change under .github/ runs
+# every suite, because it can change how any of them run.
 
 go:
   - ".github/**"

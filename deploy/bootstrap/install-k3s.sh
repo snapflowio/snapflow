@@ -6,6 +6,17 @@
 #
 # SPDX-License-Identifier: AGPL-3.0
 
+# Installs k3s on a node, as root on that node:
+#   server-edge  the first server, which also runs the edge:
+#                sudo PUBLIC_IP=<public ip> install-k3s.sh server-edge
+#   server       a server without the edge
+#   edge         an edge-only node that joins over WireGuard and is tainted for
+#                the edge (K3S_URL, K3S_TOKEN and NODE_NAME required); then add
+#                it to edges in deploy/apps/production/snapflow.yaml
+# The API is advertised on the address of the default route (NODE_IP overrides).
+# Upgrade by rerunning it with a newer k3s_version. Apply
+# deploy/bootstrap/host-firewall.sh afterwards.
+
 set -euo pipefail
 
 readonly k3s_version="v1.36.5+k3s1"

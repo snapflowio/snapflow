@@ -17,7 +17,6 @@ import {
 
 export const processEnvironment = defineEnvironment(
 	{
-		name: 'process',
 		title: 'Environment',
 		description: 'The deployment selector and the process role',
 	},

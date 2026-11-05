@@ -4,3 +4,4 @@ resources:
   - secret-store.yaml
   - cluster-issuers.yaml
   - notifications.yaml
+  - cloudflare-ddns.yaml

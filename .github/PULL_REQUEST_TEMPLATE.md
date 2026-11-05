@@ -13,8 +13,8 @@
 
 ## Checklist
 
-- [ ] PR targets `dev` (`main` only takes promotions from `dev`)
-- [ ] Title follows [Conventional Commits](https://www.conventionalcommits.org/) (mostly lowercase)
+- [ ] PR targets `main`
+- [ ] Title follows [Conventional Commits](https://www.conventionalcommits.org/) (mostly lowercase); it becomes the squashed commit's subject
 - [ ] I can explain every change in this diff
 - [ ] Tests added or updated if needed
 - [ ] CI is passing

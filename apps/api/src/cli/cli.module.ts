@@ -9,12 +9,12 @@
 
 import { Module } from '@nestjs/common';
 import { CreateAdminCommand } from './commands/create-admin.command';
-import { EnvironmentDocsCommand } from './commands/env-docs.command';
+import { EnvironmentFileCommand } from './commands/env-file.command';
 import { ResetLocalDatabaseCommand } from './commands/reset-database.command';
 
 @Module({
 	providers: [
-		EnvironmentDocsCommand,
+		EnvironmentFileCommand,
 		ResetLocalDatabaseCommand,
 		CreateAdminCommand,
 	],

@@ -50,7 +50,7 @@ jobs:
     name: Publish ${{ matrix.application }} image
     needs: changes
     if: >-
-      github.ref == 'refs/heads/dev' &&
+      github.ref == 'refs/heads/main' &&
       needs.changes.outputs.applications != '[]'
     runs-on: ubuntu-24.04
     timeout-minutes: 60
@@ -138,5 +138,5 @@ jobs:
             echo "- Image: \`${IMAGE}\`"
             echo "- Tag: \`${IMAGE_TAG}\`"
             echo "- Digest: \`${DIGEST}\`"
-            echo "- Flux pins this digest on dev; promoting dev to main deploys it."
+            echo "- Flux pins this digest on main and deploys it."
           } >>"$GITHUB_STEP_SUMMARY"

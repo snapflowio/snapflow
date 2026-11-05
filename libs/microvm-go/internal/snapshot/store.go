@@ -46,14 +46,10 @@ func NewStore(paths layout.Paths) Store {
 }
 
 func (s Store) CreateStoppedWithID(id string, source state.InstanceMetadata, name string) (Snapshot, error) {
-	return s.createFromInstance(id, source, name, KindStopped, "")
+	return s.createFromInstance(id, source, name, KindStopped)
 }
 
-func (s Store) CreateStandbyWithID(id string, source state.InstanceMetadata, name, vmSnapshotDir string) (Snapshot, error) {
-	return s.createFromInstance(id, source, name, KindStandby, vmSnapshotDir)
-}
-
-func (s Store) createFromInstance(id string, source state.InstanceMetadata, name string, kind Kind, vmSnapshotDir string) (created Snapshot, returnErr error) {
+func (s Store) createFromInstance(id string, source state.InstanceMetadata, name string, kind Kind) (created Snapshot, returnErr error) {
 	if _, err := uuid.Parse(id); err != nil {
 		return Snapshot{}, fmt.Errorf("invalid snapshot id %q: %w", id, err)
 	}
@@ -70,7 +66,7 @@ func (s Store) createFromInstance(id string, source state.InstanceMetadata, name
 			returnErr = errors.Join(returnErr, fmt.Errorf("clean up partial snapshot: %w", cleanupErr))
 		}
 	}()
-	if err := s.copySnapshotPayload(payloadDir, source, vmSnapshotDir); err != nil {
+	if err := s.copySnapshotPayload(payloadDir, source); err != nil {
 		return Snapshot{}, err
 	}
 	size, err := DirectorySize(payloadDir)
@@ -98,7 +94,7 @@ func (s Store) createFromInstance(id string, source state.InstanceMetadata, name
 	return snapshot, nil
 }
 
-func (s Store) copySnapshotPayload(payloadDir string, source state.InstanceMetadata, vmSnapshotDir string) error {
+func (s Store) copySnapshotPayload(payloadDir string, source state.InstanceMetadata) error {
 	files := []struct {
 		source string
 		name   string
@@ -110,11 +106,6 @@ func (s Store) copySnapshotPayload(payloadDir string, source state.InstanceMetad
 	for _, file := range files {
 		if err := copySnapshotFile(file.source, filepath.Join(payloadDir, file.name)); err != nil {
 			return err
-		}
-	}
-	if vmSnapshotDir != "" {
-		if err := forkvm.CopyDir(vmSnapshotDir, filepath.Join(payloadDir, vmPayloadDirectory)); err != nil {
-			return fmt.Errorf("copy VM snapshot payload: %w", err)
 		}
 	}
 	return secureSnapshotTree(payloadDir)

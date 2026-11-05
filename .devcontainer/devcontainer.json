@@ -52,7 +52,6 @@
 		"3002": { "label": "React Email Preview" },
 		"3773": { "label": "T3 Code" },
 		"4321": { "label": "Marketing (Astro)" },
-		"5173": { "label": "Vite Development Server" },
 		"8082": { "label": "Snapflow Edge HTTP Ingress" },
 		"8444": { "label": "Snapflow Edge HTTPS Ingress" },
 		"23000-23031": { "label": "Snapflow Edge Public TCP/UDP Exposures" },

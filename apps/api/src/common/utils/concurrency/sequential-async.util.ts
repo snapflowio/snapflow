@@ -35,27 +35,3 @@ export async function settleSequentially<TItem, TResult>(
 	}
 	return results;
 }
-
-export async function mapWithConcurrency<TItem, TResult>(
-	items: readonly TItem[],
-	concurrency: number,
-	operation: (item: TItem, index: number) => Promise<TResult>
-): Promise<Awaited<TResult>[]> {
-	if (!Number.isInteger(concurrency) || concurrency < 1) {
-		throw new RangeError('Concurrency must be a positive integer');
-	}
-
-	const results: Awaited<TResult>[] = new Array(items.length);
-	let nextIndex = 0;
-	const workerCount = Math.min(concurrency, items.length);
-	const workers = Array.from({ length: workerCount }, async () => {
-		while (nextIndex < items.length) {
-			const index = nextIndex;
-			nextIndex += 1;
-			results[index] = await operation(items[index], index);
-		}
-	});
-
-	await Promise.all(workers);
-	return results;
-}

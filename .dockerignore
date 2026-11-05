@@ -4,18 +4,12 @@ node_modules
 **/.pnpm-store
 
 **/dist
-!dist/
-dist/*
-!dist/libs/
-dist/libs/*
-!dist/libs/computer-use-amd64
 
 .vite
 **/.vite
 .svelte-kit
 **/.svelte-kit
 .moon/cache
-.moon/docker
 logs
 *.log
 
@@ -51,7 +45,6 @@ tmp
 *.tmp
 
 *.md
-docs
 assets
 
 **/*.test.ts

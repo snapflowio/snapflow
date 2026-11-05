@@ -12,7 +12,7 @@ readonly usage="Usage: image.sh <build|publish>"
 readonly bake_file="docker-bake.hcl"
 readonly builder="snapflow"
 readonly local_tag="local"
-readonly release_ref="origin/dev"
+readonly release_ref="origin/main"
 readonly metadata_directory="dist/images"
 readonly digest_key="containerimage.digest"
 readonly cache_tag="buildcache"
@@ -47,7 +47,7 @@ publish() {
 		exit 1
 	fi
 	if ! git merge-base --is-ancestor HEAD "${release_ref}"; then
-		echo "Publishing requires a commit that is on ${release_ref}; merge it into dev and fetch first" >&2
+		echo "Publishing requires a commit that is on ${release_ref}; merge it into main and fetch first" >&2
 		exit 1
 	fi
 	local timestamp candidate release metadata digest
