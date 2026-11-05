@@ -1,0 +1,42 @@
+layer: "library"
+stack: "backend"
+tags: ["contracts", "payments"]
+
+dependsOn:
+  - "contracts"
+
+tasks:
+  generate:
+    command: "node"
+    args: ["scripts/generate-bindings.mts"]
+    deps: ["contracts:build"]
+    inputs:
+      - "scripts/generate-bindings.mts"
+      - "/apps/contracts/out/SnapflowEscrow.sol/SnapflowEscrow.json"
+    outputs: ["src/generated"]
+
+  build:
+    script: "rm -rf ../../dist/libs/contracts && pnpm exec tsc -p tsconfig.lib.json --outDir ../../dist/libs/contracts && cp package.json ../../dist/libs/contracts/package.json"
+    inputs: ["src/**/*", "package.json", "tsconfig*.json"]
+    outputs: ["/dist/libs/contracts"]
+
+  typecheck:
+    command: "tsc"
+    args: ["-p", "tsconfig.lib.json", "--noEmit"]
+
+  test:
+    command: "vitest"
+    args: ["run"]
+    inputs:
+      - "src/**/*"
+      - "/apps/contracts/test/vectors/vouchers.json"
+
+  lint:
+    command: "biome"
+    args: ["ci", ".", "--error-on-warnings"]
+
+  format:
+    command: "biome"
+    args: ["check", ".", "--write"]
+    options:
+      cache: false

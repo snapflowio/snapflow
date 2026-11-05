@@ -1,0 +1,58 @@
+{
+  "chainId": 84532,
+  "verifyingContract": "0x5aAdFB43eF8dAF45DD80F4676345b7676f1D70e3",
+  "signer": "0xe05fcC23807536bEe418f142D19fa0d21BB0cfF7",
+  "signerKey": "0x00000000000000000000000000000000000000000000000000000000000a11ce",
+  "vouchers": [
+    {
+      "channelId": "0x706f247b800ddcfc035df6460f09a2d3a7b2f718ef245fe540e82e2277a23255",
+      "customer": "0x000000000000000000000000000000000000c057",
+      "host": "0x0000000000000000000000000000000000000057",
+      "hostAmount": "1000000",
+      "feeAmount": "200000",
+      "serviceAmount": "0",
+      "sequence": "1",
+      "expiry": "1900000000",
+      "digest": "0x456d80808fa99107c3c10b8f58c093f0f9e584116658c0116eb86e5a9508372f",
+      "signature": "0xf8fea5d4b2711c460fa473b797eae0a75fbb4292d643dd2a9f57020bc9ca286474ae60caa1c97f9d63535b5d863c82632534cc4d4df2779f16ccdc15be06ac0a1c"
+    },
+    {
+      "channelId": "0x706f247b800ddcfc035df6460f09a2d3a7b2f718ef245fe540e82e2277a23255",
+      "customer": "0x000000000000000000000000000000000000c057",
+      "host": "0x0000000000000000000000000000000000000057",
+      "hostAmount": "123456789",
+      "feeAmount": "24691357",
+      "serviceAmount": "4321",
+      "sequence": "2",
+      "expiry": "1900000000",
+      "digest": "0x36ccd77cc9f991ea4e0a5ab0c11ba3e1aafebf4b76cabaa82f7ce9cd46ae3f6d",
+      "signature": "0xb30096b7b36199cd8c2d77ea2005e48a4ecd0da6a16179601beb9927c86660462ca5fafddab5a2b3780733467527d1d6abccbe54275e6957abf68114050fdc6d1b"
+    },
+    {
+      "channelId": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "customer": "0x000000000000000000000000000000000000c057",
+      "host": "0x0000000000000000000000000000000000000057",
+      "hostAmount": "57896044618658097711785492504343953926634992332820282019728792003956564819967",
+      "feeAmount": "1",
+      "serviceAmount": "1",
+      "sequence": "18446744073709551615",
+      "expiry": "18446744073709551615",
+      "digest": "0x052b66c5501d1317e118c7a93b6e2d04cbb8db541081b2b11644f4e564484194",
+      "signature": "0x06ee8e74349295b548a9672353865e36813d9b2750e58fc8ee727bd0c46c24713420b4a0704f7523ff63747e9d8b744ae077bbd86b4e712fe1d877f810b6cebd1c"
+    }
+  ],
+  "channels": [
+    {
+      "customer": "0x000000000000000000000000000000000000c057",
+      "host": "0x0000000000000000000000000000000000000057",
+      "leaseId": "0b5f3c2e-9d4a-4e1b-8c7f-2a6d9e0f1b3c",
+      "channelId": "0x5499dfc6fd0fe5ef575156ab705bac237c895ddcc21d8f7ae60010b916067caf"
+    },
+    {
+      "customer": "0x000000000000000000000000000000000000c057",
+      "host": "0x0000000000000000000000000000000000000057",
+      "leaseId": "",
+      "channelId": "0x424834c8b7f9e4d84374fdb62b3cc75e4b1d7891e0c12a3283e1153195b0fc16"
+    }
+  ]
+}

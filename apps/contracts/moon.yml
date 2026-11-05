@@ -51,6 +51,13 @@ tasks:
     options:
       cache: false
 
+  vectors:
+    command: "forge"
+    args: ["script", "script/GenerateVoucherVectors.s.sol"]
+    deps: ["~:install"]
+    inputs: ["@group(sources)", "script/GenerateVoucherVectors.s.sol", "test/vectors/*.sol"]
+    outputs: ["test/vectors/vouchers.json"]
+
   deploy-local:
     command: "forge"
     args: ["script", "script/DeployLocal.s.sol", "--rpc-url", "anvil", "--broadcast"]

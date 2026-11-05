@@ -114,6 +114,7 @@ header:
       - "libs/machine-proto/gen/**"
       - "libs/api-client/src/**"
       - "libs/api-client-go/client.gen.go"
+      - "libs/contracts-go/escrow/*.gen.go"
       - "libs/toolbox-api-client/src/**"
     license-location-threshold: 80
     comment: on-failure

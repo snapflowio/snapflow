@@ -1,0 +1,26 @@
+{
+	"name": "@snapflow/contracts",
+	"version": "0.0.0-dev",
+	"description": "Typed bindings for the Snapflow escrow contract",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/snapflowio/snapflow.git"
+	},
+	"license": "Apache-2.0",
+	"type": "module",
+	"exports": {
+		".": "./src/index.js"
+	},
+	"dependencies": {
+		"abitype": "catalog:"
+	},
+	"peerDependencies": {
+		"viem": "catalog:"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:",
+		"typescript": "catalog:",
+		"viem": "catalog:",
+		"vitest": "catalog:"
+	}
+}

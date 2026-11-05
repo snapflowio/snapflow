@@ -11,6 +11,7 @@
 			"**/*.{js,mjs,cjs,jsx,ts,tsx,mts,cts,json,jsonc,css,html,astro,svelte}",
 			"!libs/*api-client*",
 			"!libs/machine-proto/gen",
+			"!libs/contracts/src/generated",
 			"!apps/api/src/migrations/*-migration.ts",
 			"!apps/api/src/migrations/snapflow.json",
 			"!apps/guest/internal/toolbox/docs",
