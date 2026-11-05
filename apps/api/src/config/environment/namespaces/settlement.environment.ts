@@ -16,6 +16,7 @@ import {
 	evmAddressText,
 	httpUrlText,
 	integerChoiceText,
+	nonNegativeIntegerText,
 	text,
 } from '../utils/environment-schemas.util';
 import {
@@ -42,6 +43,13 @@ export const settlementEnvironment = defineEnvironment(
 		SETTLEMENT_ESCROW_ADDRESS: environmentVariable(evmAddressText(), {
 			description: 'Address of the deployed SnapflowEscrow contract.',
 		}),
+		SETTLEMENT_ESCROW_DEPLOYMENT_BLOCK: environmentVariable(
+			nonNegativeIntegerText().default(0),
+			{
+				description:
+					'Block the escrow was deployed in; the event indexer starts there instead of scanning the whole chain.',
+			}
+		),
 		SETTLEMENT_USDC_ADDRESS: environmentVariable(evmAddressText(), {
 			description: 'Address of the USDC token the escrow settles in.',
 		}),

@@ -22,6 +22,7 @@ import {
 
 export interface BillingAdmissionInput {
 	creditBalanceMicroUsd: MicroUsd;
+	fundingWalletReady: boolean;
 	hasBillingActivity: boolean;
 	availableMicroUsd: MicroUsd;
 	minimumReservationMicroUsd: MicroUsd;
@@ -68,7 +69,11 @@ function financialBlockers(
 	) {
 		blockers.push(BillingAdmissionBlocker.NETWORK_BUDGET_EXHAUSTED);
 	}
-	if (input.availableMicroUsd.lessThan(input.minimumReservationMicroUsd)) {
+	if (!input.fundingWalletReady) {
+		blockers.push(BillingAdmissionBlocker.FUNDING_REQUIRED);
+	} else if (
+		input.availableMicroUsd.lessThan(input.minimumReservationMicroUsd)
+	) {
 		blockers.push(
 			input.creditBalanceMicroUsd.isZero() && !input.hasBillingActivity
 				? BillingAdmissionBlocker.FUNDING_REQUIRED

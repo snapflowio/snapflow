@@ -49,6 +49,8 @@ describe('machine exposure ceilings from settings', () => {
 		const capacity = (requestedMicroUsd: MicroUsd) =>
 			evaluateBillingCapacity({
 				creditBalanceMicroUsd: ceiling.multiply(10n),
+				pendingWithdrawalMicroUsd: MicroUsd.ZERO,
+				fundingWalletReady: true,
 				unpostedChargesMicroUsd: MicroUsd.ZERO,
 				reservedUsageMicroUsd: MicroUsd.ZERO,
 				requestedMicroUsd,

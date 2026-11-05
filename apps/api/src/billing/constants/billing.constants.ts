@@ -125,11 +125,20 @@ export const BillingLedgerAccountCode = {
 	PLATFORM_MARKUP_REVENUE: 'platform_markup_revenue',
 	PLATFORM_QUALIFICATION_EXPENSE: 'platform_qualification_expense',
 	HOST_EARNINGS_PENDING: 'host_earnings_pending',
+	ESCROW_CUSTODY: 'escrow_custody',
+	PLATFORM_WALLET: 'platform_wallet',
 } as const;
 
 export type BillingLedgerAccountCode =
 	(typeof BillingLedgerAccountCode)[keyof typeof BillingLedgerAccountCode];
 
+// host_earnings_pending holds what a host earned and has not claimed from the
+// escrow yet: usage credits it, claims debit it. A host may claim a voucher
+// before the usage behind it is corroborated, so the account can carry a
+// debit balance for a while; nothing constrains ledger balances to be
+// nonnegative and nothing reads this one as spendable, so that is allowed.
+// escrow_custody is the USDC the contract holds for attributed customers and
+// platform_wallet the USDC the escrow paid to Snapflow's fee recipient.
 export const BILLING_LEDGER_NORMAL_SIDE: Readonly<
 	Record<BillingLedgerAccountCode, BillingLedgerSide>
 > = {
@@ -139,6 +148,8 @@ export const BILLING_LEDGER_NORMAL_SIDE: Readonly<
 	[BillingLedgerAccountCode.PLATFORM_QUALIFICATION_EXPENSE]:
 		BillingLedgerSide.DEBIT,
 	[BillingLedgerAccountCode.HOST_EARNINGS_PENDING]: BillingLedgerSide.CREDIT,
+	[BillingLedgerAccountCode.ESCROW_CUSTODY]: BillingLedgerSide.DEBIT,
+	[BillingLedgerAccountCode.PLATFORM_WALLET]: BillingLedgerSide.DEBIT,
 };
 
 export const BillingLedgerOwnerKind = {
@@ -158,6 +169,9 @@ export const BillingLedgerSourceType = {
 	ADMIN_CREDIT_GRANT: 'admin_credit_grant',
 	EARNINGS_FORFEITURE: 'earnings_forfeiture',
 	QUALIFICATION_CREDIT: 'qualification_credit',
+	ESCROW_DEPOSIT: 'escrow_deposit',
+	ESCROW_WITHDRAWAL: 'escrow_withdrawal',
+	ESCROW_CLAIM: 'escrow_claim',
 } as const;
 
 export const BillingLedgerDescriptionCode = {
@@ -165,6 +179,9 @@ export const BillingLedgerDescriptionCode = {
 	ADMIN_CREDIT_GRANTED: 'admin_credit_granted',
 	EARNINGS_FORFEITED: 'earnings_forfeited',
 	QUALIFICATION_CREDIT_GRANTED: 'qualification_credit_granted',
+	ESCROW_DEPOSITED: 'escrow_deposited',
+	ESCROW_WITHDRAWN: 'escrow_withdrawn',
+	ESCROW_CLAIMED: 'escrow_claimed',
 } as const;
 
 export const ADMIN_CREDIT_GRANT_LIMITS = {

@@ -19,10 +19,9 @@ import {
 import type { Address } from 'viem';
 import { sqlValueList } from '../../infra/database/utils/sql-value-list.util';
 import { Organization } from '../../organization/entities/organization.entity';
+import { EVM_ADDRESS_LENGTH } from '../constants/settlement.constants';
 import { PaymentWalletPurpose } from '../enums/payment-wallet-purpose.enum';
 import { SanctionsStatus } from '../enums/sanctions-status.enum';
-
-const EVM_ADDRESS_LENGTH = 42;
 
 @Entity({ tableName: 'payment_wallet' })
 @Unique({

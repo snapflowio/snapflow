@@ -14,6 +14,7 @@ import {
 import { millisecondsBetween } from '../../common/utils/time.util';
 import { BasisPoints } from '../../common/values/basis-points.value';
 import { MicroUsd } from '../../common/values/micro-usd.value';
+import type { EscrowFunding } from '../../settlement/queries/escrow-funding.query';
 import {
 	BillingForecastMethod,
 	DEFAULT_BUDGET_WARNING_THRESHOLD_BASIS_POINTS,
@@ -45,6 +46,7 @@ export interface BillingOverviewInputs {
 	month: BillingPeriod;
 	budget: BillingBudget | null;
 	creditBalance: MicroUsd;
+	escrow: EscrowFunding;
 	spend: MonthSpend;
 	unposted: MicroUsd;
 	reservations: ActiveReservation[];
@@ -110,6 +112,8 @@ function overviewFigures(
 	const reservationCommitment = liveAccrual.add(unusedReserved);
 	const capacity = evaluateBillingCapacity({
 		creditBalanceMicroUsd: inputs.creditBalance,
+		pendingWithdrawalMicroUsd: inputs.escrow.pendingWithdrawalMicroUsd,
+		fundingWalletReady: inputs.escrow.walletReady,
 		unpostedChargesMicroUsd: inputs.unposted,
 		reservedUsageMicroUsd: reservationCommitment,
 		requestedMicroUsd: reservationCommitment,
@@ -174,6 +178,7 @@ function admissionInput(
 ): BillingAdmissionInput {
 	return {
 		creditBalanceMicroUsd: inputs.creditBalance,
+		fundingWalletReady: inputs.escrow.walletReady,
 		hasBillingActivity:
 			inputs.spend.totalMicroUsd.isPositive() ||
 			inputs.unposted.isPositive() ||

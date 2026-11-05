@@ -25,6 +25,9 @@ export const SETTLEMENT_CHAINS: Readonly<Record<SettlementChainId, Chain>> = {
 
 export const SETTLEMENT_RPC_TIMEOUT_MILLISECONDS = 10 * MILLISECONDS_PER_SECOND;
 
+export const EVM_ADDRESS_LENGTH = 42;
+export const EVM_HASH_LENGTH = 66;
+
 export const SANCTIONS_API_KEY_HEADER = 'X-API-Key';
 export const SANCTIONS_REQUEST_TIMEOUT_MILLISECONDS =
 	10 * MILLISECONDS_PER_SECOND;

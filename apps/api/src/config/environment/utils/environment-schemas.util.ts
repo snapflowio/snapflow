@@ -109,6 +109,8 @@ export const portText = () =>
 
 export const positiveIntegerText = () => integerText({ minimum: 1 });
 
+export const nonNegativeIntegerText = () => integerText({ minimum: 0 });
+
 export const originText = () =>
 	parsed((value) => {
 		const url = parseUrl(value, HTTP_PROTOCOLS);

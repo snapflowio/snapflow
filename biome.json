@@ -557,6 +557,7 @@
 				"apps/api/src/migrations/**",
 				"apps/api/src/cli/**",
 				"apps/api/src/common/testing/integration-database.util.ts",
+				"apps/api/src/settlement/testing/integration-chain.util.ts",
 				"libs/sdk-typescript/src/utils/runtime.ts",
 				"scripts/**"
 			],

@@ -91,6 +91,7 @@ export function createApplicationConfig({
 			chainId: values.SETTLEMENT_CHAIN_ID,
 			rpcUrl: values.SETTLEMENT_RPC_URL,
 			escrowAddress: values.SETTLEMENT_ESCROW_ADDRESS,
+			escrowDeploymentBlock: values.SETTLEMENT_ESCROW_DEPLOYMENT_BLOCK,
 			usdcAddress: values.SETTLEMENT_USDC_ADDRESS,
 			sanctions: {
 				apiKey: values.SANCTIONS_API_KEY,

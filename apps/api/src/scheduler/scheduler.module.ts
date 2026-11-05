@@ -23,6 +23,7 @@ import { OrganizationSchedulerModule } from '../organization/scheduler/scheduler
 import { SandboxSchedulerModule } from '../sandbox/scheduler/scheduler.module';
 import { SettingsSchedulerModule } from '../settings/scheduler/scheduler.module';
 import { SettingsModule } from '../settings/settings.module';
+import { SettlementSchedulerModule } from '../settlement/scheduler/scheduler.module';
 import { UsageSchedulerModule } from '../usage/scheduler/scheduler.module';
 import { VerificationSchedulerModule } from '../verification/scheduler/scheduler.module';
 import { SchedulerStartupService } from './services/scheduler-startup.service';
@@ -42,6 +43,7 @@ import { SchedulerStartupService } from './services/scheduler-startup.service';
 		OrganizationSchedulerModule,
 		SandboxSchedulerModule,
 		SettingsSchedulerModule,
+		SettlementSchedulerModule,
 		UsageSchedulerModule,
 		VerificationSchedulerModule,
 		NetworkingModule,

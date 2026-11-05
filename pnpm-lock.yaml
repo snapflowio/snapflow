@@ -527,6 +527,9 @@ importers:
       '@opentelemetry/semantic-conventions':
         specifier: 'catalog:'
         version: 1.43.0
+      '@snapflow/contracts':
+        specifier: workspace:*
+        version: link:../../libs/contracts
       '@snapflow/machine-proto':
         specifier: workspace:*
         version: link:../../libs/machine-proto

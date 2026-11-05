@@ -55,6 +55,7 @@ const NON_NEGATIVE_COLUMNS = [
 	'spotCheckIntervalHoursVerified',
 	'spotCheckMonthlyBudgetCents',
 	'spotCheckToleranceBasisPoints',
+	'settlementConfirmations',
 ] as const;
 
 const POSITIVE_COLUMNS = [
@@ -269,6 +270,9 @@ export class Settings {
 		foreignKeyName: 'settings_spotCheckOrganizationId_fk',
 	})
 	spotCheckOrganizationId: string | null;
+
+	@Property(integerColumn('settlementConfirmations'))
+	settlementConfirmations: number;
 
 	@Property({
 		type: 'string[]',

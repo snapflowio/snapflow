@@ -63,6 +63,7 @@ export function toSettingsSnapshot(settings: Settings): SettingsSnapshot {
 		spotCheckMonthlyBudgetCents: settings.spotCheckMonthlyBudgetCents,
 		spotCheckToleranceBasisPoints: settings.spotCheckToleranceBasisPoints,
 		spotCheckOrganizationId: settings.spotCheckOrganizationId,
+		settlementConfirmations: settings.settlementConfirmations,
 		edgeTrustedHttpProxyCidrs: [...settings.edgeTrustedHttpProxyCidrs],
 		maintenanceMode: settings.maintenanceMode,
 		drainingMode: settings.drainingMode,

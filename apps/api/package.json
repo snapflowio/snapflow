@@ -46,6 +46,7 @@
 		"@opentelemetry/sdk-node": "catalog:",
 		"@opentelemetry/sdk-trace-base": "catalog:",
 		"@opentelemetry/semantic-conventions": "catalog:",
+		"@snapflow/contracts": "workspace:*",
 		"@snapflow/machine-proto": "workspace:*",
 		"@snapflow/organization-access": "workspace:*",
 		"@snapflow/toolbox-api-client": "workspace:*",

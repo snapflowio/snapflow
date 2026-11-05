@@ -249,6 +249,11 @@ export class UpdateSettingsDto {
 	@IsUUID()
 	spotCheckOrganizationId?: string | null;
 
+	@OptionalQuantity(
+		'Blocks the settlement chain must build on an escrow event before Snapflow indexes it'
+	)
+	settlementConfirmations?: number;
+
 	@ApiPropertyOptional({
 		type: [String],
 		maxItems: EDGE_TRUSTED_HTTP_PROXY_CIDRS_MAXIMUM,

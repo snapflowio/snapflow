@@ -32,6 +32,7 @@ const alertBudget = { ...blockBudget, mode: BillingBudgetMode.ALERT };
 
 const readyInput: BillingAdmissionInput = {
 	creditBalanceMicroUsd: MicroUsd.of(50_000_000n),
+	fundingWalletReady: true,
 	hasBillingActivity: true,
 	availableMicroUsd: MicroUsd.of(40_000_000n),
 	minimumReservationMicroUsd: MicroUsd.of(1_000_001n),
@@ -53,6 +54,13 @@ describe('billing admission blockers', () => {
 				monthlyCommittedMicroUsd: MicroUsd.ZERO,
 				hasBillingActivity: false,
 			}),
+			[BillingAdmissionBlocker.FUNDING_REQUIRED]
+		);
+	});
+
+	it('requires funding without a usable funding wallet whatever the credit', () => {
+		assert.deepEqual(
+			billingAdmissionBlockers({ ...readyInput, fundingWalletReady: false }),
 			[BillingAdmissionBlocker.FUNDING_REQUIRED]
 		);
 	});

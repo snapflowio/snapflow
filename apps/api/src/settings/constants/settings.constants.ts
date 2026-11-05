@@ -95,6 +95,10 @@ export const SETTINGS_DEFAULTS = {
 	platformMarkupBasisPoints: 2_500,
 	...DEFAULT_MARKETPLACE_SETTINGS,
 	...DEFAULT_VERIFICATION_SETTINGS,
+	// About three minutes of 2-second Base blocks, in line with how long
+	// Circle waits before it recognizes Base USDC transfers; deep enough that
+	// the indexer never credits a deposit the sequencer later reorgs away.
+	settlementConfirmations: 90,
 	maintenanceMode: false,
 	drainingMode: DrainingMode.MIGRATE,
 	drainingForce: false,

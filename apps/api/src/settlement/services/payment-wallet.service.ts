@@ -22,6 +22,7 @@ import type { LinkPaymentWalletDto } from '../dto/payment-wallet.dto';
 import { PaymentWallet } from '../entities/payment-wallet.entity';
 import type { PaymentWalletPurpose } from '../enums/payment-wallet-purpose.enum';
 import { SanctionsStatus } from '../enums/sanctions-status.enum';
+import { EscrowAttributionService } from './escrow-attribution.service';
 import {
 	type SanctionsScreening,
 	SanctionsScreeningService,
@@ -40,7 +41,8 @@ export class PaymentWalletService {
 	constructor(
 		private readonly entityManager: EntityManager,
 		private readonly challenges: WalletChallengeService,
-		private readonly sanctions: SanctionsScreeningService
+		private readonly sanctions: SanctionsScreeningService,
+		private readonly attribution: EscrowAttributionService
 	) {}
 
 	list(organizationId: string): Promise<PaymentWallet[]> {
@@ -65,7 +67,8 @@ export class PaymentWalletService {
 	}
 
 	// Stores a wallet whose control was already proven, replacing the
-	// organization's previous wallet for the same purpose.
+	// organization's previous wallet for the same purpose, and claims the
+	// escrow events the address took part in while nobody had linked it.
 	async record(
 		organizationId: string,
 		purpose: PaymentWalletPurpose,
@@ -91,13 +94,20 @@ export class PaymentWalletService {
 					{ organizationId, purpose },
 					{ lockMode: LockMode.PESSIMISTIC_WRITE }
 				);
-				return current
+				const wallet = current
 					? manager.assign(current, fields)
 					: manager.create(PaymentWallet, {
 							organizationId,
 							purpose,
 							...fields,
 						});
+				await this.attribution.attributeWallet(
+					manager,
+					organizationId,
+					purpose,
+					address
+				);
+				return wallet;
 			});
 		} catch (error) {
 			if (isUniqueViolation(error)) throw addressInUse();

@@ -200,6 +200,12 @@ export class SettingsDto {
 	spotCheckOrganizationId: string | null;
 
 	@ApiProperty({
+		description:
+			'Blocks the settlement chain must build on an escrow event before Snapflow indexes it',
+	})
+	settlementConfirmations: number;
+
+	@ApiProperty({
 		type: [String],
 		maxItems: EDGE_TRUSTED_HTTP_PROXY_CIDRS_MAXIMUM,
 		description:
