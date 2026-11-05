@@ -16,82 +16,31 @@ package runtime
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 
-	mvmerrors "github.com/snapflowio/microvm-go/internal/errors"
-	"github.com/snapflowio/microvm-go/internal/filemode"
 	"github.com/snapflowio/microvm-go/internal/forkvm"
-	"github.com/snapflowio/microvm-go/internal/snapshot"
 	"github.com/snapflowio/microvm-go/internal/state"
 	"github.com/snapflowio/microvm-go/types"
 )
 
-func (b *Backend) loadForkSource(instanceID, snapshotID string) (forkSource, error) {
-	if snapshotID == "" {
-		metadata, err := b.readInstance(instanceID)
-		return forkSource{metadata: metadata}, err
-	}
-	record, err := b.snapshots.LoadRecord(snapshotID)
-	if err != nil {
-		if errors.Is(err, snapshot.ErrNotFound) {
-			return forkSource{}, mvmerrors.NewNotFound(fmt.Errorf("snapshot %s", snapshotID))
-		}
-		return forkSource{}, err
-	}
-	if record.Snapshot.SourceInstanceID != instanceID {
-		return forkSource{}, stateConflict("snapshot source does not match the requested instance", "MICROVM_SNAPSHOT_SOURCE_MISMATCH")
-	}
-	var metadata state.InstanceMetadata
-	if err := json.Unmarshal(record.StoredMetadata, &metadata); err != nil {
-		return forkSource{}, fmt.Errorf("decode snapshot source metadata: %w", err)
-	}
-	if metadata.Hypervisor != record.Snapshot.SourceHypervisor {
-		return forkSource{}, stateConflict("snapshot hypervisor metadata is inconsistent", "MICROVM_SNAPSHOT_HYPERVISOR_MISMATCH")
-	}
-	return forkSource{metadata: metadata, snapshotRecord: &record}, nil
+func (b *Backend) loadForkSource(instanceID string) (forkSource, error) {
+	metadata, err := b.readInstance(instanceID)
+	return forkSource{metadata: metadata}, err
 }
 
-func validateForkSnapshotKind(record *snapshot.Record) error {
-	if record == nil {
-		return nil
+func (b *Backend) materializeForkSourceWithOptions(source forkSource, targetDir string, options forkOptions) error {
+	copyOptions := forkvm.CopyOptions{
+		SkipRelativePaths: map[string]struct{}{
+			filepath.Base(b.paths.InstanceMetadata(source.metadata.ID)): {},
+		},
 	}
-	switch record.Snapshot.Kind {
-	case snapshot.KindStopped, snapshot.KindStandby:
-		return nil
-	default:
-		return stateConflict("snapshot kind cannot be forked", "MICROVM_SNAPSHOT_KIND_UNSUPPORTED")
+	if options.shareSnapshotMemory {
+		copyOptions.HardlinkRelativePaths = map[string]struct{}{templateSnapshotMemoryRelativePath(): {}}
 	}
-}
-
-func (b *Backend) materializeForkSourceWithOptions(source forkSource, targetDir, targetID string, options forkOptions) error {
-	if source.snapshotRecord == nil {
-		copyOptions := forkvm.CopyOptions{
-			SkipRelativePaths: map[string]struct{}{
-				filepath.Base(b.paths.InstanceMetadata(source.metadata.ID)): {},
-			},
-		}
-		if options.shareSnapshotMemory {
-			copyOptions.HardlinkRelativePaths = map[string]struct{}{templateSnapshotMemoryRelativePath(): {}}
-		}
-		return forkvm.CopyDirWithOptions(b.paths.InstanceDir(source.metadata.ID), targetDir, copyOptions)
-	}
-	if err := os.MkdirAll(targetDir, filemode.SharedDirectory); err != nil {
-		return fmt.Errorf("create fork target directory: %w", err)
-	}
-	payloadDir := b.paths.SnapshotPayloadDir(source.snapshotRecord.Snapshot.ID)
-	if err := forkvm.CopyFile(filepath.Join(payloadDir, "overlay.raw"), b.paths.InstanceOverlay(targetID)); err != nil {
-		return fmt.Errorf("copy snapshot overlay: %w", err)
-	}
-	if source.snapshotRecord.Snapshot.Kind == snapshot.KindStandby {
-		if err := b.snapshots.MaterializeVMPayload(source.snapshotRecord.Snapshot.ID, b.paths.InstanceLatestSnapshot(targetID)); err != nil {
-			return fmt.Errorf("materialize snapshot VM state: %w", err)
-		}
-	}
-	return nil
+	return forkvm.CopyDirWithOptions(b.paths.InstanceDir(source.metadata.ID), targetDir, copyOptions)
 }
 
 func validateForkSource(source state.InstanceMetadata) error {

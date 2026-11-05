@@ -15,7 +15,6 @@ import {
 
 export const redisEnvironment = defineEnvironment(
 	{
-		name: 'redis',
 		title: 'Redis',
 		description: 'Redis: locks, throttling, realtime fan-out and caches',
 	},

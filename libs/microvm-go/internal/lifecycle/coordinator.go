@@ -65,10 +65,6 @@ func (c *Coordinator) ReadLock(ctx context.Context, key string) (*Guard, error) 
 	return c.lockMany(ctx, readLock, key)
 }
 
-func (c *Coordinator) ReadLockMany(ctx context.Context, keys ...string) (*Guard, error) {
-	return c.lockMany(ctx, readLock, keys...)
-}
-
 func (c *Coordinator) Lock(ctx context.Context, key string) (*Guard, error) {
 	return c.lockMany(ctx, writeLock, key)
 }

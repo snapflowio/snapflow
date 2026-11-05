@@ -32,7 +32,6 @@ var _ edge.Tunnels = (*Tunnels)(nil)
 type Tunnels struct {
 	mu       sync.Mutex
 	backends map[uuid.UUID]string
-	opened   int
 	dialer   net.Dialer
 	changes  chan struct{}
 }
@@ -60,20 +59,11 @@ func (tunnels *Tunnels) OpenStream(
 ) (transport.Stream, error) {
 	tunnels.mu.Lock()
 	backend, found := tunnels.backends[route.BackendID]
-	if found {
-		tunnels.opened++
-	}
 	tunnels.mu.Unlock()
 	if !found {
 		return nil, tunnel.ErrMachineUnavailable
 	}
 	return tunnels.dialer.DialContext(ctx, tcpNetwork, backend)
-}
-
-func (tunnels *Tunnels) OpenedStreams() int {
-	tunnels.mu.Lock()
-	defer tunnels.mu.Unlock()
-	return tunnels.opened
 }
 
 func (tunnels *Tunnels) BackendLoad(route routes.Base) (int64, bool) {

@@ -33,7 +33,6 @@ import (
 	"github.com/snapflowio/microvm-go/layout"
 	"github.com/snapflowio/microvm-go/types"
 	"github.com/snapflowio/microvm-go/vmm"
-	"github.com/snapflowio/microvm-go/volumes"
 )
 
 type (
@@ -49,7 +48,6 @@ type (
 	RuntimeState           = types.RuntimeState
 	PreparedBootAssets     = microvmruntime.PreparedBootAssets
 	Capacity               = admission.Resources
-	VolumeBlockStore       = volumes.BlockStore
 	SandboxCapability      = guest.SandboxCapability
 )
 
@@ -86,21 +84,6 @@ type Dependencies struct {
 	BuildLogPath func(string) (string, error)
 }
 
-type Option func(*options)
-
-type options struct {
-	volumeBlockStore VolumeBlockStore
-	gpuManager       devices.GPUManager
-}
-
-func WithVolumeBlockStore(store VolumeBlockStore) Option {
-	return func(o *options) { o.volumeBlockStore = store }
-}
-
-func WithGPUManager(manager devices.GPUManager) Option {
-	return func(o *options) { o.gpuManager = manager }
-}
-
 const (
 	Firecracker     Hypervisor = hypervisor.HypervisorFirecracker
 	CloudHypervisor Hypervisor = hypervisor.HypervisorCloudHypervisor
@@ -115,17 +98,11 @@ const (
 	SandboxCapabilityDesktop        SandboxCapability = guest.SandboxCapabilityDesktop
 )
 
-func New(config Config, dependencies Dependencies, opts ...Option) (*Runtime, error) {
+func New(config Config, dependencies Dependencies) (*Runtime, error) {
 	runtimeConfig, err := runtimeConfiguration(config, dependencies)
 	if err != nil {
 		return nil, err
 	}
-	applied := options{}
-	for _, option := range opts {
-		option(&applied)
-	}
-	runtimeConfig.VolumeBlockStore = applied.volumeBlockStore
-	runtimeConfig.GPUDevices = applied.gpuManager
 	backend, err := microvmruntime.NewBackend(runtimeConfig)
 	if err != nil {
 		return nil, err

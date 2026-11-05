@@ -15,7 +15,6 @@ import {
 
 export const authenticationEnvironment = defineEnvironment(
 	{
-		name: 'authentication',
 		title: 'Authentication',
 		description: 'Session signing secrets and the health check principal',
 	},

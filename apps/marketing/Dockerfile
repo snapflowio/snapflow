@@ -22,7 +22,7 @@ COPY apps/marketing/package.json apps/marketing/package.json
 
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
 	pnpm install --filter @snapflow/marketing... --frozen-lockfile --ignore-scripts \
-	&& pnpm rebuild @parcel/watcher esbuild sharp
+	&& pnpm rebuild esbuild sharp
 
 COPY apps/marketing apps/marketing
 

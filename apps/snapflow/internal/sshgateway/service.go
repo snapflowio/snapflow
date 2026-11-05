@@ -92,10 +92,6 @@ func New(cfg Config, deps Dependencies, opts ...Option) (*Service, error) {
 	return service, nil
 }
 
-func (s *Service) GetPort() int {
-	return s.port
-}
-
 func (s *Service) PublicHostKey() string {
 	return s.hostKey
 }

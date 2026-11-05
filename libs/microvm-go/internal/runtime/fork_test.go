@@ -16,12 +16,10 @@ package runtime
 
 import (
 	"encoding/json"
-	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/snapflowio/microvm-go/devices"
-	"github.com/snapflowio/microvm-go/hypervisor"
 	"github.com/snapflowio/microvm-go/internal/snapshot"
 	"github.com/snapflowio/microvm-go/internal/state"
 	"github.com/snapflowio/microvm-go/layout"
@@ -48,62 +46,6 @@ func TestValidateForkSourceRequiresQuiescedInstance(t *testing.T) {
 			t.Fatalf("expected state %q to be rejected", runtimeState)
 		}
 	}
-}
-
-func TestLoadForkSourceRejectsInconsistentSnapshotProvenance(t *testing.T) {
-	paths := layout.NewPaths(t.TempDir())
-	store := snapshot.NewStore(paths)
-	storedMetadata, err := json.Marshal(state.InstanceMetadata{
-		ID:         "source",
-		Hypervisor: hypervisor.HypervisorFirecracker,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := store.SaveRecord(snapshot.Record{
-		Snapshot: snapshot.Snapshot{
-			ID:               "snapshot-1",
-			SourceInstanceID: "different-source",
-			SourceHypervisor: hypervisor.HypervisorFirecracker,
-		},
-		StoredMetadata: storedMetadata,
-	}); err != nil {
-		t.Fatal(err)
-	}
-	backend := &Backend{paths: paths, snapshots: store}
-	if _, err := backend.loadForkSource("source", "snapshot-1"); err == nil {
-		t.Fatal("expected inconsistent snapshot source to be rejected")
-	}
-}
-
-func TestMaterializeForkSourceUsesImmutableSnapshotPayload(t *testing.T) {
-	paths := layout.NewPaths(t.TempDir())
-	backend := &Backend{paths: paths, snapshots: snapshot.NewStore(paths)}
-	snapshotID := "snapshot-1"
-	payloadDir := paths.SnapshotPayloadDir(snapshotID)
-	if err := os.MkdirAll(filepath.Join(payloadDir, "vm"), 0o755); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(filepath.Join(payloadDir, "overlay.raw"), []byte("snapshot-overlay"), 0o644); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(filepath.Join(payloadDir, "vm", "state"), []byte("snapshot-state"), 0o644); err != nil {
-		t.Fatal(err)
-	}
-
-	source := forkSource{
-		metadata: state.InstanceMetadata{ID: "source"},
-		snapshotRecord: &snapshot.Record{Snapshot: snapshot.Snapshot{
-			ID:   snapshotID,
-			Kind: snapshot.KindStandby,
-		}},
-	}
-	if err := backend.materializeForkSourceWithOptions(source, paths.InstanceDir("target"), "target", forkOptions{}); err != nil {
-		t.Fatal(err)
-	}
-
-	assertFileContents(t, paths.InstanceOverlay("target"), "snapshot-overlay")
-	assertFileContents(t, filepath.Join(paths.InstanceLatestSnapshot("target"), "state"), "snapshot-state")
 }
 
 func TestProtectedImageDirsIncludesSnapshotReferences(t *testing.T) {
@@ -155,17 +97,6 @@ func TestProtectedImageDirsIncludesPlatformBundleReferences(t *testing.T) {
 	}
 	if !protected[filepath.Dir(bundleDisk)] {
 		t.Fatalf("snapshot platform bundle directory %q was not protected", filepath.Dir(bundleDisk))
-	}
-}
-
-func assertFileContents(t *testing.T, path, expected string) {
-	t.Helper()
-	contents, err := os.ReadFile(path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if string(contents) != expected {
-		t.Fatalf("%s = %q, want %q", path, contents, expected)
 	}
 }
 

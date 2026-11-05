@@ -21,7 +21,6 @@ import {
 
 export const objectStorageEnvironment = defineEnvironment(
 	{
-		name: 'object-storage',
 		title: 'Object Storage',
 		description:
 			'S3-compatible object storage for build contexts, logs and backups',
