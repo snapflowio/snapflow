@@ -18,7 +18,7 @@ header:
 
         SPDX-License-Identifier: AGPL-3\.0
     paths:
-      - "apps/**/*.{ts,tsx,mts,cts,js,mjs,cjs,go,sh,py,css,html,svelte}"
+      - "apps/**/*.{ts,tsx,mts,cts,js,mjs,cjs,go,sh,py,css,html,svelte,sol}"
       - "apps/**/Dockerfile"
       - "scripts/**/*.{mts,sh}"
       - "deploy/**/*.sh"
@@ -39,6 +39,9 @@ header:
       - "apps/snapflow/internal/localapi/docs/**"
       - "apps/guest/internal/terminal/static/**"
       - "apps/marketing/.astro/**"
+      - "apps/contracts/dependencies/**"
+      - "apps/contracts/out/**"
+      - "apps/contracts/cache/**"
       - "**/.svelte-kit/**"
       - "apps/api/src/migrations/*-migration.ts"
       - "libs/machine-proto/gen/**"
@@ -57,6 +60,10 @@ header:
         extensions:
           - ".svelte"
         comment_style_id: AngleBracket
+      Solidity:
+        extensions:
+          - ".sol"
+        comment_style_id: DoubleSlash
 
   - license:
       spdx-id: Apache-2.0

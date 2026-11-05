@@ -1,0 +1,60 @@
+layer: "application"
+stack: "backend"
+tags: ["contracts", "payments"]
+
+fileGroups:
+  sources:
+    - "src/**/*.sol"
+    - "foundry.toml"
+    - "soldeer.lock"
+    - "remappings.txt"
+  tests:
+    - "test/**/*"
+    - "script/**/*.sol"
+
+tasks:
+  install:
+    command: "forge"
+    args: ["soldeer", "install"]
+    inputs: ["foundry.toml", "soldeer.lock"]
+    outputs: ["dependencies"]
+
+  build:
+    command: "forge"
+    args: ["build", "--sizes"]
+    deps: ["~:install"]
+    inputs: ["@group(sources)"]
+    outputs: ["out"]
+
+  test:
+    command: "forge"
+    args: ["test"]
+    deps: ["~:install"]
+    inputs: ["@group(sources)", "@group(tests)"]
+
+  test-ci:
+    command: "forge"
+    args: ["test"]
+    deps: ["~:install"]
+    env:
+      FOUNDRY_PROFILE: "ci"
+    inputs: ["@group(sources)", "@group(tests)"]
+
+  lint:
+    script: "forge fmt --check && forge lint src"
+    deps: ["~:install"]
+    inputs: ["@group(sources)", "@group(tests)"]
+
+  format:
+    command: "forge"
+    args: ["fmt"]
+    options:
+      cache: false
+
+  deploy-local:
+    command: "forge"
+    args: ["script", "script/DeployLocal.s.sol", "--rpc-url", "anvil", "--broadcast"]
+    deps: ["~:build"]
+    options:
+      cache: false
+      runInCI: false

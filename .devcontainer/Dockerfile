@@ -26,7 +26,7 @@ FROM mcr.microsoft.com/devcontainers/base:bookworm@sha256:bb7b81b6e5be17b5267f92
 ARG DEBIAN_FRONTEND=noninteractive
 ARG MOON_VERSION=2.4.6
 ARG CODEX_VERSION=0.145.0
-ARG STRIPE_CLI_VERSION=1.53.1
+ARG FOUNDRY_VERSION=1.9.0
 ARG KUBECTL_VERSION=1.37.1
 ARG HELM_VERSION=4.3.1
 ARG FLUX_VERSION=2.9.6
@@ -83,16 +83,16 @@ RUN curl --http1.1 --retry 5 --retry-all-errors --retry-delay 2 -fsSL \
 RUN curl --http1.1 --retry 5 --retry-all-errors --retry-delay 2 -fsSL https://chatgpt.com/codex/install.sh \
   | CODEX_RELEASE="${CODEX_VERSION}" CODEX_NON_INTERACTIVE=1 CODEX_INSTALL_DIR=/usr/local/bin CODEX_HOME=/opt/codex sh
 
-RUN package="stripe_${STRIPE_CLI_VERSION}_linux_$(dpkg --print-architecture).deb" \
-  && release="https://github.com/stripe/stripe-cli/releases/download/v${STRIPE_CLI_VERSION}" \
+RUN package="foundry_v${FOUNDRY_VERSION}_linux_$(dpkg --print-architecture)" \
+  && release="https://github.com/foundry-rs/foundry/releases/download/v${FOUNDRY_VERSION}" \
   && curl --http1.1 --retry 5 --retry-all-errors --retry-delay 2 -fsSL \
-    "${release}/${package}" -o "/tmp/${package}" \
+    "${release}/${package}.tar.gz" -o "/tmp/${package}.tar.gz" \
   && curl --http1.1 --retry 5 --retry-all-errors --retry-delay 2 -fsSL \
-    "${release}/stripe-linux-checksums.txt" -o /tmp/stripe-linux-checksums.txt \
-  && (cd /tmp && grep "  ${package}\$" stripe-linux-checksums.txt | sha256sum -c -) \
-  && dpkg -i "/tmp/${package}" \
-  && rm "/tmp/${package}" /tmp/stripe-linux-checksums.txt \
-  && stripe version
+    "${release}/${package}.sha256" -o "/tmp/${package}.sha256" \
+  && (cd /tmp && sha256sum -c "${package}.sha256") \
+  && tar -xzf "/tmp/${package}.tar.gz" -C /usr/local/bin forge cast anvil chisel \
+  && rm "/tmp/${package}.tar.gz" "/tmp/${package}.sha256" \
+  && forge --version
 
 RUN release="https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64" \
   && curl --http1.1 --retry 5 --retry-all-errors --retry-delay 2 -fsSL \

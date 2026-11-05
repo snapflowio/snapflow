@@ -2,6 +2,7 @@ projects:
   workspace: "."
   deploy: "deploy"
   api: "apps/api"
+  contracts: "apps/contracts"
   dashboard: "apps/dashboard"
   edge: "apps/edge"
   guest: "apps/guest"

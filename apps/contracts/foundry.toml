@@ -1,0 +1,76 @@
+[profile.default]
+  src = "src"
+  test = "test"
+  script = "script"
+  out = "out"
+  libs = ["dependencies"]
+  solc = "0.8.38"
+  auto_detect_solc = false
+  evm_version = "cancun"
+  optimizer = true
+  optimizer_runs = 10_000
+  bytecode_hash = "none"
+  gas_reports = ["SnapflowEscrow"]
+  fs_permissions = [{ access = "read", path = "./test/vectors" }]
+
+[profile.default.fuzz]
+  runs = 10_000
+  max_test_rejects = 1_000_000
+
+[profile.default.invariant]
+  runs = 256
+  depth = 128
+  fail_on_revert = true
+
+[profile.ci.fuzz]
+  runs = 50_000
+
+[profile.ci.invariant]
+  runs = 1_000
+  depth = 256
+
+[profile.lite]
+  optimizer = false
+
+[profile.lite.fuzz]
+  runs = 256
+
+[profile.lite.invariant]
+  runs = 32
+  depth = 32
+
+[fmt]
+  bracket_spacing = true
+  int_types = "long"
+  line_length = 120
+  multiline_func_header = "all"
+  number_underscore = "thousands"
+  quote_style = "double"
+  tab_width = 4
+  wrap_comments = true
+
+[lint]
+  lint_on_build = false
+  # Timestamps only gate day-scale windows (dispute, timelock, expiry), where seconds of drift do not matter;
+  # batch claims are deliberately all-or-nothing so a relayer simulates before sending.
+  exclude_lints = ["block-timestamp", "require-revert-in-loop"]
+
+[rpc_endpoints]
+  base = "${BASE_RPC_URL}"
+  base_sepolia = "${BASE_SEPOLIA_RPC_URL}"
+  anvil = "http://127.0.0.1:8545"
+
+[etherscan]
+  base = { key = "${BASESCAN_API_KEY}", chain = 8453 }
+  base_sepolia = { key = "${BASESCAN_API_KEY}", chain = 84532 }
+
+[soldeer]
+  remappings_generate = true
+  remappings_regenerate = false
+  remappings_location = "txt"
+  remappings_version = false
+  recursive_deps = false
+
+[dependencies]
+  "@openzeppelin-contracts" = "5.7.0"
+  forge-std = "1.17.0"

@@ -33,6 +33,7 @@ jobs:
       typescript: ${{ github.event_name != 'pull_request' || steps.filter.outputs.typescript == 'true' }}
       deploy: ${{ github.event_name != 'pull_request' || steps.filter.outputs.deploy == 'true' }}
       database: ${{ github.event_name != 'pull_request' || steps.filter.outputs.database == 'true' }}
+      contracts: ${{ github.event_name != 'pull_request' || steps.filter.outputs.contracts == 'true' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         if: github.event_name == 'pull_request'
@@ -263,10 +264,43 @@ jobs:
 
   # The one check the branch rulesets require, so adding a job never needs a
   # ruleset change.
+  contracts:
+    name: Contracts
+    needs: changes
+    if: needs.changes.outputs.contracts == 'true'
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: apps/contracts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
+        with:
+          version: v1.9.0
+      - name: Install dependencies
+        run: forge soldeer install
+      - name: Format and lint
+        run: forge fmt --check && forge lint src
+      - name: Build
+        run: forge build --sizes
+      - name: Unit, fuzz and invariant tests
+        env:
+          FOUNDRY_PROFILE: ci
+        run: forge test
+      - name: Slither
+        uses: crytic/slither-action@b52cc1cbfee9ca3e8722dd5224299d16c9a6b80f # v0.4.2
+        with:
+          target: apps/contracts
+          slither-config: apps/contracts/slither.config.json
+          fail-on: low
+
   passed:
     name: CI passed
     if: always()
-    needs: [changes, license, typescript, deploy, postgres-schema, go]
+    needs: [changes, license, typescript, deploy, postgres-schema, go, contracts]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
