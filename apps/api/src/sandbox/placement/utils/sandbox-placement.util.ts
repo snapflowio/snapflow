@@ -14,10 +14,10 @@ import {
 	locationConstraintCode,
 	parseLocationConstraint,
 } from '../../../location/utils/location-constraint.util';
-import { MachineTier } from '../../../marketplace/machine/enums/machine-tier.enum';
-import { PlacementKind } from '../../../marketplace/machine/enums/placement-kind.enum';
-import type { SandboxPlacementDto } from '../../instance/dto/sandbox-placement.dto';
-import type { Sandbox } from '../../instance/entities/sandbox.entity';
+import { MachineTier } from '../../../marketplace/enums/machine-tier.enum';
+import { PlacementKind } from '../../../marketplace/enums/placement-kind.enum';
+import type { SandboxPlacementDto } from '../../dto/sandbox-placement.dto';
+import type { Sandbox } from '../../entities/sandbox.entity';
 import type {
 	FlexiblePlacement,
 	PlacementRequest,

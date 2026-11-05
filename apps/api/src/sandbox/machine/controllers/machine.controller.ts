@@ -31,12 +31,9 @@ import {
 } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import type { Request } from 'express';
-import {
-	Audit,
-	TypedRequest,
-} from '../../../audit/log/decorators/audit.decorator';
-import { AuditAction } from '../../../audit/log/enums/audit-action.enum';
-import { AuditTarget } from '../../../audit/log/enums/audit-target.enum';
+import { Audit, TypedRequest } from '../../../audit/decorators/audit.decorator';
+import { AuditAction } from '../../../audit/enums/audit-action.enum';
+import { AuditTarget } from '../../../audit/enums/audit-target.enum';
 import {
 	AllowAuthMethods,
 	AuthMethod,
@@ -45,7 +42,7 @@ import { IsOrganizationAuthContext } from '../../../common/decorators/auth-conte
 import { ThrottlerScope } from '../../../common/decorators/throttler-scope.decorator';
 import { AuthenticatedRateLimitGuard } from '../../../common/guards/authenticated-rate-limit.guard';
 import type { OrganizationAuthContext } from '../../../common/types/organization-auth-context.types';
-import { RequiredOrganizationPermissions } from '../../../organization/tenant/decorators/required-organization-permissions.decorator';
+import { RequiredOrganizationPermissions } from '../../../organization/decorators/required-organization-permissions.decorator';
 import {
 	MachineDto,
 	MachineListQueryDto,

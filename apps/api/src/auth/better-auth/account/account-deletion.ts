@@ -11,8 +11,8 @@ import { APIError } from 'better-auth/api';
 import {
 	ACCOUNT_HAS_LIVE_RESOURCES_CODE,
 	ACCOUNT_OWNS_SHARED_ORGANIZATIONS_CODE,
-} from '../../../organization/tenant/constants/live-organization-resource.constants';
-import type { OrganizationOwnershipService } from '../../../organization/tenant/services/organization-ownership.service';
+} from '../../../organization/constants/live-organization-resource.constants';
+import type { OrganizationOwnershipService } from '../../../organization/services/organization-ownership.service';
 
 export type AccountOwnership = Pick<
 	OrganizationOwnershipService,

@@ -11,7 +11,7 @@ import { isIP } from 'node:net';
 import { domainToASCII } from 'node:url';
 import { BadRequestException } from '@nestjs/common';
 import { registrableDomain } from '../../../common/utils/registrable-domain.util';
-import { NETWORKING_LIMITS } from '../../routing/constants/networking.constants';
+import { NETWORKING_LIMITS } from '../../constants/networking.constants';
 
 const DNS_LABEL_PATTERN = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
 

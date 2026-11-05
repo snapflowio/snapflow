@@ -22,7 +22,7 @@ import {
 	Min,
 } from 'class-validator';
 import { IsSafeDisplayString } from '../../../common/validators/is-safe-string.validator';
-import { SandboxClass } from '../../instance/enums/sandbox-class.enum';
+import { SandboxClass } from '../../enums/sandbox-class.enum';
 import { GpuType } from '../../machine/enums/gpu-type.enum';
 import { CreateBuildInfoDto } from './create-build-info.dto';
 

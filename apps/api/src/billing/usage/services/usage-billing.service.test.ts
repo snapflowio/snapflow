@@ -13,26 +13,26 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { MILLISECONDS_PER_SECOND } from '../../../common/constants/time.constants';
 import { fakeInstance } from '../../../common/testing/instance.fake';
 import { MicroUsd } from '../../../common/values/micro-usd.value';
-import { SandboxLease } from '../../../marketplace/machine/entities/sandbox-lease.entity';
-import type { LinePrice } from '../../../marketplace/machine/types/pricing.types';
-import { priceUsage } from '../../../marketplace/machine/utils/pricing.util';
-import { UsageMode } from '../../../usage/metering/constants/usage-lifecycle.constants';
-import { SandboxUsagePeriod } from '../../../usage/metering/entities/sandbox-usage-period.entity';
-import { quantitiesFor } from '../../../usage/metering/utils/usage-quantities.util';
+import { SandboxLease } from '../../../marketplace/entities/sandbox-lease.entity';
+import type { LinePrice } from '../../../marketplace/types/pricing.types';
+import { priceUsage } from '../../../marketplace/utils/pricing.util';
+import { UsageMode } from '../../../usage/constants/usage-lifecycle.constants';
+import { SandboxUsagePeriod } from '../../../usage/entities/sandbox-usage-period.entity';
+import { quantitiesFor } from '../../../usage/utils/usage-quantities.util';
 import {
 	BillingAdjustmentReasonCode,
 	BillingEvidenceStatus,
 	BillingLedgerAccountCode,
 	BillingLedgerSide,
 	BillingReconciliationReason,
-} from '../../ledger/constants/billing.constants';
+} from '../../constants/billing.constants';
 import {
 	BillingAuditFailure,
 	BillingAuditFaultDomain,
-} from '../../ledger/constants/billing-audit.constants';
-import { BillingLineItemService } from '../../ledger/services/billing-line-item.service';
-import { BillingAttestationService } from '../../ledger/services/evidence/billing-attestation.service';
-import type { UsageAttestation } from '../../ledger/utils/evidence/usage-attestation.util';
+} from '../../constants/billing-audit.constants';
+import { BillingLineItemService } from '../../services/billing-line-item.service';
+import { BillingAttestationService } from '../../services/evidence/billing-attestation.service';
+import type { UsageAttestation } from '../../utils/evidence/usage-attestation.util';
 import {
 	WINDOW_ALLOCATION,
 	WINDOW_TERMS,

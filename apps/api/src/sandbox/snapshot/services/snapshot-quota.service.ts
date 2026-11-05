@@ -8,13 +8,13 @@
  */
 
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { OrganizationLimitsService } from '../../../organization/tenant/services/organization-limits.service';
-import { OrganizationQuotaService } from '../../../organization/tenant/services/organization-quota.service';
-import { OrganizationUsageService } from '../../../organization/tenant/services/organization-usage.service';
-import { OrganizationUsageOverviewService } from '../../../organization/tenant/services/organization-usage-overview.service';
-import { getEffectivePerSandboxLimits } from '../../../organization/tenant/utils/sandbox-limits.util';
-import { PER_SANDBOX_LIMIT_MESSAGE } from '../../instance/constants/resource-limit-messages.constants';
-import { SandboxClass } from '../../instance/enums/sandbox-class.enum';
+import { OrganizationLimitsService } from '../../../organization/services/organization-limits.service';
+import { OrganizationQuotaService } from '../../../organization/services/organization-quota.service';
+import { OrganizationUsageService } from '../../../organization/services/organization-usage.service';
+import { OrganizationUsageOverviewService } from '../../../organization/services/organization-usage-overview.service';
+import { getEffectivePerSandboxLimits } from '../../../organization/utils/sandbox-limits.util';
+import { PER_SANDBOX_LIMIT_MESSAGE } from '../../constants/resource-limit-messages.constants';
+import { SandboxClass } from '../../enums/sandbox-class.enum';
 
 type SnapshotResourceRequest = Readonly<{
 	cpu?: number;

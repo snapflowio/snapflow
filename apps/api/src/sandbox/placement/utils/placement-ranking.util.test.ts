@@ -10,7 +10,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { MicroUsd } from '../../../common/values/micro-usd.value';
-import { PlacementLocality } from '../../instance/enums/placement-locality.enum';
+import { PlacementLocality } from '../../enums/placement-locality.enum';
 import {
 	type RankablePlacement,
 	rankPlacements,

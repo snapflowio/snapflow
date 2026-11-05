@@ -26,12 +26,9 @@ import {
 	ApiResponse,
 	ApiTags,
 } from '@nestjs/swagger';
-import {
-	Audit,
-	TypedRequest,
-} from '../../../audit/log/decorators/audit.decorator';
-import { AuditAction } from '../../../audit/log/enums/audit-action.enum';
-import { AuditTarget } from '../../../audit/log/enums/audit-target.enum';
+import { Audit, TypedRequest } from '../../../audit/decorators/audit.decorator';
+import { AuditAction } from '../../../audit/enums/audit-action.enum';
+import { AuditTarget } from '../../../audit/enums/audit-target.enum';
 import {
 	AllowAuthMethods,
 	AuthMethod,

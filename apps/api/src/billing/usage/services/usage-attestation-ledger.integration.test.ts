@@ -13,15 +13,15 @@ import { Client } from 'pg';
 import { MILLISECONDS_PER_SECOND } from '../../../common/constants/time.constants';
 import { integrationDatabaseUrl } from '../../../common/testing/integration-database.util';
 import { MicroUsd } from '../../../common/values/micro-usd.value';
-import { priceUsage } from '../../../marketplace/machine/utils/pricing.util';
-import { quantitiesFor } from '../../../usage/metering/utils/usage-quantities.util';
-import { BillingLedgerAccountCode } from '../../ledger/constants/billing.constants';
+import { priceUsage } from '../../../marketplace/utils/pricing.util';
+import { quantitiesFor } from '../../../usage/utils/usage-quantities.util';
+import { BillingLedgerAccountCode } from '../../constants/billing.constants';
 import {
 	insertLedgerAccounts,
 	insertLedgerPosting,
 	ledgerBalances,
-} from '../../ledger/testing/ledger-database.fixtures';
-import type { UsageAttestation } from '../../ledger/utils/evidence/usage-attestation.util';
+} from '../../testing/ledger-database.fixtures';
+import type { UsageAttestation } from '../../utils/evidence/usage-attestation.util';
 import {
 	WINDOW_ALLOCATION,
 	WINDOW_TERMS,

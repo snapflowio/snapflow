@@ -17,8 +17,8 @@ import {
 	Property,
 } from '@mikro-orm/decorators/legacy';
 import { NetworkUsagePeriod } from '../../../networking/usage/entities/network-usage-period.entity';
-import type { MachineUsageReceiptEnvelope } from '../../../usage/metering/schemas/machine-usage-envelope.schema';
-import { SandboxPlacement } from '../../instance/entities/sandbox-placement.entity';
+import type { MachineUsageReceiptEnvelope } from '../../../usage/schemas/machine-usage-envelope.schema';
+import { SandboxPlacement } from '../../entities/sandbox-placement.entity';
 import {
 	MACHINE_USAGE_COLUMN_LENGTH,
 	MACHINE_USAGE_NUMERIC_PRECISION,

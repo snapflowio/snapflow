@@ -19,7 +19,7 @@ import { settleSequentially } from '../../../common/utils/concurrency/sequential
 import { TrackedJobs } from '../../../common/utils/concurrency/tracked-jobs.util';
 import { errorMessage } from '../../../common/utils/error/error.util';
 import { RedisLockProvider } from '../../../infra/redis/providers/redis-lock.provider';
-import { SANDBOX_WORKER_LIMITS } from '../../instance/constants/sandbox.constants';
+import { SANDBOX_WORKER_LIMITS } from '../../constants/sandbox.constants';
 import { MachineSnapshotTargetReason } from '../../machine/enums/machine-snapshot-target-reason.enum';
 import { MachineSnapshotTargetService } from '../../machine/services/desired-state/machine-snapshot-target.service';
 import { snapshotTemplatePreparation } from '../../machine/utils/proto/snapshot-template.util';

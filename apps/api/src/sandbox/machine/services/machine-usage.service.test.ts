@@ -16,7 +16,7 @@ import {
 	MILLISECONDS_PER_SECOND,
 } from '../../../common/constants/time.constants';
 import { fakeInstance } from '../../../common/testing/instance.fake';
-import { SandboxPlacement } from '../../instance/entities/sandbox-placement.entity';
+import { SandboxPlacement } from '../../entities/sandbox-placement.entity';
 import {
 	MACHINE_USAGE_GENESIS_DIGEST,
 	MACHINE_USAGE_MAX_CLOCK_SKEW_MILLISECONDS,

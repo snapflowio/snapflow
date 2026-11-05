@@ -13,10 +13,10 @@ import { getIP } from 'better-auth/api';
 import {
 	AUDIT_ACTOR_TYPE,
 	AUDIT_CREDENTIAL_TYPE,
-} from '../../../audit/log/constants/audit-principal.constants';
-import { AuditAction } from '../../../audit/log/enums/audit-action.enum';
-import { AuditTarget } from '../../../audit/log/enums/audit-target.enum';
-import type { AuditService } from '../../../audit/log/services/audit.service';
+} from '../../../audit/constants/audit-principal.constants';
+import { AuditAction } from '../../../audit/enums/audit-action.enum';
+import { AuditTarget } from '../../../audit/enums/audit-target.enum';
+import type { AuditService } from '../../../audit/services/audit.service';
 import { AUTH_PATH } from '../../constants/auth-paths.constants';
 
 const USER_AGENT_HEADER = 'user-agent';

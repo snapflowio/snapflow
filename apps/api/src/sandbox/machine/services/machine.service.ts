@@ -14,8 +14,8 @@ import {
 	Injectable,
 	NotFoundException,
 } from '@nestjs/common';
-import { Sandbox } from '../../instance/entities/sandbox.entity';
-import { SandboxState } from '../../instance/enums/sandbox-state.enum';
+import { Sandbox } from '../../entities/sandbox.entity';
+import { SandboxState } from '../../enums/sandbox-state.enum';
 import { Snapshot } from '../../snapshot/entities/snapshot.entity';
 import { Machine } from '../entities/machine.entity';
 import { MachineState } from '../enums/machine-state.enum';

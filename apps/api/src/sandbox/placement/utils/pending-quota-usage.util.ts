@@ -7,9 +7,9 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import type { SandboxResourceAmounts } from '../../../organization/tenant/utils/organization-usage.util';
-import type { Sandbox } from '../../instance/entities/sandbox.entity';
-import type { PendingQuotaReservation } from '../../instance/types/sandbox-quota.types';
+import type { SandboxResourceAmounts } from '../../../organization/utils/organization-usage.util';
+import type { Sandbox } from '../../entities/sandbox.entity';
+import type { PendingQuotaReservation } from '../../types/sandbox-quota.types';
 
 export type PendingQuotaUsage = Partial<SandboxResourceAmounts>;
 

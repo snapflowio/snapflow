@@ -10,8 +10,8 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { SPOT_CHECK_JOB } from '../../qualification/constants/spot-check.constants';
-import { SpotCheckExecutorService } from '../../qualification/services/spot-check-executor.service';
+import { SPOT_CHECK_JOB } from '../../constants/spot-check.constants';
+import { SpotCheckExecutorService } from '../../services/spot-check-executor.service';
 
 @Injectable()
 export class SpotCheckExecutorJob {

@@ -18,7 +18,7 @@ import {
 	guardOrganizationRequest,
 	handleOrganizationResponse,
 	type OrganizationAuthHookDependencies,
-} from '../../../organization/tenant/better-auth/organization-auth-hooks';
+} from '../../../organization/better-auth/organization-auth-hooks';
 import {
 	ADMIN_MFA_REQUIRED_CODE,
 	ADMIN_MFA_REQUIRED_MESSAGE,

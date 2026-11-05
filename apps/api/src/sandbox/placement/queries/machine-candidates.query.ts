@@ -14,21 +14,21 @@ import {
 	constrainedContinents,
 	constrainedCountries,
 } from '../../../location/utils/location-constraint.util';
-import { MACHINE_TIER_ORDER } from '../../../marketplace/machine/constants/marketplace.constants';
-import { ListingState } from '../../../marketplace/machine/enums/listing-state.enum';
-import { ListingVisibility } from '../../../marketplace/machine/enums/listing-visibility.enum';
-import { MachineTier } from '../../../marketplace/machine/enums/machine-tier.enum';
-import { PlacementKind } from '../../../marketplace/machine/enums/placement-kind.enum';
-import { currentAssessmentSql } from '../../../marketplace/machine/queries/machine-assessment.query';
+import { MACHINE_TIER_ORDER } from '../../../marketplace/constants/marketplace.constants';
+import { ListingState } from '../../../marketplace/enums/listing-state.enum';
+import { ListingVisibility } from '../../../marketplace/enums/listing-visibility.enum';
+import { MachineTier } from '../../../marketplace/enums/machine-tier.enum';
+import { PlacementKind } from '../../../marketplace/enums/placement-kind.enum';
+import { currentAssessmentSql } from '../../../marketplace/queries/machine-assessment.query';
 import {
 	hostGateSql,
 	MACHINE_LOAD_BINDINGS,
 	MACHINE_LOAD_SQL,
 	type SqlFragment,
 	workloadGateSql,
-} from '../../../marketplace/machine/queries/machine-eligibility.query';
-import type { SandboxCapability } from '../../instance/enums/sandbox-capability.enum';
-import { SandboxMode } from '../../instance/enums/sandbox-mode.enum';
+} from '../../../marketplace/queries/machine-eligibility.query';
+import type { SandboxCapability } from '../../enums/sandbox-capability.enum';
+import { SandboxMode } from '../../enums/sandbox-mode.enum';
 import { MachineHypervisor } from '../../machine/enums/machine-hypervisor.enum';
 import { MachineRuntimeFeature } from '../../machine/enums/machine-runtime-feature.enum';
 import { machineTrustPlacementCondition } from '../../machine/queries/machine-placement-trust.query';

@@ -8,10 +8,10 @@
  */
 
 import { Module } from '@nestjs/common';
-import { IdempotencyRequestModule } from '../../idempotency/request/request.module';
+import { IdempotencyModule } from '../../idempotency/idempotency.module';
 import { RedisConnectionModule } from '../../infra/redis/redis.module';
 import { NetworkingCloudflareModule } from '../cloudflare/cloudflare.module';
-import { NetworkingRoutingModule } from '../routing/routing.module';
+import { NetworkingModule } from '../networking.module';
 import { CloudflareWebhookController } from './controllers/cloudflare-webhook.controller';
 import { CustomDomainController } from './controllers/custom-domain.controller';
 import { CloudflareWebhookService } from './services/cloudflare-webhook.service';
@@ -20,9 +20,9 @@ import { CustomDomainReconcilerService } from './services/custom-domain-reconcil
 
 @Module({
 	imports: [
-		IdempotencyRequestModule,
+		IdempotencyModule,
 		NetworkingCloudflareModule,
-		NetworkingRoutingModule,
+		NetworkingModule,
 		RedisConnectionModule,
 	],
 	controllers: [CloudflareWebhookController, CustomDomainController],

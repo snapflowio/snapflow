@@ -16,7 +16,7 @@ import {
 	Property,
 	Unique,
 } from '@mikro-orm/decorators/legacy';
-import { SandboxCapability } from '../../instance/enums/sandbox-capability.enum';
+import { SandboxCapability } from '../../enums/sandbox-capability.enum';
 import { SnapshotMachineState } from '../enums/snapshot-machine-state.enum';
 
 export interface PreparedSnapshotTemplate {

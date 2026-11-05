@@ -18,7 +18,7 @@ import { fakeInstance } from '../../../common/testing/instance.fake';
 import { integrationDatabaseUrl } from '../../../common/testing/integration-database.util';
 import { ENTITY_MAPPING_OPTIONS } from '../../../infra/database/config/entity-mapping.config';
 import { RedisLockProvider } from '../../../infra/redis/providers/redis-lock.provider';
-import { Organization } from '../../../organization/tenant/entities/organization.entity';
+import { Organization } from '../../../organization/entities/organization.entity';
 import { Job } from '../../machine-job/entities/job.entity';
 import { JobStatus } from '../../machine-job/enums/job-status.enum';
 import { JobType } from '../../machine-job/enums/job-type.enum';

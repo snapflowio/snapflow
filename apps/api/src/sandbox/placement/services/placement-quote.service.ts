@@ -9,14 +9,14 @@
 
 import type { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
-import type { BillingRestriction } from '../../../billing/ledger/enums/billing-restriction.enum';
-import { PlacementBillingCapacityService } from '../../../billing/ledger/services/placement/placement-billing-capacity.service';
+import type { BillingRestriction } from '../../../billing/enums/billing-restriction.enum';
+import { PlacementBillingCapacityService } from '../../../billing/services/placement/placement-billing-capacity.service';
 import { databaseNow } from '../../../infra/database/utils/database-time.util';
-import type { MachineUnavailableReason } from '../../../marketplace/machine/enums/machine-unavailable-reason.enum';
-import type { PriceTerms } from '../../../marketplace/machine/types/pricing.types';
-import { runningHourlyPrice } from '../../../marketplace/machine/utils/pricing.util';
-import { SettingsService } from '../../../settings/platform/services/settings.service';
-import type { SandboxQuoteDto } from '../../instance/dto/sandbox-quote.dto';
+import type { MachineUnavailableReason } from '../../../marketplace/enums/machine-unavailable-reason.enum';
+import type { PriceTerms } from '../../../marketplace/types/pricing.types';
+import { runningHourlyPrice } from '../../../marketplace/utils/pricing.util';
+import { SettingsService } from '../../../settings/services/settings.service';
+import type { SandboxQuoteDto } from '../../dto/sandbox-quote.dto';
 import type { CustomerMachineParams } from '../../machine/types/machine-scheduling.types';
 import { requestedShape } from '../queries/machine-candidates.query';
 import { type QuotedMachine, sandboxQuote } from '../utils/sandbox-quote.util';

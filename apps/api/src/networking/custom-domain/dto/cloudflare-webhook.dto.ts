@@ -15,7 +15,7 @@ import {
 	MaxLength,
 	ValidateNested,
 } from 'class-validator';
-import { NETWORKING_LIMITS } from '../../routing/constants/networking.constants';
+import { NETWORKING_LIMITS } from '../../constants/networking.constants';
 
 class CloudflareWebhookZoneDto {
 	@ApiPropertyOptional()

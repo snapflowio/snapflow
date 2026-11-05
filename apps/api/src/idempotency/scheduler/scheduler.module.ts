@@ -8,11 +8,11 @@
  */
 
 import { Module } from '@nestjs/common';
-import { IdempotencyRequestModule } from '../request/request.module';
+import { IdempotencyModule } from '../idempotency.module';
 import { IdempotencyPrunerJob } from './jobs/idempotency-pruner.job';
 
 @Module({
-	imports: [IdempotencyRequestModule],
+	imports: [IdempotencyModule],
 	providers: [IdempotencyPrunerJob],
 })
 export class IdempotencySchedulerModule {}

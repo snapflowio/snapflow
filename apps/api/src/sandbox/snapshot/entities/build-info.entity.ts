@@ -17,7 +17,7 @@ import {
 	Property,
 } from '@mikro-orm/decorators/legacy';
 import { SimpleArrayTextType } from '../../../common/types/simple-array-text.types';
-import { Sandbox } from '../../instance/entities/sandbox.entity';
+import { Sandbox } from '../../entities/sandbox.entity';
 import { Snapshot } from './snapshot.entity';
 
 export const BUILD_INFO_REFERENCE_PREFIX = 'snapflow-';

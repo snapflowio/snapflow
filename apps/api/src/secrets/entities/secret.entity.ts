@@ -19,7 +19,7 @@ import {
 	PLATFORM_PRINCIPAL_TYPE,
 	type PlatformPrincipalType,
 } from '../../common/types/platform-principal.types';
-import { Organization } from '../../organization/tenant/entities/organization.entity';
+import { Organization } from '../../organization/entities/organization.entity';
 
 const platformPrincipalTypes = Object.values(PLATFORM_PRINCIPAL_TYPE)
 	.map((principalType) => `'${principalType}'`)

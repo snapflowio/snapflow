@@ -18,10 +18,10 @@ import {
 	NotFoundException,
 } from '@nestjs/common';
 import { VOLUME_CREATION_LOCK_NAMESPACE } from '../../../common/constants/advisory-lock.constants';
-import { OrganizationService } from '../../../organization/tenant/services/organization.service';
-import { OrganizationLimitsService } from '../../../organization/tenant/services/organization-limits.service';
-import { Sandbox } from '../../instance/entities/sandbox.entity';
-import { SandboxDesiredState } from '../../instance/enums/sandbox-desired-state.enum';
+import { OrganizationService } from '../../../organization/services/organization.service';
+import { OrganizationLimitsService } from '../../../organization/services/organization-limits.service';
+import { Sandbox } from '../../entities/sandbox.entity';
+import { SandboxDesiredState } from '../../enums/sandbox-desired-state.enum';
 import { CreateVolumeDto } from '../dto/create-volume.dto';
 import { Volume } from '../entities/volume.entity';
 import { VolumeState } from '../enums/volume-state.enum';

@@ -12,7 +12,7 @@ import {
 	type TemplatePreparation,
 	TemplatePreparationSchema,
 } from '@snapflow/machine-proto';
-import type { Sandbox } from '../../../instance/entities/sandbox.entity';
+import type { Sandbox } from '../../../entities/sandbox.entity';
 import type { Snapshot } from '../../../snapshot/entities/snapshot.entity';
 
 export type SnapshotTemplatePreparation = Pick<

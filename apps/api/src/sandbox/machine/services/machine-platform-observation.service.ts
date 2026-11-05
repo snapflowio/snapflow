@@ -11,8 +11,8 @@ import { TransactionPropagation } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { databaseNow } from '../../../infra/database/utils/database-time.util';
-import { Sandbox } from '../../instance/entities/sandbox.entity';
-import { SandboxPlacement } from '../../instance/entities/sandbox-placement.entity';
+import { Sandbox } from '../../entities/sandbox.entity';
+import { SandboxPlacement } from '../../entities/sandbox-placement.entity';
 import { MACHINE_RELIABILITY_EVENT_KIND } from '../constants/machine-reliability.constants';
 import { MachineAssessmentService } from './qualification/machine-assessment.service';
 import {

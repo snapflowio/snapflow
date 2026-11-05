@@ -11,7 +11,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
 	MachineRestrictionReason,
 	MachineTrustStage,
-} from '../../../billing/ledger/constants/machine-trust.constants';
+} from '../../../billing/constants/machine-trust.constants';
 import { CursorPageDto } from '../../../common/dto/cursor-page.dto';
 import {
 	MACHINE_QUALIFICATION_STATE,

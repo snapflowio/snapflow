@@ -15,7 +15,7 @@ import {
 } from '../../../common/dto/cursor-page.dto';
 import { LocationDto } from '../../../location/dto/location.dto';
 import { IsLocationCode } from '../../../location/validators/is-location-code.validator';
-import { SandboxClass } from '../../instance/enums/sandbox-class.enum';
+import { SandboxClass } from '../../enums/sandbox-class.enum';
 import { Machine } from '../entities/machine.entity';
 import { MachineState } from '../enums/machine-state.enum';
 import { MachineServiceHealthDto } from './machine-health.dto';

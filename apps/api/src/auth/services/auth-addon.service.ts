@@ -21,9 +21,9 @@ import {
 import { PLATFORM_PRINCIPAL_TYPE } from '../../common/types/platform-principal.types';
 import { secretsEqual } from '../../common/utils/secret-comparison.util';
 import { TypedConfigService } from '../../config/services/typed-config.service';
-import type { Member } from '../../organization/tenant/entities/member.entity';
-import { OrganizationService } from '../../organization/tenant/services/organization.service';
-import { toCredentialPermissions } from '../../organization/tenant/utils/organization-permissions.util';
+import type { Member } from '../../organization/entities/member.entity';
+import { OrganizationService } from '../../organization/services/organization.service';
+import { toCredentialPermissions } from '../../organization/utils/organization-permissions.util';
 import type { User } from '../../user/entities/user.entity';
 import { SystemRole } from '../../user/enums/system-role.enum';
 import { UserService } from '../../user/services/user.service';

@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { MachineTrustStage } from '../../../../billing/ledger/constants/machine-trust.constants';
+import { MachineTrustStage } from '../../../../billing/constants/machine-trust.constants';
 import type { MachineAssessment } from '../../entities/machine-assessment.entity';
 
 export function machineTrustCoolingDown(

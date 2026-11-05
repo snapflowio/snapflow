@@ -8,7 +8,7 @@
  */
 
 import { ResourceShape } from '../../../../common/values/resource-shape.value';
-import type { Sandbox } from '../../../instance/entities/sandbox.entity';
+import type { Sandbox } from '../../../entities/sandbox.entity';
 
 export type DesiredStateFields = Pick<
 	Sandbox,

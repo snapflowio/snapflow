@@ -12,12 +12,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { MicroUsd } from '../../../common/values/micro-usd.value';
 import { GeoIpService } from '../../../location/services/geo-ip.service';
 import { parseLocationConstraint } from '../../../location/utils/location-constraint.util';
-import { MachineListing } from '../../../marketplace/machine/entities/machine-listing.entity';
-import { ListingVisibility } from '../../../marketplace/machine/enums/listing-visibility.enum';
-import { MarketplaceErrorCode } from '../../../marketplace/machine/enums/marketplace-error-code.enum';
-import { PlacementKind } from '../../../marketplace/machine/enums/placement-kind.enum';
-import type { SandboxPlacementRequestDto } from '../../instance/dto/sandbox-placement.dto';
-import type { Sandbox } from '../../instance/entities/sandbox.entity';
+import { MachineListing } from '../../../marketplace/entities/machine-listing.entity';
+import { ListingVisibility } from '../../../marketplace/enums/listing-visibility.enum';
+import { MarketplaceErrorCode } from '../../../marketplace/enums/marketplace-error-code.enum';
+import { PlacementKind } from '../../../marketplace/enums/placement-kind.enum';
+import type { SandboxPlacementRequestDto } from '../../dto/sandbox-placement.dto';
+import type { Sandbox } from '../../entities/sandbox.entity';
 import { Machine } from '../../machine/entities/machine.entity';
 import type { ResolvedPlacement } from '../utils/sandbox-placement.util';
 

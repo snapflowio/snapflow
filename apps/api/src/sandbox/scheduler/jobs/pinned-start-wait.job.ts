@@ -10,8 +10,8 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { SANDBOX_LEASE_JOB } from '../../instance/constants/sandbox-placement.constants';
-import { PinnedStartWaitManager } from '../../instance/managers/pinned-start-wait.manager';
+import { SANDBOX_LEASE_JOB } from '../../constants/sandbox-placement.constants';
+import { PinnedStartWaitManager } from '../../managers/pinned-start-wait.manager';
 
 @Injectable()
 export class PinnedStartWaitJob {

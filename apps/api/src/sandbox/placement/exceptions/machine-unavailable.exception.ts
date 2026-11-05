@@ -8,9 +8,9 @@
  */
 
 import { ConflictException } from '@nestjs/common';
-import type { MachineUnavailableReason } from '../../../marketplace/machine/enums/machine-unavailable-reason.enum';
-import type { SandboxPlacementAlternativeDto } from '../../instance/dto/sandbox-quote.dto';
-import { SandboxPlacementErrorCode } from '../../instance/enums/sandbox-placement-error-code.enum';
+import type { MachineUnavailableReason } from '../../../marketplace/enums/machine-unavailable-reason.enum';
+import type { SandboxPlacementAlternativeDto } from '../../dto/sandbox-quote.dto';
+import { SandboxPlacementErrorCode } from '../../enums/sandbox-placement-error-code.enum';
 
 export class MachineUnavailableException extends ConflictException {
 	constructor(

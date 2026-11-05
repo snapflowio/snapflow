@@ -17,7 +17,7 @@ import { canonicalJson } from '../../../../common/utils/canonical-json.util';
 import { addSeconds } from '../../../../common/utils/time.util';
 import { lockAdvisoryKey } from '../../../../infra/database/utils/advisory-lock.util';
 import { databaseNow } from '../../../../infra/database/utils/database-time.util';
-import { findCurrentMachineAssessment } from '../../../../marketplace/machine/queries/machine-assessment.query';
+import { findCurrentMachineAssessment } from '../../../../marketplace/queries/machine-assessment.query';
 import { Job } from '../../../machine-job/entities/job.entity';
 import { JobStatus } from '../../../machine-job/enums/job-status.enum';
 import { JobType } from '../../../machine-job/enums/job-type.enum';

@@ -8,11 +8,11 @@
  */
 
 import { Module } from '@nestjs/common';
-import { BillingLedgerModule } from '../../billing/ledger/ledger.module';
-import { IdempotencyRequestModule } from '../../idempotency/request/request.module';
+import { BillingModule } from '../../billing/billing.module';
+import { IdempotencyModule } from '../../idempotency/idempotency.module';
 import { LocationModule } from '../../location/location.module';
-import { SettingsPlatformModule } from '../../settings/platform/platform.module';
-import { MarketplaceMachineModule } from '../machine/machine.module';
+import { SettingsModule } from '../../settings/settings.module';
+import { MarketplaceModule } from '../marketplace.module';
 import { ListingController } from './controllers/listing.controller';
 import { LocationController } from './controllers/location.controller';
 import { MachineBrowseService } from './services/machine-browse.service';
@@ -20,11 +20,11 @@ import { MachineLocationDirectoryService } from './services/machine-location-dir
 
 @Module({
 	imports: [
-		BillingLedgerModule,
-		IdempotencyRequestModule,
+		BillingModule,
+		IdempotencyModule,
 		LocationModule,
-		MarketplaceMachineModule,
-		SettingsPlatformModule,
+		MarketplaceModule,
+		SettingsModule,
 	],
 	controllers: [ListingController, LocationController],
 	providers: [MachineBrowseService, MachineLocationDirectoryService],

@@ -15,7 +15,7 @@ import { GeoIpService } from '../../../location/services/geo-ip.service';
 import {
 	type MachineLocationRow,
 	machineLocationQuery,
-} from '../../machine/queries/machine-location.query';
+} from '../../queries/machine-location.query';
 import type {
 	ContinentMachinesDto,
 	MachineLocationsDto,

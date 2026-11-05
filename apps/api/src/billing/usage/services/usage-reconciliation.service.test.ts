@@ -13,27 +13,27 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { MILLISECONDS_PER_SECOND } from '../../../common/constants/time.constants';
 import { fakeInstance } from '../../../common/testing/instance.fake';
 import { MicroUsd } from '../../../common/values/micro-usd.value';
-import { MachinePriceCard } from '../../../marketplace/machine/entities/machine-price-card.entity';
-import { SandboxLease } from '../../../marketplace/machine/entities/sandbox-lease.entity';
-import { priceUsage } from '../../../marketplace/machine/utils/pricing.util';
+import { MachinePriceCard } from '../../../marketplace/entities/machine-price-card.entity';
+import { SandboxLease } from '../../../marketplace/entities/sandbox-lease.entity';
+import { priceUsage } from '../../../marketplace/utils/pricing.util';
 import { MACHINE_USAGE_RECONCILIATION_DEADLINE_MILLISECONDS } from '../../../sandbox/machine/constants/machine-usage.constants';
 import type { MachineUsageReceipt } from '../../../sandbox/machine/entities/machine-usage-receipt.entity';
 import {
 	signedUsageChain,
 	type UsageReadingSpec,
 } from '../../../sandbox/machine/testing/signed-usage-readings.fixtures';
-import { RECONCILIATION_SCHEDULE } from '../../../usage/metering/constants/usage-accounting.constants';
-import type { SandboxBillableUsage } from '../../../usage/metering/entities/sandbox-billable-usage.entity';
-import { quantitiesFor } from '../../../usage/metering/utils/usage-quantities.util';
-import { BillingEvidenceStatus } from '../../ledger/constants/billing.constants';
-import { BillingEvidenceBundle } from '../../ledger/entities/billing-evidence-bundle.entity';
+import { RECONCILIATION_SCHEDULE } from '../../../usage/constants/usage-accounting.constants';
+import type { SandboxBillableUsage } from '../../../usage/entities/sandbox-billable-usage.entity';
+import { quantitiesFor } from '../../../usage/utils/usage-quantities.util';
+import { BillingEvidenceStatus } from '../../constants/billing.constants';
+import { BillingEvidenceBundle } from '../../entities/billing-evidence-bundle.entity';
 import type {
 	BillingEvidenceBundlePayload,
 	ComputeEvidenceBundle,
-} from '../../ledger/schemas/billing-evidence-bundle.schema';
-import { BillingEvidenceBundleService } from '../../ledger/services/evidence/billing-evidence-bundle.service';
-import { auditComputeEvidence } from '../../ledger/utils/evidence/compute-evidence-audit.util';
-import type { UsageAttestation } from '../../ledger/utils/evidence/usage-attestation.util';
+} from '../../schemas/billing-evidence-bundle.schema';
+import { BillingEvidenceBundleService } from '../../services/evidence/billing-evidence-bundle.service';
+import { auditComputeEvidence } from '../../utils/evidence/compute-evidence-audit.util';
+import type { UsageAttestation } from '../../utils/evidence/usage-attestation.util';
 import {
 	billableWindow,
 	computeLine,

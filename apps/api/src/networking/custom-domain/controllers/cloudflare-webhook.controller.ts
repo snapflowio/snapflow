@@ -18,7 +18,7 @@ import {
 import { ApiExcludeController } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { PublicEndpoint } from '../../../auth/decorators/public-endpoint.decorator';
-import { NETWORKING_THROTTLE } from '../../routing/constants/networking.constants';
+import { NETWORKING_THROTTLE } from '../../constants/networking.constants';
 import { CloudflareCustomHostnameWebhookDto } from '../dto/cloudflare-webhook.dto';
 import {
 	CLOUDFLARE_WEBHOOK_AUTH_HEADER,

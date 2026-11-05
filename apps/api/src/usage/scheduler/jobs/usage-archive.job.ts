@@ -10,8 +10,8 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { USAGE_JOB } from '../../metering/constants/usage-lifecycle.constants';
-import { UsageArchiveService } from '../../metering/services/usage-archive.service';
+import { USAGE_JOB } from '../../constants/usage-lifecycle.constants';
+import { UsageArchiveService } from '../../services/usage-archive.service';
 
 @Injectable()
 export class UsageArchiveJob {

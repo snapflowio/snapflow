@@ -12,8 +12,8 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { isUniqueViolation } from '../../../common/utils/error/database-error.util';
 import { databaseNow } from '../../../infra/database/utils/database-time.util';
-import { MachineMarketplaceService } from '../../../marketplace/machine/services/machine-marketplace.service';
-import { SandboxClass } from '../../instance/enums/sandbox-class.enum';
+import { MachineMarketplaceService } from '../../../marketplace/services/machine-marketplace.service';
+import { SandboxClass } from '../../enums/sandbox-class.enum';
 import type {
 	MachineRegistrationDto,
 	RegisterMachineDto,

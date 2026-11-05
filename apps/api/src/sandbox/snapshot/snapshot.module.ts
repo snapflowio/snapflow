@@ -9,13 +9,13 @@
 
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { DockerRegistryModule } from '../../docker-registry/registry/registry.module';
-import { IdempotencyRequestModule } from '../../idempotency/request/request.module';
+import { DockerRegistryModule } from '../../docker-registry/docker-registry.module';
+import { IdempotencyModule } from '../../idempotency/idempotency.module';
 import { ControlWakeModule } from '../../infra/control-wake/control-wake.module';
 import { RedisConnectionModule } from '../../infra/redis/redis.module';
 import { ObjectStorageModule } from '../../object-storage/object-storage.module';
-import { OrganizationTenantModule } from '../../organization/tenant/tenant.module';
-import { SettingsPlatformModule } from '../../settings/platform/platform.module';
+import { OrganizationModule } from '../../organization/organization.module';
+import { SettingsModule } from '../../settings/settings.module';
 import { MachineModule } from '../machine/machine.module';
 import { MachineJobModule } from '../machine-job/machine-job.module';
 import { PlacementModule } from '../placement/placement.module';
@@ -48,14 +48,14 @@ import { SnapshotStateService } from './services/snapshot-state.service';
 		MikroOrmModule.forFeature([BuildInfo, Snapshot, SnapshotMachine]),
 		ControlWakeModule,
 		DockerRegistryModule,
-		IdempotencyRequestModule,
+		IdempotencyModule,
 		MachineJobModule,
 		ObjectStorageModule,
-		OrganizationTenantModule,
+		OrganizationModule,
 		PlacementModule,
 		RedisConnectionModule,
 		MachineModule,
-		SettingsPlatformModule,
+		SettingsModule,
 	],
 	controllers: [SnapshotController, AdminSnapshotController],
 	providers: [

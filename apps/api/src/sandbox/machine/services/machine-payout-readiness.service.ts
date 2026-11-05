@@ -9,9 +9,9 @@
 
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
-import { PaymentAccount } from '../../../payments/funds/entities/payment-account.entity';
-import type { PayoutReadiness } from '../../../payments/funds/enums/payout-readiness.enum';
-import { payoutReadiness } from '../../../payments/funds/utils/payout-readiness.util';
+import { PaymentAccount } from '../../../payments/entities/payment-account.entity';
+import type { PayoutReadiness } from '../../../payments/enums/payout-readiness.enum';
+import { payoutReadiness } from '../../../payments/utils/payout-readiness.util';
 
 @Injectable()
 export class MachinePayoutReadinessService {

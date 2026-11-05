@@ -10,26 +10,26 @@
 import { randomUUID } from 'node:crypto';
 import type { EntityManager } from '@mikro-orm/postgresql';
 import { ConflictException, Injectable } from '@nestjs/common';
-import { leasePriceTerms } from '../../../billing/ledger/queries/lease-price.query';
-import { PlacementBillingAuthorizationService } from '../../../billing/ledger/services/placement/placement-billing-authorization.service';
-import { leaseShape } from '../../../billing/ledger/utils/lease-pricing.util';
-import { lockParticipants } from '../../../billing/ledger/utils/placement-admission.util';
+import { leasePriceTerms } from '../../../billing/queries/lease-price.query';
+import { PlacementBillingAuthorizationService } from '../../../billing/services/placement/placement-billing-authorization.service';
+import { leaseShape } from '../../../billing/utils/lease-pricing.util';
+import { lockParticipants } from '../../../billing/utils/placement-admission.util';
 import { SANDBOX_PLACEMENT_LOCK_NAMESPACE } from '../../../common/constants/advisory-lock.constants';
 import type { MicroUsd } from '../../../common/values/micro-usd.value';
 import { databaseNow } from '../../../infra/database/utils/database-time.util';
 import { lockRowsForNoKeyUpdate } from '../../../infra/database/utils/row-lock.util';
-import type { SandboxLease } from '../../../marketplace/machine/entities/sandbox-lease.entity';
-import { LeaseEndReason } from '../../../marketplace/machine/enums/lease-end-reason.enum';
-import { LeaseTermsUnavailableError } from '../../../marketplace/machine/exceptions/lease-terms-unavailable.exception';
-import { findCurrentMachineAssessment } from '../../../marketplace/machine/queries/machine-assessment.query';
-import { SandboxLeaseService } from '../../../marketplace/machine/services/sandbox-lease.service';
+import type { SandboxLease } from '../../../marketplace/entities/sandbox-lease.entity';
+import { LeaseEndReason } from '../../../marketplace/enums/lease-end-reason.enum';
+import { LeaseTermsUnavailableError } from '../../../marketplace/exceptions/lease-terms-unavailable.exception';
+import { findCurrentMachineAssessment } from '../../../marketplace/queries/machine-assessment.query';
+import { SandboxLeaseService } from '../../../marketplace/services/sandbox-lease.service';
 import {
 	egressPricePerGiB,
 	runningHourlyPrice,
-} from '../../../marketplace/machine/utils/pricing.util';
-import { Sandbox } from '../../instance/entities/sandbox.entity';
-import { SandboxPlacement } from '../../instance/entities/sandbox-placement.entity';
-import type { PlacementLocality } from '../../instance/enums/placement-locality.enum';
+} from '../../../marketplace/utils/pricing.util';
+import { Sandbox } from '../../entities/sandbox.entity';
+import { SandboxPlacement } from '../../entities/sandbox-placement.entity';
+import type { PlacementLocality } from '../../enums/placement-locality.enum';
 import { Machine } from '../../machine/entities/machine.entity';
 import { lockMachinesForUpdate } from '../../machine/utils/machine-lock.util';
 import { placementMachineId } from '../utils/placement-assignment.util';

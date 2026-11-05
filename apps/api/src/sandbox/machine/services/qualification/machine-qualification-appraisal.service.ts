@@ -15,13 +15,13 @@ import {
 	BillingLedgerAccountCode,
 	BillingLedgerDescriptionCode,
 	BillingLedgerSourceType,
-} from '../../../../billing/ledger/constants/billing.constants';
-import { BillingLedgerService } from '../../../../billing/ledger/services/billing-ledger.service';
+} from '../../../../billing/constants/billing.constants';
+import { BillingLedgerService } from '../../../../billing/services/billing-ledger.service';
 import {
 	hostPendingEarningsAccount,
 	platformAccount,
-} from '../../../../billing/ledger/utils/ledger/billing-ledger-accounts.util';
-import { LedgerPostingBuilder } from '../../../../billing/ledger/utils/ledger/ledger-posting-builder.util';
+} from '../../../../billing/utils/ledger/billing-ledger-accounts.util';
+import { LedgerPostingBuilder } from '../../../../billing/utils/ledger/ledger-posting-builder.util';
 import {
 	MILLISECONDS_PER_HOUR,
 	MILLISECONDS_PER_SECOND,
@@ -29,13 +29,13 @@ import {
 import { canonicalJson } from '../../../../common/utils/canonical-json.util';
 import { addMilliseconds } from '../../../../common/utils/time.util';
 import { MicroUsd } from '../../../../common/values/micro-usd.value';
-import { MachineListing } from '../../../../marketplace/machine/entities/machine-listing.entity';
-import { MachinePriceCard } from '../../../../marketplace/machine/entities/machine-price-card.entity';
+import { MachineListing } from '../../../../marketplace/entities/machine-listing.entity';
+import { MachinePriceCard } from '../../../../marketplace/entities/machine-price-card.entity';
 import {
 	priceTerms,
 	priceUsage,
 	usageQuantities,
-} from '../../../../marketplace/machine/utils/pricing.util';
+} from '../../../../marketplace/utils/pricing.util';
 import type { Job } from '../../../machine-job/entities/job.entity';
 import { JobType } from '../../../machine-job/enums/job-type.enum';
 import {

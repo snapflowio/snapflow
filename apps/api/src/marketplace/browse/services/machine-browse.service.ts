@@ -14,29 +14,29 @@ import {
 	Injectable,
 	NotFoundException,
 } from '@nestjs/common';
-import { PlacementBillingCapacityService } from '../../../billing/ledger/services/placement/placement-billing-capacity.service';
+import { PlacementBillingCapacityService } from '../../../billing/services/placement/placement-billing-capacity.service';
 import { GeoIpService } from '../../../location/services/geo-ip.service';
-import { SettingsService } from '../../../settings/platform/services/settings.service';
-import { MachineBenchmark } from '../../../verification/qualification/entities/machine-benchmark.entity';
-import { BenchmarkState } from '../../../verification/qualification/enums/benchmark-state.enum';
-import { MACHINE_BENCHMARK_HISTORY_LIMIT } from '../../machine/constants/marketplace.constants';
+import { SettingsService } from '../../../settings/services/settings.service';
+import { MachineBenchmark } from '../../../verification/entities/machine-benchmark.entity';
+import { BenchmarkState } from '../../../verification/enums/benchmark-state.enum';
+import { MACHINE_BENCHMARK_HISTORY_LIMIT } from '../../constants/marketplace.constants';
 import {
 	type ListingPageDto,
 	MachineDetailDto,
 	MachineListingDto,
 	MachinePassedBenchmarkDto,
-} from '../../machine/dto/machine.dto';
+} from '../../dto/machine.dto';
 import type {
 	ListListingsQueryDto,
 	MachineShapeQueryDto,
-} from '../../machine/dto/machine-browse-query.dto';
-import { MachineUnavailableReason } from '../../machine/enums/machine-unavailable-reason.enum';
-import { MarketplaceErrorCode } from '../../machine/enums/marketplace-error-code.enum';
+} from '../../dto/machine-browse-query.dto';
+import { MachineUnavailableReason } from '../../enums/machine-unavailable-reason.enum';
+import { MarketplaceErrorCode } from '../../enums/marketplace-error-code.enum';
 import {
 	type MachineBrowseFilter,
 	type MachineBrowseRow,
 	machineBrowseQuery,
-} from '../../machine/queries/machine-browse.query';
+} from '../../queries/machine-browse.query';
 import {
 	type BrowseMachine,
 	browseFilter,
@@ -46,7 +46,7 @@ import {
 	hostUnavailableReason,
 	machineOffer,
 	selectBrowsePage,
-} from '../../machine/utils/machine-browse.util';
+} from '../../utils/machine-browse.util';
 
 const SINGLE_MACHINE_LIMIT = 1;
 

@@ -8,12 +8,12 @@
  */
 
 import type { OrganizationAuthContext } from '../../../common/types/organization-auth-context.types';
-import { NetworkingEvents } from '../../../networking/routing/constants/networking-events.constants';
+import { NetworkingEvents } from '../../../networking/constants/networking-events.constants';
 import type { NetworkBudgetThresholdReachedEvent } from '../../../networking/usage/events/network-budget-threshold-reached.event';
-import { SandboxEvents } from '../../../sandbox/instance/constants/sandbox-events.constants';
-import { SandboxDto } from '../../../sandbox/instance/dto/sandbox.dto';
-import { SandboxDesiredState } from '../../../sandbox/instance/enums/sandbox-desired-state.enum';
-import { SandboxState } from '../../../sandbox/instance/enums/sandbox-state.enum';
+import { SandboxEvents } from '../../../sandbox/constants/sandbox-events.constants';
+import { SandboxDto } from '../../../sandbox/dto/sandbox.dto';
+import { SandboxDesiredState } from '../../../sandbox/enums/sandbox-desired-state.enum';
+import { SandboxState } from '../../../sandbox/enums/sandbox-state.enum';
 import { MachineEvents } from '../../../sandbox/machine/constants/machine-events.constants';
 import { MachineDto } from '../../../sandbox/machine/dto/machine.dto';
 import { MachineState } from '../../../sandbox/machine/enums/machine-state.enum';

@@ -27,14 +27,11 @@ import type { Request } from 'express';
 import { IsOrganizationAuthContext } from '../../../common/decorators/auth-context.decorator';
 import { AuthenticatedRateLimitGuard } from '../../../common/guards/authenticated-rate-limit.guard';
 import type { OrganizationAuthContext } from '../../../common/types/organization-auth-context.types';
-import {
-	ListingPageDto,
-	MachineDetailDto,
-} from '../../machine/dto/machine.dto';
+import { ListingPageDto, MachineDetailDto } from '../../dto/machine.dto';
 import {
 	ListListingsQueryDto,
 	MachineShapeQueryDto,
-} from '../../machine/dto/machine-browse-query.dto';
+} from '../../dto/machine-browse-query.dto';
 import { MachineBrowseService } from '../services/machine-browse.service';
 
 @Controller('listings')

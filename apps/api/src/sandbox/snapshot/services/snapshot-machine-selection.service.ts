@@ -10,7 +10,7 @@
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { addMilliseconds } from '../../../common/utils/time.util';
-import { MachineTier } from '../../../marketplace/machine/enums/machine-tier.enum';
+import { MachineTier } from '../../../marketplace/enums/machine-tier.enum';
 import { MACHINE_SNAPSHOT_TARGETS } from '../../machine/constants/machine-snapshot.constants';
 import { MachineSnapshotTargetReason } from '../../machine/enums/machine-snapshot-target-reason.enum';
 import { MachineState } from '../../machine/enums/machine-state.enum';

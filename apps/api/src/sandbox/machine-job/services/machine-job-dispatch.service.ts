@@ -10,25 +10,25 @@
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable, Logger } from '@nestjs/common';
 import type { VolumeBackupRequest } from '@snapflow/machine-proto';
-import { DockerRegistry } from '../../../docker-registry/persistence/entities/docker-registry.entity';
 import {
 	PULL_ACTIONS,
 	PUSH_ACTIONS,
 	REGISTRY_REPOSITORY,
 	REGISTRY_TOKEN,
 	RegistrySubjectKind,
-} from '../../../docker-registry/registry/constants/registry-token.constants';
-import { RegistryTokenService } from '../../../docker-registry/registry/services/registry-token.service';
+} from '../../../docker-registry/constants/registry-token.constants';
+import { DockerRegistry } from '../../../docker-registry/persistence/entities/docker-registry.entity';
+import { RegistryTokenService } from '../../../docker-registry/services/registry-token.service';
 import {
 	namespaceAccess,
 	type RegistryAccess,
 	type RegistryGrant,
 	registrySubject,
 	repositoryAccess,
-} from '../../../docker-registry/registry/utils/registry-token-scope.util';
+} from '../../../docker-registry/utils/registry-token-scope.util';
 import { ObjectStorageService } from '../../../object-storage/services/object-storage.service';
-import { Sandbox } from '../../instance/entities/sandbox.entity';
-import { SandboxPlacement } from '../../instance/entities/sandbox-placement.entity';
+import { Sandbox } from '../../entities/sandbox.entity';
+import { SandboxPlacement } from '../../entities/sandbox-placement.entity';
 import { Machine } from '../../machine/entities/machine.entity';
 import { BuildInfo } from '../../snapshot/entities/build-info.entity';
 import type { ResourceTypeForJobType } from '../dto/job-type-map.dto';

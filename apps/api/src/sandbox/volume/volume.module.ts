@@ -9,11 +9,11 @@
 
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { IdempotencyRequestModule } from '../../idempotency/request/request.module';
+import { IdempotencyModule } from '../../idempotency/idempotency.module';
 import { EncryptionModule } from '../../infra/encryption/encryption.module';
 import { RedisConnectionModule } from '../../infra/redis/redis.module';
 import { ObjectStorageModule } from '../../object-storage/object-storage.module';
-import { OrganizationTenantModule } from '../../organization/tenant/tenant.module';
+import { OrganizationModule } from '../../organization/organization.module';
 import { MachineJobModule } from '../machine-job/machine-job.module';
 import { PlacementModule } from '../placement/placement.module';
 import { VolumeController } from './controllers/volume.controller';
@@ -34,10 +34,10 @@ import { VolumeProvisioningService } from './services/volume-provisioning.servic
 	imports: [
 		MikroOrmModule.forFeature([Volume, VolumeBackup]),
 		EncryptionModule,
-		IdempotencyRequestModule,
+		IdempotencyModule,
 		MachineJobModule,
 		ObjectStorageModule,
-		OrganizationTenantModule,
+		OrganizationModule,
 		PlacementModule,
 		RedisConnectionModule,
 	],

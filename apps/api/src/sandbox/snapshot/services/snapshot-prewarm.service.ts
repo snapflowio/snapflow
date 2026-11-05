@@ -11,7 +11,7 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { millisecondsBetween } from '../../../common/utils/time.util';
 import { recordOperationDuration } from '../../../infra/logging/utils/operation-observability.util';
-import { SettingsService } from '../../../settings/platform/services/settings.service';
+import { SettingsService } from '../../../settings/services/settings.service';
 import { Machine } from '../../machine/entities/machine.entity';
 import { MachineSnapshotTarget } from '../../machine/entities/machine-snapshot-target.entity';
 import { MachineSnapshotTargetReason } from '../../machine/enums/machine-snapshot-target-reason.enum';

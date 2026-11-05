@@ -16,7 +16,7 @@ import {
 	Property,
 	Unique,
 } from '@mikro-orm/decorators/legacy';
-import { Organization } from '../../../organization/tenant/entities/organization.entity';
+import { Organization } from '../../../organization/entities/organization.entity';
 import {
 	NETWORK_USAGE_NUMERIC_PRECISION,
 	NETWORK_USAGE_NUMERIC_SCALE,

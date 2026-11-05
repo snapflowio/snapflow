@@ -15,7 +15,7 @@ import {
 	PrimaryKey,
 	Property,
 } from '@mikro-orm/decorators/legacy';
-import { Organization } from '../../../organization/tenant/entities/organization.entity';
+import { Organization } from '../../../organization/entities/organization.entity';
 import { RegistryType } from '../enums/registry-type.enum';
 
 @Entity({ tableName: 'docker_registry' })

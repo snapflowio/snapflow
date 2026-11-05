@@ -23,13 +23,13 @@ import {
 	CUSTOM_DOMAIN_STATE,
 	type CustomDomainState,
 	EXPOSURE_BACKEND_STATE,
-} from '../../routing/constants/exposure.constants';
-import { NETWORKING_LIMITS } from '../../routing/constants/networking.constants';
-import { CustomDomain } from '../../routing/entities/custom-domain.entity';
-import { Exposure } from '../../routing/entities/exposure.entity';
-import { ExposureBackend } from '../../routing/entities/exposure-backend.entity';
-import { ExposureReconciliationQueueService } from '../../routing/services/exposure/exposure-reconciliation-queue.service';
-import type { ManagedCustomHostname } from '../../routing/types/networking.types';
+} from '../../constants/exposure.constants';
+import { NETWORKING_LIMITS } from '../../constants/networking.constants';
+import { CustomDomain } from '../../entities/custom-domain.entity';
+import { Exposure } from '../../entities/exposure.entity';
+import { ExposureBackend } from '../../entities/exposure-backend.entity';
+import { ExposureReconciliationQueueService } from '../../services/exposure/exposure-reconciliation-queue.service';
+import type { ManagedCustomHostname } from '../../types/networking.types';
 
 const CUSTOM_DOMAIN_BATCH_SIZE = 50;
 const ACTIVE_REFRESH_MINUTES = 5;

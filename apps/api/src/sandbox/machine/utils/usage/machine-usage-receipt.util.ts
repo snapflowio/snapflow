@@ -8,8 +8,8 @@
  */
 
 import { v4 } from 'uuid';
-import type { VerifiedMachineUsageReceipt } from '../../../../usage/metering/utils/evidence/machine-usage-evidence.util';
-import type { SandboxPlacement } from '../../../instance/entities/sandbox-placement.entity';
+import type { VerifiedMachineUsageReceipt } from '../../../../usage/utils/evidence/machine-usage-evidence.util';
+import type { SandboxPlacement } from '../../../entities/sandbox-placement.entity';
 import { MACHINE_NETWORK_COUNTERS } from '../../constants/machine-usage.constants';
 import type { MachineUsageReceiptDto } from '../../dto/machine-usage.dto';
 import { MachineUsageReceipt } from '../../entities/machine-usage-receipt.entity';

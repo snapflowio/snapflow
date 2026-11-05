@@ -10,7 +10,7 @@
 import { RequestContext } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable, Logger } from '@nestjs/common';
-import { MACHINE_TRUST_POLICY } from '../../../../billing/ledger/constants/machine-trust.constants';
+import { MACHINE_TRUST_POLICY } from '../../../../billing/constants/machine-trust.constants';
 import { errorMessage } from '../../../../common/utils/error/error.util';
 import { MachineState } from '../../enums/machine-state.enum';
 import { MachineAssessmentService } from './machine-assessment.service';

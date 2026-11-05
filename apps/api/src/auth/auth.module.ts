@@ -9,8 +9,8 @@
 
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { AuditLogModule } from '../audit/log/log.module';
-import { OrganizationTenantModule } from '../organization/tenant/tenant.module';
+import { AuditModule } from '../audit/audit.module';
+import { OrganizationModule } from '../organization/organization.module';
 import { UserModule } from '../user/user.module';
 import { betterAuthProvider } from './better-auth/better-auth.provider';
 import { ApiKeyController } from './controllers/api-key.controller';
@@ -37,8 +37,8 @@ import { OrganizationDeletionService } from './services/organization-deletion.se
 			Session,
 			TwoFactor,
 		]),
-		AuditLogModule,
-		OrganizationTenantModule,
+		AuditModule,
+		OrganizationModule,
 		UserModule,
 	],
 	controllers: [ApiKeyController, OrganizationDeletionController],

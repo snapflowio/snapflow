@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
 import { after, before, describe, it } from 'node:test';
 import { type EntityManager, MikroORM } from '@mikro-orm/postgresql';
-import { MACHINE_TRUST_POLICY } from '../../../billing/ledger/constants/machine-trust.constants';
+import { MACHINE_TRUST_POLICY } from '../../../billing/constants/machine-trust.constants';
 import { integrationDatabaseUrl } from '../../../common/testing/integration-database.util';
 import { ENTITY_MAPPING_OPTIONS } from '../../../infra/database/config/entity-mapping.config';
 import {

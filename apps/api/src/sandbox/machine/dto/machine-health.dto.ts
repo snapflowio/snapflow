@@ -22,7 +22,7 @@ import {
 	Min,
 	ValidateNested,
 } from 'class-validator';
-import { SHA256_HEX_PATTERN } from '../../../usage/metering/schemas/machine-usage-envelope.schema';
+import { SHA256_HEX_PATTERN } from '../../../usage/schemas/machine-usage-envelope.schema';
 import {
 	MACHINE_READINESS_REASON_MAX_LENGTH,
 	MACHINE_SSH_HOST_PUBLIC_KEY_MAX_LENGTH,

@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import type { SandboxCapability } from '../../instance/enums/sandbox-capability.enum';
+import type { SandboxCapability } from '../../enums/sandbox-capability.enum';
 import type { MachineHypervisor } from '../enums/machine-hypervisor.enum';
 import type { MachineRuntimeFeature } from '../enums/machine-runtime-feature.enum';
 import type { MachineUpdatePhase } from '../enums/machine-update-phase.enum';

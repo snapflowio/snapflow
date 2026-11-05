@@ -11,7 +11,7 @@ import type { RedisLockProvider } from '../../../infra/redis/providers/redis-loc
 import {
 	type ExclusivePaymentsJob,
 	PAYMENTS_JOB_LOCK_TTL_SECONDS,
-} from '../../funds/constants/payments.constants';
+} from '../../constants/payments.constants';
 
 // Runs a payments job on at most one API instance at a time; an instance that
 // finds the job already running skips this tick.

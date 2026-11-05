@@ -10,8 +10,8 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { ORGANIZATION_SUSPENSION } from '../../tenant/constants/organization-suspension.constants';
-import { OrganizationSuspensionService } from '../../tenant/services/organization-suspension.service';
+import { ORGANIZATION_SUSPENSION } from '../../constants/organization-suspension.constants';
+import { OrganizationSuspensionService } from '../../services/organization-suspension.service';
 
 @Injectable()
 export class OrganizationSuspensionJob {

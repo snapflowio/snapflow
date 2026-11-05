@@ -16,7 +16,7 @@ import { fakeInstance } from '../../../common/testing/instance.fake';
 import { Continent } from '../../../location/enums/continent.enum';
 import { GeoIpService } from '../../../location/services/geo-ip.service';
 import type { GeoLocation } from '../../../location/types/geo-location.types';
-import { MachineMarketplaceService } from '../../../marketplace/machine/services/machine-marketplace.service';
+import { MachineMarketplaceService } from '../../../marketplace/services/machine-marketplace.service';
 import { MACHINE_REGISTRATION_NONCE_MINIMUM_BYTES } from '../constants/machine-registration.constants';
 import type { RegisterMachineDto } from '../dto/machine-registration.dto';
 import { Machine } from '../entities/machine.entity';

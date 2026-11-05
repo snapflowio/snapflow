@@ -15,8 +15,8 @@ import {
 	PrimaryKey,
 	Property,
 } from '@mikro-orm/decorators/legacy';
-import { Sandbox } from '../../sandbox/instance/entities/sandbox.entity';
-import { SandboxPlacement } from '../../sandbox/instance/entities/sandbox-placement.entity';
+import { Sandbox } from '../../sandbox/entities/sandbox.entity';
+import { SandboxPlacement } from '../../sandbox/entities/sandbox-placement.entity';
 import { Machine } from '../../sandbox/machine/entities/machine.entity';
 import { MachineSession } from '../../sandbox/machine/entities/machine-session.entity';
 import {

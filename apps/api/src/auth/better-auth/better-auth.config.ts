@@ -11,9 +11,9 @@ import { randomUUID } from 'node:crypto';
 import type { MikroORM } from '@mikro-orm/postgresql';
 import { type BetterAuthOptions, betterAuth } from 'better-auth';
 import type Redis from 'ioredis';
-import { CLIENT_IP_HEADER } from '../../app/http/client-ip.config';
-import type { OrganizationService } from '../../organization/tenant/services/organization.service';
-import type { OrganizationOwnershipService } from '../../organization/tenant/services/organization-ownership.service';
+import { CLIENT_IP_HEADER } from '../../common/constants/client-ip.constants';
+import type { OrganizationService } from '../../organization/services/organization.service';
+import type { OrganizationOwnershipService } from '../../organization/services/organization-ownership.service';
 import {
 	AUTH_BASE_PATH,
 	DISABLED_AUTH_PATHS,

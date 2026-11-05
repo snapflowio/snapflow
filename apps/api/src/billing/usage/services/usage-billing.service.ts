@@ -14,36 +14,33 @@ import { Injectable } from '@nestjs/common';
 import { USAGE_FINALIZATION_LOCK_NAMESPACE } from '../../../common/constants/advisory-lock.constants';
 import { millisecondsBetween } from '../../../common/utils/time.util';
 import { databaseNow } from '../../../infra/database/utils/database-time.util';
-import { priceUsage } from '../../../marketplace/machine/utils/pricing.util';
+import { priceUsage } from '../../../marketplace/utils/pricing.util';
 import {
 	INITIAL_RECONCILE_ATTEMPTS,
 	INITIAL_USAGE_RECEIPT_COUNT,
 	USAGE_ACCOUNTING_POLICY_VERSION,
 	USAGE_ZERO_QUANTITY,
-} from '../../../usage/metering/constants/usage-accounting.constants';
-import { SandboxBillableUsage } from '../../../usage/metering/entities/sandbox-billable-usage.entity';
-import type { SandboxUsagePeriod } from '../../../usage/metering/entities/sandbox-usage-period.entity';
-import type { UsagePeriodFinalizer } from '../../../usage/metering/services/usage-period-finalizer.service';
+} from '../../../usage/constants/usage-accounting.constants';
+import { SandboxBillableUsage } from '../../../usage/entities/sandbox-billable-usage.entity';
+import type { SandboxUsagePeriod } from '../../../usage/entities/sandbox-usage-period.entity';
+import type { UsagePeriodFinalizer } from '../../../usage/services/usage-period-finalizer.service';
 import {
 	allocationColumns,
 	allocationUnits,
 	intendedQuantities,
 	quantityColumns,
-} from '../../../usage/metering/utils/usage-quantities.util';
+} from '../../../usage/utils/usage-quantities.util';
 import {
 	BillingEvidenceStatus,
 	BillingLineSourceType,
-} from '../../ledger/constants/billing.constants';
-import type { BillingEvidenceBundle } from '../../ledger/entities/billing-evidence-bundle.entity';
-import type { BillingLineItem } from '../../ledger/entities/billing-line-item.entity';
-import { PlacementBillingAuthorization } from '../../ledger/entities/placement-billing-authorization.entity';
-import {
-	type PricedLease,
-	pricedLease,
-} from '../../ledger/queries/lease-price.query';
-import { BillingLineItemService } from '../../ledger/services/billing-line-item.service';
-import { BillingAttestationService } from '../../ledger/services/evidence/billing-attestation.service';
-import type { UsageAttestation } from '../../ledger/utils/evidence/usage-attestation.util';
+} from '../../constants/billing.constants';
+import type { BillingEvidenceBundle } from '../../entities/billing-evidence-bundle.entity';
+import type { BillingLineItem } from '../../entities/billing-line-item.entity';
+import { PlacementBillingAuthorization } from '../../entities/placement-billing-authorization.entity';
+import { type PricedLease, pricedLease } from '../../queries/lease-price.query';
+import { BillingLineItemService } from '../../services/billing-line-item.service';
+import { BillingAttestationService } from '../../services/evidence/billing-attestation.service';
+import type { UsageAttestation } from '../../utils/evidence/usage-attestation.util';
 
 @Injectable()
 export class UsageBillingService implements UsagePeriodFinalizer {

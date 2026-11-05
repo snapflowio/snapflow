@@ -25,7 +25,7 @@ import {
 	PLATFORM_PRINCIPAL_TYPE,
 } from '../../../../common/types/platform-principal.types';
 import { ENTITY_MAPPING_OPTIONS } from '../../../../infra/database/config/entity-mapping.config';
-import { PlacementKind } from '../../../../marketplace/machine/enums/placement-kind.enum';
+import { PlacementKind } from '../../../../marketplace/enums/placement-kind.enum';
 import { SandboxSecretBinding } from '../../../../secrets/entities/sandbox-secret-binding.entity';
 import { SandboxSecretBindingSet } from '../../../../secrets/entities/sandbox-secret-binding-set.entity';
 import { Secret } from '../../../../secrets/entities/secret.entity';
@@ -34,10 +34,10 @@ import { MachineSandboxSecretDeliveryService } from '../../../../secrets/service
 import { SecretService } from '../../../../secrets/services/secret.service';
 import { SecretVersionCipherService } from '../../../../secrets/services/secret-version-cipher.service';
 import { SystemRole } from '../../../../user/enums/system-role.enum';
-import { Sandbox } from '../../../instance/entities/sandbox.entity';
-import { SandboxPlacement } from '../../../instance/entities/sandbox-placement.entity';
-import { SandboxMode } from '../../../instance/enums/sandbox-mode.enum';
-import { SandboxState } from '../../../instance/enums/sandbox-state.enum';
+import { Sandbox } from '../../../entities/sandbox.entity';
+import { SandboxPlacement } from '../../../entities/sandbox-placement.entity';
+import { SandboxMode } from '../../../enums/sandbox-mode.enum';
+import { SandboxState } from '../../../enums/sandbox-state.enum';
 import { Machine } from '../../entities/machine.entity';
 import { MachineSession } from '../../entities/machine-session.entity';
 import { runtimeIntentUpdate } from '../../utils/proto/sandbox-runtime-intent.util';

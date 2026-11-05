@@ -9,10 +9,10 @@
 
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { BillingLedgerModule } from '../../billing/ledger/ledger.module';
+import { BillingModule } from '../../billing/billing.module';
 import { RedisConnectionModule } from '../../infra/redis/redis.module';
-import { SandboxInstanceModule } from '../../sandbox/instance/instance.module';
-import { SettingsPlatformModule } from '../../settings/platform/platform.module';
+import { SandboxModule } from '../../sandbox/sandbox.module';
+import { SettingsModule } from '../../settings/settings.module';
 import { NetworkUsageController } from './controllers/network-usage.controller';
 import { ExposureNetworkUsage } from './entities/exposure-network-usage.entity';
 import { NetworkBudgetAlert } from './entities/network-budget-alert.entity';
@@ -28,10 +28,10 @@ import { NetworkUsageRatingService } from './services/network-usage-rating.servi
 			NetworkBudgetAlert,
 			NetworkUsagePeriod,
 		]),
-		BillingLedgerModule,
+		BillingModule,
 		RedisConnectionModule,
-		SandboxInstanceModule,
-		SettingsPlatformModule,
+		SandboxModule,
+		SettingsModule,
 	],
 	controllers: [NetworkUsageController],
 	providers: [

@@ -9,8 +9,8 @@
 
 import type { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
-import { Sandbox } from '../../../instance/entities/sandbox.entity';
-import { SandboxPlacement } from '../../../instance/entities/sandbox-placement.entity';
+import { Sandbox } from '../../../entities/sandbox.entity';
+import { SandboxPlacement } from '../../../entities/sandbox-placement.entity';
 import { Job } from '../../../machine-job/entities/job.entity';
 import { JobStatus } from '../../../machine-job/enums/job-status.enum';
 import { ResourceType } from '../../../machine-job/enums/resource-type.enum';

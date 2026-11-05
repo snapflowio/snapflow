@@ -8,17 +8,17 @@
  */
 
 import { randomUUID } from 'node:crypto';
-import { BillingEvidenceStatus } from '../../../billing/ledger/constants/billing.constants';
-import { BillingLineItem } from '../../../billing/ledger/entities/billing-line-item.entity';
-import type { NetworkEvidenceBundle } from '../../../billing/ledger/schemas/billing-evidence-bundle.schema';
-import { billingLineContentDigest } from '../../../billing/ledger/utils/line-item/billing-line-content.util';
-import { networkLineContent } from '../../../billing/ledger/utils/line-item/network-line-content.util';
+import { BillingEvidenceStatus } from '../../../billing/constants/billing.constants';
+import { BillingLineItem } from '../../../billing/entities/billing-line-item.entity';
+import type { NetworkEvidenceBundle } from '../../../billing/schemas/billing-evidence-bundle.schema';
 import {
 	WINDOW_TERMS,
 	windowLease,
 } from '../../../billing/usage/testing/billable-window.fixtures';
+import { billingLineContentDigest } from '../../../billing/utils/line-item/billing-line-content.util';
+import { networkLineContent } from '../../../billing/utils/line-item/network-line-content.util';
 import { SHA256_HEX_LENGTH } from '../../../common/constants/digest.constants';
-import { priceTransfer } from '../../../marketplace/machine/utils/pricing.util';
+import { priceTransfer } from '../../../marketplace/utils/pricing.util';
 import {
 	USAGE_MACHINE_ID,
 	USAGE_PLACEMENT,

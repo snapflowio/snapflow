@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { USAGE_MONEY_SCALE } from '../../usage/metering/constants/usage-accounting.constants';
+import { USAGE_MONEY_SCALE } from '../../usage/constants/usage-accounting.constants';
 
 const FIXED_POINT_PATTERN = /^(\d+)(?:\.(\d+))?$/;
 const DECIMAL_RADIX = 10n;

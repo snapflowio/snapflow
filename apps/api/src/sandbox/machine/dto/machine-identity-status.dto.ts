@@ -8,7 +8,7 @@
  */
 
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
-import { PayoutReadiness } from '../../../payments/funds/enums/payout-readiness.enum';
+import { PayoutReadiness } from '../../../payments/enums/payout-readiness.enum';
 import { MachineFullDto } from './machine-full.dto';
 
 @ApiSchema({ name: 'MachineIdentityStatus' })

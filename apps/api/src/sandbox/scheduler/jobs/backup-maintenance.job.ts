@@ -10,8 +10,8 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { BackupJobName } from '../../instance/constants/backup.constants';
-import { BackupMaintenanceManager } from '../../instance/managers/backup/backup-maintenance.manager';
+import { BackupJobName } from '../../constants/backup.constants';
+import { BackupMaintenanceManager } from '../../managers/backup/backup-maintenance.manager';
 
 @Injectable()
 export class BackupMaintenanceJob {

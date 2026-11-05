@@ -15,9 +15,9 @@ import {
 	PrimaryKey,
 	Property,
 } from '@mikro-orm/decorators/legacy';
-import { Organization } from '../../../organization/tenant/entities/organization.entity';
-import { Sandbox } from '../../instance/entities/sandbox.entity';
-import { SandboxPlacement } from '../../instance/entities/sandbox-placement.entity';
+import { Organization } from '../../../organization/entities/organization.entity';
+import { Sandbox } from '../../entities/sandbox.entity';
+import { SandboxPlacement } from '../../entities/sandbox-placement.entity';
 import { Job } from '../../machine-job/entities/job.entity';
 import {
 	type JobLifecyclePhase,

@@ -19,7 +19,7 @@ import {
 	SandboxLifecycle,
 	type SandboxSpec,
 } from '@snapflow/machine-proto';
-import type { Sandbox } from '../../../instance/entities/sandbox.entity';
+import type { Sandbox } from '../../../entities/sandbox.entity';
 import { protoJsonObject } from './proto-json.util';
 import { encodeSandboxSpec } from './sandbox-runtime-spec.util';
 

@@ -13,8 +13,8 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { IsolatedEntityManagerContext } from '../../../common/decorators/isolated-entity-manager-context.decorator';
 import { errorMessage } from '../../../common/utils/error/error.util';
 import { RedisLockProvider } from '../../../infra/redis/providers/redis-lock.provider';
-import { SandboxEvents } from '../../instance/constants/sandbox-events.constants';
-import { SandboxCreatedEvent } from '../../instance/events/sandbox-create.event';
+import { SandboxEvents } from '../../constants/sandbox-events.constants';
+import { SandboxCreatedEvent } from '../../events/sandbox-create.event';
 import { Volume } from '../entities/volume.entity';
 
 const VOLUME_LAST_USED_LOCK_SECONDS = 60;

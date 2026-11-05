@@ -11,7 +11,7 @@ import type { EntityManager } from '@mikro-orm/postgresql';
 import {
 	MACHINE_TRUST_POLICY,
 	MAJORITY_SHARE,
-} from '../../../billing/ledger/constants/machine-trust.constants';
+} from '../../../billing/constants/machine-trust.constants';
 import {
 	SANDBOX_STATES_CONVERGING,
 	SLOW_START_INITIAL_WINDOW,

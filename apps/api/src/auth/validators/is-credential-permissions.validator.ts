@@ -14,7 +14,7 @@ import {
 	ValidatorConstraint,
 	type ValidatorConstraintInterface,
 } from 'class-validator';
-import { isCredentialPermissions } from '../../organization/tenant/utils/organization-permissions.util';
+import { isCredentialPermissions } from '../../organization/utils/organization-permissions.util';
 
 @ValidatorConstraint({ async: false })
 class IsCredentialPermissionsConstraint

@@ -12,9 +12,9 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { v4 } from 'uuid';
-import { BillingBudget } from '../../../billing/ledger/entities/billing-budget.entity';
-import { monthSpend } from '../../../billing/ledger/queries/billing-admission.query';
-import { utcBillingMonth } from '../../../billing/ledger/utils/billing-period.util';
+import { BillingBudget } from '../../../billing/entities/billing-budget.entity';
+import { monthSpend } from '../../../billing/queries/billing-admission.query';
+import { utcBillingMonth } from '../../../billing/utils/billing-period.util';
 import { LogExecution } from '../../../common/decorators/log-execution.decorator';
 import { TrackJobExecution } from '../../../common/decorators/track-job-execution.decorator';
 import { settleSequentially } from '../../../common/utils/concurrency/sequential-async.util';
@@ -22,10 +22,10 @@ import { TrackedJobs } from '../../../common/utils/concurrency/tracked-jobs.util
 import { MicroUsd } from '../../../common/values/micro-usd.value';
 import { databaseNow } from '../../../infra/database/utils/database-time.util';
 import { RedisLockProvider } from '../../../infra/redis/providers/redis-lock.provider';
-import { SandboxState } from '../../../sandbox/instance/enums/sandbox-state.enum';
-import { SandboxRuntimeOperationService } from '../../../sandbox/instance/services/sandbox/sandbox-runtime-operation.service';
-import { SettingsService } from '../../../settings/platform/services/settings.service';
-import { NetworkingEvents } from '../../routing/constants/networking-events.constants';
+import { SandboxState } from '../../../sandbox/enums/sandbox-state.enum';
+import { SandboxRuntimeOperationService } from '../../../sandbox/services/sandbox/sandbox-runtime-operation.service';
+import { SettingsService } from '../../../settings/services/settings.service';
+import { NetworkingEvents } from '../../constants/networking-events.constants';
 import { NETWORK_BUDGET } from '../constants/network-usage.constants';
 import { NetworkBudgetThresholdReachedEvent } from '../events/network-budget-threshold-reached.event';
 import {

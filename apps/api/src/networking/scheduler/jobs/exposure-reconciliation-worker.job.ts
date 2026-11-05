@@ -10,7 +10,7 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { ExposureReconciliationWorkerService } from '../../routing/services/exposure/exposure-reconciliation-worker.service';
+import { ExposureReconciliationWorkerService } from '../../services/exposure/exposure-reconciliation-worker.service';
 
 @Injectable()
 export class ExposureReconciliationWorkerJob {

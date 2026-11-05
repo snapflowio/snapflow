@@ -20,7 +20,7 @@ import {
 	Min,
 	ValidateNested,
 } from 'class-validator';
-import { SandboxCapability } from '../../instance/enums/sandbox-capability.enum';
+import { SandboxCapability } from '../../enums/sandbox-capability.enum';
 import { MachineHypervisor } from '../enums/machine-hypervisor.enum';
 import { MachineRuntimeFeature } from '../enums/machine-runtime-feature.enum';
 import type {

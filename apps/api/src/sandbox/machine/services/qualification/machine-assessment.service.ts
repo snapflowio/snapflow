@@ -12,7 +12,7 @@ import { Injectable } from '@nestjs/common';
 import {
 	MACHINE_TRUST_POLICY,
 	MachineTrustStage,
-} from '../../../../billing/ledger/constants/machine-trust.constants';
+} from '../../../../billing/constants/machine-trust.constants';
 import { MACHINE_ASSESSMENT_LOCK_NAMESPACE } from '../../../../common/constants/advisory-lock.constants';
 import { MILLISECONDS_PER_DAY } from '../../../../common/constants/time.constants';
 import { addMilliseconds } from '../../../../common/utils/time.util';

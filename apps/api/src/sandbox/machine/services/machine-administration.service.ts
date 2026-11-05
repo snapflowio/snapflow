@@ -19,9 +19,9 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { isUniqueViolation } from '../../../common/utils/error/database-error.util';
 import { errorDetail } from '../../../common/utils/error/error.util';
 import { databaseNow } from '../../../infra/database/utils/database-time.util';
-import { Sandbox } from '../../instance/entities/sandbox.entity';
-import { SandboxPlacement } from '../../instance/entities/sandbox-placement.entity';
-import { SandboxState } from '../../instance/enums/sandbox-state.enum';
+import { Sandbox } from '../../entities/sandbox.entity';
+import { SandboxPlacement } from '../../entities/sandbox-placement.entity';
+import { SandboxState } from '../../enums/sandbox-state.enum';
 import {
 	JOB_MACHINE_API_VERSION,
 	MACHINE_IDENTITY_REVOKED_REASON,

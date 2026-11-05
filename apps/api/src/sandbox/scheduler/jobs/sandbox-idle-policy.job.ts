@@ -10,7 +10,7 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { SandboxIdlePolicyManager } from '../../instance/managers/sandbox-idle-policy.manager';
+import { SandboxIdlePolicyManager } from '../../managers/sandbox-idle-policy.manager';
 
 @Injectable()
 export class SandboxIdlePolicyJob {

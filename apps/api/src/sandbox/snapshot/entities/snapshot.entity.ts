@@ -17,15 +17,15 @@ import {
 	Property,
 	Unique,
 } from '@mikro-orm/decorators/legacy';
-import { Organization } from '../../../organization/tenant/entities/organization.entity';
+import { Organization } from '../../../organization/entities/organization.entity';
 import {
 	DEFAULT_SNAPSHOT_CPU,
 	DEFAULT_SNAPSHOT_DISK_GIB,
 	DEFAULT_SNAPSHOT_GPU,
 	DEFAULT_SNAPSHOT_IMAGE_NAME,
 	DEFAULT_SNAPSHOT_MEMORY_GIB,
-} from '../../instance/constants/sandbox.constants';
-import { SandboxClass } from '../../instance/enums/sandbox-class.enum';
+} from '../../constants/sandbox.constants';
+import { SandboxClass } from '../../enums/sandbox-class.enum';
 import { GpuType } from '../../machine/enums/gpu-type.enum';
 import { SnapshotState } from '../enums/snapshot-state.enum';
 import { BuildInfo } from './build-info.entity';

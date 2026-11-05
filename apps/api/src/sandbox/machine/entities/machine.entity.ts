@@ -28,11 +28,11 @@ import {
 	GEO_COORDINATE_COLUMN,
 } from '../../../location/entities/location.columns';
 import type { Continent } from '../../../location/enums/continent.enum';
-import { MachineCategory } from '../../../marketplace/machine/enums/machine-category.enum';
-import { MachineTier } from '../../../marketplace/machine/enums/machine-tier.enum';
-import { Organization } from '../../../organization/tenant/entities/organization.entity';
-import { MachineBenchmark } from '../../../verification/qualification/entities/machine-benchmark.entity';
-import { SandboxClass } from '../../instance/enums/sandbox-class.enum';
+import { MachineCategory } from '../../../marketplace/enums/machine-category.enum';
+import { MachineTier } from '../../../marketplace/enums/machine-tier.enum';
+import { Organization } from '../../../organization/entities/organization.entity';
+import { MachineBenchmark } from '../../../verification/entities/machine-benchmark.entity';
+import { SandboxClass } from '../../enums/sandbox-class.enum';
 import {
 	JOB_MACHINE_API_VERSION,
 	MACHINE_DEVELOPMENT_APP_VERSION,

@@ -7,19 +7,19 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import type { BillingRestriction } from '../../../billing/ledger/enums/billing-restriction.enum';
+import type { BillingRestriction } from '../../../billing/enums/billing-restriction.enum';
 import { HOURS_PER_DAY } from '../../../common/constants/time.constants';
 import type { MicroUsd } from '../../../common/values/micro-usd.value';
 import type { ResourceShapeFields } from '../../../common/values/resource-shape.value';
-import { HOURS_PER_BILLING_MONTH } from '../../../marketplace/machine/constants/pricing.constants';
-import type { MachineUnavailableReason } from '../../../marketplace/machine/enums/machine-unavailable-reason.enum';
-import type { PlacementKind } from '../../../marketplace/machine/enums/placement-kind.enum';
-import type { PriceTerms } from '../../../marketplace/machine/types/pricing.types';
+import { HOURS_PER_BILLING_MONTH } from '../../../marketplace/constants/pricing.constants';
+import type { MachineUnavailableReason } from '../../../marketplace/enums/machine-unavailable-reason.enum';
+import type { PlacementKind } from '../../../marketplace/enums/placement-kind.enum';
+import type { PriceTerms } from '../../../marketplace/types/pricing.types';
 import {
 	runningHourlyPrice,
 	stoppedHourlyPrice,
-} from '../../../marketplace/machine/utils/pricing.util';
-import type { SandboxQuoteDto } from '../../instance/dto/sandbox-quote.dto';
+} from '../../../marketplace/utils/pricing.util';
+import type { SandboxQuoteDto } from '../../dto/sandbox-quote.dto';
 
 export interface QuotedMachine {
 	machineId: string;

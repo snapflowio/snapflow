@@ -8,13 +8,13 @@
  */
 
 import { Module } from '@nestjs/common';
-import { UsageMeteringModule } from '../metering/metering.module';
+import { UsageModule } from '../usage.module';
 import { UsageArchiveJob } from './jobs/usage-archive.job';
 import { UsageDriftReconcilerJob } from './jobs/usage-drift-reconciler.job';
 import { UsageWindowRotationJob } from './jobs/usage-window-rotation.job';
 
 @Module({
-	imports: [UsageMeteringModule],
+	imports: [UsageModule],
 	providers: [UsageArchiveJob, UsageDriftReconcilerJob, UsageWindowRotationJob],
 })
 export class UsageSchedulerModule {}

@@ -8,7 +8,7 @@
  */
 
 import { BadRequestException } from '@nestjs/common';
-import type { Sandbox } from '../../instance/entities/sandbox.entity';
+import type { Sandbox } from '../../entities/sandbox.entity';
 import type { Snapshot } from '../entities/snapshot.entity';
 
 export interface RequestedResources {

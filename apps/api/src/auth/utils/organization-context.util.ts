@@ -8,7 +8,7 @@
  */
 
 import { ConflictException } from '@nestjs/common';
-import { ORGANIZATION_ERROR } from '../../organization/tenant/constants/organization-errors.constants';
+import { ORGANIZATION_ERROR } from '../../organization/constants/organization-errors.constants';
 
 export function assertOrganizationContext(
 	assertedOrganizationId: unknown,

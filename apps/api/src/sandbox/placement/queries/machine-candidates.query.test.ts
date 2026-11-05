@@ -12,14 +12,14 @@ import { describe, it } from 'node:test';
 import { Continent } from '../../../location/enums/continent.enum';
 import { LocationConstraintKind } from '../../../location/enums/location-constraint-kind.enum';
 import type { LocationConstraint } from '../../../location/types/geo-location.types';
-import { MachineCategory } from '../../../marketplace/machine/enums/machine-category.enum';
-import { MachineTier } from '../../../marketplace/machine/enums/machine-tier.enum';
-import { PlacementKind } from '../../../marketplace/machine/enums/placement-kind.enum';
+import { MachineCategory } from '../../../marketplace/enums/machine-category.enum';
+import { MachineTier } from '../../../marketplace/enums/machine-tier.enum';
+import { PlacementKind } from '../../../marketplace/enums/placement-kind.enum';
 import {
 	hostGateSql,
 	workloadGateSql,
-} from '../../../marketplace/machine/queries/machine-eligibility.query';
-import { SandboxClass } from '../../instance/enums/sandbox-class.enum';
+} from '../../../marketplace/queries/machine-eligibility.query';
+import { SandboxClass } from '../../enums/sandbox-class.enum';
 import { SANDBOX_STATES_CONVERGING } from '../../machine/constants/machine-placement.constants';
 import { GpuType } from '../../machine/enums/gpu-type.enum';
 import type {

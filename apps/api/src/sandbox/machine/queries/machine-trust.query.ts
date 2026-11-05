@@ -12,9 +12,9 @@ import {
 	BillingAdjustmentReasonCode,
 	BillingEvidenceStatus,
 	BillingLineSourceType,
-} from '../../../billing/ledger/constants/billing.constants';
-import { BillingAuditFaultDomain } from '../../../billing/ledger/constants/billing-audit.constants';
-import { MACHINE_TRUST_POLICY } from '../../../billing/ledger/constants/machine-trust.constants';
+} from '../../../billing/constants/billing.constants';
+import { BillingAuditFaultDomain } from '../../../billing/constants/billing-audit.constants';
+import { MACHINE_TRUST_POLICY } from '../../../billing/constants/machine-trust.constants';
 import {
 	MACHINE_ATTRIBUTION_SUBJECT,
 	MACHINE_RELIABILITY_OUTCOME,

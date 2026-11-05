@@ -8,11 +8,11 @@
  */
 
 import { generateKeyPairSync, randomUUID, sign } from 'node:crypto';
-import type { MachineUsageReceiptEnvelope } from '../../../usage/metering/schemas/machine-usage-envelope.schema';
+import type { MachineUsageReceiptEnvelope } from '../../../usage/schemas/machine-usage-envelope.schema';
 import {
 	machineUsagePayloadDigest,
 	machineUsageSignaturePayload,
-} from '../../../usage/metering/utils/evidence/machine-usage-signature.util';
+} from '../../../usage/utils/evidence/machine-usage-signature.util';
 import {
 	MACHINE_USAGE_GENESIS_DIGEST,
 	type MachineNetworkBytes,

@@ -8,13 +8,13 @@
  */
 
 import { Module } from '@nestjs/common';
-import { OrganizationTenantModule } from '../../organization/tenant/tenant.module';
-import { SettingsPlatformModule } from '../../settings/platform/platform.module';
+import { OrganizationModule } from '../../organization/organization.module';
+import { SettingsModule } from '../../settings/settings.module';
 import { UserModule } from '../../user/user.module';
-import { SandboxInstanceModule } from '../instance/instance.module';
 import { MachineModule } from '../machine/machine.module';
 import { MachineJobModule } from '../machine-job/machine-job.module';
 import { PlacementModule } from '../placement/placement.module';
+import { SandboxModule } from '../sandbox.module';
 import { DefaultSnapshotBootstrapService } from '../snapshot/services/default-snapshot-bootstrap.service';
 import { SnapshotModule } from '../snapshot/snapshot.module';
 import { VolumeModule } from '../volume/volume.module';
@@ -49,9 +49,9 @@ import { VolumeBackupJob } from './jobs/volume-backup.job';
 		PlacementModule,
 		SnapshotModule,
 		VolumeModule,
-		SandboxInstanceModule,
-		OrganizationTenantModule,
-		SettingsPlatformModule,
+		SandboxModule,
+		OrganizationModule,
+		SettingsModule,
 		UserModule,
 	],
 	providers: [

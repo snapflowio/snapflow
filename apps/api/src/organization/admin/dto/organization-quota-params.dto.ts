@@ -9,7 +9,7 @@
 
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { SandboxClass } from '../../../sandbox/instance/enums/sandbox-class.enum';
+import { SandboxClass } from '../../../sandbox/enums/sandbox-class.enum';
 
 export class OrganizationQuotaParamsDto {
 	@ApiProperty({ description: 'Organization ID' })

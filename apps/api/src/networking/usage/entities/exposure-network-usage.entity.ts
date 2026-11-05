@@ -17,15 +17,15 @@ import {
 	Property,
 	Unique,
 } from '@mikro-orm/decorators/legacy';
-import { Organization } from '../../../organization/tenant/entities/organization.entity';
-import { SandboxPlacement } from '../../../sandbox/instance/entities/sandbox-placement.entity';
+import { Organization } from '../../../organization/entities/organization.entity';
+import { SandboxPlacement } from '../../../sandbox/entities/sandbox-placement.entity';
 import { Machine } from '../../../sandbox/machine/entities/machine.entity';
-import { type NetworkProtocol } from '../../routing/constants/networking.constants';
-import { NETWORKING_DATABASE_CHECK } from '../../routing/constants/networking-database-check.constants';
-import { Edge } from '../../routing/entities/edge.entity';
-import { EdgeUsageCheckpoint } from '../../routing/entities/edge-usage-checkpoint.entity';
-import { Exposure } from '../../routing/entities/exposure.entity';
-import { ExposureBackend } from '../../routing/entities/exposure-backend.entity';
+import { type NetworkProtocol } from '../../constants/networking.constants';
+import { NETWORKING_DATABASE_CHECK } from '../../constants/networking-database-check.constants';
+import { Edge } from '../../entities/edge.entity';
+import { EdgeUsageCheckpoint } from '../../entities/edge-usage-checkpoint.entity';
+import { Exposure } from '../../entities/exposure.entity';
+import { ExposureBackend } from '../../entities/exposure-backend.entity';
 import {
 	NETWORK_USAGE_NUMERIC_PRECISION,
 	NETWORK_USAGE_NUMERIC_SCALE,

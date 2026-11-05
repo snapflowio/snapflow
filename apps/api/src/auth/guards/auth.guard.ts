@@ -26,13 +26,13 @@ import {
 } from '../../common/types/organization-auth-context.types';
 import { millisecondsBetween } from '../../common/utils/time.util';
 import { TypedConfigService } from '../../config/services/typed-config.service';
-import { ORGANIZATION_ERROR } from '../../organization/tenant/constants/organization-errors.constants';
+import { ORGANIZATION_ERROR } from '../../organization/constants/organization-errors.constants';
 import {
 	RequiredAnyOrganizationPermissions,
 	RequiredOrganizationPermissions,
-} from '../../organization/tenant/decorators/required-organization-permissions.decorator';
-import { OrganizationService } from '../../organization/tenant/services/organization.service';
-import { permissionPairs } from '../../organization/tenant/utils/organization-permissions.util';
+} from '../../organization/decorators/required-organization-permissions.decorator';
+import { OrganizationService } from '../../organization/services/organization.service';
+import { permissionPairs } from '../../organization/utils/organization-permissions.util';
 import { AUTH_ERROR } from '../constants/auth-errors.constants';
 import { AuthMethod } from '../constants/auth-method.constants';
 import { SESSION_FRESH_AGE_SECONDS } from '../constants/auth-security.constants';

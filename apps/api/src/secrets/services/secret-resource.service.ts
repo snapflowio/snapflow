@@ -22,7 +22,7 @@ import { isUniqueViolation } from '../../common/utils/error/database-error.util'
 import { findCursorPage } from '../../common/utils/pagination/cursor-page.util';
 import { tenantScopedRelationKey } from '../../infra/database/utils/composite-relation-key.util';
 import { databaseNow } from '../../infra/database/utils/database-time.util';
-import { SandboxDesiredState } from '../../sandbox/instance/enums/sandbox-desired-state.enum';
+import { SandboxDesiredState } from '../../sandbox/enums/sandbox-desired-state.enum';
 import {
 	SECRET_PROBLEM_CODE,
 	SECRET_RESOURCE_VERSION_INITIAL,

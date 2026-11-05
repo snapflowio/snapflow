@@ -9,8 +9,8 @@
 
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { LeaseEndReason } from '../../../marketplace/machine/enums/lease-end-reason.enum';
-import { SandboxState } from '../../instance/enums/sandbox-state.enum';
+import { LeaseEndReason } from '../../../marketplace/enums/lease-end-reason.enum';
+import { SandboxState } from '../../enums/sandbox-state.enum';
 import {
 	leaseEndReason,
 	placementReleaseReason,

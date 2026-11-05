@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { SandboxClass } from '../../instance/enums/sandbox-class.enum';
+import { SandboxClass } from '../../enums/sandbox-class.enum';
 
 export type CreateMachineInternalDto = {
 	organizationId: string;

@@ -14,11 +14,11 @@ import { MikroORM } from '@mikro-orm/postgresql';
 import { fakeInstance } from '../../../common/testing/instance.fake';
 import { integrationDatabaseUrl } from '../../../common/testing/integration-database.util';
 import { ENTITY_MAPPING_OPTIONS } from '../../../infra/database/config/entity-mapping.config';
-import { PlacementKind } from '../../../marketplace/machine/enums/placement-kind.enum';
-import { Sandbox } from '../../instance/entities/sandbox.entity';
-import { SandboxPlacement } from '../../instance/entities/sandbox-placement.entity';
-import { SandboxMode } from '../../instance/enums/sandbox-mode.enum';
-import { SandboxState } from '../../instance/enums/sandbox-state.enum';
+import { PlacementKind } from '../../../marketplace/enums/placement-kind.enum';
+import { Sandbox } from '../../entities/sandbox.entity';
+import { SandboxPlacement } from '../../entities/sandbox-placement.entity';
+import { SandboxMode } from '../../enums/sandbox-mode.enum';
+import { SandboxState } from '../../enums/sandbox-state.enum';
 import {
 	JOB_LIFECYCLE_PHASE,
 	MACHINE_FAULT_DOMAIN,

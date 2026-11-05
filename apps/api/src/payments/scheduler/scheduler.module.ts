@@ -10,8 +10,8 @@
 import { Module } from '@nestjs/common';
 import { ControlWakeModule } from '../../infra/control-wake/control-wake.module';
 import { RedisConnectionModule } from '../../infra/redis/redis.module';
-import { SettingsPlatformModule } from '../../settings/platform/platform.module';
-import { PaymentsFundsModule } from '../funds/funds.module';
+import { SettingsModule } from '../../settings/settings.module';
+import { PaymentsModule } from '../payments.module';
 import { AutoTopUpJob } from './jobs/auto-top-up.job';
 import { EarningsMaturityJob } from './jobs/earnings-maturity.job';
 import { PayoutJob } from './jobs/payout.job';
@@ -21,10 +21,10 @@ import { TopUpSettlementJob } from './jobs/top-up-settlement.job';
 
 @Module({
 	imports: [
-		PaymentsFundsModule,
+		PaymentsModule,
 		ControlWakeModule,
 		RedisConnectionModule,
-		SettingsPlatformModule,
+		SettingsModule,
 	],
 	providers: [
 		AutoTopUpJob,

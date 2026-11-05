@@ -18,11 +18,7 @@ import { toNodeHandler } from 'better-auth/node';
 import CacheableLookup from 'cacheable-lookup';
 import type { Express } from 'express';
 import { LoggerErrorInterceptor, Logger as PinoLogger } from 'nestjs-pino';
-import { configureBodyParsers } from './app/http/body-parsers.config';
-import { resolveClientIpHeader } from './app/http/client-ip.config';
-import { corsOptions } from './app/http/cors-options.config';
-import { createOpenApiDocument } from './app/http/openapi.config';
-import { AuditInterceptor } from './audit/log/interceptors/audit.interceptor';
+import { AuditInterceptor } from './audit/interceptors/audit.interceptor';
 import type { Auth } from './auth/better-auth/better-auth.config';
 import { BETTER_AUTH } from './auth/better-auth/better-auth.provider';
 import { AUTH_BASE_PATH } from './auth/constants/auth-paths.constants';
@@ -33,6 +29,10 @@ import { errorMessage } from './common/utils/error/error.util';
 import { ProcessRole } from './config/enums/process-role.enum';
 import { TypedConfigService } from './config/services/typed-config.service';
 import { currentProcess } from './config/utils/current-process.util';
+import { configureBodyParsers } from './http/body-parsers.config';
+import { resolveClientIpHeader } from './http/client-ip.config';
+import { corsOptions } from './http/cors-options.config';
+import { createOpenApiDocument } from './http/openapi.config';
 import { assertDatabaseSchemaReady } from './infra/database/utils/database-schema-readiness.util';
 import { startTelemetry, stopTelemetry } from './tracing';
 
@@ -45,12 +45,10 @@ cacheableLookup.install(http.globalAgent);
 cacheableLookup.install(https.globalAgent);
 
 const ROOT_MODULES = {
-	[ProcessRole.API]: async () =>
-		(await import('./app/root/app.module')).ApiAppModule,
+	[ProcessRole.API]: async () => (await import('./app.module')).ApiAppModule,
 	[ProcessRole.WORKER]: async () =>
-		(await import('./app/root/app.module')).WorkerAppModule,
-	[ProcessRole.ALL]: async () =>
-		(await import('./app/root/app.module')).AllAppModule,
+		(await import('./app.module')).WorkerAppModule,
+	[ProcessRole.ALL]: async () => (await import('./app.module')).AllAppModule,
 } satisfies Record<ProcessRole, () => Promise<Type>>;
 
 export async function bootstrap() {

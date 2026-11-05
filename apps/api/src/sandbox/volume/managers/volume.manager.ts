@@ -16,7 +16,7 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable, Logger } from '@nestjs/common';
 import { errorMessage } from '../../../common/utils/error/error.util';
 import { RedisLockProvider } from '../../../infra/redis/providers/redis-lock.provider';
-import { SANDBOX_WORKER_LIMITS } from '../../instance/constants/sandbox.constants';
+import { SANDBOX_WORKER_LIMITS } from '../../constants/sandbox.constants';
 import type { Job } from '../../machine-job/entities/job.entity';
 import { JobType } from '../../machine-job/enums/job-type.enum';
 import { ResourceType } from '../../machine-job/enums/resource-type.enum';

@@ -19,9 +19,9 @@ import { MILLISECONDS_PER_MINUTE } from '../../../common/constants/time.constant
 import { IsolatedEntityManagerContext } from '../../../common/decorators/isolated-entity-manager-context.decorator';
 import { millisecondsBetween } from '../../../common/utils/time.util';
 import { RedisLockProvider } from '../../../infra/redis/providers/redis-lock.provider';
-import { OrganizationEvents } from '../../../organization/tenant/constants/organization-events.constants';
-import { OrganizationSuspendedSnapshotDeactivatedEvent } from '../../../organization/tenant/events/organization-suspended-snapshot-deactivated.event';
-import { OrganizationService } from '../../../organization/tenant/services/organization.service';
+import { OrganizationEvents } from '../../../organization/constants/organization-events.constants';
+import { OrganizationSuspendedSnapshotDeactivatedEvent } from '../../../organization/events/organization-suspended-snapshot-deactivated.event';
+import { OrganizationService } from '../../../organization/services/organization.service';
 import { MachineSnapshotTargetService } from '../../machine/services/desired-state/machine-snapshot-target.service';
 import { SnapshotEvents } from '../constants/snapshot-events.constants';
 import { Snapshot } from '../entities/snapshot.entity';

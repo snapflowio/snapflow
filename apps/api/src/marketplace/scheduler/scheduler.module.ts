@@ -8,11 +8,11 @@
  */
 
 import { Module } from '@nestjs/common';
-import { MarketplaceMachineModule } from '../machine/machine.module';
+import { MarketplaceModule } from '../marketplace.module';
 import { PriceFloorJob } from './jobs/price-floor.job';
 
 @Module({
-	imports: [MarketplaceMachineModule],
+	imports: [MarketplaceModule],
 	providers: [PriceFloorJob],
 })
 export class MarketplaceSchedulerModule {}

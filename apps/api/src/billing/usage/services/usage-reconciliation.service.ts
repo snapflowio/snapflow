@@ -19,21 +19,21 @@ import { databaseNow } from '../../../infra/database/utils/database-time.util';
 import { MACHINE_USAGE_RECONCILIATION_DEADLINE_MILLISECONDS } from '../../../sandbox/machine/constants/machine-usage.constants';
 import { MachineUsageReceipt } from '../../../sandbox/machine/entities/machine-usage-receipt.entity';
 import { MachineUsageEvidenceError } from '../../../sandbox/machine/exceptions/machine-usage-evidence.exception';
-import { USAGE_RECONCILIATION } from '../../../usage/metering/constants/usage-accounting.constants';
-import { SandboxBillableUsage } from '../../../usage/metering/entities/sandbox-billable-usage.entity';
-import { verifyMachineUsageReceipt } from '../../../usage/metering/utils/evidence/machine-usage-evidence.util';
+import { USAGE_RECONCILIATION } from '../../../usage/constants/usage-accounting.constants';
+import { SandboxBillableUsage } from '../../../usage/entities/sandbox-billable-usage.entity';
+import { verifyMachineUsageReceipt } from '../../../usage/utils/evidence/machine-usage-evidence.util';
 import {
 	deferFailedReconciliation,
 	scheduleNextReconciliation,
-} from '../../../usage/metering/utils/reconciliation-schedule.util';
-import { BillingEvidenceStatus } from '../../ledger/constants/billing.constants';
-import { pricedLease } from '../../ledger/queries/lease-price.query';
-import { BillingEvidenceBundleService } from '../../ledger/services/evidence/billing-evidence-bundle.service';
+} from '../../../usage/utils/reconciliation-schedule.util';
+import { BillingEvidenceStatus } from '../../constants/billing.constants';
+import { pricedLease } from '../../queries/lease-price.query';
+import { BillingEvidenceBundleService } from '../../services/evidence/billing-evidence-bundle.service';
 import {
 	computeEvidenceBundle,
 	type StoredVerifiedReceipt,
-} from '../../ledger/utils/evidence/compute-evidence.util';
-import { attestUsageWindow } from '../../ledger/utils/evidence/usage-attestation.util';
+} from '../../utils/evidence/compute-evidence.util';
+import { attestUsageWindow } from '../../utils/evidence/usage-attestation.util';
 import { UsageBillingService } from './usage-billing.service';
 
 @Injectable()

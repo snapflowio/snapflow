@@ -20,8 +20,8 @@ import {
 	clearEnvironment,
 	MachineSandboxSecretDeliveryService,
 } from '../../../../secrets/services/machine-sandbox-secret-delivery.service';
-import { Sandbox } from '../../../instance/entities/sandbox.entity';
-import { SandboxPlacement } from '../../../instance/entities/sandbox-placement.entity';
+import { Sandbox } from '../../../entities/sandbox.entity';
+import { SandboxPlacement } from '../../../entities/sandbox-placement.entity';
 import type {
 	MachineSandboxSecretsDto,
 	MachineSandboxSecretsQueryDto,

@@ -22,7 +22,7 @@ import { CursorPageDto } from '../../../common/dto/cursor-page.dto';
 import {
 	type MachineUsageReceiptEnvelope,
 	SHA256_HEX_PATTERN,
-} from '../../../usage/metering/schemas/machine-usage-envelope.schema';
+} from '../../../usage/schemas/machine-usage-envelope.schema';
 import { MachineUsageRuntimeState } from '../constants/machine-usage.constants';
 
 export class MachineReportablePlacementDto {

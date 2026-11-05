@@ -21,16 +21,16 @@ import { isUniqueViolation } from '../../../common/utils/error/database-error.ut
 import { findCursorPage } from '../../../common/utils/pagination/cursor-page.util';
 import { TypedConfigService } from '../../../config/services/typed-config.service';
 import { databaseNow } from '../../../infra/database/utils/database-time.util';
-import { Sandbox } from '../../../sandbox/instance/entities/sandbox.entity';
-import { SandboxState } from '../../../sandbox/instance/enums/sandbox-state.enum';
+import { Sandbox } from '../../../sandbox/entities/sandbox.entity';
+import { SandboxState } from '../../../sandbox/enums/sandbox-state.enum';
 import { CloudflareZoneService } from '../../cloudflare/services/cloudflare-zone.service';
 import {
 	CUSTOM_DOMAIN_STATE,
 	EXPOSURE_DESIRED_STATE,
-} from '../../routing/constants/exposure.constants';
-import { NETWORK_PROTOCOL } from '../../routing/constants/networking.constants';
-import { CustomDomain } from '../../routing/entities/custom-domain.entity';
-import { Exposure } from '../../routing/entities/exposure.entity';
+} from '../../constants/exposure.constants';
+import { NETWORK_PROTOCOL } from '../../constants/networking.constants';
+import { CustomDomain } from '../../entities/custom-domain.entity';
+import { Exposure } from '../../entities/exposure.entity';
 import type {
 	CreateCustomDomainDto,
 	CustomDomainDto,

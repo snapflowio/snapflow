@@ -8,14 +8,14 @@
  */
 
 import { Global, Module } from '@nestjs/common';
-import { UsagePeriodFinalizer } from '../../usage/metering/services/usage-period-finalizer.service';
-import { BillingLedgerModule } from '../ledger/ledger.module';
+import { UsagePeriodFinalizer } from '../../usage/services/usage-period-finalizer.service';
+import { BillingModule } from '../billing.module';
 import { UsageBillingService } from './services/usage-billing.service';
 import { UsageReconciliationService } from './services/usage-reconciliation.service';
 
 @Global()
 @Module({
-	imports: [BillingLedgerModule],
+	imports: [BillingModule],
 	providers: [
 		UsageBillingService,
 		UsageReconciliationService,

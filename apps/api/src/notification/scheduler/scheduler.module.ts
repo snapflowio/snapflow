@@ -8,11 +8,11 @@
  */
 
 import { Module } from '@nestjs/common';
-import { NotificationDispatchModule } from '../dispatch/dispatch.module';
+import { NotificationModule } from '../notification.module';
 import { RealtimeOutboxDispatcherJob } from './jobs/realtime-outbox-dispatcher.job';
 
 @Module({
-	imports: [NotificationDispatchModule],
+	imports: [NotificationModule],
 	providers: [RealtimeOutboxDispatcherJob],
 })
 export class NotificationSchedulerModule {}

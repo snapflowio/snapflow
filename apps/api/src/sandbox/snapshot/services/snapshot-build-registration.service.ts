@@ -10,9 +10,9 @@
 import type { EntityManager } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { registryRepositoryPrefix } from '../../../docker-registry/persistence/utils/docker-registry-url.util';
-import { DockerRegistryService } from '../../../docker-registry/registry/services/docker-registry.service';
+import { DockerRegistryService } from '../../../docker-registry/services/docker-registry.service';
 import { RedisLockProvider } from '../../../infra/redis/providers/redis-lock.provider';
-import type { OrganizationLimits } from '../../../organization/tenant/entities/organization-limits.entity';
+import type { OrganizationLimits } from '../../../organization/entities/organization-limits.entity';
 import { MachineState } from '../../machine/enums/machine-state.enum';
 import { CreateBuildInfoDto } from '../dto/create-build-info.dto';
 import {

@@ -17,7 +17,7 @@ import {
 import { IsOrganizationAuthContext } from '../../../common/decorators/auth-context.decorator';
 import { AuthenticatedRateLimitGuard } from '../../../common/guards/authenticated-rate-limit.guard';
 import type { OrganizationAuthContext } from '../../../common/types/organization-auth-context.types';
-import { RequiredOrganizationPermissions } from '../../../organization/tenant/decorators/required-organization-permissions.decorator';
+import { RequiredOrganizationPermissions } from '../../../organization/decorators/required-organization-permissions.decorator';
 import {
 	ListNetworkUsageQueryDto,
 	NetworkUsagePeriodDto,

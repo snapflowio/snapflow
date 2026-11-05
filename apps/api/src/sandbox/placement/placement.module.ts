@@ -8,10 +8,10 @@
  */
 
 import { Module } from '@nestjs/common';
-import { BillingLedgerModule } from '../../billing/ledger/ledger.module';
+import { BillingModule } from '../../billing/billing.module';
 import { LocationModule } from '../../location/location.module';
-import { MarketplaceMachineModule } from '../../marketplace/machine/machine.module';
-import { SettingsPlatformModule } from '../../settings/platform/platform.module';
+import { MarketplaceModule } from '../../marketplace/marketplace.module';
+import { SettingsModule } from '../../settings/settings.module';
 import { MachineModule } from '../machine/machine.module';
 import { MachineAvailabilityService } from './services/machine-availability.service';
 import { MachineCapacityService } from './services/machine-capacity.service';
@@ -24,11 +24,11 @@ import { SandboxPlacementResolverService } from './services/sandbox-placement-re
 
 @Module({
 	imports: [
-		BillingLedgerModule,
-		MarketplaceMachineModule,
+		BillingModule,
+		MarketplaceModule,
 		LocationModule,
 		MachineModule,
-		SettingsPlatformModule,
+		SettingsModule,
 	],
 	providers: [
 		MachineAvailabilityService,

@@ -21,7 +21,7 @@ import {
 	type RegistryCredentials,
 	registryMessage,
 } from '../../../../docker-registry/persistence/utils/registry-message.util';
-import { SandboxCapability } from '../../../instance/enums/sandbox-capability.enum';
+import { SandboxCapability } from '../../../enums/sandbox-capability.enum';
 import type { PreparedSnapshotTemplate } from '../../../snapshot/entities/snapshot-machine.entity';
 import { SnapshotMachineState } from '../../../snapshot/enums/snapshot-machine-state.enum';
 import { MACHINE_SNAPSHOT_INVENTORY_LIMITS } from '../../constants/machine-snapshot.constants';

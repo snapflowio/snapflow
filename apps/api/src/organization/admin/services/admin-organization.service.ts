@@ -9,11 +9,11 @@
 
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { BillingOverviewService } from '../../../billing/ledger/services/billing-overview.service';
+import { BillingOverviewService } from '../../../billing/services/billing-overview.service';
 import { findCursorPage } from '../../../common/utils/pagination/cursor-page.util';
 import { containsPattern } from '../../../common/utils/pagination/like-pattern.util';
 import { MicroUsd } from '../../../common/values/micro-usd.value';
-import { Organization } from '../../tenant/entities/organization.entity';
+import { Organization } from '../../entities/organization.entity';
 import {
 	AdminOrganizationDto,
 	type AdminOrganizationListQueryDto,

@@ -35,8 +35,8 @@ import { IsOrganizationAuthContext } from '../../../common/decorators/auth-conte
 import { CursorPageQueryDto } from '../../../common/dto/cursor-page.dto';
 import { AuthenticatedRateLimitGuard } from '../../../common/guards/authenticated-rate-limit.guard';
 import type { OrganizationAuthContext } from '../../../common/types/organization-auth-context.types';
-import { ApiIdempotentRequestService } from '../../../idempotency/request/services/api-idempotent-request.service';
-import { RequiredOrganizationPermissions } from '../../../organization/tenant/decorators/required-organization-permissions.decorator';
+import { ApiIdempotentRequestService } from '../../../idempotency/services/api-idempotent-request.service';
+import { RequiredOrganizationPermissions } from '../../../organization/decorators/required-organization-permissions.decorator';
 import {
 	CreateCustomDomainDto,
 	CustomDomainDto,

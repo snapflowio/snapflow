@@ -14,7 +14,7 @@ import {
 	PrimaryKey,
 	Property,
 } from '@mikro-orm/decorators/legacy';
-import { Organization } from '../../organization/tenant/entities/organization.entity';
+import { Organization } from '../../organization/entities/organization.entity';
 
 const DEFAULT_CONFIG_ID = 'default';
 

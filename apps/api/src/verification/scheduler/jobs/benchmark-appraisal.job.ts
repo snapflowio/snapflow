@@ -10,8 +10,8 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { BENCHMARK_JOB } from '../../qualification/constants/benchmark-policy.constants';
-import { BenchmarkAppraisalService } from '../../qualification/services/benchmark-appraisal.service';
+import { BENCHMARK_JOB } from '../../constants/benchmark-policy.constants';
+import { BenchmarkAppraisalService } from '../../services/benchmark-appraisal.service';
 
 @Injectable()
 export class BenchmarkAppraisalJob {

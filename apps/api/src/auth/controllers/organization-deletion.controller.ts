@@ -16,9 +16,9 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
-import { Audit } from '../../audit/log/decorators/audit.decorator';
-import { AuditAction } from '../../audit/log/enums/audit-action.enum';
-import { AuditTarget } from '../../audit/log/enums/audit-target.enum';
+import { Audit } from '../../audit/decorators/audit.decorator';
+import { AuditAction } from '../../audit/enums/audit-action.enum';
+import { AuditTarget } from '../../audit/enums/audit-target.enum';
 import { IsOrganizationAuthContext } from '../../common/decorators/auth-context.decorator';
 import { AuthenticatedRateLimitGuard } from '../../common/guards/authenticated-rate-limit.guard';
 import {
@@ -28,8 +28,8 @@ import {
 import {
 	ACTIVE_ORGANIZATION_ROUTE,
 	ORGANIZATIONS_API_TAG,
-} from '../../organization/tenant/constants/organization-routes.constants';
-import { RequiredOrganizationPermissions } from '../../organization/tenant/decorators/required-organization-permissions.decorator';
+} from '../../organization/constants/organization-routes.constants';
+import { RequiredOrganizationPermissions } from '../../organization/decorators/required-organization-permissions.decorator';
 import {
 	AllowAuthMethods,
 	AuthMethod,

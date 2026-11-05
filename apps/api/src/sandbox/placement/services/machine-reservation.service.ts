@@ -15,12 +15,12 @@ import {
 	Injectable,
 	Logger,
 } from '@nestjs/common';
-import { BillingRestrictedException } from '../../../billing/ledger/exceptions/billing-restricted.exception';
-import { PlacementBillingCapacityService } from '../../../billing/ledger/services/placement/placement-billing-capacity.service';
-import { MachineListing } from '../../../marketplace/machine/entities/machine-listing.entity';
-import { PlacementKind } from '../../../marketplace/machine/enums/placement-kind.enum';
-import type { PlacementLocality } from '../../instance/enums/placement-locality.enum';
-import { SandboxPlacementErrorCode } from '../../instance/enums/sandbox-placement-error-code.enum';
+import { BillingRestrictedException } from '../../../billing/exceptions/billing-restricted.exception';
+import { PlacementBillingCapacityService } from '../../../billing/services/placement/placement-billing-capacity.service';
+import { MachineListing } from '../../../marketplace/entities/machine-listing.entity';
+import { PlacementKind } from '../../../marketplace/enums/placement-kind.enum';
+import type { PlacementLocality } from '../../enums/placement-locality.enum';
+import { SandboxPlacementErrorCode } from '../../enums/sandbox-placement-error-code.enum';
 import type { Machine } from '../../machine/entities/machine.entity';
 import type { CustomerMachineParams } from '../../machine/types/machine-scheduling.types';
 import { lockMachinesForUpdate } from '../../machine/utils/machine-lock.util';

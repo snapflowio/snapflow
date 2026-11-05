@@ -12,20 +12,20 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { entrypointFromDockerfile } from '../../../common/utils/dockerfile.util';
-import { DockerRegistryService } from '../../../docker-registry/registry/services/docker-registry.service';
-import { OrganizationLimits } from '../../../organization/tenant/entities/organization-limits.entity';
-import { OrganizationService } from '../../../organization/tenant/services/organization.service';
-import { OrganizationLimitsService } from '../../../organization/tenant/services/organization-limits.service';
-import { OrganizationQuotaService } from '../../../organization/tenant/services/organization-quota.service';
-import { SettingsService } from '../../../settings/platform/services/settings.service';
+import { DockerRegistryService } from '../../../docker-registry/services/docker-registry.service';
+import { OrganizationLimits } from '../../../organization/entities/organization-limits.entity';
+import { OrganizationService } from '../../../organization/services/organization.service';
+import { OrganizationLimitsService } from '../../../organization/services/organization-limits.service';
+import { OrganizationQuotaService } from '../../../organization/services/organization-quota.service';
+import { SettingsService } from '../../../settings/services/settings.service';
 import {
 	DEFAULT_SNAPSHOT_CPU,
 	DEFAULT_SNAPSHOT_DISK_GIB,
 	DEFAULT_SNAPSHOT_GPU,
 	DEFAULT_SNAPSHOT_IMAGE_NAME,
 	DEFAULT_SNAPSHOT_MEMORY_GIB,
-} from '../../instance/constants/sandbox.constants';
-import { SandboxClass } from '../../instance/enums/sandbox-class.enum';
+} from '../../constants/sandbox.constants';
+import { SandboxClass } from '../../enums/sandbox-class.enum';
 import { GpuType } from '../../machine/enums/gpu-type.enum';
 import { MachineSchedulingService } from '../../placement/services/machine-scheduling.service';
 import { resolveGpuTypePreferences } from '../../placement/utils/gpu-type-preferences.util';

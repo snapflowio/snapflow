@@ -10,7 +10,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
-import { SandboxClass } from '../../../sandbox/instance/enums/sandbox-class.enum';
+import { SandboxClass } from '../../../sandbox/enums/sandbox-class.enum';
 import { OrganizationQuotaParamsDto } from './organization-quota-params.dto';
 
 const pipe = new ValidationPipe({

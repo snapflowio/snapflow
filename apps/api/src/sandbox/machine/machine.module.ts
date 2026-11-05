@@ -9,15 +9,15 @@
 
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { BillingLedgerModule } from '../../billing/ledger/ledger.module';
-import { DockerRegistryModule } from '../../docker-registry/registry/registry.module';
+import { BillingModule } from '../../billing/billing.module';
+import { DockerRegistryModule } from '../../docker-registry/docker-registry.module';
 import { ControlWakeModule } from '../../infra/control-wake/control-wake.module';
 import { EncryptionModule } from '../../infra/encryption/encryption.module';
 import { RedisConnectionModule } from '../../infra/redis/redis.module';
 import { LocationModule } from '../../location/location.module';
-import { MarketplaceMachineModule } from '../../marketplace/machine/machine.module';
+import { MarketplaceModule } from '../../marketplace/marketplace.module';
 import { SecretsModule } from '../../secrets/secrets.module';
-import { SettingsPlatformModule } from '../../settings/platform/platform.module';
+import { SettingsModule } from '../../settings/settings.module';
 import { AdminMachineController } from './controllers/admin-machine.controller';
 import { MachineController } from './controllers/machine.controller';
 import { MachineSessionController } from './controllers/machine-session.controller';
@@ -74,15 +74,15 @@ import { MachineReliabilityRetentionService } from './services/qualification/mac
 			MachineUsageReceipt,
 			MachineWorkloadOutcome,
 		]),
-		BillingLedgerModule,
+		BillingModule,
 		ControlWakeModule,
 		DockerRegistryModule,
 		EncryptionModule,
-		MarketplaceMachineModule,
+		MarketplaceModule,
 		RedisConnectionModule,
 		LocationModule,
 		SecretsModule,
-		SettingsPlatformModule,
+		SettingsModule,
 	],
 	controllers: [
 		MachineController,

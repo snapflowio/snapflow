@@ -18,9 +18,9 @@ import {
 	Unique,
 } from '@mikro-orm/decorators/legacy';
 import { BASIS_POINTS_SCALE } from '../../../common/constants/money.constants';
-import { SandboxLease } from '../../../marketplace/machine/entities/sandbox-lease.entity';
-import { Organization } from '../../../organization/tenant/entities/organization.entity';
-import { SandboxPlacement } from '../../../sandbox/instance/entities/sandbox-placement.entity';
+import { SandboxLease } from '../../../marketplace/entities/sandbox-lease.entity';
+import { Organization } from '../../../organization/entities/organization.entity';
+import { SandboxPlacement } from '../../../sandbox/entities/sandbox-placement.entity';
 import { Machine } from '../../../sandbox/machine/entities/machine.entity';
 import {
 	NETWORK_USAGE_NUMERIC_PRECISION,

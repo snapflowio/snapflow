@@ -10,7 +10,7 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { DiscoveryModule } from '@nestjs/core';
-import { DockerRegistryModule } from '../../docker-registry/registry/registry.module';
+import { DockerRegistryModule } from '../../docker-registry/docker-registry.module';
 import { ControlWakeModule } from '../../infra/control-wake/control-wake.module';
 import { ObjectStorageModule } from '../../object-storage/object-storage.module';
 import { MachineModule } from '../machine/machine.module';

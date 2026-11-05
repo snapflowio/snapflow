@@ -8,7 +8,7 @@
  */
 
 import { Module } from '@nestjs/common';
-import { VerificationQualificationModule } from '../qualification/qualification.module';
+import { VerificationModule } from '../verification.module';
 import { BenchmarkAppraisalJob } from './jobs/benchmark-appraisal.job';
 import { MachineBenchmarkJob } from './jobs/machine-benchmark.job';
 import { MachineTierJob } from './jobs/machine-tier.job';
@@ -17,7 +17,7 @@ import { SpotCheckExecutorJob } from './jobs/spot-check-executor.job';
 import { SpotCheckSchedulerJob } from './jobs/spot-check-scheduler.job';
 
 @Module({
-	imports: [VerificationQualificationModule],
+	imports: [VerificationModule],
 	providers: [
 		BenchmarkAppraisalJob,
 		MachineBenchmarkJob,

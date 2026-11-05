@@ -14,7 +14,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { TypedConfigService } from '../../../config/services/typed-config.service';
 import { databaseNow } from '../../../infra/database/utils/database-time.util';
 import { CloudflareZoneService } from '../../cloudflare/services/cloudflare-zone.service';
-import { CustomDomain } from '../../routing/entities/custom-domain.entity';
+import { CustomDomain } from '../../entities/custom-domain.entity';
 import type { CloudflareCustomHostnameWebhookDto } from '../dto/cloudflare-webhook.dto';
 
 export const CLOUDFLARE_WEBHOOK_AUTH_HEADER = 'cf-webhook-auth';

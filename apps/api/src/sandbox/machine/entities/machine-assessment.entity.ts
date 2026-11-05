@@ -19,7 +19,7 @@ import {
 	MachineTrustStage,
 	type MachineRestrictionReason as RestrictionReason,
 	type MachineTrustStage as TrustStage,
-} from '../../../billing/ledger/constants/machine-trust.constants';
+} from '../../../billing/constants/machine-trust.constants';
 import { BASIS_POINTS_SCALE } from '../../../common/constants/money.constants';
 import { SLOW_START_INITIAL_WINDOW } from '../constants/machine-placement.constants';
 import { Machine } from './machine.entity';

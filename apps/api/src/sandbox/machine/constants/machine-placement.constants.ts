@@ -7,8 +7,8 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { PlacementLocality } from '../../instance/enums/placement-locality.enum';
-import { SandboxState } from '../../instance/enums/sandbox-state.enum';
+import { PlacementLocality } from '../../enums/placement-locality.enum';
+import { SandboxState } from '../../enums/sandbox-state.enum';
 
 export const SANDBOX_STATES_CONVERGING: readonly SandboxState[] = [
 	SandboxState.CREATING,

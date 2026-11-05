@@ -9,7 +9,7 @@
 
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable, Logger } from '@nestjs/common';
-import { MACHINE_RELIABILITY_RETENTION } from '../../../../billing/ledger/constants/machine-trust.constants';
+import { MACHINE_RELIABILITY_RETENTION } from '../../../../billing/constants/machine-trust.constants';
 import { pruneInBatches } from '../../../../infra/database/utils/batched-prune.util';
 import { MachineReliabilityEvent } from '../../entities/machine-reliability-event.entity';
 import { MachineWorkloadOutcome } from '../../entities/machine-workload-outcome.entity';

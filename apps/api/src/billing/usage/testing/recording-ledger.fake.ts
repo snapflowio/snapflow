@@ -11,23 +11,23 @@ import { mock } from 'node:test';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { fakeInstance } from '../../../common/testing/instance.fake';
 import { MicroUsd } from '../../../common/values/micro-usd.value';
-import { BillingLedgerSide } from '../../ledger/constants/billing.constants';
-import { BillingEvidenceBundle } from '../../ledger/entities/billing-evidence-bundle.entity';
-import { BillingLedgerTransaction } from '../../ledger/entities/billing-ledger-transaction.entity';
-import { BillingLineAdjustment } from '../../ledger/entities/billing-line-adjustment.entity';
+import { BillingLedgerSide } from '../../constants/billing.constants';
+import { BillingEvidenceBundle } from '../../entities/billing-evidence-bundle.entity';
+import { BillingLedgerTransaction } from '../../entities/billing-ledger-transaction.entity';
+import { BillingLineAdjustment } from '../../entities/billing-line-adjustment.entity';
 import {
 	type BillingLedgerPosting,
 	BillingLedgerService,
-} from '../../ledger/services/billing-ledger.service';
-import { BillingLineAdjustmentService } from '../../ledger/services/billing-line-adjustment.service';
-import { BillingLineItemService } from '../../ledger/services/billing-line-item.service';
-import { BillingAttestationService } from '../../ledger/services/evidence/billing-attestation.service';
+} from '../../services/billing-ledger.service';
+import { BillingLineAdjustmentService } from '../../services/billing-line-adjustment.service';
+import { BillingLineItemService } from '../../services/billing-line-item.service';
+import { BillingAttestationService } from '../../services/evidence/billing-attestation.service';
 import {
 	type BillingAuditVerdict,
 	BillingEvidenceAuditorService,
-} from '../../ledger/services/evidence/billing-evidence-auditor.service';
-import { BillingQuarantineService } from '../../ledger/services/evidence/billing-quarantine.service';
-import type { UsageAttestation } from '../../ledger/utils/evidence/usage-attestation.util';
+} from '../../services/evidence/billing-evidence-auditor.service';
+import { BillingQuarantineService } from '../../services/evidence/billing-quarantine.service';
+import type { UsageAttestation } from '../../utils/evidence/usage-attestation.util';
 import { UsageBillingService } from '../services/usage-billing.service';
 import {
 	billableWindow,

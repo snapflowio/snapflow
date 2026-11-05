@@ -13,13 +13,13 @@ import {
 	PULL_ACTIONS,
 	REGISTRY_TOKEN,
 	RegistrySubjectKind,
-} from '../../../../docker-registry/registry/constants/registry-token.constants';
-import { DockerRegistryService } from '../../../../docker-registry/registry/services/docker-registry.service';
-import { RegistryTokenService } from '../../../../docker-registry/registry/services/registry-token.service';
+} from '../../../../docker-registry/constants/registry-token.constants';
+import { DockerRegistryService } from '../../../../docker-registry/services/docker-registry.service';
+import { RegistryTokenService } from '../../../../docker-registry/services/registry-token.service';
 import {
 	registrySubject,
 	repositoryAccess,
-} from '../../../../docker-registry/registry/utils/registry-token-scope.util';
+} from '../../../../docker-registry/utils/registry-token-scope.util';
 import { databaseNow } from '../../../../infra/database/utils/database-time.util';
 import type { MachineSnapshotRegistryCredentialsDto } from '../../dto/machine-snapshot-control.dto';
 import type { MachineSession } from '../../entities/machine-session.entity';

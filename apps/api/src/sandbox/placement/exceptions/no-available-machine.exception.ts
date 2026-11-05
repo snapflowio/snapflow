@@ -9,7 +9,7 @@
 
 import { BadRequestException } from '@nestjs/common';
 import { locationConstraintCode } from '../../../location/utils/location-constraint.util';
-import { PlacementKind } from '../../../marketplace/machine/enums/placement-kind.enum';
+import { PlacementKind } from '../../../marketplace/enums/placement-kind.enum';
 import type { GetMachineParams } from '../../machine/types/machine-scheduling.types';
 
 const NO_AVAILABLE_MACHINES_MESSAGE = 'No available machines';

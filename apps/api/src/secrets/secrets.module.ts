@@ -9,7 +9,7 @@
 
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { IdempotencyRequestModule } from '../idempotency/request/request.module';
+import { IdempotencyModule } from '../idempotency/idempotency.module';
 import { EncryptionModule } from '../infra/encryption/encryption.module';
 import { SecretController } from './controllers/secret.controller';
 import { SandboxSecretBinding } from './entities/sandbox-secret-binding.entity';
@@ -32,7 +32,7 @@ import { SecretVersionCipherService } from './services/secret-version-cipher.ser
 			SecretDeliveryEvent,
 		]),
 		EncryptionModule,
-		IdempotencyRequestModule,
+		IdempotencyModule,
 	],
 	controllers: [SecretController],
 	providers: [

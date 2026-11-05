@@ -10,7 +10,7 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { BillingEvidenceRetentionService } from '../../ledger/services/evidence/billing-evidence-retention.service';
+import { BillingEvidenceRetentionService } from '../../services/evidence/billing-evidence-retention.service';
 
 @Injectable()
 export class BillingEvidenceRetentionJob {

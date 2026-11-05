@@ -19,7 +19,7 @@ import {
 import {
 	BILLING_NUMERIC_PRECISION,
 	BILLING_NUMERIC_SCALE,
-} from '../../../billing/ledger/constants/billing.constants';
+} from '../../../billing/constants/billing.constants';
 import { SHA256_HEX_LENGTH } from '../../../common/constants/digest.constants';
 import { Job } from '../../machine-job/entities/job.entity';
 import {

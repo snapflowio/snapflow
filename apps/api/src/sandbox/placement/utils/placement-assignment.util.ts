@@ -7,8 +7,8 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import type { Sandbox } from '../../instance/entities/sandbox.entity';
-import { SandboxState } from '../../instance/enums/sandbox-state.enum';
+import type { Sandbox } from '../../entities/sandbox.entity';
+import { SandboxState } from '../../enums/sandbox-state.enum';
 
 const STATES_WITHOUT_A_RUNTIME = new Set<SandboxState>([
 	SandboxState.ARCHIVED,

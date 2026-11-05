@@ -9,7 +9,7 @@
 
 import type { EntityManager } from '@mikro-orm/postgresql';
 import { v4 as uuidv4 } from 'uuid';
-import { SandboxClass } from '../../instance/enums/sandbox-class.enum';
+import { SandboxClass } from '../../enums/sandbox-class.enum';
 import { OCI_DIGEST_PREFIX } from '../../machine/constants/machine-snapshot.constants';
 import { GpuType } from '../../machine/enums/gpu-type.enum';
 import { Snapshot } from '../entities/snapshot.entity';

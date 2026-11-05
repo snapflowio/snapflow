@@ -9,7 +9,7 @@
 
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional } from 'class-validator';
-import { SandboxClass } from '../../instance/enums/sandbox-class.enum';
+import { SandboxClass } from '../../enums/sandbox-class.enum';
 import { GpuType } from '../../machine/enums/gpu-type.enum';
 import { Snapshot } from '../entities/snapshot.entity';
 import { SnapshotState } from '../enums/snapshot-state.enum';

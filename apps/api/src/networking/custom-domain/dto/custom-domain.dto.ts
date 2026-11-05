@@ -13,9 +13,9 @@ import { CursorPageDto } from '../../../common/dto/cursor-page.dto';
 import {
 	CUSTOM_DOMAIN_STATE,
 	type CustomDomainState,
-} from '../../routing/constants/exposure.constants';
-import { NETWORKING_LIMITS } from '../../routing/constants/networking.constants';
-import type { DomainVerificationRecord } from '../../routing/types/networking.types';
+} from '../../constants/exposure.constants';
+import { NETWORKING_LIMITS } from '../../constants/networking.constants';
+import type { DomainVerificationRecord } from '../../types/networking.types';
 
 const MINIMUM_HOSTNAME_LENGTH = 4;
 

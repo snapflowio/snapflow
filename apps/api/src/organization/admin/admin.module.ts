@@ -8,18 +8,14 @@
  */
 
 import { Module } from '@nestjs/common';
-import { BillingLedgerModule } from '../../billing/ledger/ledger.module';
-import { IdempotencyRequestModule } from '../../idempotency/request/request.module';
-import { OrganizationTenantModule } from '../tenant/tenant.module';
+import { BillingModule } from '../../billing/billing.module';
+import { IdempotencyModule } from '../../idempotency/idempotency.module';
+import { OrganizationModule } from '../organization.module';
 import { AdminOrganizationController } from './controllers/admin-organization.controller';
 import { AdminOrganizationService } from './services/admin-organization.service';
 
 @Module({
-	imports: [
-		BillingLedgerModule,
-		IdempotencyRequestModule,
-		OrganizationTenantModule,
-	],
+	imports: [BillingModule, IdempotencyModule, OrganizationModule],
 	controllers: [AdminOrganizationController],
 	providers: [AdminOrganizationService],
 })

@@ -13,7 +13,7 @@ import { Injectable } from '@nestjs/common';
 import type { CursorPage } from '../../../common/dto/cursor-page.dto';
 import { findCursorPage } from '../../../common/utils/pagination/cursor-page.util';
 import { locationWhere } from '../../../location/utils/location-constraint.util';
-import { MachineMarketplaceService } from '../../../marketplace/machine/services/machine-marketplace.service';
+import { MachineMarketplaceService } from '../../../marketplace/services/machine-marketplace.service';
 import { MachineDto } from '../dto/machine.dto';
 import { MachineFullDto } from '../dto/machine-full.dto';
 import { Machine } from '../entities/machine.entity';

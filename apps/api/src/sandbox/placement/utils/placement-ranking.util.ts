@@ -9,8 +9,8 @@
 
 import { BasisPoints } from '../../../common/values/basis-points.value';
 import type { MicroUsd } from '../../../common/values/micro-usd.value';
-import { MINIMUM_RELIABILITY_FOR_RANKING } from '../../../marketplace/machine/constants/pricing.constants';
-import type { PlacementLocality } from '../../instance/enums/placement-locality.enum';
+import { MINIMUM_RELIABILITY_FOR_RANKING } from '../../../marketplace/constants/pricing.constants';
+import type { PlacementLocality } from '../../enums/placement-locality.enum';
 import { PLACEMENT_LOCALITY_ORDER } from '../../machine/constants/machine-placement.constants';
 
 export interface RankablePlacement {

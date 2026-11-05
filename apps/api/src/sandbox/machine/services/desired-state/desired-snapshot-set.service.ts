@@ -18,9 +18,9 @@ import {
 	SnapshotRetention,
 } from '@snapflow/machine-proto';
 import type { DockerRegistry } from '../../../../docker-registry/persistence/entities/docker-registry.entity';
-import { DockerRegistryService } from '../../../../docker-registry/registry/services/docker-registry.service';
-import { findRegistryByUrlMatch } from '../../../../docker-registry/registry/utils/registry-match.util';
-import { Sandbox } from '../../../instance/entities/sandbox.entity';
+import { DockerRegistryService } from '../../../../docker-registry/services/docker-registry.service';
+import { findRegistryByUrlMatch } from '../../../../docker-registry/utils/registry-match.util';
+import { Sandbox } from '../../../entities/sandbox.entity';
 import { Snapshot } from '../../../snapshot/entities/snapshot.entity';
 import { SnapshotState } from '../../../snapshot/enums/snapshot-state.enum';
 import { MACHINE_QUALIFICATION_CANARY_SNAPSHOT } from '../../constants/machine-qualification.constants';

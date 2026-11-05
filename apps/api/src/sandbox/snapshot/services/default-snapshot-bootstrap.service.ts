@@ -18,10 +18,10 @@ import {
 } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { MILLISECONDS_PER_MINUTE } from '../../../common/constants/time.constants';
-import { PersonalOrganizationService } from '../../../organization/tenant/services/personal-organization.service';
-import { SettingsEvents } from '../../../settings/platform/constants/settings.constants';
-import { SettingsChangedEvent } from '../../../settings/platform/events/settings-changed.event';
-import { SettingsService } from '../../../settings/platform/services/settings.service';
+import { PersonalOrganizationService } from '../../../organization/services/personal-organization.service';
+import { SettingsEvents } from '../../../settings/constants/settings.constants';
+import { SettingsChangedEvent } from '../../../settings/events/settings-changed.event';
+import { SettingsService } from '../../../settings/services/settings.service';
 import { UserService } from '../../../user/services/user.service';
 import { MachineSchedulingService } from '../../placement/services/machine-scheduling.service';
 import { platformWorkloadPlacement } from '../../placement/utils/sandbox-placement.util';

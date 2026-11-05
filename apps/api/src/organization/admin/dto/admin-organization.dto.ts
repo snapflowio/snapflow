@@ -14,7 +14,7 @@ import {
 	CursorPageQueryDto,
 } from '../../../common/dto/cursor-page.dto';
 import type { MicroUsd } from '../../../common/values/micro-usd.value';
-import type { Organization } from '../../tenant/entities/organization.entity';
+import type { Organization } from '../../entities/organization.entity';
 
 const MAXIMUM_QUERY_LENGTH = 256;
 

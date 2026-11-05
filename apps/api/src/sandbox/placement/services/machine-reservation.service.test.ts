@@ -11,23 +11,23 @@ import assert from 'node:assert/strict';
 import { describe, it, mock } from 'node:test';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { ConflictException, HttpException } from '@nestjs/common';
-import { BILLING_RESTRICTION_MESSAGES } from '../../../billing/ledger/constants/billing-admission.constants';
-import { BillingRestriction } from '../../../billing/ledger/enums/billing-restriction.enum';
-import { BillingRestrictedException } from '../../../billing/ledger/exceptions/billing-restricted.exception';
-import { PlacementBillingCapacityService } from '../../../billing/ledger/services/placement/placement-billing-capacity.service';
+import { BILLING_RESTRICTION_MESSAGES } from '../../../billing/constants/billing-admission.constants';
+import { BillingRestriction } from '../../../billing/enums/billing-restriction.enum';
+import { BillingRestrictedException } from '../../../billing/exceptions/billing-restricted.exception';
+import { PlacementBillingCapacityService } from '../../../billing/services/placement/placement-billing-capacity.service';
 import { fakeInstance } from '../../../common/testing/instance.fake';
 import { MicroUsd } from '../../../common/values/micro-usd.value';
-import { MachineListing } from '../../../marketplace/machine/entities/machine-listing.entity';
-import { MachineUnavailableReason } from '../../../marketplace/machine/enums/machine-unavailable-reason.enum';
-import { PlacementKind } from '../../../marketplace/machine/enums/placement-kind.enum';
+import { MachineListing } from '../../../marketplace/entities/machine-listing.entity';
+import { MachineUnavailableReason } from '../../../marketplace/enums/machine-unavailable-reason.enum';
+import { PlacementKind } from '../../../marketplace/enums/placement-kind.enum';
 import {
 	egressPricePerGiB,
 	priceTerms,
 	runningHourlyPrice,
-} from '../../../marketplace/machine/utils/pricing.util';
-import { PlacementLocality } from '../../instance/enums/placement-locality.enum';
-import { SandboxClass } from '../../instance/enums/sandbox-class.enum';
-import { SandboxPlacementErrorCode } from '../../instance/enums/sandbox-placement-error-code.enum';
+} from '../../../marketplace/utils/pricing.util';
+import { PlacementLocality } from '../../enums/placement-locality.enum';
+import { SandboxClass } from '../../enums/sandbox-class.enum';
+import { SandboxPlacementErrorCode } from '../../enums/sandbox-placement-error-code.enum';
 import { Machine } from '../../machine/entities/machine.entity';
 import type { CustomerMachineParams } from '../../machine/types/machine-scheduling.types';
 import { MachineUnavailableException } from '../exceptions/machine-unavailable.exception';

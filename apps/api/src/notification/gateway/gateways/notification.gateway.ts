@@ -35,8 +35,8 @@ import {
 	isOrganizationAuthContext,
 } from '../../../common/types/organization-auth-context.types';
 import { TypedConfigService } from '../../../config/services/typed-config.service';
-import { OrganizationEvents } from '../../../organization/tenant/constants/organization-events.constants';
-import type { OrganizationActiveChangedEvent } from '../../../organization/tenant/events/organization-active-changed.event';
+import { OrganizationEvents } from '../../../organization/constants/organization-events.constants';
+import type { OrganizationActiveChangedEvent } from '../../../organization/events/organization-active-changed.event';
 import { NOTIFICATION_LIMITS } from '../../transport/constants/notification.constants';
 import {
 	credentialRoom,

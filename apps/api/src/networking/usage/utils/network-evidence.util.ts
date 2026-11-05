@@ -7,12 +7,12 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import type { BillingLineItem } from '../../../billing/ledger/entities/billing-line-item.entity';
-import type { PricedLease } from '../../../billing/ledger/queries/lease-price.query';
+import type { BillingLineItem } from '../../../billing/entities/billing-line-item.entity';
+import type { PricedLease } from '../../../billing/queries/lease-price.query';
 import {
 	BILLING_EVIDENCE_SCHEMA_VERSION,
 	type NetworkEvidenceBundle,
-} from '../../../billing/ledger/schemas/billing-evidence-bundle.schema';
+} from '../../../billing/schemas/billing-evidence-bundle.schema';
 import type { NetworkUsagePeriod } from '../entities/network-usage-period.entity';
 import type {
 	RatedEdgeEvidence,

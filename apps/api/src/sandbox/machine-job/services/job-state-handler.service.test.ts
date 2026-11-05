@@ -19,8 +19,8 @@ import {
 } from '@nestjs/common';
 import { DiscoveryModule, NestFactory } from '@nestjs/core';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { SandboxRepository } from '../../instance/repositories/sandbox.repository';
-import { SandboxArtifactJobProjector } from '../../instance/services/backup/sandbox-artifact-job.projector';
+import { SandboxRepository } from '../../repositories/sandbox.repository';
+import { SandboxArtifactJobProjector } from '../../services/backup/sandbox-artifact-job.projector';
 import { SnapshotRepository } from '../../snapshot/repositories/snapshot.repository';
 import { SnapshotActivationService } from '../../snapshot/services/snapshot-activation.service';
 import { SnapshotJobProjector } from '../../snapshot/services/snapshot-job.projector';

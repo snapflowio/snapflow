@@ -18,7 +18,7 @@ import {
 	type VolumeAttachment,
 	VolumeAttachmentSchema,
 } from '@snapflow/machine-proto';
-import type { Sandbox } from '../../../instance/entities/sandbox.entity';
+import type { Sandbox } from '../../../entities/sandbox.entity';
 import type { Volume } from '../../../volume/entities/volume.entity';
 import { optionalUint64 } from './proto-integer.util';
 import { protoJsonDigest, protoJsonObject } from './proto-json.util';

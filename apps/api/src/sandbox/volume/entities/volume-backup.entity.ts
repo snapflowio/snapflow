@@ -19,7 +19,7 @@ import {
 	Unique,
 } from '@mikro-orm/decorators/legacy';
 import { ENCRYPTION_ENVELOPE_VERSION } from '../../../infra/encryption/constants/encryption.constants';
-import { Organization } from '../../../organization/tenant/entities/organization.entity';
+import { Organization } from '../../../organization/entities/organization.entity';
 import { VolumeBackupState } from '../enums/volume-backup-state.enum';
 import { Volume } from './volume.entity';
 

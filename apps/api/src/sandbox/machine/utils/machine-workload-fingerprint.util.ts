@@ -9,9 +9,9 @@
 
 import { createHash } from 'node:crypto';
 import { canonicalJson } from '../../../common/utils/canonical-json.util';
-import type { SandboxCapability } from '../../instance/enums/sandbox-capability.enum';
-import type { SandboxClass } from '../../instance/enums/sandbox-class.enum';
-import type { SandboxMode } from '../../instance/enums/sandbox-mode.enum';
+import type { SandboxCapability } from '../../enums/sandbox-capability.enum';
+import type { SandboxClass } from '../../enums/sandbox-class.enum';
+import type { SandboxMode } from '../../enums/sandbox-mode.enum';
 
 export interface MachineWorkloadIdentity {
 	snapshot: string | null;

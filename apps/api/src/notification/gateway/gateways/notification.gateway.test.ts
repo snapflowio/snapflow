@@ -25,7 +25,7 @@ import {
 } from '../../../common/types/organization-auth-context.types';
 import { PLATFORM_PRINCIPAL_TYPE } from '../../../common/types/platform-principal.types';
 import { TypedConfigService } from '../../../config/services/typed-config.service';
-import { ORGANIZATION_ERROR } from '../../../organization/tenant/constants/organization-errors.constants';
+import { ORGANIZATION_ERROR } from '../../../organization/constants/organization-errors.constants';
 import { SystemRole } from '../../../user/enums/system-role.enum';
 import { NotificationConnectionsService } from '../../transport/services/notification-connections.service';
 import { NotificationRedisService } from '../../transport/services/notification-redis.service';

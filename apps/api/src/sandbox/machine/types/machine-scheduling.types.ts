@@ -12,12 +12,12 @@ import type {
 	GeoPoint,
 	LocationConstraint,
 } from '../../../location/types/geo-location.types';
-import type { MachineCategory } from '../../../marketplace/machine/enums/machine-category.enum';
-import type { MachineTier } from '../../../marketplace/machine/enums/machine-tier.enum';
-import type { PlacementKind } from '../../../marketplace/machine/enums/placement-kind.enum';
-import type { SandboxCapability } from '../../instance/enums/sandbox-capability.enum';
-import type { SandboxClass } from '../../instance/enums/sandbox-class.enum';
-import type { SandboxMode } from '../../instance/enums/sandbox-mode.enum';
+import type { MachineCategory } from '../../../marketplace/enums/machine-category.enum';
+import type { MachineTier } from '../../../marketplace/enums/machine-tier.enum';
+import type { PlacementKind } from '../../../marketplace/enums/placement-kind.enum';
+import type { SandboxCapability } from '../../enums/sandbox-capability.enum';
+import type { SandboxClass } from '../../enums/sandbox-class.enum';
+import type { SandboxMode } from '../../enums/sandbox-mode.enum';
 import type { GpuType } from '../enums/gpu-type.enum';
 
 export interface PinnedPlacement {

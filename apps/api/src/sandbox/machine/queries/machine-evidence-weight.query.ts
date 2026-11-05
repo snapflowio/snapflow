@@ -10,7 +10,7 @@
 import {
 	HALF_LIFE_DECAY_BASE,
 	MACHINE_TRUST_POLICY,
-} from '../../../billing/ledger/constants/machine-trust.constants';
+} from '../../../billing/constants/machine-trust.constants';
 import { SECONDS_PER_HOUR } from '../../../common/constants/time.constants';
 
 const HALF_LIFE_SECONDS =

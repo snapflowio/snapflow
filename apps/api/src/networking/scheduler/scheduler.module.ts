@@ -9,7 +9,7 @@
 
 import { Module } from '@nestjs/common';
 import { NetworkingCustomDomainModule } from '../custom-domain/custom-domain.module';
-import { NetworkingRoutingModule } from '../routing/routing.module';
+import { NetworkingModule } from '../networking.module';
 import { NetworkingUsageModule } from '../usage/usage.module';
 import { ControlSnapshotRefreshJob } from './jobs/control-snapshot-refresh.job';
 import { CustomDomainReconcilerJob } from './jobs/custom-domain-reconciler.job';
@@ -23,7 +23,7 @@ import { SystemExposureProvisionerJob } from './jobs/system-exposure-provisioner
 @Module({
 	imports: [
 		NetworkingCustomDomainModule,
-		NetworkingRoutingModule,
+		NetworkingModule,
 		NetworkingUsageModule,
 	],
 	providers: [

@@ -16,9 +16,9 @@ import { Continent } from '../../../location/enums/continent.enum';
 import { LocationConstraintKind } from '../../../location/enums/location-constraint-kind.enum';
 import { GeoIpService } from '../../../location/services/geo-ip.service';
 import type { GeoLocation } from '../../../location/types/geo-location.types';
-import { MachineListing } from '../../../marketplace/machine/entities/machine-listing.entity';
-import { ListingVisibility } from '../../../marketplace/machine/enums/listing-visibility.enum';
-import { PlacementKind } from '../../../marketplace/machine/enums/placement-kind.enum';
+import { MachineListing } from '../../../marketplace/entities/machine-listing.entity';
+import { ListingVisibility } from '../../../marketplace/enums/listing-visibility.enum';
+import { PlacementKind } from '../../../marketplace/enums/placement-kind.enum';
 import { Machine } from '../../machine/entities/machine.entity';
 import { SandboxPlacementResolverService } from './sandbox-placement-resolver.service';
 

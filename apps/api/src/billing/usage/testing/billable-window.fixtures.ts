@@ -9,13 +9,13 @@
 
 import { SHA256_HEX_LENGTH } from '../../../common/constants/digest.constants';
 import { addMilliseconds } from '../../../common/utils/time.util';
-import { SandboxLease } from '../../../marketplace/machine/entities/sandbox-lease.entity';
-import { PlacementKind } from '../../../marketplace/machine/enums/placement-kind.enum';
-import type { PriceCardRates } from '../../../marketplace/machine/types/pricing.types';
+import { SandboxLease } from '../../../marketplace/entities/sandbox-lease.entity';
+import { PlacementKind } from '../../../marketplace/enums/placement-kind.enum';
+import type { PriceCardRates } from '../../../marketplace/types/pricing.types';
 import {
 	priceTerms,
 	priceUsage,
-} from '../../../marketplace/machine/utils/pricing.util';
+} from '../../../marketplace/utils/pricing.util';
 import { MachineUsageReceipt } from '../../../sandbox/machine/entities/machine-usage-receipt.entity';
 import {
 	type SignedUsageReceipt,
@@ -23,23 +23,23 @@ import {
 	USAGE_MACHINE_ID,
 	USAGE_PLACEMENT,
 } from '../../../sandbox/machine/testing/signed-usage-readings.fixtures';
-import { USAGE_ACCOUNTING_POLICY_VERSION } from '../../../usage/metering/constants/usage-accounting.constants';
-import { UsageMode } from '../../../usage/metering/constants/usage-lifecycle.constants';
-import { SandboxBillableUsage } from '../../../usage/metering/entities/sandbox-billable-usage.entity';
+import { USAGE_ACCOUNTING_POLICY_VERSION } from '../../../usage/constants/usage-accounting.constants';
+import { UsageMode } from '../../../usage/constants/usage-lifecycle.constants';
+import { SandboxBillableUsage } from '../../../usage/entities/sandbox-billable-usage.entity';
 import {
 	allocationColumns,
 	allocationUnits,
 	intendedQuantities,
 	quantityColumns,
-} from '../../../usage/metering/utils/usage-quantities.util';
+} from '../../../usage/utils/usage-quantities.util';
 import {
 	BillingBeneficiaryKind,
 	BillingChargeClass,
 	BillingEvidenceStatus,
 	BillingLineSourceType,
-} from '../../ledger/constants/billing.constants';
-import { BillingLineItem } from '../../ledger/entities/billing-line-item.entity';
-import type { PricedLease } from '../../ledger/queries/lease-price.query';
+} from '../../constants/billing.constants';
+import { BillingLineItem } from '../../entities/billing-line-item.entity';
+import type { PricedLease } from '../../queries/lease-price.query';
 
 export const WINDOW_MARKUP_BASIS_POINTS = 2_500;
 

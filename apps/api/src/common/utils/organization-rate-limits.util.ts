@@ -13,8 +13,8 @@ import { z } from 'zod';
 import {
 	ORGANIZATION_RATE_LIMITS_CACHE,
 	organizationRateLimitsCacheKey,
-} from '../../organization/tenant/constants/organization-limits.constants';
-import { OrganizationLimits } from '../../organization/tenant/entities/organization-limits.entity';
+} from '../../organization/constants/organization-limits.constants';
+import { OrganizationLimits } from '../../organization/entities/organization-limits.entity';
 
 const ORGANIZATION_RATE_LIMIT_FIELDS = [
 	'authenticatedRateLimit',

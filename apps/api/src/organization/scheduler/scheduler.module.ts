@@ -8,11 +8,11 @@
  */
 
 import { Module } from '@nestjs/common';
-import { OrganizationTenantModule } from '../tenant/tenant.module';
+import { OrganizationModule } from '../organization.module';
 import { OrganizationSuspensionJob } from './jobs/organization-suspension.job';
 
 @Module({
-	imports: [OrganizationTenantModule],
+	imports: [OrganizationModule],
 	providers: [OrganizationSuspensionJob],
 })
 export class OrganizationSchedulerModule {}

@@ -9,7 +9,7 @@
 
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { CursorPageDto } from '../../../common/dto/cursor-page.dto';
-import { MachineMarketplaceStatusDto } from '../../../marketplace/machine/dto/machine.dto';
+import { MachineMarketplaceStatusDto } from '../../../marketplace/dto/machine.dto';
 import { Machine } from '../entities/machine.entity';
 import { MachineDto } from './machine.dto';
 

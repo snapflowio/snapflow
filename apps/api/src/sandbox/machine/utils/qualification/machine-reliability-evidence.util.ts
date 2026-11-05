@@ -10,7 +10,7 @@
 import { createHash } from 'node:crypto';
 import { canonicalJson } from '../../../../common/utils/canonical-json.util';
 import { ResourceShape } from '../../../../common/values/resource-shape.value';
-import type { Sandbox } from '../../../instance/entities/sandbox.entity';
+import type { Sandbox } from '../../../entities/sandbox.entity';
 import type { JobExecutionResult } from '../../../machine-job/types/job-execution-result.types';
 import {
 	JOB_EXECUTION_OUTCOME,

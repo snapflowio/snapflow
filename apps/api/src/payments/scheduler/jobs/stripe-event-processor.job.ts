@@ -17,12 +17,12 @@ import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
 import { stripeErrorDetails } from '../../../common/utils/error/stripe-error.util';
 import { ControlWakeService } from '../../../infra/control-wake/services/control-wake.service';
-import { SettingsService } from '../../../settings/platform/services/settings.service';
+import { SettingsService } from '../../../settings/services/settings.service';
 import {
 	PaymentsJob,
 	STRIPE_EVENT_WAKE,
-} from '../../funds/constants/payments.constants';
-import { StripeEventProcessorService } from '../../funds/services/stripe-event/stripe-event-processor.service';
+} from '../../constants/payments.constants';
+import { StripeEventProcessorService } from '../../services/stripe-event/stripe-event-processor.service';
 
 @Injectable()
 export class StripeEventProcessorJob implements OnModuleInit, OnModuleDestroy {

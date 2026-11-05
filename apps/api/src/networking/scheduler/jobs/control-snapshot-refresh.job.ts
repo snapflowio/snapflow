@@ -10,7 +10,7 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { ControlSnapshotRefreshService } from '../../routing/services/control-snapshot-refresh.service';
+import { ControlSnapshotRefreshService } from '../../services/control-snapshot-refresh.service';
 
 @Injectable()
 export class ControlSnapshotRefreshJob {

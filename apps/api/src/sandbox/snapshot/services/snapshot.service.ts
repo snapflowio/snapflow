@@ -24,10 +24,10 @@ import { findCursorPage } from '../../../common/utils/pagination/cursor-page.uti
 import { containsPattern } from '../../../common/utils/pagination/like-pattern.util';
 import { RedisLockProvider } from '../../../infra/redis/providers/redis-lock.provider';
 import { ObjectStorageService } from '../../../object-storage/services/object-storage.service';
-import { SandboxEvents } from '../../instance/constants/sandbox-events.constants';
-import { Sandbox } from '../../instance/entities/sandbox.entity';
-import { SandboxState } from '../../instance/enums/sandbox-state.enum';
-import { SandboxCreatedEvent } from '../../instance/events/sandbox-create.event';
+import { SandboxEvents } from '../../constants/sandbox-events.constants';
+import { Sandbox } from '../../entities/sandbox.entity';
+import { SandboxState } from '../../enums/sandbox-state.enum';
+import { SandboxCreatedEvent } from '../../events/sandbox-create.event';
 import { MachineEvents } from '../../machine/constants/machine-events.constants';
 import { MachineDeletedEvent } from '../../machine/events/machine-deleted.event';
 import { MachineSnapshotTargetService } from '../../machine/services/desired-state/machine-snapshot-target.service';

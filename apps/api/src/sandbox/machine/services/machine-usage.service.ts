@@ -24,10 +24,10 @@ import {
 import {
 	type VerifiedMachineUsageReceipt,
 	verifyMachineUsageReceipt,
-} from '../../../usage/metering/utils/evidence/machine-usage-evidence.util';
-import { machineUsagePayloadDigest } from '../../../usage/metering/utils/evidence/machine-usage-signature.util';
-import { Sandbox } from '../../instance/entities/sandbox.entity';
-import { SandboxPlacement } from '../../instance/entities/sandbox-placement.entity';
+} from '../../../usage/utils/evidence/machine-usage-evidence.util';
+import { machineUsagePayloadDigest } from '../../../usage/utils/evidence/machine-usage-signature.util';
+import { Sandbox } from '../../entities/sandbox.entity';
+import { SandboxPlacement } from '../../entities/sandbox-placement.entity';
 import {
 	MACHINE_USAGE_GENESIS_DIGEST,
 	MACHINE_USAGE_RECONCILIATION_DEADLINE_MILLISECONDS,

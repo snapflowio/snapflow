@@ -35,9 +35,9 @@ import type { Request, Response } from 'express';
 import {
 	Audit,
 	type TypedRequest,
-} from '../../../audit/log/decorators/audit.decorator';
-import { AuditAction } from '../../../audit/log/enums/audit-action.enum';
-import { AuditTarget } from '../../../audit/log/enums/audit-target.enum';
+} from '../../../audit/decorators/audit.decorator';
+import { AuditAction } from '../../../audit/enums/audit-action.enum';
+import { AuditTarget } from '../../../audit/enums/audit-target.enum';
 import {
 	AllowAuthMethods,
 	AuthMethod,
@@ -45,24 +45,24 @@ import {
 import {
 	AdminCreditGrantDto,
 	AdminGrantCreditDto,
-} from '../../../billing/ledger/dto/billing-credit-grant.dto';
-import { BillingCreditGrantService } from '../../../billing/ledger/services/billing-credit-grant.service';
+} from '../../../billing/dto/billing-credit-grant.dto';
+import { BillingCreditGrantService } from '../../../billing/services/billing-credit-grant.service';
 import { CustomHeaders } from '../../../common/constants/header.constants';
 import { IsOrganizationAuthContext } from '../../../common/decorators/auth-context.decorator';
 import { AuthenticatedRateLimitGuard } from '../../../common/guards/authenticated-rate-limit.guard';
 import type { OrganizationAuthContext } from '../../../common/types/organization-auth-context.types';
-import { ApiIdempotentRequestService } from '../../../idempotency/request/services/api-idempotent-request.service';
+import { ApiIdempotentRequestService } from '../../../idempotency/services/api-idempotent-request.service';
 import { RequiredSystemRole } from '../../../user/decorators/required-system-role.decorator';
 import { SystemRole } from '../../../user/enums/system-role.enum';
-import { CreateOrganizationQuotaDto } from '../../tenant/dto/create-organization-quota.dto';
-import { OrganizationLimitsDto } from '../../tenant/dto/organization-limits.dto';
-import { OrganizationQuotaDto } from '../../tenant/dto/organization-quota.dto';
-import { OrganizationSuspensionDto } from '../../tenant/dto/organization-suspension.dto';
-import { UpdateOrganizationLimitsDto } from '../../tenant/dto/update-organization-limits.dto';
-import { UpdateOrganizationQuotaDto } from '../../tenant/dto/update-organization-quota.dto';
-import { OrganizationLimitsService } from '../../tenant/services/organization-limits.service';
-import { OrganizationQuotaService } from '../../tenant/services/organization-quota.service';
-import { OrganizationSuspensionService } from '../../tenant/services/organization-suspension.service';
+import { CreateOrganizationQuotaDto } from '../../dto/create-organization-quota.dto';
+import { OrganizationLimitsDto } from '../../dto/organization-limits.dto';
+import { OrganizationQuotaDto } from '../../dto/organization-quota.dto';
+import { OrganizationSuspensionDto } from '../../dto/organization-suspension.dto';
+import { UpdateOrganizationLimitsDto } from '../../dto/update-organization-limits.dto';
+import { UpdateOrganizationQuotaDto } from '../../dto/update-organization-quota.dto';
+import { OrganizationLimitsService } from '../../services/organization-limits.service';
+import { OrganizationQuotaService } from '../../services/organization-quota.service';
+import { OrganizationSuspensionService } from '../../services/organization-suspension.service';
 import {
 	AdminOrganizationDto,
 	AdminOrganizationListQueryDto,

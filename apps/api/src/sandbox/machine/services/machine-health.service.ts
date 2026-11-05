@@ -18,8 +18,8 @@ import {
 } from '../../../common/utils/time.util';
 import { databaseNow } from '../../../infra/database/utils/database-time.util';
 import { RedisLockProvider } from '../../../infra/redis/providers/redis-lock.provider';
-import { MachineMarketplaceService } from '../../../marketplace/machine/services/machine-marketplace.service';
-import { SANDBOX_WORKER_LIMITS } from '../../instance/constants/sandbox.constants';
+import { MachineMarketplaceService } from '../../../marketplace/services/machine-marketplace.service';
+import { SANDBOX_WORKER_LIMITS } from '../../constants/sandbox.constants';
 import {
 	MACHINE_HEALTH_CHECK,
 	MACHINE_HEALTH_STALE_THRESHOLD_MS,

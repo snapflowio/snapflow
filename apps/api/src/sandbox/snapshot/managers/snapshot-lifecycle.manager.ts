@@ -20,7 +20,7 @@ import { TrackedJobs } from '../../../common/utils/concurrency/tracked-jobs.util
 import { errorMessage } from '../../../common/utils/error/error.util';
 import { millisecondsBetween } from '../../../common/utils/time.util';
 import { RedisLockProvider } from '../../../infra/redis/providers/redis-lock.provider';
-import { SANDBOX_WORKER_LIMITS } from '../../instance/constants/sandbox.constants';
+import { SANDBOX_WORKER_LIMITS } from '../../constants/sandbox.constants';
 import { Machine } from '../../machine/entities/machine.entity';
 import { MachineService } from '../../machine/services/machine.service';
 import { MachineSchedulingService } from '../../placement/services/machine-scheduling.service';

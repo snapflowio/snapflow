@@ -20,7 +20,7 @@ import {
 	ResizeVolumePayloadSchema,
 	RestoreVolumePayloadSchema,
 } from '@snapflow/machine-proto';
-import { SandboxClass } from '../../instance/enums/sandbox-class.enum';
+import { SandboxClass } from '../../enums/sandbox-class.enum';
 import type { Job } from '../../machine-job/entities/job.entity';
 import { JobType } from '../../machine-job/enums/job-type.enum';
 import { ResourceType } from '../../machine-job/enums/resource-type.enum';

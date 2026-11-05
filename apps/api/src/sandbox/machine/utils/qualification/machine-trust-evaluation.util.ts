@@ -11,7 +11,7 @@ import {
 	MACHINE_TRUST_POLICY,
 	MachineRestrictionReason,
 	MINIMUM_CONFIDENT_SAMPLES,
-} from '../../../../billing/ledger/constants/machine-trust.constants';
+} from '../../../../billing/constants/machine-trust.constants';
 import { BASIS_POINTS_SCALE } from '../../../../common/constants/money.constants';
 import { BasisPoints } from '../../../../common/values/basis-points.value';
 

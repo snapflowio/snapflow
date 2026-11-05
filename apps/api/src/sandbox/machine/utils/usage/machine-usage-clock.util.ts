@@ -7,8 +7,8 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import type { MachineUsageReading } from '../../../../usage/metering/utils/evidence/machine-usage-meter.util';
-import type { SandboxPlacement } from '../../../instance/entities/sandbox-placement.entity';
+import type { MachineUsageReading } from '../../../../usage/utils/evidence/machine-usage-meter.util';
+import type { SandboxPlacement } from '../../../entities/sandbox-placement.entity';
 import {
 	MACHINE_USAGE_COUNTER_GRACE_MILLISECONDS,
 	MACHINE_USAGE_MAX_CLOCK_SKEW_MILLISECONDS,

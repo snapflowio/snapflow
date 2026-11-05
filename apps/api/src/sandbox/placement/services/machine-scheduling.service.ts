@@ -9,7 +9,7 @@
 
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
-import { placementPriceTerms } from '../../../billing/ledger/utils/lease-pricing.util';
+import { placementPriceTerms } from '../../../billing/utils/lease-pricing.util';
 import { observeOperation } from '../../../infra/logging/utils/operation-observability.util';
 import { LocationDto } from '../../../location/dto/location.dto';
 import {
@@ -17,20 +17,20 @@ import {
 	proximityBand,
 } from '../../../location/utils/geo-distance.util';
 import { locationPreferenceRank } from '../../../location/utils/location-constraint.util';
-import { PlacementKind } from '../../../marketplace/machine/enums/placement-kind.enum';
-import { currentAssessmentSql } from '../../../marketplace/machine/queries/machine-assessment.query';
+import { PlacementKind } from '../../../marketplace/enums/placement-kind.enum';
+import { currentAssessmentSql } from '../../../marketplace/queries/machine-assessment.query';
 import type {
 	LinePrice,
 	PriceCardRates,
 	PriceTerms,
-} from '../../../marketplace/machine/types/pricing.types';
+} from '../../../marketplace/types/pricing.types';
 import {
 	egressPricePerGiB,
 	runningHourlyPrice,
-} from '../../../marketplace/machine/utils/pricing.util';
-import { SettingsService } from '../../../settings/platform/services/settings.service';
-import { PlacementLocality } from '../../instance/enums/placement-locality.enum';
-import type { SandboxClass } from '../../instance/enums/sandbox-class.enum';
+} from '../../../marketplace/utils/pricing.util';
+import { SettingsService } from '../../../settings/services/settings.service';
+import { PlacementLocality } from '../../enums/placement-locality.enum';
+import type { SandboxClass } from '../../enums/sandbox-class.enum';
 import { Machine } from '../../machine/entities/machine.entity';
 import type {
 	GetMachineParams,

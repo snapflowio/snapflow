@@ -33,19 +33,16 @@ import {
 	ApiTags,
 } from '@nestjs/swagger';
 import type { Response } from 'express';
-import {
-	Audit,
-	TypedRequest,
-} from '../../../audit/log/decorators/audit.decorator';
-import { AuditAction } from '../../../audit/log/enums/audit-action.enum';
-import { AuditTarget } from '../../../audit/log/enums/audit-target.enum';
+import { Audit, TypedRequest } from '../../../audit/decorators/audit.decorator';
+import { AuditAction } from '../../../audit/enums/audit-action.enum';
+import { AuditTarget } from '../../../audit/enums/audit-target.enum';
 import { CustomHeaders } from '../../../common/constants/header.constants';
 import { IsOrganizationAuthContext } from '../../../common/decorators/auth-context.decorator';
 import { UrlDto } from '../../../common/dto/url.dto';
 import { AuthenticatedRateLimitGuard } from '../../../common/guards/authenticated-rate-limit.guard';
 import type { OrganizationAuthContext } from '../../../common/types/organization-auth-context.types';
-import { ApiIdempotentRequestService } from '../../../idempotency/request/services/api-idempotent-request.service';
-import { RequiredOrganizationPermissions } from '../../../organization/tenant/decorators/required-organization-permissions.decorator';
+import { ApiIdempotentRequestService } from '../../../idempotency/services/api-idempotent-request.service';
+import { RequiredOrganizationPermissions } from '../../../organization/decorators/required-organization-permissions.decorator';
 import { AllowGeneralSnapshots } from '../decorators/allow-general-snapshots.decorator';
 import { CreateSnapshotDto } from '../dto/create-snapshot.dto';
 import { ListSnapshotsQueryDto } from '../dto/list-snapshots-query.dto';

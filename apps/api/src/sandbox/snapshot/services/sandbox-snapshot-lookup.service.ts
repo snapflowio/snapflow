@@ -11,8 +11,8 @@ import type { FilterQuery } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { isValidUuid } from '../../../common/utils/uuid.util';
-import { SettingsService } from '../../../settings/platform/services/settings.service';
-import { CreateSandboxDto } from '../../instance/dto/create-sandbox.dto';
+import { SettingsService } from '../../../settings/services/settings.service';
+import { CreateSandboxDto } from '../../dto/create-sandbox.dto';
 import { Snapshot } from '../entities/snapshot.entity';
 
 @Injectable()

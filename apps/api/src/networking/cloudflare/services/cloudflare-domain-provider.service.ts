@@ -29,7 +29,7 @@ import {
 import type {
 	DomainVerificationRecord,
 	ManagedCustomHostname,
-} from '../../routing/types/networking.types';
+} from '../../types/networking.types';
 import { RefreshingValue } from '../utils/refreshing-value.util';
 import { CloudflareZoneService } from './cloudflare-zone.service';
 

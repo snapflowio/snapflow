@@ -13,7 +13,7 @@ import {
 	MACHINE_TRUST_POLICY,
 	MachineRestrictionReason,
 	MINIMUM_CONFIDENT_SAMPLES,
-} from '../../../../billing/ledger/constants/machine-trust.constants';
+} from '../../../../billing/constants/machine-trust.constants';
 import {
 	type MachineAttestationMass,
 	type MachineOutcomeMass,

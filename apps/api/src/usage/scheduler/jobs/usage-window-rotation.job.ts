@@ -10,8 +10,8 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { USAGE_JOB } from '../../metering/constants/usage-lifecycle.constants';
-import { UsageWindowRotationService } from '../../metering/services/usage-window-rotation.service';
+import { USAGE_JOB } from '../../constants/usage-lifecycle.constants';
+import { UsageWindowRotationService } from '../../services/usage-window-rotation.service';
 
 @Injectable()
 export class UsageWindowRotationJob {

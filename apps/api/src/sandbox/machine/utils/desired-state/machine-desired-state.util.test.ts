@@ -22,7 +22,7 @@ import {
 	SandboxLifecycle,
 	SandboxSpecSchema,
 } from '@snapflow/machine-proto';
-import { SandboxMode } from '../../../instance/enums/sandbox-mode.enum';
+import { SandboxMode } from '../../../enums/sandbox-mode.enum';
 import { protoJsonDigest } from '../proto/proto-json.util';
 import {
 	runtimeIntentUpdate,
