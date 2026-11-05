@@ -17,6 +17,7 @@ import {
 	httpUrlText,
 	integerChoiceText,
 	nonNegativeIntegerText,
+	privateKeyText,
 	text,
 } from '../utils/environment-schemas.util';
 import {
@@ -53,6 +54,19 @@ export const settlementEnvironment = defineEnvironment(
 		SETTLEMENT_USDC_ADDRESS: environmentVariable(evmAddressText(), {
 			description: 'Address of the USDC token the escrow settles in.',
 		}),
+		SETTLEMENT_SIGNER_PRIVATE_KEY: environmentVariable(privateKeyText(), {
+			description:
+				"Key of Snapflow's delegated voucher signer; customers authorize its address as an escrow session key so Snapflow can sign vouchers for them within their caps. It needs no funds.",
+			secret: true,
+		}),
+		SETTLEMENT_RELAYER_PRIVATE_KEY: environmentVariable(
+			privateKeyText().optional(),
+			{
+				description:
+					'Key of the wallet that sends voucher claims to the escrow and pays their gas in ETH; required wherever the worker runs.',
+				secret: true,
+			}
+		),
 		SANCTIONS_API_KEY: environmentVariable(text().optional(), {
 			description:
 				'Chainalysis sanctions screening API key; without it (development only) linked wallets are recorded as unchecked.',

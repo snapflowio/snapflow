@@ -163,6 +163,9 @@ export class SandboxAdmissionService {
 		sandbox.mem = shape.mem;
 		sandbox.disk = shape.disk;
 		applyPlacement(sandbox, placement);
+		if (createSandboxDto.voucherSigning !== undefined) {
+			sandbox.voucherSigning = createSandboxDto.voucherSigning;
+		}
 		applyNetworkPolicy(sandbox, createSandboxDto, organizationLimits);
 		await this.applyIdleIntervals(sandbox, createSandboxDto);
 		if (volumes !== undefined) {

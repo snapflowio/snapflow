@@ -18,6 +18,7 @@ import { v4 } from 'uuid';
 import { ResourceShape } from '../../common/values/resource-shape.value';
 import { databaseNow } from '../../infra/database/utils/database-time.util';
 import { SettingsService } from '../../settings/services/settings.service';
+import { PaymentChannelService } from '../../settlement/services/payment-channel.service';
 import { SandboxLeaseDto } from '../dto/sandbox-lease.dto';
 import { MachineListing } from '../entities/machine-listing.entity';
 import { MachinePriceCard } from '../entities/machine-price-card.entity';
@@ -65,7 +66,10 @@ type TermsPolicy = (
 
 @Injectable()
 export class SandboxLeaseService {
-	constructor(private readonly settings: SettingsService) {}
+	constructor(
+		private readonly settings: SettingsService,
+		private readonly channels: PaymentChannelService
+	) {}
 
 	async open(
 		manager: EntityManager,
@@ -117,6 +121,7 @@ export class SandboxLeaseService {
 		lease.endedAt = await databaseNow(manager);
 		lease.endReason = reason;
 		await manager.flush();
+		await this.channels.close(manager, lease);
 		return lease;
 	}
 
@@ -197,6 +202,7 @@ export class SandboxLeaseService {
 		);
 		manager.persist(lease);
 		await manager.flush();
+		await this.channels.open(manager, lease);
 		return lease;
 	}
 }

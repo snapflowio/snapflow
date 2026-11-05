@@ -7,7 +7,12 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { BaseError, HttpRequestError, TimeoutError } from 'viem';
+import {
+	BaseError,
+	ContractFunctionRevertedError,
+	HttpRequestError,
+	TimeoutError,
+} from 'viem';
 
 // True when the RPC endpoint could not be reached, as opposed to the chain
 // answering that a signature or call is invalid.
@@ -19,4 +24,18 @@ export function isChainUnreachable(error: unknown): boolean {
 				cause instanceof HttpRequestError || cause instanceof TimeoutError
 		) !== null
 	);
+}
+
+// The custom error a simulated call reverted with (for example StaleVoucher
+// or SessionSpendCapExceeded), or viem's summary when it carries none.
+// Anything that is not a chain error is rethrown.
+export function contractRevertReason(error: unknown): string {
+	if (!(error instanceof BaseError)) throw error;
+	const reverted = error.walk(
+		(cause) => cause instanceof ContractFunctionRevertedError
+	);
+	if (reverted instanceof ContractFunctionRevertedError) {
+		return reverted.data?.errorName ?? reverted.reason ?? reverted.shortMessage;
+	}
+	return error.shortMessage;
 }

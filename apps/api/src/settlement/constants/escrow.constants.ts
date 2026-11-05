@@ -22,6 +22,8 @@ export const ESCROW_EVENT_KINDS: readonly EscrowEventKind[] =
 		item.type === 'event' ? [item.name] : []
 	);
 
+export const CLAIMED_EVENT = 'Claimed' satisfies EscrowEventKind;
+
 export const ESCROW_INDEXER = {
 	JOB: 'index-escrow-events',
 	LOCK_TTL_SECONDS: 5 * SECONDS_PER_MINUTE,

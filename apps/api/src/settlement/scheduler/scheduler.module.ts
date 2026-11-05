@@ -10,12 +10,25 @@
 import { Module } from '@nestjs/common';
 import { RedisConnectionModule } from '../../infra/redis/redis.module';
 import { SettingsModule } from '../../settings/settings.module';
+import { relayerWalletProvider } from '../providers/relayer-wallet.provider';
 import { SettlementModule } from '../settlement.module';
+import { ClaimRelayerJob } from './jobs/claim-relayer.job';
 import { EscrowIndexerJob } from './jobs/escrow-indexer.job';
+import { VoucherIssuerJob } from './jobs/voucher-issuer.job';
+import { ClaimRelayerService } from './services/claim-relayer.service';
 import { EscrowIndexerService } from './services/escrow-indexer.service';
+import { VoucherIssuerService } from './services/voucher-issuer.service';
 
 @Module({
 	imports: [RedisConnectionModule, SettingsModule, SettlementModule],
-	providers: [EscrowIndexerJob, EscrowIndexerService],
+	providers: [
+		relayerWalletProvider,
+		ClaimRelayerJob,
+		ClaimRelayerService,
+		EscrowIndexerJob,
+		EscrowIndexerService,
+		VoucherIssuerJob,
+		VoucherIssuerService,
+	],
 })
 export class SettlementSchedulerModule {}

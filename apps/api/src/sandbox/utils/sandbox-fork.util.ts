@@ -47,6 +47,7 @@ export function buildForkedSandbox(
 	forked.egressBandwidthBps = sourceSandbox.egressBandwidthBps;
 	forked.machineId = sourceSandbox.machineId;
 	applyPlacement(forked, { request: placementRequest(sourceSandbox) });
+	forked.voucherSigning = sourceSandbox.voucherSigning;
 	forked.pending = true;
 	forked.state = SandboxState.CREATING;
 	return forked;

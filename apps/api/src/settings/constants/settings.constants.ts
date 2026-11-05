@@ -69,6 +69,16 @@ const DEFAULT_VERIFICATION_SETTINGS = {
 	spotCheckOrganizationId: null,
 } as const;
 
+// A voucher a minute keeps a host at most two minutes of usage away from a
+// signed payment; a day-long voucher survives a long API outage, and claiming
+// hourly keeps gas low while vouchers stay far from expiry.
+const DEFAULT_VOUCHER_SETTINGS = {
+	voucherIntervalSeconds: 60,
+	voucherGraceIntervals: 2,
+	voucherLifetimeHours: 24,
+	claimIntervalMinutes: 60,
+} as const;
+
 export const SETTINGS_FIRST_RUN_ACTOR_ID = 'settings-first-run';
 
 const DEFAULT_ORGANIZATION_QUOTA = {
@@ -99,6 +109,7 @@ export const SETTINGS_DEFAULTS = {
 	// Circle waits before it recognizes Base USDC transfers; deep enough that
 	// the indexer never credits a deposit the sequencer later reorgs away.
 	settlementConfirmations: 90,
+	...DEFAULT_VOUCHER_SETTINGS,
 	maintenanceMode: false,
 	drainingMode: DrainingMode.MIGRATE,
 	drainingForce: false,

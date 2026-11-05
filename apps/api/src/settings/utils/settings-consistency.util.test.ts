@@ -21,6 +21,10 @@ const defaults: ConsistencySettings = {
 	exposureCeilingEstablishedCents:
 		SETTINGS_DEFAULTS.exposureCeilingEstablishedCents,
 	exposureCeilingHostCents: SETTINGS_DEFAULTS.exposureCeilingHostCents,
+	voucherIntervalSeconds: SETTINGS_DEFAULTS.voucherIntervalSeconds,
+	voucherGraceIntervals: SETTINGS_DEFAULTS.voucherGraceIntervals,
+	voucherLifetimeHours: SETTINGS_DEFAULTS.voucherLifetimeHours,
+	claimIntervalMinutes: SETTINGS_DEFAULTS.claimIntervalMinutes,
 };
 
 describe('settingsInconsistency', () => {
@@ -36,6 +40,37 @@ describe('settingsInconsistency', () => {
 					defaults.exposureCeilingEstablishedCents + 1,
 			}),
 			'exposureCeilingEstablishedCents must be at least exposureCeilingProbationaryCents'
+		);
+	});
+
+	it('rejects a voucher grace window longer than half a voucher lifetime', () => {
+		assert.equal(
+			settingsInconsistency({
+				...defaults,
+				voucherLifetimeHours: 1,
+				voucherIntervalSeconds: 1_801,
+				voucherGraceIntervals: 1,
+			}),
+			'voucherIntervalSeconds * voucherGraceIntervals must be at most half of voucherLifetimeHours'
+		);
+	});
+
+	it('rejects claims rarer than half a voucher lifetime', () => {
+		assert.equal(
+			settingsInconsistency({
+				...defaults,
+				voucherLifetimeHours: 2,
+				claimIntervalMinutes: 61,
+			}),
+			'claimIntervalMinutes must be at most half of voucherLifetimeHours'
+		);
+		assert.equal(
+			settingsInconsistency({
+				...defaults,
+				voucherLifetimeHours: 2,
+				claimIntervalMinutes: 60,
+			}),
+			null
 		);
 	});
 });

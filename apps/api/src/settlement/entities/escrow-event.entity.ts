@@ -19,7 +19,10 @@ import {
 } from '@mikro-orm/decorators/legacy';
 import type { Address, Hash } from 'viem';
 import { Organization } from '../../organization/entities/organization.entity';
-import { ESCROW_EVENT_KINDS } from '../constants/escrow.constants';
+import {
+	CLAIMED_EVENT,
+	ESCROW_EVENT_KINDS,
+} from '../constants/escrow.constants';
 import {
 	EVM_ADDRESS_LENGTH,
 	EVM_HASH_LENGTH,
@@ -77,6 +80,11 @@ const organizationColumn = (joinColumn: string, foreignKeyName: string) =>
 @Index({
 	name: 'IDX_escrow_event_host_address',
 	properties: ['hostAddress'],
+})
+// Claims are summed per channel to know what each voucher still adds.
+@Index({
+	name: 'IDX_escrow_event_claimed_channel',
+	expression: `create index "IDX_escrow_event_claimed_channel" on "escrow_event" ("chainId", "contractAddress", ("args"->>'channelId')) where "kind" = '${CLAIMED_EVENT}'`,
 })
 @Check({
 	name: 'CHK_escrow_event_kind',

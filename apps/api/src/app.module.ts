@@ -32,6 +32,7 @@ import { AppSchedulerModule } from './scheduler/scheduler.module';
 import { SecretsModule } from './secrets/secrets.module';
 import { SettingsModule } from './settings/settings.module';
 import { SettlementModule } from './settlement/settlement.module';
+import { SettlementMachineModule } from './settlement/settlement-machine.module';
 import { UsageModule } from './usage/usage.module';
 import { UserModule } from './user/user.module';
 import { VerificationModule } from './verification/verification.module';
@@ -56,6 +57,7 @@ const FEATURE_MODULES = [
 	SecretsModule,
 	SettingsModule,
 	SettlementModule,
+	SettlementMachineModule,
 	UsageModule,
 	UserModule,
 	VerificationModule,

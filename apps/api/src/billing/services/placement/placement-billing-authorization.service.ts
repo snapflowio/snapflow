@@ -17,6 +17,8 @@ import { Machine } from '../../../machine/entities/machine.entity';
 import { Sandbox } from '../../../sandbox/entities/sandbox.entity';
 import { SandboxPlacement } from '../../../sandbox/entities/sandbox-placement.entity';
 import { SandboxDesiredState } from '../../../sandbox/enums/sandbox-desired-state.enum';
+import { SettingsService } from '../../../settings/services/settings.service';
+import { leaseVoucherCoverageLapsed } from '../../../settlement/queries/voucher-coverage.query';
 import { PlacementFundingState } from '../../constants/billing.constants';
 import {
 	BillingAdmissionErrorCode,
@@ -33,7 +35,10 @@ import { PlacementBillingCapacityService } from './placement-billing-capacity.se
 
 @Injectable()
 export class PlacementBillingAuthorizationService {
-	constructor(private readonly capacity: PlacementBillingCapacityService) {}
+	constructor(
+		private readonly capacity: PlacementBillingCapacityService,
+		private readonly settings: SettingsService
+	) {}
 
 	async authorize(
 		manager: EntityManager,
@@ -121,6 +126,7 @@ export class PlacementBillingAuthorizationService {
 			});
 		}
 		const now = await databaseNow(manager);
+		await this.assertVoucherCoverage(manager, authorization, now);
 		const assessment = await trustedAssessment(
 			manager,
 			machine,
@@ -227,6 +233,32 @@ export class PlacementBillingAuthorizationService {
 		const authorization = await findActiveAuthorization(manager, placementId);
 		if (!authorization) return;
 		authorization.remainingReservedMicroUsd = '0';
+	}
+
+	// A lease paid through the escrow is only funded while a signed voucher
+	// keeps up with its usage; failing renewal here hands a lapsed sandbox to
+	// the funding policy's warning, suspension and stop path.
+	private async assertVoucherCoverage(
+		manager: EntityManager,
+		authorization: PlacementBillingAuthorization,
+		now: Date
+	): Promise<void> {
+		if (
+			await leaseVoucherCoverageLapsed(
+				manager,
+				authorization.leaseId,
+				now,
+				await this.settings.get()
+			)
+		) {
+			throw new ConflictException({
+				code: BillingAdmissionErrorCode.VOUCHER_COVERAGE_LAPSED,
+				message:
+					'No signed escrow voucher covers the recent usage of this sandbox',
+				placementId: authorization.placementId,
+				leaseId: authorization.leaseId,
+			});
+		}
 	}
 
 	private reservationExpiry(now: Date): Date {

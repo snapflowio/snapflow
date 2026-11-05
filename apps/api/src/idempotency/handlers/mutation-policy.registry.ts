@@ -90,6 +90,7 @@ const NATURALLY_IDEMPOTENT = [
 	'PaymentWalletController.createChallenge',
 	'PaymentWalletController.link',
 	'PaymentWalletController.unlink',
+	'PaymentChannelController.submitVoucher',
 	'SnapshotController.activateSnapshot',
 	'SnapshotController.deactivateSnapshot',
 	'SnapshotController.removeSnapshot',

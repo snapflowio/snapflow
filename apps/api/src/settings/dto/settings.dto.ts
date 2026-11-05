@@ -206,6 +206,25 @@ export class SettingsDto {
 	settlementConfirmations: number;
 
 	@ApiProperty({
+		description: 'Seconds between the escrow vouchers issued for each lease',
+	})
+	voucherIntervalSeconds: number;
+
+	@ApiProperty({
+		description:
+			'Voucher intervals a lease may go without a signed voucher before its sandbox counts as unfunded',
+	})
+	voucherGraceIntervals: number;
+
+	@ApiProperty({ description: 'Hours an escrow voucher stays claimable' })
+	voucherLifetimeHours: number;
+
+	@ApiProperty({
+		description: 'Minutes between the claims Snapflow relays for each lease',
+	})
+	claimIntervalMinutes: number;
+
+	@ApiProperty({
 		type: [String],
 		maxItems: EDGE_TRUSTED_HTTP_PROXY_CIDRS_MAXIMUM,
 		description:

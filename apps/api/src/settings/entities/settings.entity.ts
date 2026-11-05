@@ -68,6 +68,10 @@ const POSITIVE_COLUMNS = [
 	'exposureCeilingProbationaryCents',
 	'exposureCeilingEstablishedCents',
 	'exposureCeilingHostCents',
+	'voucherIntervalSeconds',
+	'voucherGraceIntervals',
+	'voucherLifetimeHours',
+	'claimIntervalMinutes',
 ] as const;
 
 const BASIS_POINTS_COLUMNS = [
@@ -273,6 +277,18 @@ export class Settings {
 
 	@Property(integerColumn('settlementConfirmations'))
 	settlementConfirmations: number;
+
+	@Property(integerColumn('voucherIntervalSeconds'))
+	voucherIntervalSeconds: number;
+
+	@Property(integerColumn('voucherGraceIntervals'))
+	voucherGraceIntervals: number;
+
+	@Property(integerColumn('voucherLifetimeHours'))
+	voucherLifetimeHours: number;
+
+	@Property(integerColumn('claimIntervalMinutes'))
+	claimIntervalMinutes: number;
 
 	@Property({
 		type: 'string[]',

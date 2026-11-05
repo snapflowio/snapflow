@@ -16,6 +16,8 @@ import {
 } from '../../config/constants/settlement-chain.constants';
 
 export const SETTLEMENT_PUBLIC_CLIENT = Symbol('SETTLEMENT_PUBLIC_CLIENT');
+export const SETTLEMENT_VOUCHER_SIGNER = Symbol('SETTLEMENT_VOUCHER_SIGNER');
+export const SETTLEMENT_RELAYER_WALLET = Symbol('SETTLEMENT_RELAYER_WALLET');
 
 export const SETTLEMENT_CHAINS: Readonly<Record<SettlementChainId, Chain>> = {
 	[SETTLEMENT_CHAIN_ID.BASE]: base,
