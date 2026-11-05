@@ -10,7 +10,7 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { VolumeManager } from '../../volume/managers/volume.manager';
+import { VolumeManager } from '../../../volume/managers/volume.manager';
 
 @Injectable()
 export class VolumeJob {

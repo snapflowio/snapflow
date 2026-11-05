@@ -14,7 +14,7 @@ import {
 	Property,
 } from '@mikro-orm/decorators/legacy';
 import { sqlValueList } from '../../infra/database/utils/sql-value-list.util';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
+import { Machine } from '../../machine/entities/machine.entity';
 import { MARKETPLACE_INITIAL_VERSION } from '../constants/marketplace.constants';
 import { ListingState } from '../enums/listing-state.enum';
 import { ListingVisibility } from '../enums/listing-visibility.enum';

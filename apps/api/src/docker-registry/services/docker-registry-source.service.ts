@@ -13,10 +13,10 @@ import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { checkDockerfileHasRegistryPrefix } from '../../common/utils/docker-image.util';
 import { errorMessage } from '../../common/utils/error/error.util';
 import { ImageReference } from '../../common/values/image-reference.value';
+import { DOCKER_HUB_URL } from '../constants/docker-registry-persistence.constants';
 import { PLATFORM_REGISTRY_IMAGE_FORBIDDEN } from '../constants/platform-registry-image.constants';
-import { DOCKER_HUB_URL } from '../persistence/constants/docker-registry-persistence.constants';
-import { DockerRegistry } from '../persistence/entities/docker-registry.entity';
-import { RegistryType } from '../persistence/enums/registry-type.enum';
+import { DockerRegistry } from '../entities/docker-registry.entity';
+import { RegistryType } from '../enums/registry-type.enum';
 import { isForeignPlatformRegistryImage } from '../utils/platform-registry-image.util';
 import {
 	findRegistryByUrlMatch,

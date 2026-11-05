@@ -15,7 +15,7 @@ import {
 	PrimaryKey,
 	Property,
 } from '@mikro-orm/decorators/legacy';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
+import { Machine } from '../../machine/entities/machine.entity';
 import {
 	LIVE_BINDING_STATES,
 	MACHINE_EDGE_BINDING_DESIRED_STATE,

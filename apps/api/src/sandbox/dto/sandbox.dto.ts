@@ -17,6 +17,10 @@ import {
 	IsString,
 } from 'class-validator';
 import { LocationDto } from '../../location/dto/location.dto';
+import { GpuType } from '../../machine/enums/gpu-type.enum';
+import { sandboxPlacementDto } from '../../placement/utils/sandbox-placement.util';
+import { BuildInfoDto } from '../../snapshot/dto/build-info.dto';
+import { BackupState } from '../../volume/enums/backup-state.enum';
 import { EXAMPLE_SANDBOX_ARCHIVE_INTERVAL_MINUTES } from '../constants/sandbox.constants';
 import { Sandbox } from '../entities/sandbox.entity';
 import { SandboxCapability } from '../enums/sandbox-capability.enum';
@@ -24,12 +28,8 @@ import { SandboxClass } from '../enums/sandbox-class.enum';
 import { SandboxDesiredState } from '../enums/sandbox-desired-state.enum';
 import { SandboxMode } from '../enums/sandbox-mode.enum';
 import { SandboxState } from '../enums/sandbox-state.enum';
-import { GpuType } from '../machine/enums/gpu-type.enum';
-import { sandboxPlacementDto } from '../placement/utils/sandbox-placement.util';
-import { BuildInfoDto } from '../snapshot/dto/build-info.dto';
 import type { SandboxVolumeMount } from '../types/sandbox-storage.types';
 import { deriveSandboxResponseState } from '../utils/sandbox-response-state.util';
-import { BackupState } from '../volume/enums/backup-state.enum';
 import { SandboxPlacementDto } from './sandbox-placement.dto';
 
 function isoTimestamp(value: Date | null | undefined): string | undefined {

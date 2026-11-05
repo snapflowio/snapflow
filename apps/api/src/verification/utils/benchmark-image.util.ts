@@ -8,7 +8,7 @@
  */
 
 import { z } from 'zod';
-import { registryHost } from '../../docker-registry/persistence/utils/docker-registry-url.util';
+import { registryHost } from '../../docker-registry/utils/docker-registry-url.util';
 import { GUEST_RELEASE } from '../constants/benchmark-policy.constants';
 import { sha256 } from './nonce-stream.util';
 

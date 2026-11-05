@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { VolumeState } from '../../sandbox/volume/enums/volume-state.enum';
+import { VolumeState } from '../../volume/enums/volume-state.enum';
 
 export const VOLUME_STATES_CONSUMING_RESOURCES: VolumeState[] = [
 	VolumeState.READY,

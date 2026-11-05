@@ -36,9 +36,9 @@ import {
 	CONTROL_DOCUMENT_WAIT_QUERY,
 	sendControlDocument,
 } from '../../infra/control-wake/utils/control-document-long-poll.util';
-import { ActiveMachineSession } from '../../sandbox/machine/decorators/machine-session.decorator';
-import type { MachineSession } from '../../sandbox/machine/entities/machine-session.entity';
-import { MachineSessionGuard } from '../../sandbox/machine/guards/machine-session.guard';
+import { ActiveMachineSession } from '../../machine/decorators/machine-session.decorator';
+import type { MachineSession } from '../../machine/entities/machine-session.entity';
+import { MachineSessionGuard } from '../../machine/guards/machine-session.guard';
 import { NETWORK_WAKE_TOPIC } from '../constants/networking.constants';
 import {
 	IssueMachineTunnelCertificateDto,

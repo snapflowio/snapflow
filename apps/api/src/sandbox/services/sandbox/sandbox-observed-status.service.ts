@@ -21,17 +21,17 @@ import {
 import { truncateErrorMessage } from '../../../common/utils/error/truncate-error-message.util';
 import { databaseNow } from '../../../infra/database/utils/database-time.util';
 import { observeOperation } from '../../../infra/logging/utils/operation-observability.util';
+import { MACHINE_OBSERVED_STATUS_LIMITS } from '../../../machine/constants/machine-desired-state.constants';
+import type { MachineObservedStatusResultDto } from '../../../machine/dto/machine-sandbox-control.dto';
+import type { MachineSession } from '../../../machine/entities/machine-session.entity';
+import { MachineSessionService } from '../../../machine/services/machine-session.service';
+import { MachineAssessmentService } from '../../../machine/services/qualification/machine-assessment.service';
+import { MachineReliabilityService } from '../../../machine/services/qualification/machine-reliability.service';
+import { convergenceExecutionResult } from '../../../machine/utils/desired-state/convergence-result.util';
 import { CONVERGENCE_OUTCOME } from '../../constants/sandbox-state-machine.constants';
 import { Sandbox } from '../../entities/sandbox.entity';
 import { SandboxPlacement } from '../../entities/sandbox-placement.entity';
 import { SandboxConflictException } from '../../exceptions/sandbox-conflict.exception';
-import { MACHINE_OBSERVED_STATUS_LIMITS } from '../../machine/constants/machine-desired-state.constants';
-import type { MachineObservedStatusResultDto } from '../../machine/dto/machine-sandbox-control.dto';
-import type { MachineSession } from '../../machine/entities/machine-session.entity';
-import { MachineSessionService } from '../../machine/services/machine-session.service';
-import { MachineAssessmentService } from '../../machine/services/qualification/machine-assessment.service';
-import { MachineReliabilityService } from '../../machine/services/qualification/machine-reliability.service';
-import { convergenceExecutionResult } from '../../machine/utils/desired-state/convergence-result.util';
 import { runtimeConvergenceOutcome } from '../../utils/runtime/runtime-convergence.util';
 import {
 	decodeObservedStatusReport,

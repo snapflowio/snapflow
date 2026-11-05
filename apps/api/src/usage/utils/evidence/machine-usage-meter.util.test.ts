@@ -12,8 +12,8 @@ import { describe, it } from 'node:test';
 import {
 	type MachineNetworkBytes,
 	MachineUsageRuntimeState,
-} from '../../../sandbox/machine/constants/machine-usage.constants';
-import { MachineUsageEvidenceError } from '../../../sandbox/machine/exceptions/machine-usage-evidence.exception';
+} from '../../../machine/constants/machine-usage.constants';
+import { MachineUsageEvidenceError } from '../../../machine/exceptions/machine-usage-evidence.exception';
 import {
 	type MachineUsageReading,
 	meterMachineUsageInterval,

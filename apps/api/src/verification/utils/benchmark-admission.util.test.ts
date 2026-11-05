@@ -12,10 +12,10 @@ import { describe, it } from 'node:test';
 import {
 	JOB_EXECUTION_OUTCOME,
 	JOB_LIFECYCLE_PHASE,
-} from '../../sandbox/machine/constants/machine-reliability.constants';
-import type { Job } from '../../sandbox/machine-job/entities/job.entity';
-import { JobErrorCode } from '../../sandbox/machine-job/enums/job-error-code.enum';
-import { JobStatus } from '../../sandbox/machine-job/enums/job-status.enum';
+} from '../../machine/constants/machine-reliability.constants';
+import type { Job } from '../../machine-job/entities/job.entity';
+import { JobErrorCode } from '../../machine-job/enums/job-error-code.enum';
+import { JobStatus } from '../../machine-job/enums/job-status.enum';
 import { benchmarkNotAdmitted } from './benchmark-admission.util';
 
 const EXECUTION_SCHEMA_VERSION = 1;

@@ -30,11 +30,16 @@ import {
 	GEO_COORDINATE_COLUMN,
 } from '../../location/entities/location.columns';
 import type { Continent } from '../../location/enums/continent.enum';
+import { Machine } from '../../machine/entities/machine.entity';
+import { GpuType } from '../../machine/enums/gpu-type.enum';
+import { protoEnumCheckExpression } from '../../machine/utils/proto/proto-enum.util';
 import { MARKETPLACE_MONEY_COLUMN_TYPE } from '../../marketplace/constants/marketplace.constants';
 import { MachineCategory } from '../../marketplace/enums/machine-category.enum';
 import { MachineTier } from '../../marketplace/enums/machine-tier.enum';
 import { PlacementKind } from '../../marketplace/enums/placement-kind.enum';
 import { Organization } from '../../organization/entities/organization.entity';
+import { BuildInfo } from '../../snapshot/entities/build-info.entity';
+import { BackupState } from '../../volume/enums/backup-state.enum';
 import {
 	DEFAULT_SANDBOX_CPU,
 	DEFAULT_SANDBOX_DELETE_INTERVAL_MINUTES,
@@ -56,17 +61,12 @@ import { SandboxClass } from '../enums/sandbox-class.enum';
 import { SandboxDesiredState } from '../enums/sandbox-desired-state.enum';
 import { SandboxMode } from '../enums/sandbox-mode.enum';
 import { SandboxState } from '../enums/sandbox-state.enum';
-import { Machine } from '../machine/entities/machine.entity';
-import { GpuType } from '../machine/enums/gpu-type.enum';
-import { protoEnumCheckExpression } from '../machine/utils/proto/proto-enum.util';
-import { BuildInfo } from '../snapshot/entities/build-info.entity';
 import type {
 	SandboxBackupSnapshot,
 	SandboxVolumeMount,
 } from '../types/sandbox-storage.types';
 import { getSandboxInvariantChanges } from '../utils/state/sandbox-invariants.util';
 import { assertSandboxDesiredStateAcceptsState } from '../utils/state/sandbox-state-validation.util';
-import { BackupState } from '../volume/enums/backup-state.enum';
 import { SandboxLastActivity } from './sandbox-last-activity.entity';
 
 @Entity({ tableName: 'sandbox' })

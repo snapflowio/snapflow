@@ -8,16 +8,16 @@
  */
 
 import { Module } from '@nestjs/common';
+import { MachineModule } from '../../machine/machine.module';
+import { MachineJobModule } from '../../machine-job/machine-job.module';
 import { OrganizationModule } from '../../organization/organization.module';
+import { PlacementModule } from '../../placement/placement.module';
 import { SettingsModule } from '../../settings/settings.module';
+import { DefaultSnapshotBootstrapService } from '../../snapshot/services/default-snapshot-bootstrap.service';
+import { SnapshotModule } from '../../snapshot/snapshot.module';
 import { UserModule } from '../../user/user.module';
-import { MachineModule } from '../machine/machine.module';
-import { MachineJobModule } from '../machine-job/machine-job.module';
-import { PlacementModule } from '../placement/placement.module';
+import { VolumeModule } from '../../volume/volume.module';
 import { SandboxModule } from '../sandbox.module';
-import { DefaultSnapshotBootstrapService } from '../snapshot/services/default-snapshot-bootstrap.service';
-import { SnapshotModule } from '../snapshot/snapshot.module';
-import { VolumeModule } from '../volume/volume.module';
 import { BackupJob } from './jobs/backup.job';
 import { BackupMaintenanceJob } from './jobs/backup-maintenance.job';
 import { DrainingMachineJob } from './jobs/draining-machine.job';

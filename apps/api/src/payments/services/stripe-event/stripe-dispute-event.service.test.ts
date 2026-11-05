@@ -18,7 +18,7 @@ import {
 import {
 	accountBalances,
 	RecordingLedger,
-} from '../../../billing/usage/testing/recording-ledger.fake';
+} from '../../../billing/testing/recording-ledger.fake';
 import { MicroUsd } from '../../../common/values/micro-usd.value';
 import { STRIPE_API_VERSION } from '../../constants/stripe.constants';
 import { PaymentDispute } from '../../entities/payment-dispute.entity';

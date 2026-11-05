@@ -18,7 +18,7 @@ import {
 	BillingLedgerSide,
 	BillingLedgerSourceType,
 } from '../constants/billing.constants';
-import { RecordingLedger } from '../usage/testing/recording-ledger.fake';
+import { RecordingLedger } from '../testing/recording-ledger.fake';
 import { BillingCreditGrantService } from './billing-credit-grant.service';
 
 const ORGANIZATION_ID = 'organization-id';

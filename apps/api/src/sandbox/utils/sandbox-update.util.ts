@@ -9,6 +9,7 @@
 
 import type { EntityData } from '@mikro-orm/core';
 import { ResourceShape } from '../../common/values/resource-shape.value';
+import type { DesiredStateFields } from '../../machine/utils/desired-state/desired-state-change.util';
 import { SandboxEvents } from '../constants/sandbox-events.constants';
 import type { Sandbox } from '../entities/sandbox.entity';
 import { SandboxDesiredState } from '../enums/sandbox-desired-state.enum';
@@ -16,7 +17,6 @@ import { SandboxState } from '../enums/sandbox-state.enum';
 import { SandboxDesiredStateUpdatedEvent } from '../events/sandbox-desired-state-updated.event';
 import { SandboxMachineUpdatedEvent } from '../events/sandbox-machine-updated.event';
 import { SandboxStateUpdatedEvent } from '../events/sandbox-state-updated.event';
-import type { DesiredStateFields } from '../machine/utils/desired-state/desired-state-change.util';
 
 export type SandboxConcurrencyGuard = Pick<
 	Sandbox,

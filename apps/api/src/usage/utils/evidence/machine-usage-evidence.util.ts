@@ -7,8 +7,8 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { MACHINE_USAGE_GENESIS_DIGEST } from '../../../sandbox/machine/constants/machine-usage.constants';
-import { MachineUsageEvidenceError } from '../../../sandbox/machine/exceptions/machine-usage-evidence.exception';
+import { MACHINE_USAGE_GENESIS_DIGEST } from '../../../machine/constants/machine-usage.constants';
+import { MachineUsageEvidenceError } from '../../../machine/exceptions/machine-usage-evidence.exception';
 import {
 	type MachineUsageReceiptEnvelope,
 	machineUsageEnvelopeSchema,

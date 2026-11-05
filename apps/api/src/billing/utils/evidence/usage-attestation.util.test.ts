@@ -11,15 +11,15 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { MILLISECONDS_PER_SECOND } from '../../../common/constants/time.constants';
 import { MicroUsd } from '../../../common/values/micro-usd.value';
-import { priceUsage } from '../../../marketplace/utils/pricing.util';
-import { MachineUsageRuntimeState } from '../../../sandbox/machine/constants/machine-usage.constants';
+import { MachineUsageRuntimeState } from '../../../machine/constants/machine-usage.constants';
 import {
 	type SignedUsageReceipt,
 	signedUsageChain,
 	USAGE_ALLOCATION,
 	USAGE_MACHINE_ID,
 	type UsageReadingSpec,
-} from '../../../sandbox/machine/testing/signed-usage-readings.fixtures';
+} from '../../../machine/testing/signed-usage-readings.fixtures';
+import { priceUsage } from '../../../marketplace/utils/pricing.util';
 import { UsageMode } from '../../../usage/constants/usage-lifecycle.constants';
 import {
 	LIFECYCLE_WINDOWS,
@@ -35,7 +35,7 @@ import {
 	quantityColumns,
 } from '../../../usage/utils/usage-quantities.util';
 import { BillingReconciliationReason } from '../../constants/billing.constants';
-import { WINDOW_TERMS } from '../../usage/testing/billable-window.fixtures';
+import { WINDOW_TERMS } from '../../testing/billable-window.fixtures';
 import { attestationReason } from './billing-attestation.util';
 import {
 	type AttestationWindow,

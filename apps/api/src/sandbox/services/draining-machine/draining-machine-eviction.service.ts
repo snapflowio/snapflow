@@ -13,7 +13,12 @@ import { SandboxLifecycle } from '@snapflow/machine-proto';
 import { BillingRestrictedException } from '../../../billing/exceptions/billing-restricted.exception';
 import { settleSequentially } from '../../../common/utils/concurrency/sequential-async.util';
 import { RedisLockProvider } from '../../../infra/redis/providers/redis-lock.provider';
+import type { Machine } from '../../../machine/entities/machine.entity';
 import { PlacementKind } from '../../../marketplace/enums/placement-kind.enum';
+import { NoAvailableMachineError } from '../../../placement/exceptions/no-available-machine.exception';
+import { MachineReservationService } from '../../../placement/services/machine-reservation.service';
+import { sandboxSchedulingParameters } from '../../../placement/utils/sandbox-scheduling.util';
+import { BackupState } from '../../../volume/enums/backup-state.enum';
 import {
 	DRAINING_MIGRATION_LOCK_TTL_SECONDS,
 	DRAINING_SANDBOX_LOCK_TTL_SECONDS,
@@ -22,14 +27,9 @@ import { SANDBOX_WORKER_LIMITS } from '../../constants/sandbox.constants';
 import { Sandbox } from '../../entities/sandbox.entity';
 import { SandboxDesiredState } from '../../enums/sandbox-desired-state.enum';
 import { SandboxState } from '../../enums/sandbox-state.enum';
-import type { Machine } from '../../machine/entities/machine.entity';
-import { NoAvailableMachineError } from '../../placement/exceptions/no-available-machine.exception';
-import { MachineReservationService } from '../../placement/services/machine-reservation.service';
-import { sandboxSchedulingParameters } from '../../placement/utils/sandbox-scheduling.util';
 import { SandboxRepository } from '../../repositories/sandbox.repository';
 import { getStateChangeLockKey } from '../../utils/lock-key.util';
 import { deletesImmediatelyOnStop } from '../../utils/runtime/ephemeral.util';
-import { BackupState } from '../../volume/enums/backup-state.enum';
 import { SandboxRuntimeSpecService } from '../sandbox/sandbox-runtime-spec.service';
 
 @Injectable()

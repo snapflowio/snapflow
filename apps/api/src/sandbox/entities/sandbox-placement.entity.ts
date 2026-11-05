@@ -16,9 +16,9 @@ import {
 	Property,
 } from '@mikro-orm/decorators/legacy';
 import { sqlValueList } from '../../infra/database/utils/sql-value-list.util';
+import { Machine } from '../../machine/entities/machine.entity';
 import { PlacementKind } from '../../marketplace/enums/placement-kind.enum';
 import { PlacementLocality } from '../enums/placement-locality.enum';
-import { Machine } from '../machine/entities/machine.entity';
 import { Sandbox } from './sandbox.entity';
 
 @Entity({ tableName: 'sandbox_placement' })

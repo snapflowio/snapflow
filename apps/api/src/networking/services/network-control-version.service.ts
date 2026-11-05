@@ -10,7 +10,7 @@
 import type { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { ControlWakeService } from '../../infra/control-wake/services/control-wake.service';
-import { lockMachinesForUpdate } from '../../sandbox/machine/utils/machine-lock.util';
+import { lockMachinesForUpdate } from '../../machine/utils/machine-lock.util';
 import { ACTIVE_BACKEND_STATES } from '../constants/exposure.constants';
 import { NETWORK_WAKE_TOPIC } from '../constants/networking.constants';
 import { lockEdges } from '../utils/network-lock.util';

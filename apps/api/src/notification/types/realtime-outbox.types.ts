@@ -7,12 +7,12 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import type { MachineEvents } from '../../sandbox/machine/constants/machine-events.constants';
-import type { MachineDto } from '../../sandbox/machine/dto/machine.dto';
-import type { MachineState } from '../../sandbox/machine/enums/machine-state.enum';
-import type { VolumeEvents } from '../../sandbox/volume/constants/volume-events.constants';
-import type { VolumeDto } from '../../sandbox/volume/dto/volume.dto';
-import type { VolumeState } from '../../sandbox/volume/enums/volume-state.enum';
+import type { MachineEvents } from '../../machine/constants/machine-events.constants';
+import type { MachineDto } from '../../machine/dto/machine.dto';
+import type { MachineState } from '../../machine/enums/machine-state.enum';
+import type { VolumeEvents } from '../../volume/constants/volume-events.constants';
+import type { VolumeDto } from '../../volume/dto/volume.dto';
+import type { VolumeState } from '../../volume/enums/volume-state.enum';
 
 export type RealtimeOutboxPayload =
 	| {

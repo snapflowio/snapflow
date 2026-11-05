@@ -8,7 +8,7 @@
  */
 
 import { z } from 'zod';
-import { MachineUsageRuntimeState } from '../../sandbox/machine/constants/machine-usage.constants';
+import { MachineUsageRuntimeState } from '../../machine/constants/machine-usage.constants';
 
 const ISO_TIMESTAMP_MIN_LENGTH = 20;
 

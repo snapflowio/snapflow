@@ -8,11 +8,11 @@
  */
 
 import { millisecondsBetween } from '../../common/utils/time.util';
-import { MachineUsageRuntimeState } from '../../sandbox/machine/constants/machine-usage.constants';
+import { MachineUsageRuntimeState } from '../../machine/constants/machine-usage.constants';
 import {
 	type SignedUsageReceipt,
 	signedUsageChain,
-} from '../../sandbox/machine/testing/signed-usage-readings.fixtures';
+} from '../../machine/testing/signed-usage-readings.fixtures';
 
 const READINGS = [
 	{

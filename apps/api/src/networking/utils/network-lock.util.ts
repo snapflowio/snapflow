@@ -10,7 +10,7 @@
 import type { FilterQuery } from '@mikro-orm/core';
 import type { EntityManager } from '@mikro-orm/postgresql';
 import { lockRowsForNoKeyUpdate } from '../../infra/database/utils/row-lock.util';
-import { lockMachinesForUpdate } from '../../sandbox/machine/utils/machine-lock.util';
+import { lockMachinesForUpdate } from '../../machine/utils/machine-lock.util';
 import { ACTIVE_BACKEND_STATES } from '../constants/exposure.constants';
 import { Edge } from '../entities/edge.entity';
 import { Exposure } from '../entities/exposure.entity';

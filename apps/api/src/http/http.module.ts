@@ -25,7 +25,7 @@ import { HealthModule } from '../health/health.module';
 import { IdempotencyKeyGuard } from '../idempotency/guards/idempotency-key.guard';
 import { IdempotencyModule } from '../idempotency/idempotency.module';
 import { MutationPolicyRegistryValidationService } from '../idempotency/services/mutation-policy-registry-validation.service';
-import { NotificationGatewayModule } from '../notification/gateway/gateway.module';
+import { NotificationGatewayModule } from '../notification/notification-gateway.module';
 import { OrganizationModule } from '../organization/organization.module';
 import { PublicConfigModule } from '../public-config/public-config.module';
 import { MaintenanceGuard } from '../settings/guards/maintenance.guard';

@@ -14,12 +14,12 @@ import { SandboxEvents } from '../../sandbox/constants/sandbox-events.constants'
 import type { Sandbox } from '../../sandbox/entities/sandbox.entity';
 import { SandboxCreatedEvent } from '../../sandbox/events/sandbox-create.event';
 import { SandboxStateUpdatedEvent } from '../../sandbox/events/sandbox-state-updated.event';
-import { SnapshotEvents } from '../../sandbox/snapshot/constants/snapshot-events.constants';
-import { SnapshotCreatedEvent } from '../../sandbox/snapshot/events/snapshot-created.event';
-import { SnapshotStateUpdatedEvent } from '../../sandbox/snapshot/events/snapshot-state-updated.event';
-import { VolumeEvents } from '../../sandbox/volume/constants/volume-events.constants';
-import { VolumeCreatedEvent } from '../../sandbox/volume/events/volume-created.event';
-import { VolumeStateUpdatedEvent } from '../../sandbox/volume/events/volume-state-updated.event';
+import { SnapshotEvents } from '../../snapshot/constants/snapshot-events.constants';
+import { SnapshotCreatedEvent } from '../../snapshot/events/snapshot-created.event';
+import { SnapshotStateUpdatedEvent } from '../../snapshot/events/snapshot-state-updated.event';
+import { VolumeEvents } from '../../volume/constants/volume-events.constants';
+import { VolumeCreatedEvent } from '../../volume/events/volume-created.event';
+import { VolumeStateUpdatedEvent } from '../../volume/events/volume-state-updated.event';
 import { ORGANIZATION_USAGE_CACHE } from '../constants/organization-usage-cache.constants';
 import {
 	SANDBOX_STATES_CONDITIONALLY_CONSUMING_COMPUTE,

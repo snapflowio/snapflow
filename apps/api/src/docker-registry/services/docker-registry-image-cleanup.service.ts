@@ -18,8 +18,8 @@ import {
 	REGISTRY_TOKEN,
 	RegistrySubjectKind,
 } from '../constants/registry-token.constants';
-import type { DockerRegistry } from '../persistence/entities/docker-registry.entity';
-import { registryEndpoint } from '../persistence/utils/docker-registry-url.util';
+import type { DockerRegistry } from '../entities/docker-registry.entity';
+import { registryEndpoint } from '../utils/docker-registry-url.util';
 import { registrySubject } from '../utils/registry-token-scope.util';
 import { RegistryTokenService } from './registry-token.service';
 

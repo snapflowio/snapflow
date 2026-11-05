@@ -38,19 +38,19 @@ import {
 	CONTROL_DOCUMENT_WAIT_QUERY,
 	sendControlDocument,
 } from '../../infra/control-wake/utils/control-document-long-poll.util';
-import { MACHINE_DESIRED_STATE_WAKE_TOPIC } from '../machine/constants/machine-desired-state.constants';
-import { ActiveMachineSession } from '../machine/decorators/machine-session.decorator';
+import { MACHINE_DESIRED_STATE_WAKE_TOPIC } from '../../machine/constants/machine-desired-state.constants';
+import { ActiveMachineSession } from '../../machine/decorators/machine-session.decorator';
 import {
 	MachineDesiredStateDocumentDto,
 	MachineObservedStatusReportDto,
 	MachineObservedStatusResultDto,
 	MachineSandboxSecretsDto,
 	MachineSandboxSecretsQueryDto,
-} from '../machine/dto/machine-sandbox-control.dto';
-import type { MachineSession } from '../machine/entities/machine-session.entity';
-import { MachineSessionGuard } from '../machine/guards/machine-session.guard';
-import { MachineDesiredStateService } from '../machine/services/desired-state/machine-desired-state.service';
-import { MachineSandboxSecretsService } from '../machine/services/desired-state/machine-sandbox-secrets.service';
+} from '../../machine/dto/machine-sandbox-control.dto';
+import type { MachineSession } from '../../machine/entities/machine-session.entity';
+import { MachineSessionGuard } from '../../machine/guards/machine-session.guard';
+import { MachineDesiredStateService } from '../../machine/services/desired-state/machine-desired-state.service';
+import { MachineSandboxSecretsService } from '../../machine/services/desired-state/machine-sandbox-secrets.service';
 import { SandboxObservedStatusService } from '../services/sandbox/sandbox-observed-status.service';
 
 const IF_NONE_MATCH_HEADER = 'if-none-match';

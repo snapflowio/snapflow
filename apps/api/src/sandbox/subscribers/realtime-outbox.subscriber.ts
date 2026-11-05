@@ -14,16 +14,16 @@ import {
 } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
+import { MachineEvents } from '../../machine/constants/machine-events.constants';
+import { MachineDto } from '../../machine/dto/machine.dto';
+import { Machine } from '../../machine/entities/machine.entity';
+import { MachineState } from '../../machine/enums/machine-state.enum';
 import { RealtimeOutboxEvent } from '../../notification/entities/realtime-outbox-event.entity';
 import type { RealtimeOutboxPayload } from '../../notification/types/realtime-outbox.types';
-import { MachineEvents } from '../machine/constants/machine-events.constants';
-import { MachineDto } from '../machine/dto/machine.dto';
-import { Machine } from '../machine/entities/machine.entity';
-import { MachineState } from '../machine/enums/machine-state.enum';
-import { VolumeEvents } from '../volume/constants/volume-events.constants';
-import { VolumeDto } from '../volume/dto/volume.dto';
-import { Volume } from '../volume/entities/volume.entity';
-import { VolumeState } from '../volume/enums/volume-state.enum';
+import { VolumeEvents } from '../../volume/constants/volume-events.constants';
+import { VolumeDto } from '../../volume/dto/volume.dto';
+import { Volume } from '../../volume/entities/volume.entity';
+import { VolumeState } from '../../volume/enums/volume-state.enum';
 
 const machineStates = new Set<unknown>(Object.values(MachineState));
 const volumeStates = new Set<unknown>(Object.values(VolumeState));

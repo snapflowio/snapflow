@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { fakeInstance } from '../../../common/testing/instance.fake';
-import { Machine } from '../../../sandbox/machine/entities/machine.entity';
+import { Machine } from '../../../machine/entities/machine.entity';
 import {
 	EXPOSURE_BACKEND_STATE,
 	EXPOSURE_TARGET_HOST,

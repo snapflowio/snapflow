@@ -7,13 +7,10 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { DOCKER_HUB_URL } from '../persistence/constants/docker-registry-persistence.constants';
-import { DockerRegistry } from '../persistence/entities/docker-registry.entity';
-import { RegistryType } from '../persistence/enums/registry-type.enum';
-import {
-	registryEndpoint,
-	registryHost,
-} from '../persistence/utils/docker-registry-url.util';
+import { DOCKER_HUB_URL } from '../constants/docker-registry-persistence.constants';
+import { DockerRegistry } from '../entities/docker-registry.entity';
+import { RegistryType } from '../enums/registry-type.enum';
+import { registryEndpoint, registryHost } from './docker-registry-url.util';
 
 const ORGANIZATION_REGISTRY_RANK = 0;
 const SHARED_REGISTRY_RANK = 1;

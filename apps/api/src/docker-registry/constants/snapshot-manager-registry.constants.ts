@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { RegistryType } from '../persistence/enums/registry-type.enum';
+import { RegistryType } from '../enums/registry-type.enum';
 
 export const SNAPSHOT_MANAGER_REGISTRY_TYPES = [
 	RegistryType.INTERNAL,

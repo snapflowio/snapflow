@@ -11,7 +11,7 @@ import { LockMode, QueryOrder } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { databaseNow } from '../../infra/database/utils/database-time.util';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
+import { Machine } from '../../machine/entities/machine.entity';
 import { MachineBenchmark } from '../../verification/entities/machine-benchmark.entity';
 import { MachineMarketplaceStatusDto } from '../dto/machine.dto';
 import { MachineListing } from '../entities/machine-listing.entity';

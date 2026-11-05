@@ -8,8 +8,8 @@
  */
 
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
+import { GpuType } from '../../machine/enums/gpu-type.enum';
 import { SandboxClass } from '../../sandbox/enums/sandbox-class.enum';
-import { GpuType } from '../../sandbox/machine/enums/gpu-type.enum';
 import { OrganizationQuota } from '../entities/organization-quota.entity';
 
 @ApiSchema({ name: 'OrganizationQuota' })

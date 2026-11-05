@@ -13,7 +13,7 @@ import { Injectable } from '@nestjs/common';
 import { v4 } from 'uuid';
 import { MicroUsd } from '../../common/values/micro-usd.value';
 import { databaseNow } from '../../infra/database/utils/database-time.util';
-import type { NetworkUsagePeriod } from '../../networking/usage/entities/network-usage-period.entity';
+import type { NetworkUsagePeriod } from '../../network-usage/entities/network-usage-period.entity';
 import type { SandboxBillableUsage } from '../../usage/entities/sandbox-billable-usage.entity';
 import type { SandboxUsagePeriod } from '../../usage/entities/sandbox-usage-period.entity';
 import {

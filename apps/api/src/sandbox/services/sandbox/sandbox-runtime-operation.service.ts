@@ -13,10 +13,16 @@ import {
 	NotFoundException,
 } from '@nestjs/common';
 import { SandboxLifecycle } from '@snapflow/machine-proto';
+import {
+	type SandboxNetworkFields,
+	sandboxNetworkPolicy,
+	sandboxResources,
+} from '../../../machine/utils/proto/sandbox-runtime-spec.util';
 import { OrganizationService } from '../../../organization/services/organization.service';
 import { OrganizationLimitsService } from '../../../organization/services/organization-limits.service';
 import { OrganizationQuotaService } from '../../../organization/services/organization-quota.service';
 import { getEffectivePerSandboxLimits } from '../../../organization/utils/sandbox-limits.util';
+import { SandboxPlacementResolverService } from '../../../placement/services/sandbox-placement-resolver.service';
 import { SecretService } from '../../../secrets/services/secret.service';
 import { PER_SANDBOX_LIMIT_MESSAGE } from '../../constants/resource-limit-messages.constants';
 import { PAUSE_WITH_MANAGED_SECRETS_UNSUPPORTED } from '../../constants/sandbox.constants';
@@ -25,12 +31,6 @@ import { Sandbox } from '../../entities/sandbox.entity';
 import { SandboxDesiredState } from '../../enums/sandbox-desired-state.enum';
 import { SandboxState } from '../../enums/sandbox-state.enum';
 import { StateChangeInProgressException } from '../../exceptions/state-change-in-progress.exception';
-import {
-	type SandboxNetworkFields,
-	sandboxNetworkPolicy,
-	sandboxResources,
-} from '../../machine/utils/proto/sandbox-runtime-spec.util';
-import { SandboxPlacementResolverService } from '../../placement/services/sandbox-placement-resolver.service';
 import { SandboxRepository } from '../../repositories/sandbox.repository';
 import { isEphemeral } from '../../utils/runtime/ephemeral.util';
 import { networkSettingsUpdate } from '../../utils/runtime/sandbox-network-settings.util';

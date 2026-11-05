@@ -19,7 +19,7 @@ import {
 } from '@mikro-orm/decorators/legacy';
 import { BILLING_COLUMN_LENGTH } from '../../billing/constants/billing.constants';
 import { sqlValueList } from '../../infra/database/utils/sql-value-list.util';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
+import { Machine } from '../../machine/entities/machine.entity';
 import { BenchmarkState } from '../enums/benchmark-state.enum';
 import { BenchmarkTrigger } from '../enums/benchmark-trigger.enum';
 

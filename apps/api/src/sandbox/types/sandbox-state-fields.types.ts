@@ -8,9 +8,9 @@
  */
 
 import type { SandboxLifecycle } from '@snapflow/machine-proto';
+import type { BackupState } from '../../volume/enums/backup-state.enum';
 import type { SandboxDesiredState } from '../enums/sandbox-desired-state.enum';
 import type { SandboxState } from '../enums/sandbox-state.enum';
-import type { BackupState } from '../volume/enums/backup-state.enum';
 
 export interface SandboxStateFields {
 	id: string;

@@ -18,8 +18,8 @@ import { fakeInstance } from '../../common/testing/instance.fake';
 import { integrationDatabaseUrl } from '../../common/testing/integration-database.util';
 import { ENTITY_MAPPING_OPTIONS } from '../../infra/database/config/entity-mapping.config';
 import { TransactionCommitHooks } from '../../infra/database/subscribers/transaction-commit-hooks.subscriber';
-import { MachineSession } from '../../sandbox/machine/entities/machine-session.entity';
-import { MachineSessionService } from '../../sandbox/machine/services/machine-session.service';
+import { MachineSession } from '../../machine/entities/machine-session.entity';
+import { MachineSessionService } from '../../machine/services/machine-session.service';
 import {
 	EdgeBindingAcknowledgementDto,
 	EdgeCapacitySnapshotDto,

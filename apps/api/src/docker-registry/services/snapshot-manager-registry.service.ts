@@ -14,9 +14,9 @@ import {
 	SNAPSHOT_MANAGER_REGISTRY_TYPES,
 	type SnapshotManagerRegistryType,
 } from '../constants/snapshot-manager-registry.constants';
-import { DockerRegistry } from '../persistence/entities/docker-registry.entity';
-import { RegistryType } from '../persistence/enums/registry-type.enum';
-import { registryEndpoint } from '../persistence/utils/docker-registry-url.util';
+import { DockerRegistry } from '../entities/docker-registry.entity';
+import { RegistryType } from '../enums/registry-type.enum';
+import { registryEndpoint } from '../utils/docker-registry-url.util';
 
 @Injectable()
 export class SnapshotManagerRegistryService {

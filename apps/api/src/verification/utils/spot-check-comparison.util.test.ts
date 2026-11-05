@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { create } from '@bufbuild/protobuf';
 import { DiskMeasurementSchema } from '@snapflow/machine-proto';
-import { GpuType } from '../../sandbox/machine/enums/gpu-type.enum';
+import { GpuType } from '../../machine/enums/gpu-type.enum';
 import { SPOT_CHECK_FAILURE } from '../constants/spot-check.constants';
 import type { MeasuredCompute } from '../types/benchmark.types';
 import {

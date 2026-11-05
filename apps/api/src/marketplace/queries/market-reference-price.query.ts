@@ -8,7 +8,7 @@
  */
 
 import type { EntityManager } from '@mikro-orm/postgresql';
-import type { GpuType } from '../../sandbox/machine/enums/gpu-type.enum';
+import type { GpuType } from '../../machine/enums/gpu-type.enum';
 import { MARKET_SAMPLE_TIERS } from '../constants/marketplace.constants';
 import { ListingState } from '../enums/listing-state.enum';
 import { ListingVisibility } from '../enums/listing-visibility.enum';

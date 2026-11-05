@@ -7,6 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
+import { BackupState } from '../../../volume/enums/backup-state.enum';
 import { isApiRecoverableError } from '../../constants/errors-for-recovery.constants';
 import { SandboxDesiredState } from '../../enums/sandbox-desired-state.enum';
 import { SandboxState } from '../../enums/sandbox-state.enum';
@@ -14,7 +15,6 @@ import type {
 	SandboxInvariantChanges,
 	SandboxStateFields,
 } from '../../types/sandbox-state-fields.types';
-import { BackupState } from '../../volume/enums/backup-state.enum';
 
 type SandboxInvariantInput = Pick<
 	SandboxStateFields,

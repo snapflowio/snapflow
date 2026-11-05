@@ -16,6 +16,8 @@ import { TrackedJobs } from '../../common/utils/concurrency/tracked-jobs.util';
 import { findCursorPage } from '../../common/utils/pagination/cursor-page.util';
 import { addDays, millisecondsBetween } from '../../common/utils/time.util';
 import { databaseNow } from '../../infra/database/utils/database-time.util';
+import { Machine } from '../../machine/entities/machine.entity';
+import { MachineAssessment } from '../../machine/entities/machine-assessment.entity';
 import { MachineListing } from '../../marketplace/entities/machine-listing.entity';
 import { ListingVisibility } from '../../marketplace/enums/listing-visibility.enum';
 import { MachineMarketplaceService } from '../../marketplace/services/machine-marketplace.service';
@@ -24,8 +26,6 @@ import {
 	PaymentAccountRequirementsStatus,
 	PaymentAccountTransfersStatus,
 } from '../../payments/enums/payment-account-status.enum';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
-import { MachineAssessment } from '../../sandbox/machine/entities/machine-assessment.entity';
 import { SettingsService } from '../../settings/services/settings.service';
 import type { SettingsSnapshot } from '../../settings/types/settings.types';
 import { MACHINE_TIER_POLICY } from '../constants/machine-tier.constants';

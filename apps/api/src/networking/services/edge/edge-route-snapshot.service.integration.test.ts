@@ -10,12 +10,12 @@
 import assert from 'node:assert/strict';
 import { after, before, beforeEach, describe, it } from 'node:test';
 import { type EntityManager, MikroORM } from '@mikro-orm/postgresql';
+import { CloudflareDomainProvider } from '../../../cloudflare/services/cloudflare-domain-provider.service';
 import { fakeInstance } from '../../../common/testing/instance.fake';
 import { integrationDatabaseUrl } from '../../../common/testing/integration-database.util';
 import { TypedConfigService } from '../../../config/services/typed-config.service';
 import { ENTITY_MAPPING_OPTIONS } from '../../../infra/database/config/entity-mapping.config';
 import { fakeSettings } from '../../../settings/testing/settings.fake';
-import { CloudflareDomainProvider } from '../../cloudflare/services/cloudflare-domain-provider.service';
 import type { EdgeRouteSnapshotDto } from '../../dto/edge-route-snapshot.dto';
 import { Edge } from '../../entities/edge.entity';
 import { ExposureBackend } from '../../entities/exposure-backend.entity';

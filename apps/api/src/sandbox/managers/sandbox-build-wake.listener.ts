@@ -14,10 +14,10 @@ import { OnAsyncEvent } from '../../common/decorators/on-async-event.decorator';
 import { TrackJobExecution } from '../../common/decorators/track-job-execution.decorator';
 import { mapSequentially } from '../../common/utils/concurrency/sequential-async.util';
 import { TrackedJobs } from '../../common/utils/concurrency/tracked-jobs.util';
+import { SnapshotEvents } from '../../snapshot/constants/snapshot-events.constants';
+import type { SnapshotBuildSettledEvent } from '../../snapshot/events/snapshot-build-settled.event';
 import { Sandbox } from '../entities/sandbox.entity';
 import { SandboxState } from '../enums/sandbox-state.enum';
-import { SnapshotEvents } from '../snapshot/constants/snapshot-events.constants';
-import type { SnapshotBuildSettledEvent } from '../snapshot/events/snapshot-build-settled.event';
 import { SandboxManager } from './sandbox.manager';
 
 @Injectable()

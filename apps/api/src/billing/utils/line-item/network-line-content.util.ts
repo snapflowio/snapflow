@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import type { NetworkUsagePeriod } from '../../../networking/usage/entities/network-usage-period.entity';
+import type { NetworkUsagePeriod } from '../../../network-usage/entities/network-usage-period.entity';
 import {
 	BILLING_LINE_SCHEMA_VERSION,
 	BillingBeneficiaryKind,

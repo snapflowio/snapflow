@@ -9,8 +9,8 @@
 
 import { canonicalJson } from '../../../common/utils/canonical-json.util';
 import type { MicroUsd } from '../../../common/values/micro-usd.value';
+import { MachineUsageEvidenceError } from '../../../machine/exceptions/machine-usage-evidence.exception';
 import { priceUsage } from '../../../marketplace/utils/pricing.util';
-import { MachineUsageEvidenceError } from '../../../sandbox/machine/exceptions/machine-usage-evidence.exception';
 import {
 	type VerifiedMachineUsageReceipt,
 	verifyMachineUsageReceipt,

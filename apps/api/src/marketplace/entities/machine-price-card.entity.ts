@@ -17,8 +17,8 @@ import {
 	Trigger,
 	Unique,
 } from '@mikro-orm/decorators/legacy';
+import { Machine } from '../../machine/entities/machine.entity';
 import { Organization } from '../../organization/entities/organization.entity';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
 import { User } from '../../user/entities/user.entity';
 import { MARKETPLACE_MONEY_COLUMN_TYPE } from '../constants/marketplace.constants';
 import { MACHINE_PRICE_CARD_IMMUTABLE_TRIGGER } from './machine-price-card.triggers';

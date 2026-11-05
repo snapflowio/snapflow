@@ -15,14 +15,14 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { errorMessage, errorStack } from '../../common/utils/error/error.util';
 import { addSeconds } from '../../common/utils/time.util';
 import { databaseNow } from '../../infra/database/utils/database-time.util';
-import { MachineEvents } from '../../sandbox/machine/constants/machine-events.constants';
-import { MachineCreatedEvent } from '../../sandbox/machine/events/machine-created.event';
-import { MachineStateUpdatedEvent } from '../../sandbox/machine/events/machine-state-updated.event';
-import { MachineUnschedulableUpdatedEvent } from '../../sandbox/machine/events/machine-unschedulable-updated.event';
-import { VolumeEvents } from '../../sandbox/volume/constants/volume-events.constants';
-import { VolumeCreatedEvent } from '../../sandbox/volume/events/volume-created.event';
-import { VolumeLastUsedAtUpdatedEvent } from '../../sandbox/volume/events/volume-last-used-at-updated.event';
-import { VolumeStateUpdatedEvent } from '../../sandbox/volume/events/volume-state-updated.event';
+import { MachineEvents } from '../../machine/constants/machine-events.constants';
+import { MachineCreatedEvent } from '../../machine/events/machine-created.event';
+import { MachineStateUpdatedEvent } from '../../machine/events/machine-state-updated.event';
+import { MachineUnschedulableUpdatedEvent } from '../../machine/events/machine-unschedulable-updated.event';
+import { VolumeEvents } from '../../volume/constants/volume-events.constants';
+import { VolumeCreatedEvent } from '../../volume/events/volume-created.event';
+import { VolumeLastUsedAtUpdatedEvent } from '../../volume/events/volume-last-used-at-updated.event';
+import { VolumeStateUpdatedEvent } from '../../volume/events/volume-state-updated.event';
 import {
 	REALTIME_OUTBOX,
 	RealtimeOutboxStatus,

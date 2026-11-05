@@ -15,7 +15,7 @@ import { BillingLedgerAccountCode } from '../../../billing/constants/billing.con
 import {
 	accountBalances,
 	RecordingLedger,
-} from '../../../billing/usage/testing/recording-ledger.fake';
+} from '../../../billing/testing/recording-ledger.fake';
 import { fakeInstance } from '../../../common/testing/instance.fake';
 import { MicroUsd } from '../../../common/values/micro-usd.value';
 import {

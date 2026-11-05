@@ -9,8 +9,8 @@
 
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { CursorPageDto } from '../../common/dto/cursor-page.dto';
-import { DockerRegistry } from '../persistence/entities/docker-registry.entity';
-import { RegistryType } from '../persistence/enums/registry-type.enum';
+import { DockerRegistry } from '../entities/docker-registry.entity';
+import { RegistryType } from '../enums/registry-type.enum';
 
 @ApiSchema({ name: 'DockerRegistry' })
 export class DockerRegistryDto {

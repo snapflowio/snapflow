@@ -12,8 +12,8 @@ import {
 	MACHINE_NETWORK_COUNTERS,
 	type MachineNetworkBytes,
 	type MachineUsageRuntimeState,
-} from '../../../sandbox/machine/constants/machine-usage.constants';
-import { MachineUsageEvidenceError } from '../../../sandbox/machine/exceptions/machine-usage-evidence.exception';
+} from '../../../machine/constants/machine-usage.constants';
+import { MachineUsageEvidenceError } from '../../../machine/exceptions/machine-usage-evidence.exception';
 import type { MachineUsageReceiptEnvelope } from '../../schemas/machine-usage-envelope.schema';
 
 export interface MachineUsageReading {

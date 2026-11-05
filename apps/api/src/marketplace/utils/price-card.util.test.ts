@@ -10,7 +10,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { MicroUsd } from '../../common/values/micro-usd.value';
-import { GpuType } from '../../sandbox/machine/enums/gpu-type.enum';
+import { GpuType } from '../../machine/enums/gpu-type.enum';
 import { MachineCategory } from '../enums/machine-category.enum';
 import { MarketplaceErrorCode } from '../enums/marketplace-error-code.enum';
 import type { PriceCardRates } from '../types/pricing.types';

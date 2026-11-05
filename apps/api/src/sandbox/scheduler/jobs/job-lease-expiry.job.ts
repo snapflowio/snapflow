@@ -10,7 +10,7 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { JobLeaseExpiryManager } from '../../machine-job/managers/job-lease-expiry.manager';
+import { JobLeaseExpiryManager } from '../../../machine-job/managers/job-lease-expiry.manager';
 
 @Injectable()
 export class JobLeaseExpiryJob {

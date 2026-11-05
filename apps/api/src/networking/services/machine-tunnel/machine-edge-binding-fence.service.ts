@@ -10,7 +10,7 @@
 import { randomUUID } from 'node:crypto';
 import type { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
-import type { Machine } from '../../../sandbox/machine/entities/machine.entity';
+import type { Machine } from '../../../machine/entities/machine.entity';
 import {
 	MACHINE_EDGE_BINDING_DESIRED_STATE,
 	MACHINE_EDGE_BINDING_STATE,

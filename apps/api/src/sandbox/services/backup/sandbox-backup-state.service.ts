@@ -9,14 +9,14 @@
 
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable, Logger } from '@nestjs/common';
+import { MachineService } from '../../../machine/services/machine.service';
+import { BackupState } from '../../../volume/enums/backup-state.enum';
 import { Sandbox } from '../../entities/sandbox.entity';
 import { SandboxDesiredState } from '../../enums/sandbox-desired-state.enum';
 import { SandboxState } from '../../enums/sandbox-state.enum';
 import { SandboxConflictException } from '../../exceptions/sandbox-conflict.exception';
-import { MachineService } from '../../machine/services/machine.service';
 import { SandboxRepository } from '../../repositories/sandbox.repository';
 import { sanitizeSandboxError } from '../../utils/sanitize-error.util';
-import { BackupState } from '../../volume/enums/backup-state.enum';
 
 type BackupStateChange = Readonly<{
 	backupSnapshot?: string | null;

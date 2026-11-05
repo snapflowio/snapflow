@@ -13,13 +13,13 @@ import { MILLISECONDS_PER_SECOND } from '../../../common/constants/time.constant
 import {
 	MACHINE_USAGE_GENESIS_DIGEST,
 	MachineUsageRuntimeState,
-} from '../../../sandbox/machine/constants/machine-usage.constants';
-import { MachineUsageEvidenceError } from '../../../sandbox/machine/exceptions/machine-usage-evidence.exception';
+} from '../../../machine/constants/machine-usage.constants';
+import { MachineUsageEvidenceError } from '../../../machine/exceptions/machine-usage-evidence.exception';
 import {
 	signedUsageChain,
 	signUsageEnvelope,
 	USAGE_MACHINE_ID,
-} from '../../../sandbox/machine/testing/signed-usage-readings.fixtures';
+} from '../../../machine/testing/signed-usage-readings.fixtures';
 import { verifyMachineUsageReceipt } from './machine-usage-evidence.util';
 
 const START = new Date('2026-10-04T12:00:00.000Z');

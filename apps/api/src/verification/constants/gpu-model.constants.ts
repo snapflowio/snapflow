@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { GpuType } from '../../sandbox/machine/enums/gpu-type.enum';
+import { GpuType } from '../../machine/enums/gpu-type.enum';
 
 export interface GpuModel {
 	gpuType: GpuType;

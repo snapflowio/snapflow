@@ -14,7 +14,7 @@ import { EventEmitterReadinessWatcher } from '@nestjs/event-emitter';
 import { DeploymentEnvironment } from '../../config/enums/deployment-environment.enum';
 import { TypedConfigService } from '../../config/services/typed-config.service';
 import { DevelopmentSeedService } from '../../development/services/development-seed.service';
-import { DefaultSnapshotBootstrapService } from '../../sandbox/snapshot/services/default-snapshot-bootstrap.service';
+import { DefaultSnapshotBootstrapService } from '../../snapshot/services/default-snapshot-bootstrap.service';
 
 @Injectable()
 export class SchedulerStartupService implements OnApplicationBootstrap {

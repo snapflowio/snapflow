@@ -10,14 +10,14 @@
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { IsEnum, IsOptional } from 'class-validator';
 import { LocationDto } from '../../location/dto/location.dto';
+import { GpuType } from '../../machine/enums/gpu-type.enum';
+import { BackupState } from '../../volume/enums/backup-state.enum';
 import { EXAMPLE_SANDBOX_ARCHIVE_INTERVAL_MINUTES } from '../constants/sandbox.constants';
 import { SandboxClass } from '../enums/sandbox-class.enum';
 import { SandboxDesiredState } from '../enums/sandbox-desired-state.enum';
 import { SandboxMode } from '../enums/sandbox-mode.enum';
 import { SandboxState } from '../enums/sandbox-state.enum';
-import { GpuType } from '../machine/enums/gpu-type.enum';
 import { deriveSandboxResponseState } from '../utils/sandbox-response-state.util';
-import { BackupState } from '../volume/enums/backup-state.enum';
 
 interface SandboxListItemDtoFields {
 	id: string;

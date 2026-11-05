@@ -25,8 +25,8 @@ import {
 	SpeedtestReceiptSchema,
 } from '@snapflow/machine-proto';
 import { BASIS_POINTS_SCALE } from '../../common/constants/money.constants';
-import { GpuType } from '../../sandbox/machine/enums/gpu-type.enum';
-import { protoJsonObject } from '../../sandbox/machine/utils/proto/proto-json.util';
+import { GpuType } from '../../machine/enums/gpu-type.enum';
+import { protoJsonObject } from '../../machine/utils/proto/proto-json.util';
 import {
 	BENCHMARK_FAILURE,
 	BENCHMARK_POLICY,

@@ -8,7 +8,7 @@
  */
 
 import { ConflictException } from '@nestjs/common';
-import { GpuType } from '../../sandbox/machine/enums/gpu-type.enum';
+import { GpuType } from '../../machine/enums/gpu-type.enum';
 import { GPU_PRICE_CLASS_PREFIX } from '../constants/marketplace.constants';
 import { MachineCategory } from '../enums/machine-category.enum';
 import { MarketplaceErrorCode } from '../enums/marketplace-error-code.enum';

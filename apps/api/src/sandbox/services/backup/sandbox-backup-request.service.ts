@@ -13,16 +13,16 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { IsolatedEntityManagerContext } from '../../../common/decorators/isolated-entity-manager-context.decorator';
 import { TrackJobExecution } from '../../../common/decorators/track-job-execution.decorator';
 import { TrackedJobs } from '../../../common/utils/concurrency/tracked-jobs.util';
-import { DockerRegistry } from '../../../docker-registry/persistence/entities/docker-registry.entity';
-import { registryRepositoryPrefix } from '../../../docker-registry/persistence/utils/docker-registry-url.util';
+import { DockerRegistry } from '../../../docker-registry/entities/docker-registry.entity';
 import { DockerRegistryService } from '../../../docker-registry/services/docker-registry.service';
+import { registryRepositoryPrefix } from '../../../docker-registry/utils/docker-registry-url.util';
+import { BackupState } from '../../../volume/enums/backup-state.enum';
 import { SandboxEvents } from '../../constants/sandbox-events.constants';
 import { Sandbox } from '../../entities/sandbox.entity';
 import { SandboxState } from '../../enums/sandbox-state.enum';
 import { SandboxArchivedEvent } from '../../events/sandbox-archived.event';
 import { SandboxBackupCreatedEvent } from '../../events/sandbox-backup-created.event';
 import { SandboxDestroyedEvent } from '../../events/sandbox-destroyed.event';
-import { BackupState } from '../../volume/enums/backup-state.enum';
 import { SandboxBackupStateService } from './sandbox-backup-state.service';
 
 type SetBackupPendingOptions = Readonly<{

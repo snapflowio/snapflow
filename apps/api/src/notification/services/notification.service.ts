@@ -15,8 +15,12 @@ import type { ApiKeyRevokedEvent } from '../../auth/events/api-key-revoked.event
 import type { SessionRevokedEvent } from '../../auth/events/session-revoked.event';
 import { IsolatedEntityManagerContext } from '../../common/decorators/isolated-entity-manager-context.decorator';
 import { AUTH_CREDENTIAL_TYPES } from '../../common/types/organization-auth-context.types';
+import { MachineEvents } from '../../machine/constants/machine-events.constants';
+import { MachineCreatedEvent } from '../../machine/events/machine-created.event';
+import { MachineStateUpdatedEvent } from '../../machine/events/machine-state-updated.event';
+import { MachineUnschedulableUpdatedEvent } from '../../machine/events/machine-unschedulable-updated.event';
+import type { NetworkBudgetThresholdReachedEvent } from '../../network-usage/events/network-budget-threshold-reached.event';
 import { NetworkingEvents } from '../../networking/constants/networking-events.constants';
-import type { NetworkBudgetThresholdReachedEvent } from '../../networking/usage/events/network-budget-threshold-reached.event';
 import { OrganizationEvents } from '../../organization/constants/organization-events.constants';
 import type { OrganizationAuthorizationChangedEvent } from '../../organization/events/organization-authorization-changed.event';
 import type { OrganizationDeletedEvent } from '../../organization/events/organization-deleted.event';
@@ -27,23 +31,19 @@ import { SandboxCreatedEvent } from '../../sandbox/events/sandbox-create.event';
 import { SandboxDesiredStateUpdatedEvent } from '../../sandbox/events/sandbox-desired-state-updated.event';
 import { SandboxLeaseRenewalRequiredEvent } from '../../sandbox/events/sandbox-lease-renewal-required.event';
 import { SandboxStateUpdatedEvent } from '../../sandbox/events/sandbox-state-updated.event';
-import { MachineEvents } from '../../sandbox/machine/constants/machine-events.constants';
-import { MachineCreatedEvent } from '../../sandbox/machine/events/machine-created.event';
-import { MachineStateUpdatedEvent } from '../../sandbox/machine/events/machine-state-updated.event';
-import { MachineUnschedulableUpdatedEvent } from '../../sandbox/machine/events/machine-unschedulable-updated.event';
 import { SandboxService } from '../../sandbox/services/sandbox/sandbox.service';
-import { SnapshotEvents } from '../../sandbox/snapshot/constants/snapshot-events.constants';
-import { SnapshotCreatedEvent } from '../../sandbox/snapshot/events/snapshot-created.event';
-import { SnapshotRemovedEvent } from '../../sandbox/snapshot/events/snapshot-removed.event';
-import { SnapshotStateUpdatedEvent } from '../../sandbox/snapshot/events/snapshot-state-updated.event';
-import { VolumeEvents } from '../../sandbox/volume/constants/volume-events.constants';
-import { VolumeCreatedEvent } from '../../sandbox/volume/events/volume-created.event';
-import { VolumeLastUsedAtUpdatedEvent } from '../../sandbox/volume/events/volume-last-used-at-updated.event';
-import { VolumeStateUpdatedEvent } from '../../sandbox/volume/events/volume-state-updated.event';
+import { SnapshotEvents } from '../../snapshot/constants/snapshot-events.constants';
+import { SnapshotCreatedEvent } from '../../snapshot/events/snapshot-created.event';
+import { SnapshotRemovedEvent } from '../../snapshot/events/snapshot-removed.event';
+import { SnapshotStateUpdatedEvent } from '../../snapshot/events/snapshot-state-updated.event';
 import { UserEvents } from '../../user/constants/user-events.constants';
 import type { UserAuthorizationChangedEvent } from '../../user/events/user-authorization-changed.event';
 import type { UserDeletedEvent } from '../../user/events/user-deleted.event';
-import { NotificationEmitter } from '../transport/gateways/notification-emitter.abstract';
+import { VolumeEvents } from '../../volume/constants/volume-events.constants';
+import { VolumeCreatedEvent } from '../../volume/events/volume-created.event';
+import { VolumeLastUsedAtUpdatedEvent } from '../../volume/events/volume-last-used-at-updated.event';
+import { VolumeStateUpdatedEvent } from '../../volume/events/volume-state-updated.event';
+import { NotificationEmitter } from '../gateways/notification-emitter.abstract';
 
 @Injectable()
 export class NotificationService {

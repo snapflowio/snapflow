@@ -20,7 +20,7 @@ import { PublicEndpoint } from '../../auth/decorators/public-endpoint.decorator'
 import { IsMachineAuthContext } from '../../common/decorators/auth-context.decorator';
 import { AuthenticatedRateLimitGuard } from '../../common/guards/authenticated-rate-limit.guard';
 import type { MachineAuthContext } from '../../common/types/machine-auth-context.types';
-import { MachineSessionGuard } from '../../sandbox/machine/guards/machine-session.guard';
+import { MachineSessionGuard } from '../../machine/guards/machine-session.guard';
 import { MachineSshAccessDto, ResolveSshRelayDto } from '../dto/ssh-relay.dto';
 import { SshRelayService } from '../services/ssh-relay.service';
 

@@ -14,13 +14,13 @@ import { MikroORM } from '@mikro-orm/postgresql';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { integrationDatabaseUrl } from '../../common/testing/integration-database.util';
 import { ENTITY_MAPPING_OPTIONS } from '../../infra/database/config/entity-mapping.config';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
+import { Machine } from '../../machine/entities/machine.entity';
 import { RealtimeOutboxSubscriber } from '../../sandbox/subscribers/realtime-outbox.subscriber';
-import { VolumeEvents } from '../../sandbox/volume/constants/volume-events.constants';
-import { Volume } from '../../sandbox/volume/entities/volume.entity';
-import { VolumeBackupState } from '../../sandbox/volume/enums/volume-backup-state.enum';
-import { VolumeState } from '../../sandbox/volume/enums/volume-state.enum';
-import type { VolumeCreatedEvent } from '../../sandbox/volume/events/volume-created.event';
+import { VolumeEvents } from '../../volume/constants/volume-events.constants';
+import { Volume } from '../../volume/entities/volume.entity';
+import { VolumeBackupState } from '../../volume/enums/volume-backup-state.enum';
+import { VolumeState } from '../../volume/enums/volume-state.enum';
+import type { VolumeCreatedEvent } from '../../volume/events/volume-created.event';
 import {
 	REALTIME_OUTBOX,
 	RealtimeOutboxStatus,

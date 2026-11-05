@@ -12,7 +12,7 @@ import {
 	ResourceAccessGuard,
 	type ResourceRequest,
 } from '../../common/guards/resource-access.guard';
-import { RegistryType } from '../persistence/enums/registry-type.enum';
+import { RegistryType } from '../enums/registry-type.enum';
 import { DockerRegistryService } from '../services/docker-registry.service';
 
 @Injectable()

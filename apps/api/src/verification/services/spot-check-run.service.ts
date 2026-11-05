@@ -19,9 +19,9 @@ import { addMinutes, millisecondsBetween } from '../../common/utils/time.util';
 import { BasisPoints } from '../../common/values/basis-points.value';
 import { ResourceShape } from '../../common/values/resource-shape.value';
 import { databaseNow } from '../../infra/database/utils/database-time.util';
+import { Machine } from '../../machine/entities/machine.entity';
 import { Sandbox } from '../../sandbox/entities/sandbox.entity';
 import { SandboxState } from '../../sandbox/enums/sandbox-state.enum';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
 import type { SettingsSnapshot } from '../../settings/types/settings.types';
 import { BENCHMARK_PARAMETERS } from '../constants/benchmark-policy.constants';
 import {

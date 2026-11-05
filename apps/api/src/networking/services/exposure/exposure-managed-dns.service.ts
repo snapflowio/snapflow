@@ -8,8 +8,8 @@
  */
 
 import { Injectable } from '@nestjs/common';
+import { CloudflareDomainProvider } from '../../../cloudflare/services/cloudflare-domain-provider.service';
 import { TypedConfigService } from '../../../config/services/typed-config.service';
-import { CloudflareDomainProvider } from '../../cloudflare/services/cloudflare-domain-provider.service';
 import type { Edge } from '../../entities/edge.entity';
 import type { Exposure } from '../../entities/exposure.entity';
 

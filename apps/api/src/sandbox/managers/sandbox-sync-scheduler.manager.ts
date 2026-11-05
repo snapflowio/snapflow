@@ -22,14 +22,14 @@ import {
 } from '../../common/utils/concurrency/sequential-async.util';
 import { TrackedJobs } from '../../common/utils/concurrency/tracked-jobs.util';
 import { RedisLockProvider } from '../../infra/redis/providers/redis-lock.provider';
+import { MachineState } from '../../machine/enums/machine-state.enum';
+import { MachineService } from '../../machine/services/machine.service';
+import { BackupState } from '../../volume/enums/backup-state.enum';
 import { SANDBOX_WORKER_LIMITS } from '../constants/sandbox.constants';
 import { Sandbox } from '../entities/sandbox.entity';
 import { SandboxDesiredState } from '../enums/sandbox-desired-state.enum';
 import { SandboxState } from '../enums/sandbox-state.enum';
-import { MachineState } from '../machine/enums/machine-state.enum';
-import { MachineService } from '../machine/services/machine.service';
 import { getStateChangeLockKey } from '../utils/lock-key.util';
-import { BackupState } from '../volume/enums/backup-state.enum';
 import { SandboxManager } from './sandbox.manager';
 
 const STATE_SYNC_MACHINE_CURSOR_KEY = 'sync-states-machine-cursor';

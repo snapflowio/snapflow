@@ -8,9 +8,9 @@
  */
 
 import { Module } from '@nestjs/common';
-import { NetworkingCustomDomainModule } from '../custom-domain/custom-domain.module';
+import { CustomDomainModule } from '../../custom-domain/custom-domain.module';
+import { NetworkUsageModule } from '../../network-usage/network-usage.module';
 import { NetworkingModule } from '../networking.module';
-import { NetworkingUsageModule } from '../usage/usage.module';
 import { ControlSnapshotRefreshJob } from './jobs/control-snapshot-refresh.job';
 import { CustomDomainReconcilerJob } from './jobs/custom-domain-reconciler.job';
 import { ExposureDnsReconcilerJob } from './jobs/exposure-dns-reconciler.job';
@@ -21,11 +21,7 @@ import { SystemExposureLeaseJob } from './jobs/system-exposure-lease.job';
 import { SystemExposureProvisionerJob } from './jobs/system-exposure-provisioner.job';
 
 @Module({
-	imports: [
-		NetworkingCustomDomainModule,
-		NetworkingModule,
-		NetworkingUsageModule,
-	],
+	imports: [CustomDomainModule, NetworkingModule, NetworkUsageModule],
 	providers: [
 		ControlSnapshotRefreshJob,
 		CustomDomainReconcilerJob,

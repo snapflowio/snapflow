@@ -22,9 +22,9 @@ import {
 } from 'class-validator';
 import { BillingRestriction } from '../../billing/enums/billing-restriction.enum';
 import { LocationDto } from '../../location/dto/location.dto';
+import { GpuType } from '../../machine/enums/gpu-type.enum';
 import { MachineUnavailableReason } from '../../marketplace/enums/machine-unavailable-reason.enum';
 import { PlacementKind } from '../../marketplace/enums/placement-kind.enum';
-import { GpuType } from '../machine/enums/gpu-type.enum';
 import { SandboxPlacementRequestDto } from './sandbox-placement.dto';
 
 @ApiSchema({ name: 'SandboxQuoteRequest' })

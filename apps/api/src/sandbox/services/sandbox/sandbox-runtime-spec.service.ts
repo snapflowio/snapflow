@@ -19,16 +19,16 @@ import {
 } from '@snapflow/machine-proto';
 import { entrypointFromDockerfile } from '../../../common/utils/dockerfile.util';
 import { DockerRegistryService } from '../../../docker-registry/services/docker-registry.service';
-import { Sandbox } from '../../entities/sandbox.entity';
-import type { SandboxRuntimeIntent } from '../../machine/utils/proto/sandbox-runtime-intent.util';
+import type { SandboxRuntimeIntent } from '../../../machine/utils/proto/sandbox-runtime-intent.util';
 import {
 	buildSandboxSpec,
 	decodeSandboxSpec,
 	type FencedVolume,
 	type SandboxSpecSource,
-} from '../../machine/utils/proto/sandbox-runtime-spec.util';
-import { SnapshotService } from '../../snapshot/services/snapshot.service';
-import { VolumeAttachmentService } from '../../volume/services/volume-attachment.service';
+} from '../../../machine/utils/proto/sandbox-runtime-spec.util';
+import { SnapshotService } from '../../../snapshot/services/snapshot.service';
+import { VolumeAttachmentService } from '../../../volume/services/volume-attachment.service';
+import { Sandbox } from '../../entities/sandbox.entity';
 
 const SANDBOX_NAME_LABEL = 'sandboxName';
 const SANDBOX_OWNER_LABEL = 'organizationId';

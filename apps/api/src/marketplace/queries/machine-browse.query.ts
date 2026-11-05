@@ -14,9 +14,9 @@ import {
 	constrainedContinents,
 	constrainedCountries,
 } from '../../location/utils/location-constraint.util';
-import type { GpuType } from '../../sandbox/machine/enums/gpu-type.enum';
-import { MachineRuntimeFeature } from '../../sandbox/machine/enums/machine-runtime-feature.enum';
-import { MachineState } from '../../sandbox/machine/enums/machine-state.enum';
+import type { GpuType } from '../../machine/enums/gpu-type.enum';
+import { MachineRuntimeFeature } from '../../machine/enums/machine-runtime-feature.enum';
+import { MachineState } from '../../machine/enums/machine-state.enum';
 import { ListingState } from '../enums/listing-state.enum';
 import { ListingVisibility } from '../enums/listing-visibility.enum';
 import type { MachineCategory } from '../enums/machine-category.enum';

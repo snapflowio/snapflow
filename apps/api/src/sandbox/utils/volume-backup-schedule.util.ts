@@ -7,13 +7,13 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
+import type { Volume } from '../../volume/entities/volume.entity';
+import { BackupState } from '../../volume/enums/backup-state.enum';
+import { VolumeBackupState } from '../../volume/enums/volume-backup-state.enum';
+import { VolumeState } from '../../volume/enums/volume-state.enum';
 import type { Sandbox } from '../entities/sandbox.entity';
 import { SandboxDesiredState } from '../enums/sandbox-desired-state.enum';
 import { SandboxState } from '../enums/sandbox-state.enum';
-import type { Volume } from '../volume/entities/volume.entity';
-import { BackupState } from '../volume/enums/backup-state.enum';
-import { VolumeBackupState } from '../volume/enums/volume-backup-state.enum';
-import { VolumeState } from '../volume/enums/volume-state.enum';
 
 export type ScheduledVolume = Pick<
 	Volume,

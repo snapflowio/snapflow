@@ -8,7 +8,7 @@
  */
 
 import type { DiskMeasurement } from '@snapflow/machine-proto';
-import type { GpuType } from '../../sandbox/machine/enums/gpu-type.enum';
+import type { GpuType } from '../../machine/enums/gpu-type.enum';
 
 export interface BenchmarkParameters {
 	cpuSegmentIterations: number;

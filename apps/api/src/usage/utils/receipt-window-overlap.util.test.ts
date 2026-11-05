@@ -9,7 +9,7 @@
 
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { MachineUsageRuntimeState } from '../../sandbox/machine/constants/machine-usage.constants';
+import { MachineUsageRuntimeState } from '../../machine/constants/machine-usage.constants';
 import {
 	type ReceiptMeterEvidence,
 	receiptWindowOverlap,

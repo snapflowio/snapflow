@@ -18,7 +18,7 @@ import {
 } from '@mikro-orm/decorators/legacy';
 import { BILLING_COLUMN_LENGTH } from '../../billing/constants/billing.constants';
 import { sqlValueList } from '../../infra/database/utils/sql-value-list.util';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
+import { Machine } from '../../machine/entities/machine.entity';
 import { FingerprintKind } from '../enums/fingerprint-kind.enum';
 
 @Entity({ tableName: 'machine_fingerprint_component' })

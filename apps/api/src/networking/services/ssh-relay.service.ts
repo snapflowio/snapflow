@@ -18,7 +18,7 @@ import {
 import { MILLISECONDS_PER_SECOND } from '../../common/constants/time.constants';
 import { millisecondsBetween } from '../../common/utils/time.util';
 import { databaseNow } from '../../infra/database/utils/database-time.util';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
+import { Machine } from '../../machine/entities/machine.entity';
 import { SandboxService } from '../../sandbox/services/sandbox/sandbox.service';
 import {
 	EXPOSURE_BACKEND_STATE,

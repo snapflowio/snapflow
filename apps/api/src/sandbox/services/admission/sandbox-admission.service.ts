@@ -11,17 +11,18 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { isValidUuid } from '../../../common/utils/uuid.util';
 import type { OrganizationLimits } from '../../../organization/entities/organization-limits.entity';
+import {
+	applyPlacement,
+	type ResolvedPlacement,
+} from '../../../placement/utils/sandbox-placement.util';
 import { SettingsService } from '../../../settings/services/settings.service';
+import { VolumeService } from '../../../volume/services/volume.service';
 import { MINIMUM_EGRESS_BANDWIDTH_BPS } from '../../constants/network.constants';
 import { CreateSandboxDto } from '../../dto/create-sandbox.dto';
 import { SandboxVolume } from '../../dto/sandbox.dto';
 import { Sandbox } from '../../entities/sandbox.entity';
 import { SandboxDesiredState } from '../../enums/sandbox-desired-state.enum';
 import { SandboxState } from '../../enums/sandbox-state.enum';
-import {
-	applyPlacement,
-	type ResolvedPlacement,
-} from '../../placement/utils/sandbox-placement.util';
 import { isEphemeral } from '../../utils/runtime/ephemeral.util';
 import {
 	requireValidDomainAllowList,
@@ -39,7 +40,6 @@ import {
 	validateMountPaths,
 	validateSubpaths,
 } from '../../utils/runtime/volume-mount-path-validation.util';
-import { VolumeService } from '../../volume/services/volume.service';
 import { SandboxService } from '../sandbox/sandbox.service';
 
 export type AdmittedSandboxShape = Pick<

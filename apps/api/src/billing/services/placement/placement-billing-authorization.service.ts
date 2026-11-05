@@ -13,10 +13,10 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { addMinutes } from '../../../common/utils/time.util';
 import { MicroUsd } from '../../../common/values/micro-usd.value';
 import { databaseNow } from '../../../infra/database/utils/database-time.util';
+import { Machine } from '../../../machine/entities/machine.entity';
 import { Sandbox } from '../../../sandbox/entities/sandbox.entity';
 import { SandboxPlacement } from '../../../sandbox/entities/sandbox-placement.entity';
 import { SandboxDesiredState } from '../../../sandbox/enums/sandbox-desired-state.enum';
-import { Machine } from '../../../sandbox/machine/entities/machine.entity';
 import { PlacementFundingState } from '../../constants/billing.constants';
 import {
 	BillingAdmissionErrorCode,

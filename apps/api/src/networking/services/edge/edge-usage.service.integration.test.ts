@@ -15,7 +15,10 @@ import { ConflictException, GoneException } from '@nestjs/common';
 import { fakeInstance } from '../../../common/testing/instance.fake';
 import { integrationDatabaseUrl } from '../../../common/testing/integration-database.util';
 import { ENTITY_MAPPING_OPTIONS } from '../../../infra/database/config/entity-mapping.config';
-import { MachinePlatformObservationService } from '../../../sandbox/machine/services/machine-platform-observation.service';
+import { MachinePlatformObservationService } from '../../../machine/services/machine-platform-observation.service';
+import { ExposureNetworkUsage } from '../../../network-usage/entities/exposure-network-usage.entity';
+import { NetworkUsagePeriod } from '../../../network-usage/entities/network-usage-period.entity';
+import { NetworkUsageService } from '../../../network-usage/services/network-usage.service';
 import type {
 	EdgeUsageCheckpointAcknowledgementDto,
 	EdgeUsageCheckpointDto,
@@ -32,9 +35,6 @@ import {
 	networkingFixture,
 	seedNetworkingFixture,
 } from '../../testing/networking-database.fixtures';
-import { ExposureNetworkUsage } from '../../usage/entities/exposure-network-usage.entity';
-import { NetworkUsagePeriod } from '../../usage/entities/network-usage-period.entity';
-import { NetworkUsageService } from '../../usage/services/network-usage.service';
 import {
 	edgeUsageDigest,
 	edgeUsageSignaturePayload,

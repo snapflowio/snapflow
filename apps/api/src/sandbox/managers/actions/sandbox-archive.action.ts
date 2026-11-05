@@ -13,13 +13,13 @@ import { InjectRedis } from '@nestjs-modules/ioredis';
 import { SandboxLifecycle } from '@snapflow/machine-proto';
 import Redis from 'ioredis';
 import { SECONDS_PER_MINUTE } from '../../../common/constants/time.constants';
+import { MachineService } from '../../../machine/services/machine.service';
+import { BackupState } from '../../../volume/enums/backup-state.enum';
 import { SandboxEvents } from '../../constants/sandbox-events.constants';
 import { Sandbox } from '../../entities/sandbox.entity';
 import { SandboxState } from '../../enums/sandbox-state.enum';
 import { SandboxBackupCreatedEvent } from '../../events/sandbox-backup-created.event';
-import { MachineService } from '../../machine/services/machine.service';
 import { SandboxRepository } from '../../repositories/sandbox.repository';
-import { BackupState } from '../../volume/enums/backup-state.enum';
 import { DONT_SYNC_AGAIN, SandboxAction, SyncState } from './sandbox.action';
 
 const ARCHIVE_BACKUP_RETRY_LIMIT = 3;

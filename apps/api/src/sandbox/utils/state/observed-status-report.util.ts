@@ -20,7 +20,7 @@ import {
 	SandboxRuntimeState,
 } from '@snapflow/machine-proto';
 import { errorMessage } from '../../../common/utils/error/error.util';
-import { MACHINE_OBSERVED_STATUS_LIMITS } from '../../machine/constants/machine-desired-state.constants';
+import { MACHINE_OBSERVED_STATUS_LIMITS } from '../../../machine/constants/machine-desired-state.constants';
 
 export function decodeObservedStatusReport(
 	encodedReport: string

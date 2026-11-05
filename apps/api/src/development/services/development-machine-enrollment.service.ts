@@ -9,15 +9,15 @@
 
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
-import { PersonalOrganizationService } from '../../organization/services/personal-organization.service';
 import type {
 	MachineRegistrationDto,
 	RegisterMachineDto,
-} from '../../sandbox/machine/dto/machine-registration.dto';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
-import { MachineAdministrationService } from '../../sandbox/machine/services/machine-administration.service';
-import { MachineRegistrationService } from '../../sandbox/machine/services/machine-registration.service';
-import { parseMachineIdentity } from '../../sandbox/machine/utils/machine-identity.util';
+} from '../../machine/dto/machine-registration.dto';
+import { Machine } from '../../machine/entities/machine.entity';
+import { MachineAdministrationService } from '../../machine/services/machine-administration.service';
+import { MachineRegistrationService } from '../../machine/services/machine-registration.service';
+import { parseMachineIdentity } from '../../machine/utils/machine-identity.util';
+import { PersonalOrganizationService } from '../../organization/services/personal-organization.service';
 import { UserService } from '../../user/services/user.service';
 
 @Injectable()

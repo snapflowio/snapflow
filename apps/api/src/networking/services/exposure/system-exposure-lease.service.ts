@@ -20,9 +20,9 @@ import { PlacementBillingAuthorizationService } from '../../../billing/services/
 import { errorMessage } from '../../../common/utils/error/error.util';
 import { addSeconds } from '../../../common/utils/time.util';
 import { databaseNow } from '../../../infra/database/utils/database-time.util';
+import { Machine } from '../../../machine/entities/machine.entity';
 import { Sandbox } from '../../../sandbox/entities/sandbox.entity';
 import { SandboxPlacement } from '../../../sandbox/entities/sandbox-placement.entity';
-import { Machine } from '../../../sandbox/machine/entities/machine.entity';
 import { SandboxService } from '../../../sandbox/services/sandbox/sandbox.service';
 import {
 	EXPOSURE_BACKEND_STATE,

@@ -32,6 +32,7 @@ import { AuthenticatedRateLimitGuard } from '../../common/guards/authenticated-r
 import type { OrganizationAuthContext } from '../../common/types/organization-auth-context.types';
 import { SandboxLeaseDto } from '../../marketplace/dto/sandbox-lease.dto';
 import { RequiredOrganizationPermissions } from '../../organization/decorators/required-organization-permissions.decorator';
+import { SandboxPlacementControlService } from '../../placement/services/sandbox-placement-control.service';
 import { ApiPlacementConflictResponse } from '../decorators/api-placement-conflict-response.decorator';
 import { SandboxDto } from '../dto/sandbox.dto';
 import {
@@ -44,7 +45,6 @@ import {
 	PriceChangedErrorDto,
 } from '../dto/sandbox-placement-error.dto';
 import { SandboxAccessGuard } from '../guards/sandbox-access.guard';
-import { SandboxPlacementControlService } from '../placement/services/sandbox-placement-control.service';
 import { SandboxLifecycleService } from '../services/lifecycle/sandbox-lifecycle.service';
 import { SandboxService } from '../services/sandbox/sandbox.service';
 

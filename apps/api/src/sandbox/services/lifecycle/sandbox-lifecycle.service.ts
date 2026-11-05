@@ -12,6 +12,16 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { OrganizationService } from '../../../organization/services/organization.service';
 import { OrganizationLimitsService } from '../../../organization/services/organization-limits.service';
+import {
+	type PlacementUpdate,
+	SandboxPlacementControlService,
+} from '../../../placement/services/sandbox-placement-control.service';
+import { SandboxPlacementResolverService } from '../../../placement/services/sandbox-placement-resolver.service';
+import {
+	type PendingQuotaUsage,
+	pendingQuotaUsage,
+	sandboxQuotaUsage,
+} from '../../../placement/utils/pending-quota-usage.util';
 import { SandboxEvents } from '../../constants/sandbox-events.constants';
 import type {
 	MoveSandboxDto,
@@ -25,16 +35,6 @@ import { SandboxDestroyedEvent } from '../../events/sandbox-destroyed.event';
 import { SandboxStartedEvent } from '../../events/sandbox-started.event';
 import { SandboxStoppedEvent } from '../../events/sandbox-stopped.event';
 import { StateChangeInProgressException } from '../../exceptions/state-change-in-progress.exception';
-import {
-	type PlacementUpdate,
-	SandboxPlacementControlService,
-} from '../../placement/services/sandbox-placement-control.service';
-import { SandboxPlacementResolverService } from '../../placement/services/sandbox-placement-resolver.service';
-import {
-	type PendingQuotaUsage,
-	pendingQuotaUsage,
-	sandboxQuotaUsage,
-} from '../../placement/utils/pending-quota-usage.util';
 import { SandboxRepository } from '../../repositories/sandbox.repository';
 import {
 	deletesImmediatelyOnStop,

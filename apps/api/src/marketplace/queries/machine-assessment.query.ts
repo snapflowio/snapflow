@@ -10,8 +10,8 @@
 import type { LockMode } from '@mikro-orm/core';
 import type { EntityManager } from '@mikro-orm/postgresql';
 import { MACHINE_TRUST_POLICY } from '../../billing/constants/machine-trust.constants';
-import { MACHINE_QUALIFICATION_POLICY } from '../../sandbox/machine/constants/machine-qualification.constants';
-import { MachineAssessment } from '../../sandbox/machine/entities/machine-assessment.entity';
+import { MACHINE_QUALIFICATION_POLICY } from '../../machine/constants/machine-qualification.constants';
+import { MachineAssessment } from '../../machine/entities/machine-assessment.entity';
 
 export function currentAssessmentSql(alias: string): string {
 	return `${alias}.qualified = true

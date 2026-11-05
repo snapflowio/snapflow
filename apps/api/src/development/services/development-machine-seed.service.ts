@@ -14,6 +14,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import Stripe from 'stripe';
 import { DeploymentEnvironment } from '../../config/enums/deployment-environment.enum';
 import { TypedConfigService } from '../../config/services/typed-config.service';
+import { Machine } from '../../machine/entities/machine.entity';
 import { MachineListing } from '../../marketplace/entities/machine-listing.entity';
 import { ListingState } from '../../marketplace/enums/listing-state.enum';
 import { ListingVisibility } from '../../marketplace/enums/listing-visibility.enum';
@@ -23,7 +24,6 @@ import { PriceFloorService } from '../../marketplace/services/price-floor.servic
 import { requirePriceClass } from '../../marketplace/utils/price-class.util';
 import { STRIPE_CLIENT } from '../../payments/constants/stripe.constants';
 import { PaymentAccountService } from '../../payments/services/payment-account.service';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
 import { UserService } from '../../user/services/user.service';
 import { VerificationEvents } from '../../verification/constants/verification-events.constants';
 import { BenchmarkPassedEvent } from '../../verification/events/benchmark-passed.event';

@@ -17,7 +17,7 @@ import {
 } from '../../common/values/resource-shape.value';
 import { Continent } from '../../location/enums/continent.enum';
 import { LocationConstraintKind } from '../../location/enums/location-constraint-kind.enum';
-import { GpuType } from '../../sandbox/machine/enums/gpu-type.enum';
+import { GpuType } from '../../machine/enums/gpu-type.enum';
 import { ListingState } from '../enums/listing-state.enum';
 import { MachineBrowseSort } from '../enums/machine-browse-sort.enum';
 import { MachineCategory } from '../enums/machine-category.enum';

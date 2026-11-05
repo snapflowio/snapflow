@@ -12,7 +12,7 @@ import { after, before, describe, it } from 'node:test';
 import { Client } from 'pg';
 import { integrationDatabaseUrl } from '../../../common/testing/integration-database.util';
 import { MicroUsd } from '../../../common/values/micro-usd.value';
-import { ratedNetworkPeriod } from '../../../networking/usage/testing/network-period.fixtures';
+import { ratedNetworkPeriod } from '../../../network-usage/testing/network-period.fixtures';
 import { BillingLedgerAccountCode } from '../../constants/billing.constants';
 import {
 	insertLedgerAccounts,

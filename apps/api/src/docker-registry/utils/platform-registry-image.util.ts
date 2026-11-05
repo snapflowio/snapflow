@@ -8,7 +8,7 @@
  */
 
 import { ImageReference } from '../../common/values/image-reference.value';
-import { registryHost } from '../persistence/utils/docker-registry-url.util';
+import { registryHost } from './docker-registry-url.util';
 import { isRegistryPushImage } from './registry-token-scope.util';
 
 export function isForeignPlatformRegistryImage(

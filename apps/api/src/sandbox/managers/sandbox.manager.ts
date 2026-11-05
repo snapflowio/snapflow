@@ -15,6 +15,7 @@ import { TrackJobExecution } from '../../common/decorators/track-job-execution.d
 import { TrackedJobs } from '../../common/utils/concurrency/tracked-jobs.util';
 import { millisecondsBetween } from '../../common/utils/time.util';
 import { RedisLockProvider } from '../../infra/redis/providers/redis-lock.provider';
+import { JobConflictException } from '../../machine-job/exceptions/job-conflict.exception';
 import { SandboxEvents } from '../constants/sandbox-events.constants';
 import { Sandbox } from '../entities/sandbox.entity';
 import { SandboxDesiredState } from '../enums/sandbox-desired-state.enum';
@@ -25,7 +26,6 @@ import { SandboxDestroyedEvent } from '../events/sandbox-destroyed.event';
 import { SandboxStartedEvent } from '../events/sandbox-started.event';
 import { SandboxStoppedEvent } from '../events/sandbox-stopped.event';
 import { SandboxConflictException } from '../exceptions/sandbox-conflict.exception';
-import { JobConflictException } from '../machine-job/exceptions/job-conflict.exception';
 import { SandboxRepository } from '../repositories/sandbox.repository';
 import { getStateChangeLockKey } from '../utils/lock-key.util';
 import { sanitizeSandboxError } from '../utils/sanitize-error.util';

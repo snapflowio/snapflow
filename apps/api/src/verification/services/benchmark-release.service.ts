@@ -9,8 +9,8 @@
 
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { z } from 'zod';
-import { registryEndpoint } from '../../docker-registry/persistence/utils/docker-registry-url.util';
-import type { MachineRuntimeCapabilities } from '../../sandbox/machine/types/machine-runtime.types';
+import { registryEndpoint } from '../../docker-registry/utils/docker-registry-url.util';
+import type { MachineRuntimeCapabilities } from '../../machine/types/machine-runtime.types';
 import { SettingsService } from '../../settings/services/settings.service';
 import { GUEST_RELEASE } from '../constants/benchmark-policy.constants';
 import {

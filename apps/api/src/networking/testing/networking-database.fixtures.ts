@@ -13,12 +13,12 @@ import { MILLISECONDS_PER_HOUR } from '../../common/constants/time.constants';
 import { fakeInstance } from '../../common/testing/instance.fake';
 import { addMilliseconds } from '../../common/utils/time.util';
 import { ControlWakeService } from '../../infra/control-wake/services/control-wake.service';
+import { Machine } from '../../machine/entities/machine.entity';
 import { PlacementKind } from '../../marketplace/enums/placement-kind.enum';
 import { Sandbox } from '../../sandbox/entities/sandbox.entity';
 import { SandboxPlacement } from '../../sandbox/entities/sandbox-placement.entity';
 import { SandboxMode } from '../../sandbox/enums/sandbox-mode.enum';
 import { SandboxState } from '../../sandbox/enums/sandbox-state.enum';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
 import { fakeSettings } from '../../settings/testing/settings.fake';
 import { EDGE_STATUS } from '../constants/edge.constants';
 import {

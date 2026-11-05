@@ -8,7 +8,7 @@
  */
 
 import { z } from 'zod';
-import { MachineUsageRuntimeState } from '../../sandbox/machine/constants/machine-usage.constants';
+import { MachineUsageRuntimeState } from '../../machine/constants/machine-usage.constants';
 import {
 	machineUsageEnvelopeSchema,
 	sha256Hex as sha256,

@@ -13,7 +13,7 @@ import {
 	type RegistryAction,
 	type RegistrySubjectKind,
 } from '../constants/registry-token.constants';
-import { registryHost } from '../persistence/utils/docker-registry-url.util';
+import { registryHost } from './docker-registry-url.util';
 
 export type RegistryAccess = Readonly<{
 	name: string;

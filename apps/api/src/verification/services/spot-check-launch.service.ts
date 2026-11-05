@@ -12,12 +12,12 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable, Logger } from '@nestjs/common';
 import { addDays } from '../../common/utils/time.util';
 import { ResourceShape } from '../../common/values/resource-shape.value';
+import { Machine } from '../../machine/entities/machine.entity';
 import { REFERENCE_SHAPES } from '../../marketplace/constants/pricing.constants';
 import { SandboxLease } from '../../marketplace/entities/sandbox-lease.entity';
 import type { MachineCategory } from '../../marketplace/enums/machine-category.enum';
 import { PlacementKind } from '../../marketplace/enums/placement-kind.enum';
 import { SandboxMode } from '../../sandbox/enums/sandbox-mode.enum';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
 import { SandboxSnapshotCreateService } from '../../sandbox/services/lifecycle/sandbox-snapshot-create.service';
 import type { SettingsSnapshot } from '../../settings/types/settings.types';
 import {

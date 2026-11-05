@@ -11,7 +11,7 @@ import { QueryOrder } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { findCursorPage } from '../../common/utils/pagination/cursor-page.util';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
+import { Machine } from '../../machine/entities/machine.entity';
 import type { BenchmarkState } from '../../verification/enums/benchmark-state.enum';
 import {
 	HostMachineDto,

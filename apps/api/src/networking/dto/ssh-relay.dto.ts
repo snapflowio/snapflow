@@ -9,7 +9,7 @@
 
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, MaxLength, MinLength } from 'class-validator';
-import { MACHINE_SSH_HOST_PUBLIC_KEY_MAX_LENGTH } from '../../sandbox/machine/constants/machine.constants';
+import { MACHINE_SSH_HOST_PUBLIC_KEY_MAX_LENGTH } from '../../machine/constants/machine.constants';
 import { NETWORKING_LIMITS } from '../constants/networking.constants';
 
 const SSH_ACCESS_TOKEN_MAX_LENGTH = 128;

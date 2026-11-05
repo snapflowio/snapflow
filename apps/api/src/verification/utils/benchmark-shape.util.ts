@@ -8,7 +8,7 @@
  */
 
 import { ResourceShape } from '../../common/values/resource-shape.value';
-import type { Machine } from '../../sandbox/machine/entities/machine.entity';
+import type { Machine } from '../../machine/entities/machine.entity';
 
 export type BenchmarkShapeSource = Pick<
 	Machine,

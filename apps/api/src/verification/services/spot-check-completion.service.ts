@@ -12,7 +12,7 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable, Logger } from '@nestjs/common';
 import { BenchmarkMeasurementsSchema } from '@snapflow/machine-proto';
 import { databaseNow } from '../../infra/database/utils/database-time.util';
-import { protoJsonObject } from '../../sandbox/machine/utils/proto/proto-json.util';
+import { protoJsonObject } from '../../machine/utils/proto/proto-json.util';
 import { SandboxLifecycleService } from '../../sandbox/services/lifecycle/sandbox-lifecycle.service';
 import { SettingsService } from '../../settings/services/settings.service';
 import { MachineSpotCheck } from '../entities/machine-spot-check.entity';

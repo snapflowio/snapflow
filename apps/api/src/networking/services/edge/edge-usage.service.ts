@@ -20,7 +20,8 @@ import {
 import { v4 } from 'uuid';
 import { errorMessage } from '../../../common/utils/error/error.util';
 import { databaseNow } from '../../../infra/database/utils/database-time.util';
-import { MachinePlatformObservationService } from '../../../sandbox/machine/services/machine-platform-observation.service';
+import { MachinePlatformObservationService } from '../../../machine/services/machine-platform-observation.service';
+import { NetworkUsageService } from '../../../network-usage/services/network-usage.service';
 import {
 	EDGE_CONTROL_LIMITS,
 	EDGE_USAGE_CHAIN_POSITION,
@@ -35,7 +36,6 @@ import { Edge } from '../../entities/edge.entity';
 import { EdgeSession } from '../../entities/edge-session.entity';
 import { EdgeUsageCheckpoint } from '../../entities/edge-usage-checkpoint.entity';
 import { ExposureBackend } from '../../entities/exposure-backend.entity';
-import { NetworkUsageService } from '../../usage/services/network-usage.service';
 import {
 	edgeUsageDigest,
 	edgeUsageSignaturePayload,

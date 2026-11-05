@@ -21,7 +21,7 @@ import { errorMessage } from '../../common/utils/error/error.util';
 import { addDays } from '../../common/utils/time.util';
 import { MicroUsd } from '../../common/values/micro-usd.value';
 import { databaseNow } from '../../infra/database/utils/database-time.util';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
+import { Machine } from '../../machine/entities/machine.entity';
 import { SettingsService } from '../../settings/services/settings.service';
 import type { SettingsSnapshot } from '../../settings/types/settings.types';
 import { EARNINGS_MATURITY_BATCH_SIZE } from '../constants/payments.constants';

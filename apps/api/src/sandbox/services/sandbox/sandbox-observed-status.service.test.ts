@@ -20,15 +20,15 @@ import {
 	SandboxRuntimeState,
 } from '@snapflow/machine-proto';
 import { fakeInstance } from '../../../common/testing/instance.fake';
+import { Machine } from '../../../machine/entities/machine.entity';
+import { MachineSession } from '../../../machine/entities/machine-session.entity';
+import { MachineSessionService } from '../../../machine/services/machine-session.service';
+import { MachineAssessmentService } from '../../../machine/services/qualification/machine-assessment.service';
+import { MachineReliabilityService } from '../../../machine/services/qualification/machine-reliability.service';
 import { OBSERVED_TRANSITION } from '../../constants/sandbox-state-machine.constants';
 import { Sandbox } from '../../entities/sandbox.entity';
 import { SandboxPlacement } from '../../entities/sandbox-placement.entity';
 import { SandboxConflictException } from '../../exceptions/sandbox-conflict.exception';
-import { Machine } from '../../machine/entities/machine.entity';
-import { MachineSession } from '../../machine/entities/machine-session.entity';
-import { MachineSessionService } from '../../machine/services/machine-session.service';
-import { MachineAssessmentService } from '../../machine/services/qualification/machine-assessment.service';
-import { MachineReliabilityService } from '../../machine/services/qualification/machine-reliability.service';
 import { SandboxObservedStatusProjector } from './sandbox-observed-status.projector';
 import { SandboxObservedStatusService } from './sandbox-observed-status.service';
 

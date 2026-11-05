@@ -16,9 +16,9 @@ import {
 } from '../../billing/constants/billing.constants';
 import type { ForfeitableLine } from '../../billing/utils/ledger/billing-forfeiture-posting.util';
 import { MicroUsd } from '../../common/values/micro-usd.value';
+import { MachineState } from '../../machine/enums/machine-state.enum';
 import { ListingVisibility } from '../../marketplace/enums/listing-visibility.enum';
 import { MachineTier } from '../../marketplace/enums/machine-tier.enum';
-import { MachineState } from '../../sandbox/machine/enums/machine-state.enum';
 import { MachineBenchmark } from '../entities/machine-benchmark.entity';
 import { MachineSpotCheck } from '../entities/machine-spot-check.entity';
 import { BenchmarkState } from '../enums/benchmark-state.enum';

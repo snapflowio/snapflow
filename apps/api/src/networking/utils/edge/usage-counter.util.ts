@@ -8,7 +8,7 @@
  */
 
 import { UnprocessableEntityException } from '@nestjs/common';
-import { NETWORK_USAGE_MAXIMUM_COUNTER } from '../../usage/constants/network-usage.constants';
+import { NETWORK_USAGE_MAXIMUM_COUNTER } from '../../../network-usage/constants/network-usage.constants';
 
 export function parseSupportedUsageCounter(
 	value: string,

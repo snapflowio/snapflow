@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { SnapshotState } from '../../sandbox/snapshot/enums/snapshot-state.enum';
+import { SnapshotState } from '../../snapshot/enums/snapshot-state.enum';
 
 export const SNAPSHOT_STATES_CONSUMING_RESOURCES: SnapshotState[] = [
 	SnapshotState.BUILDING,

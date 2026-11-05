@@ -14,9 +14,9 @@ import { type EntityManager, MikroORM } from '@mikro-orm/postgresql';
 import { integrationDatabaseUrl } from '../../common/testing/integration-database.util';
 import { addMilliseconds, addMinutes } from '../../common/utils/time.util';
 import { ENTITY_MAPPING_OPTIONS } from '../../infra/database/config/entity-mapping.config';
-import { JOB_MACHINE_API_VERSION } from '../../sandbox/machine/constants/machine.constants';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
-import { MachineState } from '../../sandbox/machine/enums/machine-state.enum';
+import { JOB_MACHINE_API_VERSION } from '../../machine/constants/machine.constants';
+import { Machine } from '../../machine/entities/machine.entity';
+import { MachineState } from '../../machine/enums/machine-state.enum';
 import {
 	BENCHMARK_POLICY,
 	BENCHMARK_SUITE_VERSION,

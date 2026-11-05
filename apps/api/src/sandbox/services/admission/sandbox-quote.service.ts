@@ -11,10 +11,18 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PlacementBillingCapacityService } from '../../../billing/services/placement/placement-billing-capacity.service';
 import { placementPriceTerms } from '../../../billing/utils/lease-pricing.util';
+import type { CustomerMachineParams } from '../../../machine/types/machine-scheduling.types';
 import { SELF_USE_MARKUP_BASIS_POINTS } from '../../../marketplace/constants/marketplace.constants';
 import { MachineUnavailableReason } from '../../../marketplace/enums/machine-unavailable-reason.enum';
 import { PlacementKind } from '../../../marketplace/enums/placement-kind.enum';
 import { OrganizationService } from '../../../organization/services/organization.service';
+import { MachineAvailabilityService } from '../../../placement/services/machine-availability.service';
+import { MachineSchedulingService } from '../../../placement/services/machine-scheduling.service';
+import { PlacementQuoteService } from '../../../placement/services/placement-quote.service';
+import { SandboxPlacementResolverService } from '../../../placement/services/sandbox-placement-resolver.service';
+import { SnapshotState } from '../../../snapshot/enums/snapshot-state.enum';
+import { SandboxSnapshotLookupService } from '../../../snapshot/services/sandbox-snapshot-lookup.service';
+import { snapshotSandboxShape } from '../../../snapshot/utils/snapshot-shape.util';
 import {
 	BUILD_SANDBOX_CLASS,
 	BUILD_SANDBOX_DEFAULT_RESOURCES,
@@ -23,14 +31,6 @@ import type {
 	SandboxQuoteDto,
 	SandboxQuoteRequestDto,
 } from '../../dto/sandbox-quote.dto';
-import type { CustomerMachineParams } from '../../machine/types/machine-scheduling.types';
-import { MachineAvailabilityService } from '../../placement/services/machine-availability.service';
-import { MachineSchedulingService } from '../../placement/services/machine-scheduling.service';
-import { PlacementQuoteService } from '../../placement/services/placement-quote.service';
-import { SandboxPlacementResolverService } from '../../placement/services/sandbox-placement-resolver.service';
-import { SnapshotState } from '../../snapshot/enums/snapshot-state.enum';
-import { SandboxSnapshotLookupService } from '../../snapshot/services/sandbox-snapshot-lookup.service';
-import { snapshotSandboxShape } from '../../snapshot/utils/snapshot-shape.util';
 
 @Injectable()
 export class SandboxQuoteService {

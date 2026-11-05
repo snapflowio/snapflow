@@ -18,10 +18,27 @@ import type { HumanPrincipal } from '../../../common/types/platform-principal.ty
 import { isUniqueViolation } from '../../../common/utils/error/database-error.util';
 import { ResourceShape } from '../../../common/values/resource-shape.value';
 import { RedisLockProvider } from '../../../infra/redis/providers/redis-lock.provider';
+import { Machine } from '../../../machine/entities/machine.entity';
+import type { CustomerMachineParams } from '../../../machine/types/machine-scheduling.types';
+import { machineWorkloadFingerprint } from '../../../machine/utils/machine-workload-fingerprint.util';
 import { OrganizationService } from '../../../organization/services/organization.service';
 import { OrganizationLimitsService } from '../../../organization/services/organization-limits.service';
 import { OrganizationQuotaService } from '../../../organization/services/organization-quota.service';
+import { NoAvailableMachineError } from '../../../placement/exceptions/no-available-machine.exception';
+import { MachineReservationService } from '../../../placement/services/machine-reservation.service';
+import { MachineSchedulingService } from '../../../placement/services/machine-scheduling.service';
+import { SandboxPlacementResolverService } from '../../../placement/services/sandbox-placement-resolver.service';
+import { resolveGpuTypePreferences } from '../../../placement/utils/gpu-type-preferences.util';
+import {
+	type PendingQuotaUsage,
+	pendingQuotaUsage,
+} from '../../../placement/utils/pending-quota-usage.util';
+import { placementRequest } from '../../../placement/utils/sandbox-placement.util';
 import { SecretService } from '../../../secrets/services/secret.service';
+import {
+	BuildInfo,
+	generateBuildInfoHash as generateBuildSnapshotRef,
+} from '../../../snapshot/entities/build-info.entity';
 import {
 	BUILD_SANDBOX_CLASS,
 	BUILD_SANDBOX_DEFAULT_RESOURCES,
@@ -29,24 +46,7 @@ import {
 import { CreateSandboxDto } from '../../dto/create-sandbox.dto';
 import { Sandbox } from '../../entities/sandbox.entity';
 import { SandboxState } from '../../enums/sandbox-state.enum';
-import { Machine } from '../../machine/entities/machine.entity';
-import type { CustomerMachineParams } from '../../machine/types/machine-scheduling.types';
-import { machineWorkloadFingerprint } from '../../machine/utils/machine-workload-fingerprint.util';
-import { NoAvailableMachineError } from '../../placement/exceptions/no-available-machine.exception';
-import { MachineReservationService } from '../../placement/services/machine-reservation.service';
-import { MachineSchedulingService } from '../../placement/services/machine-scheduling.service';
-import { SandboxPlacementResolverService } from '../../placement/services/sandbox-placement-resolver.service';
-import { resolveGpuTypePreferences } from '../../placement/utils/gpu-type-preferences.util';
-import {
-	type PendingQuotaUsage,
-	pendingQuotaUsage,
-} from '../../placement/utils/pending-quota-usage.util';
-import { placementRequest } from '../../placement/utils/sandbox-placement.util';
 import { SandboxRepository } from '../../repositories/sandbox.repository';
-import {
-	BuildInfo,
-	generateBuildInfoHash as generateBuildSnapshotRef,
-} from '../../snapshot/entities/build-info.entity';
 import { isEphemeral } from '../../utils/runtime/ephemeral.util';
 import { SandboxAdmissionService } from '../admission/sandbox-admission.service';
 import { SandboxQuotaService } from '../sandbox/sandbox-quota.service';

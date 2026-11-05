@@ -14,8 +14,8 @@ import {
 	PrimaryKey,
 	Property,
 } from '@mikro-orm/decorators/legacy';
+import { GpuType } from '../../machine/enums/gpu-type.enum';
 import { SandboxClass } from '../../sandbox/enums/sandbox-class.enum';
-import { GpuType } from '../../sandbox/machine/enums/gpu-type.enum';
 import { Organization } from './organization.entity';
 
 const DEFAULT_MAX_CPU_PER_GPU_SANDBOX = 16;

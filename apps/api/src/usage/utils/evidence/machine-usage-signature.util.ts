@@ -8,7 +8,7 @@
  */
 
 import { createHash, createPublicKey, verify } from 'node:crypto';
-import { MACHINE_USAGE_SIGNATURE_DOMAIN } from '../../../sandbox/machine/constants/machine-usage.constants';
+import { MACHINE_USAGE_SIGNATURE_DOMAIN } from '../../../machine/constants/machine-usage.constants';
 import type { MachineUsageReceiptEnvelope } from '../../schemas/machine-usage-envelope.schema';
 
 const ED25519_SIGNATURE_BYTES = 64;

@@ -12,9 +12,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { RETENTION_POLICY } from '../../../common/constants/retention-policy.constants';
 import { errorMessage } from '../../../common/utils/error/error.util';
 import { pruneInBatches } from '../../../infra/database/utils/batched-prune.util';
+import { MachineUsageReceipt } from '../../../machine/entities/machine-usage-receipt.entity';
+import { ExposureNetworkUsage } from '../../../network-usage/entities/exposure-network-usage.entity';
 import { EdgeUsageCheckpoint } from '../../../networking/entities/edge-usage-checkpoint.entity';
-import { ExposureNetworkUsage } from '../../../networking/usage/entities/exposure-network-usage.entity';
-import { MachineUsageReceipt } from '../../../sandbox/machine/entities/machine-usage-receipt.entity';
 import { BILLING_EVIDENCE_RETENTION } from '../../constants/billing.constants';
 import { BillingEvidenceBundle } from '../../entities/billing-evidence-bundle.entity';
 import {

@@ -10,9 +10,9 @@
 import { InjectRepository } from '@mikro-orm/nestjs';
 import type { EntityRepository } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
-import { DOCKER_HUB_URL } from '../persistence/constants/docker-registry-persistence.constants';
-import { DockerRegistry } from '../persistence/entities/docker-registry.entity';
-import { RegistryType } from '../persistence/enums/registry-type.enum';
+import { DOCKER_HUB_URL } from '../constants/docker-registry-persistence.constants';
+import { DockerRegistry } from '../entities/docker-registry.entity';
+import { RegistryType } from '../enums/registry-type.enum';
 import { findRegistryByUrlMatch } from '../utils/registry-match.util';
 import { SnapshotManagerRegistryService } from './snapshot-manager-registry.service';
 

@@ -13,7 +13,7 @@ import {
 	BenchmarkMachinePayloadSchema,
 	BenchmarkProfile,
 } from '@snapflow/machine-proto';
-import { protoJsonObject } from '../../sandbox/machine/utils/proto/proto-json.util';
+import { protoJsonObject } from '../../machine/utils/proto/proto-json.util';
 import type { MachineBenchmark } from '../entities/machine-benchmark.entity';
 
 export type ChallengedBenchmark = Pick<

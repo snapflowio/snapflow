@@ -19,10 +19,10 @@ import {
 } from '@mikro-orm/decorators/legacy';
 import { BASIS_POINTS_SCALE } from '../../common/constants/money.constants';
 import { sqlValueList } from '../../infra/database/utils/sql-value-list.util';
+import { Machine } from '../../machine/entities/machine.entity';
 import { Organization } from '../../organization/entities/organization.entity';
 import { Sandbox } from '../../sandbox/entities/sandbox.entity';
 import { SandboxPlacement } from '../../sandbox/entities/sandbox-placement.entity';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
 import { MARKETPLACE_MONEY_COLUMN_TYPE } from '../constants/marketplace.constants';
 import { LeaseEndReason } from '../enums/lease-end-reason.enum';
 import { LeaseRenewalState } from '../enums/lease-renewal-state.enum';

@@ -9,10 +9,10 @@
 
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { ratedNetworkPeriod } from '../../../networking/usage/testing/network-period.fixtures';
+import { ratedNetworkPeriod } from '../../../network-usage/testing/network-period.fixtures';
 import { BillingAuditFailure } from '../../constants/billing-audit.constants';
 import { BillingEvidenceAuditError } from '../../exceptions/billing-evidence-audit.exception';
-import { windowLease } from '../../usage/testing/billable-window.fixtures';
+import { windowLease } from '../../testing/billable-window.fixtures';
 import { auditNetworkEvidence } from './network-evidence-audit.util';
 
 function failure(run: () => unknown): BillingAuditFailure {

@@ -20,30 +20,30 @@ import { isUniqueViolation } from '../../../common/utils/error/database-error.ut
 import { errorConstraint } from '../../../common/utils/error/error.util';
 import { ResourceShape } from '../../../common/values/resource-shape.value';
 import { observeOperation } from '../../../infra/logging/utils/operation-observability.util';
+import type { CustomerMachineParams } from '../../../machine/types/machine-scheduling.types';
+import { machineWorkloadFingerprint } from '../../../machine/utils/machine-workload-fingerprint.util';
 import { OrganizationService } from '../../../organization/services/organization.service';
 import { OrganizationLimitsService } from '../../../organization/services/organization-limits.service';
+import {
+	MachineReservationService,
+	type ReservedMachine,
+} from '../../../placement/services/machine-reservation.service';
+import { SandboxPlacementResolverService } from '../../../placement/services/sandbox-placement-resolver.service';
+import {
+	type PendingQuotaUsage,
+	pendingQuotaUsage,
+} from '../../../placement/utils/pending-quota-usage.util';
+import { placementRequest } from '../../../placement/utils/sandbox-placement.util';
 import { SecretService } from '../../../secrets/services/secret.service';
+import { Snapshot } from '../../../snapshot/entities/snapshot.entity';
+import { SnapshotState } from '../../../snapshot/enums/snapshot-state.enum';
+import { SandboxSnapshotLookupService } from '../../../snapshot/services/sandbox-snapshot-lookup.service';
+import { snapshotSandboxShape } from '../../../snapshot/utils/snapshot-shape.util';
 import { CreateSandboxDto } from '../../dto/create-sandbox.dto';
 import { Sandbox } from '../../entities/sandbox.entity';
 import { SandboxClass } from '../../enums/sandbox-class.enum';
 import { SandboxState } from '../../enums/sandbox-state.enum';
-import type { CustomerMachineParams } from '../../machine/types/machine-scheduling.types';
-import { machineWorkloadFingerprint } from '../../machine/utils/machine-workload-fingerprint.util';
-import {
-	MachineReservationService,
-	type ReservedMachine,
-} from '../../placement/services/machine-reservation.service';
-import { SandboxPlacementResolverService } from '../../placement/services/sandbox-placement-resolver.service';
-import {
-	type PendingQuotaUsage,
-	pendingQuotaUsage,
-} from '../../placement/utils/pending-quota-usage.util';
-import { placementRequest } from '../../placement/utils/sandbox-placement.util';
 import { SandboxRepository } from '../../repositories/sandbox.repository';
-import { Snapshot } from '../../snapshot/entities/snapshot.entity';
-import { SnapshotState } from '../../snapshot/enums/snapshot-state.enum';
-import { SandboxSnapshotLookupService } from '../../snapshot/services/sandbox-snapshot-lookup.service';
-import { snapshotSandboxShape } from '../../snapshot/utils/snapshot-shape.util';
 import { isEphemeral } from '../../utils/runtime/ephemeral.util';
 import { normalizeSandboxCapabilities } from '../../utils/runtime/sandbox-capabilities.util';
 import { SandboxAdmissionService } from '../admission/sandbox-admission.service';

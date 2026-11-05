@@ -11,7 +11,7 @@ import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { ResourceShape } from '../../common/values/resource-shape.value';
 import { parseDatabaseTimestamp } from '../../infra/database/utils/database-time.util';
 import { LocationDto } from '../../location/dto/location.dto';
-import { GpuType } from '../../sandbox/machine/enums/gpu-type.enum';
+import { GpuType } from '../../machine/enums/gpu-type.enum';
 import type { MachineBenchmark } from '../../verification/entities/machine-benchmark.entity';
 import { BenchmarkState } from '../../verification/enums/benchmark-state.enum';
 import { ListingState } from '../enums/listing-state.enum';

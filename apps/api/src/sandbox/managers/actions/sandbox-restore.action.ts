@@ -11,23 +11,23 @@ import type { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { SandboxLifecycle } from '@snapflow/machine-proto';
 import { BillingRestrictedException } from '../../../billing/exceptions/billing-restricted.exception';
+import { MachineService } from '../../../machine/services/machine.service';
+import type { CustomerMachineParams } from '../../../machine/types/machine-scheduling.types';
 import { LeaseEndReason } from '../../../marketplace/enums/lease-end-reason.enum';
 import { PlacementKind } from '../../../marketplace/enums/placement-kind.enum';
-import { Sandbox } from '../../entities/sandbox.entity';
-import { SandboxState } from '../../enums/sandbox-state.enum';
-import { MachineService } from '../../machine/services/machine.service';
-import type { CustomerMachineParams } from '../../machine/types/machine-scheduling.types';
-import { MachineUnavailableException } from '../../placement/exceptions/machine-unavailable.exception';
-import { NoAvailableMachineError } from '../../placement/exceptions/no-available-machine.exception';
+import { MachineUnavailableException } from '../../../placement/exceptions/machine-unavailable.exception';
+import { NoAvailableMachineError } from '../../../placement/exceptions/no-available-machine.exception';
 import {
 	MachineReservationService,
 	type ReservedMachine,
-} from '../../placement/services/machine-reservation.service';
-import { sandboxSchedulingParameters } from '../../placement/utils/sandbox-scheduling.util';
+} from '../../../placement/services/machine-reservation.service';
+import { sandboxSchedulingParameters } from '../../../placement/utils/sandbox-scheduling.util';
+import { SnapshotService } from '../../../snapshot/services/snapshot.service';
+import { BackupState } from '../../../volume/enums/backup-state.enum';
+import { Sandbox } from '../../entities/sandbox.entity';
+import { SandboxState } from '../../enums/sandbox-state.enum';
 import { SandboxRepository } from '../../repositories/sandbox.repository';
 import { SandboxRuntimeSpecService } from '../../services/sandbox/sandbox-runtime-spec.service';
-import { SnapshotService } from '../../snapshot/services/snapshot.service';
-import { BackupState } from '../../volume/enums/backup-state.enum';
 import { DONT_SYNC_AGAIN, SandboxAction, SyncState } from './sandbox.action';
 
 const MISSING_BACKUP_REASON =

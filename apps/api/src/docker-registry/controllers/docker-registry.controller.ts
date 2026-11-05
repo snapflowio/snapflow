@@ -59,8 +59,8 @@ import {
 } from '../dto/docker-registry.dto';
 import { RegistryPushAccessDto } from '../dto/registry-push-access.dto';
 import { UpdateDockerRegistryDto } from '../dto/update-docker-registry.dto';
+import { RegistryType } from '../enums/registry-type.enum';
 import { DockerRegistryAccessGuard } from '../guards/docker-registry-access.guard';
-import { RegistryType } from '../persistence/enums/registry-type.enum';
 import { DockerRegistryService } from '../services/docker-registry.service';
 import { RegistryPushAccessService } from '../services/registry-push-access.service';
 

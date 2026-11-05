@@ -14,9 +14,9 @@ import { MikroORM } from '@mikro-orm/postgresql';
 import { MILLISECONDS_PER_DAY } from '../../../common/constants/time.constants';
 import { integrationDatabaseUrl } from '../../../common/testing/integration-database.util';
 import { ENTITY_MAPPING_OPTIONS } from '../../../infra/database/config/entity-mapping.config';
+import { MachineUsageReceipt } from '../../../machine/entities/machine-usage-receipt.entity';
+import { ExposureNetworkUsage } from '../../../network-usage/entities/exposure-network-usage.entity';
 import { EdgeUsageCheckpoint } from '../../../networking/entities/edge-usage-checkpoint.entity';
-import { ExposureNetworkUsage } from '../../../networking/usage/entities/exposure-network-usage.entity';
-import { MachineUsageReceipt } from '../../../sandbox/machine/entities/machine-usage-receipt.entity';
 import {
 	BILLING_EVIDENCE_RETENTION,
 	BillingEvidenceStatus,

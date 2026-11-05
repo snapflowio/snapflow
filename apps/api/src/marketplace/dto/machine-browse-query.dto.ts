@@ -28,13 +28,13 @@ import {
 import { PageLimit } from '../../common/decorators/page-limit.decorator';
 import { ToArray } from '../../common/decorators/to-array.decorator';
 import { IsLocationCode } from '../../location/validators/is-location-code.validator';
+import { GpuType } from '../../machine/enums/gpu-type.enum';
 import {
 	DEFAULT_SANDBOX_CPU,
 	DEFAULT_SANDBOX_DISK_GIB,
 	DEFAULT_SANDBOX_GPU,
 	DEFAULT_SANDBOX_MEMORY_GIB,
 } from '../../sandbox/constants/sandbox.constants';
-import { GpuType } from '../../sandbox/machine/enums/gpu-type.enum';
 import { MACHINE_BROWSE_PAGE_LIMIT } from '../constants/marketplace.constants';
 import { MachineBrowseSort } from '../enums/machine-browse-sort.enum';
 import { MachineCategory } from '../enums/machine-category.enum';

@@ -15,10 +15,15 @@ import { DockerRegistryModule } from '../docker-registry/docker-registry.module'
 import { IdempotencyModule } from '../idempotency/idempotency.module';
 import { ControlWakeModule } from '../infra/control-wake/control-wake.module';
 import { RedisConnectionModule } from '../infra/redis/redis.module';
+import { MachineModule } from '../machine/machine.module';
+import { MachineJobModule } from '../machine-job/machine-job.module';
 import { RealtimeOutboxEvent } from '../notification/entities/realtime-outbox-event.entity';
 import { OrganizationModule } from '../organization/organization.module';
+import { PlacementModule } from '../placement/placement.module';
 import { SecretsModule } from '../secrets/secrets.module';
 import { SettingsModule } from '../settings/settings.module';
+import { SnapshotModule } from '../snapshot/snapshot.module';
+import { VolumeModule } from '../volume/volume.module';
 import { AdminSandboxController } from './controllers/admin-sandbox.controller';
 import { MachineSandboxControlController } from './controllers/machine-sandbox-control.controller';
 import { MachineSelfController } from './controllers/machine-self.controller';
@@ -36,8 +41,6 @@ import { SandboxLastActivity } from './entities/sandbox-last-activity.entity';
 import { SandboxObservedStatus } from './entities/sandbox-observed-status.entity';
 import { SandboxPlacement } from './entities/sandbox-placement.entity';
 import { SshAccess } from './entities/ssh-access.entity';
-import { MachineModule } from './machine/machine.module';
-import { MachineJobModule } from './machine-job/machine-job.module';
 import { SandboxArchiveAction } from './managers/actions/sandbox-archive.action';
 import { SandboxBuildAction } from './managers/actions/sandbox-build.action';
 import { SandboxDestroyAction } from './managers/actions/sandbox-destroy.action';
@@ -58,7 +61,6 @@ import { SandboxLeaseRenewalManager } from './managers/sandbox-lease-renewal.man
 import { SandboxLifecycleCascadeListener } from './managers/sandbox-lifecycle-cascade.listener';
 import { SandboxStateWakeListener } from './managers/sandbox-state-wake.listener';
 import { SandboxSyncScheduler } from './managers/sandbox-sync-scheduler.manager';
-import { PlacementModule } from './placement/placement.module';
 import { SandboxRepository } from './repositories/sandbox.repository';
 import { SandboxAdmissionService } from './services/admission/sandbox-admission.service';
 import { SandboxQuoteService } from './services/admission/sandbox-quote.service';
@@ -87,9 +89,7 @@ import { SandboxRuntimeSpecService } from './services/sandbox/sandbox-runtime-sp
 import { SandboxSearchService } from './services/sandbox/sandbox-search.service';
 import { SandboxSettingsService } from './services/sandbox/sandbox-settings.service';
 import { SandboxStateWaitService } from './services/sandbox/sandbox-state-wait.service';
-import { SnapshotModule } from './snapshot/snapshot.module';
 import { RealtimeOutboxSubscriber } from './subscribers/realtime-outbox.subscriber';
-import { VolumeModule } from './volume/volume.module';
 
 @Module({
 	imports: [

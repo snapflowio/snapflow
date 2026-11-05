@@ -10,11 +10,11 @@
 import { randomUUID } from 'node:crypto';
 import { MILLISECONDS_PER_SECOND } from '../../common/constants/time.constants';
 import { addMilliseconds } from '../../common/utils/time.util';
-import { SandboxClass } from '../../sandbox/enums/sandbox-class.enum';
 import {
 	signedUsageChain,
 	USAGE_MACHINE_ID,
-} from '../../sandbox/machine/testing/signed-usage-readings.fixtures';
+} from '../../machine/testing/signed-usage-readings.fixtures';
+import { SandboxClass } from '../../sandbox/enums/sandbox-class.enum';
 import { verifyMachineUsageReceipt } from '../../usage/utils/evidence/machine-usage-evidence.util';
 import {
 	BILLING_LINE_SCHEMA_VERSION,
@@ -24,15 +24,15 @@ import { BillingEvidenceBundle } from '../entities/billing-evidence-bundle.entit
 import type { BillingLineItem } from '../entities/billing-line-item.entity';
 import type { BillingEvidenceBundlePayload } from '../schemas/billing-evidence-bundle.schema';
 import { billingEvidenceRoot } from '../services/evidence/billing-evidence-bundle.service';
+import { computeEvidenceBundle } from '../utils/evidence/compute-evidence.util';
+import { attestUsageWindow } from '../utils/evidence/usage-attestation.util';
+import { billingLineContentDigest } from '../utils/line-item/billing-line-content.util';
 import {
 	billableWindow,
 	computeLine,
 	WINDOW_TERMS,
 	windowLease,
-} from '../usage/testing/billable-window.fixtures';
-import { computeEvidenceBundle } from '../utils/evidence/compute-evidence.util';
-import { attestUsageWindow } from '../utils/evidence/usage-attestation.util';
-import { billingLineContentDigest } from '../utils/line-item/billing-line-content.util';
+} from './billable-window.fixtures';
 
 const AUDIT_WINDOW_MILLIS = 60 * MILLISECONDS_PER_SECOND;
 const LEAD_MILLIS = MILLISECONDS_PER_SECOND;

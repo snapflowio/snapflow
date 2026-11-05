@@ -8,7 +8,7 @@
  */
 
 import type { Continent } from '../../location/enums/continent.enum';
-import { MachineState } from '../../sandbox/machine/enums/machine-state.enum';
+import { MachineState } from '../../machine/enums/machine-state.enum';
 import { ListingState } from '../enums/listing-state.enum';
 import {
 	type MachineBrowseQuery,

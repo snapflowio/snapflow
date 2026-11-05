@@ -7,13 +7,13 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import type { ForkSandboxDto } from '../dto/fork-sandbox.dto';
-import { Sandbox } from '../entities/sandbox.entity';
-import { SandboxState } from '../enums/sandbox-state.enum';
 import {
 	applyPlacement,
 	placementRequest,
-} from '../placement/utils/sandbox-placement.util';
+} from '../../placement/utils/sandbox-placement.util';
+import type { ForkSandboxDto } from '../dto/fork-sandbox.dto';
+import { Sandbox } from '../entities/sandbox.entity';
+import { SandboxState } from '../enums/sandbox-state.enum';
 
 export function buildForkedSandbox(
 	sourceSandbox: Sandbox,

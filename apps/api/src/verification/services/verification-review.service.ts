@@ -18,9 +18,9 @@ import { BillingLedgerService } from '../../billing/services/billing-ledger.serv
 import { earningsForfeiturePosting } from '../../billing/utils/ledger/billing-forfeiture-posting.util';
 import { findCursorPage } from '../../common/utils/pagination/cursor-page.util';
 import { databaseNow } from '../../infra/database/utils/database-time.util';
+import { Machine } from '../../machine/entities/machine.entity';
 import { MachineTier } from '../../marketplace/enums/machine-tier.enum';
 import { MachineMarketplaceService } from '../../marketplace/services/machine-marketplace.service';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
 import {
 	ALL_FORFEITABLE_CHARGE_CLASSES,
 	NETWORK_FORFEITABLE_CHARGE_CLASSES,

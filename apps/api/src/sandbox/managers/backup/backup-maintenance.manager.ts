@@ -20,6 +20,7 @@ import { settleSequentially } from '../../../common/utils/concurrency/sequential
 import { TrackedJobs } from '../../../common/utils/concurrency/tracked-jobs.util';
 import { addMilliseconds } from '../../../common/utils/time.util';
 import { RedisLockProvider } from '../../../infra/redis/providers/redis-lock.provider';
+import { BackupState } from '../../../volume/enums/backup-state.enum';
 import {
 	BACKUP_MAINTENANCE_LOCK_TTL_SECONDS,
 	BACKUP_POLICY,
@@ -36,7 +37,6 @@ import { Sandbox } from '../../entities/sandbox.entity';
 import { SandboxDesiredState } from '../../enums/sandbox-desired-state.enum';
 import { SandboxBackupStateService } from '../../services/backup/sandbox-backup-state.service';
 import { hydrateSandboxes } from '../../utils/hydrate-sandboxes.util';
-import { BackupState } from '../../volume/enums/backup-state.enum';
 
 @Injectable()
 export class BackupMaintenanceManager extends TrackedJobs {

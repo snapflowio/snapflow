@@ -9,7 +9,7 @@
 
 import { Module } from '@nestjs/common';
 import { BillingModule } from '../billing.module';
-import { BillingUsageModule } from '../usage/usage.module';
+import { BillingUsageModule } from '../billing-usage.module';
 import { BillingEvidenceRetentionJob } from './jobs/billing-evidence-retention.job';
 import { UsageReconciliationJob } from './jobs/usage-reconciliation.job';
 

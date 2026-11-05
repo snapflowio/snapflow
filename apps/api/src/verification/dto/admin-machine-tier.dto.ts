@@ -20,9 +20,9 @@ import {
 	CursorPageDto,
 	CursorPageQueryDto,
 } from '../../common/dto/cursor-page.dto';
+import type { Machine } from '../../machine/entities/machine.entity';
 import { MachineCategory } from '../../marketplace/enums/machine-category.enum';
 import { MachineTier } from '../../marketplace/enums/machine-tier.enum';
-import type { Machine } from '../../sandbox/machine/entities/machine.entity';
 
 const TIER_REASON_MAXIMUM_LENGTH = 255;
 

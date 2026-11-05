@@ -8,8 +8,8 @@
  */
 
 import type { MicroUsd } from '../../common/values/micro-usd.value';
-import type { Machine } from '../../sandbox/machine/entities/machine.entity';
-import type { GpuType } from '../../sandbox/machine/enums/gpu-type.enum';
+import type { Machine } from '../../machine/entities/machine.entity';
+import type { GpuType } from '../../machine/enums/gpu-type.enum';
 import type { SandboxLease } from '../entities/sandbox-lease.entity';
 import type { PriceFloorSource } from '../enums/price-floor-source.enum';
 

@@ -11,8 +11,8 @@ import { IsolationLevel, TransactionPropagation } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { databaseNow } from '../../../infra/database/utils/database-time.util';
-import type { MachineSession } from '../../../sandbox/machine/entities/machine-session.entity';
-import { MachineSessionService } from '../../../sandbox/machine/services/machine-session.service';
+import type { MachineSession } from '../../../machine/entities/machine-session.entity';
+import { MachineSessionService } from '../../../machine/services/machine-session.service';
 import {
 	LIVE_BINDING_STATES,
 	TUNNEL_CERTIFICATE_AUTHORITY,

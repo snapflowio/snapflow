@@ -17,6 +17,8 @@ import { TrackJobExecution } from '../../../common/decorators/track-job-executio
 import { settleSequentially } from '../../../common/utils/concurrency/sequential-async.util';
 import { TrackedJobs } from '../../../common/utils/concurrency/tracked-jobs.util';
 import { RedisLockProvider } from '../../../infra/redis/providers/redis-lock.provider';
+import { MachineState } from '../../../machine/enums/machine-state.enum';
+import { BackupState } from '../../../volume/enums/backup-state.enum';
 import {
 	BACKUP_MAX_WORKER_ERRORS,
 	BACKUP_PROGRESS_CURSOR_KEY,
@@ -32,12 +34,10 @@ import { Sandbox } from '../../entities/sandbox.entity';
 import { SandboxDesiredState } from '../../enums/sandbox-desired-state.enum';
 import { SandboxMode } from '../../enums/sandbox-mode.enum';
 import { SandboxState } from '../../enums/sandbox-state.enum';
-import { MachineState } from '../../machine/enums/machine-state.enum';
 import { SandboxBackupExecutionService } from '../../services/backup/sandbox-backup-execution.service';
 import { SandboxBackupRequestService } from '../../services/backup/sandbox-backup-request.service';
 import { SandboxBackupStateService } from '../../services/backup/sandbox-backup-state.service';
 import { hydrateSandboxes } from '../../utils/hydrate-sandboxes.util';
-import { BackupState } from '../../volume/enums/backup-state.enum';
 
 const PENDING_ONLY: ReadonlySet<BackupState> = new Set([BackupState.PENDING]);
 const IN_PROGRESS_ONLY: ReadonlySet<BackupState> = new Set([

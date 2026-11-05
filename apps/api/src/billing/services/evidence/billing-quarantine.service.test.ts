@@ -24,17 +24,17 @@ import {
 import { BillingLineAdjustment } from '../../entities/billing-line-adjustment.entity';
 import type { BillingLineItem } from '../../entities/billing-line-item.entity';
 import { BillingLineQuarantine } from '../../entities/billing-line-quarantine.entity';
+import { windowLease } from '../../testing/billable-window.fixtures';
 import {
 	auditedComputeLine,
 	tamperedReceiptBundle,
 } from '../../testing/billing-audit.fixtures';
 import { InMemoryEntityManager } from '../../testing/in-memory-entity-manager.fake';
-import { windowLease } from '../../usage/testing/billable-window.fixtures';
 import {
 	accountBalances,
 	attestationService,
 	RecordingLedger,
-} from '../../usage/testing/recording-ledger.fake';
+} from '../../testing/recording-ledger.fake';
 import type { AttestedCharge } from '../../utils/evidence/billing-attestation.util';
 import { BillingLineAdjustmentService } from '../billing-line-adjustment.service';
 import {

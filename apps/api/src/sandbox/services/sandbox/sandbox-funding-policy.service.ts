@@ -17,11 +17,11 @@ import { PlacementBillingAuthorizationService } from '../../../billing/services/
 import { MILLISECONDS_PER_MINUTE } from '../../../common/constants/time.constants';
 import { errorMessage } from '../../../common/utils/error/error.util';
 import { addMilliseconds } from '../../../common/utils/time.util';
+import { Machine } from '../../../machine/entities/machine.entity';
 import { Sandbox } from '../../entities/sandbox.entity';
 import { SandboxPlacement } from '../../entities/sandbox-placement.entity';
 import { SandboxDesiredState } from '../../enums/sandbox-desired-state.enum';
 import { SandboxState } from '../../enums/sandbox-state.enum';
-import { Machine } from '../../machine/entities/machine.entity';
 import { SandboxLifecycleService } from '../lifecycle/sandbox-lifecycle.service';
 
 const RESERVATION_RENEWAL_BATCH_SIZE = 100;

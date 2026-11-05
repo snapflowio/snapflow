@@ -16,7 +16,7 @@ import {
 	Property,
 } from '@mikro-orm/decorators/legacy';
 import { sqlValueList } from '../../infra/database/utils/sql-value-list.util';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
+import { Machine } from '../../machine/entities/machine.entity';
 import { VerificationReviewKind } from '../enums/verification-review-kind.enum';
 import { VerificationReviewState } from '../enums/verification-review-state.enum';
 

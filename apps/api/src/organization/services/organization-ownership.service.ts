@@ -13,17 +13,17 @@ import {
 	ORGANIZATION_ROLE,
 	ORGANIZATION_ROLE_SEPARATOR,
 } from '@snapflow/organization-access';
-import { DockerRegistry } from '../../docker-registry/persistence/entities/docker-registry.entity';
+import { DockerRegistry } from '../../docker-registry/entities/docker-registry.entity';
+import { Machine } from '../../machine/entities/machine.entity';
+import { MachineState } from '../../machine/enums/machine-state.enum';
 import { EXPOSURE_DESIRED_STATE } from '../../networking/constants/exposure.constants';
 import { Exposure } from '../../networking/entities/exposure.entity';
 import { Sandbox } from '../../sandbox/entities/sandbox.entity';
 import { SandboxState } from '../../sandbox/enums/sandbox-state.enum';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
-import { MachineState } from '../../sandbox/machine/enums/machine-state.enum';
-import { Snapshot } from '../../sandbox/snapshot/entities/snapshot.entity';
-import { Volume } from '../../sandbox/volume/entities/volume.entity';
-import { VolumeState } from '../../sandbox/volume/enums/volume-state.enum';
 import { Secret } from '../../secrets/entities/secret.entity';
+import { Snapshot } from '../../snapshot/entities/snapshot.entity';
+import { Volume } from '../../volume/entities/volume.entity';
+import { VolumeState } from '../../volume/enums/volume-state.enum';
 import {
 	LIVE_ORGANIZATION_RESOURCE,
 	type LiveOrganizationResource,

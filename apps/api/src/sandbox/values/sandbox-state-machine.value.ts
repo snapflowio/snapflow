@@ -8,6 +8,7 @@
  */
 
 import { SandboxLifecycle, SandboxRuntimeState } from '@snapflow/machine-proto';
+import { BackupState } from '../../volume/enums/backup-state.enum';
 import {
 	type ActiveLifecycle,
 	CONVERGED_RUNTIME_STATE,
@@ -23,7 +24,6 @@ import {
 import type { Sandbox } from '../entities/sandbox.entity';
 import { SandboxDesiredState } from '../enums/sandbox-desired-state.enum';
 import { SandboxState } from '../enums/sandbox-state.enum';
-import { BackupState } from '../volume/enums/backup-state.enum';
 
 export type ObservedSandbox = Pick<
 	Sandbox,

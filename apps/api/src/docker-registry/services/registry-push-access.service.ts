@@ -15,7 +15,7 @@ import {
 	RegistrySubjectKind,
 } from '../constants/registry-token.constants';
 import type { RegistryPushAccessDto } from '../dto/registry-push-access.dto';
-import { registryHost } from '../persistence/utils/docker-registry-url.util';
+import { registryHost } from '../utils/docker-registry-url.util';
 import {
 	namespaceAccess,
 	registryPushNamespace,

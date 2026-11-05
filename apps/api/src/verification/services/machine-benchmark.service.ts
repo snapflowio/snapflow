@@ -15,12 +15,12 @@ import { TrackJobExecution } from '../../common/decorators/track-job-execution.d
 import { TrackedJobs } from '../../common/utils/concurrency/tracked-jobs.util';
 import { addMinutes } from '../../common/utils/time.util';
 import { databaseNow } from '../../infra/database/utils/database-time.util';
+import { Machine } from '../../machine/entities/machine.entity';
+import type { Job } from '../../machine-job/entities/job.entity';
+import { JobType } from '../../machine-job/enums/job-type.enum';
+import { ResourceType } from '../../machine-job/enums/resource-type.enum';
+import { JobService } from '../../machine-job/services/job.service';
 import { SandboxPlacement } from '../../sandbox/entities/sandbox-placement.entity';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
-import type { Job } from '../../sandbox/machine-job/entities/job.entity';
-import { JobType } from '../../sandbox/machine-job/enums/job-type.enum';
-import { ResourceType } from '../../sandbox/machine-job/enums/resource-type.enum';
-import { JobService } from '../../sandbox/machine-job/services/job.service';
 import {
 	BENCHMARK_ERROR_CODE,
 	BENCHMARK_POLICY,

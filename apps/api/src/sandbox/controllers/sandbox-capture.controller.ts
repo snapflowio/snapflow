@@ -36,10 +36,10 @@ import { AuthenticatedRateLimitGuard } from '../../common/guards/authenticated-r
 import type { OrganizationAuthContext } from '../../common/types/organization-auth-context.types';
 import { ApiIdempotentRequestService } from '../../idempotency/services/api-idempotent-request.service';
 import { RequiredOrganizationPermissions } from '../../organization/decorators/required-organization-permissions.decorator';
+import { CreateSandboxSnapshotDto } from '../../snapshot/dto/create-sandbox-snapshot.dto';
 import { SandboxDto } from '../dto/sandbox.dto';
 import { SandboxAccessGuard } from '../guards/sandbox-access.guard';
 import { SandboxCaptureService } from '../services/lifecycle/sandbox-capture.service';
-import { CreateSandboxSnapshotDto } from '../snapshot/dto/create-sandbox-snapshot.dto';
 
 @Controller('sandbox')
 @ApiTags('sandbox')

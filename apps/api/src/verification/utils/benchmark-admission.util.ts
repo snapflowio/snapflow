@@ -7,9 +7,9 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import type { Job } from '../../sandbox/machine-job/entities/job.entity';
-import { JobErrorCode } from '../../sandbox/machine-job/enums/job-error-code.enum';
-import { JobStatus } from '../../sandbox/machine-job/enums/job-status.enum';
+import type { Job } from '../../machine-job/entities/job.entity';
+import { JobErrorCode } from '../../machine-job/enums/job-error-code.enum';
+import { JobStatus } from '../../machine-job/enums/job-status.enum';
 
 export function benchmarkNotAdmitted(
 	job: Pick<Job, 'status' | 'executionResult'>

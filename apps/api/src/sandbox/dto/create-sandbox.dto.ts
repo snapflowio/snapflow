@@ -26,7 +26,9 @@ import {
 	ValidateNested,
 } from 'class-validator';
 import { IsSafeDisplayString } from '../../common/validators/is-safe-string.validator';
+import { GpuType } from '../../machine/enums/gpu-type.enum';
 import { SecretBindingDto } from '../../secrets/dto/secret.dto';
+import { CreateBuildInfoDto } from '../../snapshot/dto/create-build-info.dto';
 import {
 	MAXIMUM_EGRESS_BANDWIDTH_BPS,
 	MINIMUM_EGRESS_BANDWIDTH_BPS,
@@ -37,8 +39,6 @@ import {
 } from '../constants/sandbox.constants';
 import { SandboxCapability } from '../enums/sandbox-capability.enum';
 import { SandboxMode } from '../enums/sandbox-mode.enum';
-import { GpuType } from '../machine/enums/gpu-type.enum';
-import { CreateBuildInfoDto } from '../snapshot/dto/create-build-info.dto';
 import { SandboxVolume } from './sandbox.dto';
 import { SandboxPlacementRequestDto } from './sandbox-placement.dto';
 

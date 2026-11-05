@@ -26,7 +26,7 @@ import {
 	ECR_CREDENTIALS,
 	ECR_REGISTRY_ROLE_FORBIDDEN,
 } from '../constants/ecr-credentials.constants';
-import type { DockerRegistry } from '../persistence/entities/docker-registry.entity';
+import type { DockerRegistry } from '../entities/docker-registry.entity';
 import {
 	decodeEcrAuthorizationToken,
 	type EcrAuth,

@@ -11,26 +11,26 @@ import assert from 'node:assert/strict';
 import { describe, it, mock } from 'node:test';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { fakeInstance } from '../../../common/testing/instance.fake';
-import { DockerRegistry } from '../../../docker-registry/persistence/entities/docker-registry.entity';
+import { DockerRegistry } from '../../../docker-registry/entities/docker-registry.entity';
 import { DockerRegistryService } from '../../../docker-registry/services/docker-registry.service';
+import { Machine } from '../../../machine/entities/machine.entity';
+import { MachineSnapshotTargetReason } from '../../../machine/enums/machine-snapshot-target-reason.enum';
+import { MachineSnapshotTargetService } from '../../../machine/services/desired-state/machine-snapshot-target.service';
+import { MachineService } from '../../../machine/services/machine.service';
+import type { GetMachineParams } from '../../../machine/types/machine-scheduling.types';
+import { MachineJobDispatchService } from '../../../machine-job/services/machine-job-dispatch.service';
+import { MachineReservationService } from '../../../placement/services/machine-reservation.service';
+import { MachineSchedulingService } from '../../../placement/services/machine-scheduling.service';
+import { BuildInfo } from '../../../snapshot/entities/build-info.entity';
+import {
+	type BuildProgress,
+	SnapshotBuildProgressService,
+} from '../../../snapshot/services/snapshot-build-progress.service';
 import { Sandbox } from '../../entities/sandbox.entity';
 import { PlacementLocality } from '../../enums/placement-locality.enum';
 import { SandboxMode } from '../../enums/sandbox-mode.enum';
 import { SandboxState } from '../../enums/sandbox-state.enum';
-import { Machine } from '../../machine/entities/machine.entity';
-import { MachineSnapshotTargetReason } from '../../machine/enums/machine-snapshot-target-reason.enum';
-import { MachineSnapshotTargetService } from '../../machine/services/desired-state/machine-snapshot-target.service';
-import { MachineService } from '../../machine/services/machine.service';
-import type { GetMachineParams } from '../../machine/types/machine-scheduling.types';
-import { MachineJobDispatchService } from '../../machine-job/services/machine-job-dispatch.service';
-import { MachineReservationService } from '../../placement/services/machine-reservation.service';
-import { MachineSchedulingService } from '../../placement/services/machine-scheduling.service';
 import { SandboxRepository } from '../../repositories/sandbox.repository';
-import { BuildInfo } from '../../snapshot/entities/build-info.entity';
-import {
-	type BuildProgress,
-	SnapshotBuildProgressService,
-} from '../../snapshot/services/snapshot-build-progress.service';
 import { DONT_SYNC_AGAIN, SYNC_AGAIN } from './sandbox.action';
 import { SandboxBuildAction } from './sandbox-build.action';
 

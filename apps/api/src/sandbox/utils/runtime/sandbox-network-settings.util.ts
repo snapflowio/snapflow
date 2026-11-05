@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import type { SandboxNetworkFields } from '../../machine/utils/proto/sandbox-runtime-spec.util';
+import type { SandboxNetworkFields } from '../../../machine/utils/proto/sandbox-runtime-spec.util';
 import {
 	requireValidDomainAllowList,
 	requireValidNetworkAllowList,

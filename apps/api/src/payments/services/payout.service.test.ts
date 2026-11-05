@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { describe, it, mock } from 'node:test';
 import { EntityManager } from '@mikro-orm/postgresql';
 import Stripe from 'stripe';
-import { RecordingLedger } from '../../billing/usage/testing/recording-ledger.fake';
+import { RecordingLedger } from '../../billing/testing/recording-ledger.fake';
 import { fakeInstance } from '../../common/testing/instance.fake';
 import { ISO_WEEKDAY } from '../../settings/constants/settings.constants';
 import { fakeSettings } from '../../settings/testing/settings.fake';

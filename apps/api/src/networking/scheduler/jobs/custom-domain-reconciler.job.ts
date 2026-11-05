@@ -10,7 +10,7 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { CustomDomainReconcilerService } from '../../custom-domain/services/custom-domain-reconciler.service';
+import { CustomDomainReconcilerService } from '../../../custom-domain/services/custom-domain-reconciler.service';
 
 @Injectable()
 export class CustomDomainReconcilerJob {

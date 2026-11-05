@@ -18,7 +18,18 @@ import {
 	lockRowsForNoKeyUpdate,
 } from '../../infra/database/utils/row-lock.util';
 import { observeOperation } from '../../infra/logging/utils/operation-observability.util';
+import { MachineDesiredStateRevisionService } from '../../machine/services/desired-state/machine-desired-state-revision.service';
+import { desiredStateMachineIds } from '../../machine/utils/desired-state/desired-state-change.util';
+import {
+	runtimeIntentUpdate,
+	type SandboxRuntimeIntent,
+} from '../../machine/utils/proto/sandbox-runtime-intent.util';
 import type { LeaseEndReason } from '../../marketplace/enums/lease-end-reason.enum';
+import type { ReservedMachine } from '../../placement/services/machine-reservation.service';
+import {
+	SandboxPlacementService,
+	type SynchronizePlacementOptions,
+} from '../../placement/services/sandbox-placement.service';
 import { SandboxPersistenceEvents } from '../constants/sandbox-persistence-events.constants';
 import { Sandbox } from '../entities/sandbox.entity';
 import { SandboxFork } from '../entities/sandbox-fork.entity';
@@ -26,17 +37,6 @@ import { SandboxLastActivity } from '../entities/sandbox-last-activity.entity';
 import type { PlacementLocality } from '../enums/placement-locality.enum';
 import { SandboxPersistedEvent } from '../events/sandbox-persisted.event';
 import { SandboxConflictException } from '../exceptions/sandbox-conflict.exception';
-import { MachineDesiredStateRevisionService } from '../machine/services/desired-state/machine-desired-state-revision.service';
-import { desiredStateMachineIds } from '../machine/utils/desired-state/desired-state-change.util';
-import {
-	runtimeIntentUpdate,
-	type SandboxRuntimeIntent,
-} from '../machine/utils/proto/sandbox-runtime-intent.util';
-import type { ReservedMachine } from '../placement/services/machine-reservation.service';
-import {
-	SandboxPlacementService,
-	type SynchronizePlacementOptions,
-} from '../placement/services/sandbox-placement.service';
 import {
 	persistedConcurrencyGuard,
 	placementSynchronizationOptions,

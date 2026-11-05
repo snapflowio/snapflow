@@ -10,8 +10,8 @@
 import { LockMode } from '@mikro-orm/core';
 import type { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
-import { MachineState } from '../../sandbox/machine/enums/machine-state.enum';
+import { Machine } from '../../machine/entities/machine.entity';
+import { MachineState } from '../../machine/enums/machine-state.enum';
 import { MachineFingerprintComponent } from '../entities/machine-fingerprint-component.entity';
 import { VerificationReviewKind } from '../enums/verification-review-kind.enum';
 import type { FingerprintDigest } from '../utils/inventory-digest.util';

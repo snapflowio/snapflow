@@ -13,7 +13,9 @@ import { after, before, describe, it } from 'node:test';
 import { MikroORM } from '@mikro-orm/postgresql';
 import { integrationDatabaseUrl } from '../../../common/testing/integration-database.util';
 import { ENTITY_MAPPING_OPTIONS } from '../../../infra/database/config/entity-mapping.config';
+import { Machine } from '../../../machine/entities/machine.entity';
 import { Organization } from '../../../organization/entities/organization.entity';
+import { BuildInfo } from '../../../snapshot/entities/build-info.entity';
 import { User } from '../../../user/entities/user.entity';
 import { MachineBenchmark } from '../../../verification/entities/machine-benchmark.entity';
 import {
@@ -25,8 +27,6 @@ import { Sandbox } from '../../entities/sandbox.entity';
 import { SandboxLastActivity } from '../../entities/sandbox-last-activity.entity';
 import { SandboxMode } from '../../enums/sandbox-mode.enum';
 import { SandboxState } from '../../enums/sandbox-state.enum';
-import { Machine } from '../../machine/entities/machine.entity';
-import { BuildInfo } from '../../snapshot/entities/build-info.entity';
 import { SandboxSearchService } from './sandbox-search.service';
 
 const DATABASE_URL = integrationDatabaseUrl();

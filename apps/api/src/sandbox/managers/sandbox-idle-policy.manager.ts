@@ -16,6 +16,7 @@ import { TrackJobExecution } from '../../common/decorators/track-job-execution.d
 import { mapSequentially } from '../../common/utils/concurrency/sequential-async.util';
 import { TrackedJobs } from '../../common/utils/concurrency/tracked-jobs.util';
 import { RedisLockProvider } from '../../infra/redis/providers/redis-lock.provider';
+import { MachineState } from '../../machine/enums/machine-state.enum';
 import { SettingsService } from '../../settings/services/settings.service';
 import {
 	RETENTION_ARCHIVE_INTERVAL_MINUTES,
@@ -28,7 +29,6 @@ import { SandboxState } from '../enums/sandbox-state.enum';
 import { SandboxArchivedEvent } from '../events/sandbox-archived.event';
 import { SandboxDestroyedEvent } from '../events/sandbox-destroyed.event';
 import { SandboxStoppedEvent } from '../events/sandbox-stopped.event';
-import { MachineState } from '../machine/enums/machine-state.enum';
 import { SandboxRepository } from '../repositories/sandbox.repository';
 import { hydrateSandboxes } from '../utils/hydrate-sandboxes.util';
 import { getStateChangeLockKey } from '../utils/lock-key.util';

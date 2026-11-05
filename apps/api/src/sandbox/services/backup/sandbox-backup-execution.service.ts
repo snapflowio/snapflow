@@ -12,21 +12,21 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { DockerRegistryService } from '../../../docker-registry/services/docker-registry.service';
 import { RedisLockProvider } from '../../../infra/redis/providers/redis-lock.provider';
+import { MachineService } from '../../../machine/services/machine.service';
+import { Job } from '../../../machine-job/entities/job.entity';
+import { JobStatus } from '../../../machine-job/enums/job-status.enum';
+import { JobType } from '../../../machine-job/enums/job-type.enum';
+import { ResourceType } from '../../../machine-job/enums/resource-type.enum';
+import { JobConflictException } from '../../../machine-job/exceptions/job-conflict.exception';
+import { MachineJobDispatchService } from '../../../machine-job/services/machine-job-dispatch.service';
+import { BackupState } from '../../../volume/enums/backup-state.enum';
+import { VolumeBackupService } from '../../../volume/services/volume-backup.service';
 import {
 	concurrentBackupLimit,
 	MACHINE_BACKUP_LOCK_TTL_SECONDS,
 	machineBackupLockKey,
 } from '../../constants/backup.constants';
 import { Sandbox } from '../../entities/sandbox.entity';
-import { MachineService } from '../../machine/services/machine.service';
-import { Job } from '../../machine-job/entities/job.entity';
-import { JobStatus } from '../../machine-job/enums/job-status.enum';
-import { JobType } from '../../machine-job/enums/job-type.enum';
-import { ResourceType } from '../../machine-job/enums/resource-type.enum';
-import { JobConflictException } from '../../machine-job/exceptions/job-conflict.exception';
-import { MachineJobDispatchService } from '../../machine-job/services/machine-job-dispatch.service';
-import { BackupState } from '../../volume/enums/backup-state.enum';
-import { VolumeBackupService } from '../../volume/services/volume-backup.service';
 import { SandboxArtifactJobProjector } from './sandbox-artifact-job.projector';
 import { SandboxBackupStateService } from './sandbox-backup-state.service';
 

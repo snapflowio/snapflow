@@ -31,6 +31,13 @@ import {
 	priceTerms,
 	runningHourlyPrice,
 } from '../../marketplace/utils/pricing.util';
+import { SandboxPlacementService } from '../../placement/services/sandbox-placement.service';
+import { SandboxPlacementControlService } from '../../placement/services/sandbox-placement-control.service';
+import {
+	LeaseRenewalDecision,
+	type LeaseRenewalPrices,
+	leaseRenewalDecision,
+} from '../../placement/utils/lease-renewal.util';
 import { SettingsService } from '../../settings/services/settings.service';
 import { SandboxEvents } from '../constants/sandbox-events.constants';
 import {
@@ -41,13 +48,6 @@ import { Sandbox } from '../entities/sandbox.entity';
 import { SandboxDesiredState } from '../enums/sandbox-desired-state.enum';
 import { SandboxState } from '../enums/sandbox-state.enum';
 import { SandboxLeaseRenewalRequiredEvent } from '../events/sandbox-lease-renewal-required.event';
-import { SandboxPlacementService } from '../placement/services/sandbox-placement.service';
-import { SandboxPlacementControlService } from '../placement/services/sandbox-placement-control.service';
-import {
-	LeaseRenewalDecision,
-	type LeaseRenewalPrices,
-	leaseRenewalDecision,
-} from '../placement/utils/lease-renewal.util';
 import { SandboxRepository } from '../repositories/sandbox.repository';
 
 const LEASE_JOB_LOCK_TTL_SECONDS = 300;

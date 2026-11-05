@@ -9,10 +9,10 @@
 
 import { Injectable } from '@nestjs/common';
 import { SandboxLifecycle } from '@snapflow/machine-proto';
+import { MachineState } from '../../../machine/enums/machine-state.enum';
+import { MachineService } from '../../../machine/services/machine.service';
 import { Sandbox } from '../../entities/sandbox.entity';
 import { SandboxState } from '../../enums/sandbox-state.enum';
-import { MachineState } from '../../machine/enums/machine-state.enum';
-import { MachineService } from '../../machine/services/machine.service';
 import { SandboxRepository } from '../../repositories/sandbox.repository';
 import { DONT_SYNC_AGAIN, SandboxAction, SyncState } from './sandbox.action';
 

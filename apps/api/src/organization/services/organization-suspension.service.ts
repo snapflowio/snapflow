@@ -21,8 +21,8 @@ import { RedisLockProvider } from '../../infra/redis/providers/redis-lock.provid
 import { Sandbox } from '../../sandbox/entities/sandbox.entity';
 import { SandboxDesiredState } from '../../sandbox/enums/sandbox-desired-state.enum';
 import { SandboxState } from '../../sandbox/enums/sandbox-state.enum';
-import { Snapshot } from '../../sandbox/snapshot/entities/snapshot.entity';
-import { SnapshotState } from '../../sandbox/snapshot/enums/snapshot-state.enum';
+import { Snapshot } from '../../snapshot/entities/snapshot.entity';
+import { SnapshotState } from '../../snapshot/enums/snapshot-state.enum';
 import { UserEvents } from '../../user/constants/user-events.constants';
 import { UserAuthorizationChangedEvent } from '../../user/events/user-authorization-changed.event';
 import { UserBannedEvent } from '../../user/events/user-banned.event';

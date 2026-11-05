@@ -11,11 +11,11 @@ import { LockMode } from '@mikro-orm/core';
 import type { EntityManager } from '@mikro-orm/postgresql';
 import { ConflictException } from '@nestjs/common';
 import { lockRowIdsForKeyShare } from '../../infra/database/utils/row-lock.util';
+import type { Machine } from '../../machine/entities/machine.entity';
+import { MachineAssessment } from '../../machine/entities/machine-assessment.entity';
 import { findCurrentMachineAssessment } from '../../marketplace/queries/machine-assessment.query';
 import { Organization } from '../../organization/entities/organization.entity';
 import type { Sandbox } from '../../sandbox/entities/sandbox.entity';
-import type { Machine } from '../../sandbox/machine/entities/machine.entity';
-import { MachineAssessment } from '../../sandbox/machine/entities/machine-assessment.entity';
 import { BillingAdmissionErrorCode } from '../constants/billing-admission.constants';
 import { PlacementBillingAuthorization } from '../entities/placement-billing-authorization.entity';
 

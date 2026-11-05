@@ -16,12 +16,12 @@ import {
 	Property,
 } from '@mikro-orm/decorators/legacy';
 import { sqlValueList } from '../../infra/database/utils/sql-value-list.util';
+import { Machine } from '../../machine/entities/machine.entity';
+import { GpuType } from '../../machine/enums/gpu-type.enum';
 import { SandboxLease } from '../../marketplace/entities/sandbox-lease.entity';
 import { Organization } from '../../organization/entities/organization.entity';
 import { SandboxPlacement } from '../../sandbox/entities/sandbox-placement.entity';
 import { SandboxClass } from '../../sandbox/enums/sandbox-class.enum';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
-import { GpuType } from '../../sandbox/machine/enums/gpu-type.enum';
 import { UsageMode } from '../constants/usage-lifecycle.constants';
 
 @Entity({ tableName: 'sandbox_usage_periods' })

@@ -10,11 +10,11 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
 import { DockerRegistryModule } from '../docker-registry/docker-registry.module';
+import { MachineModule } from '../machine/machine.module';
 import { MarketplaceModule } from '../marketplace/marketplace.module';
 import { NetworkingModule } from '../networking/networking.module';
 import { OrganizationModule } from '../organization/organization.module';
 import { PaymentsModule } from '../payments/payments.module';
-import { MachineModule } from '../sandbox/machine/machine.module';
 import { SettingsModule } from '../settings/settings.module';
 import { UserModule } from '../user/user.module';
 import { VerificationModule } from '../verification/verification.module';

@@ -8,14 +8,14 @@
  */
 
 import type { ResourceShapeFields } from '../../common/values/resource-shape.value';
+import { SANDBOX_STATES_CONVERGING } from '../../machine/constants/machine-placement.constants';
+import { MachineState } from '../../machine/enums/machine-state.enum';
 import {
 	SANDBOX_STATES_CONDITIONALLY_CONSUMING_COMPUTE,
 	SANDBOX_STATES_CONSUMING_COMPUTE,
 } from '../../organization/constants/sandbox-states-consuming-compute.constants';
 import { SANDBOX_STATES_CONSUMING_DISK } from '../../organization/constants/sandbox-states-consuming-disk.constants';
 import { SandboxDesiredState } from '../../sandbox/enums/sandbox-desired-state.enum';
-import { SANDBOX_STATES_CONVERGING } from '../../sandbox/machine/constants/machine-placement.constants';
-import { MachineState } from '../../sandbox/machine/enums/machine-state.enum';
 
 const COMPUTE_USAGE_SQL = `sandbox_usage.state = ANY(ARRAY[?]::sandbox_state_enum[]) OR (sandbox_usage.state = ANY(ARRAY[?]::sandbox_state_enum[]) AND sandbox_usage."desiredState" = ?)`;
 const COMPUTE_USAGE_BINDINGS = [

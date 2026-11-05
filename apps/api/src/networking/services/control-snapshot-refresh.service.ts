@@ -12,7 +12,7 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { ControlWakeService } from '../../infra/control-wake/services/control-wake.service';
 import { NO_KEY_UPDATE_LOCK } from '../../infra/database/utils/row-lock.util';
-import type { Machine } from '../../sandbox/machine/entities/machine.entity';
+import type { Machine } from '../../machine/entities/machine.entity';
 import { EDGE_CONTROL_LIMITS } from '../constants/edge.constants';
 import { ACTIVE_BACKEND_STATES } from '../constants/exposure.constants';
 import { NETWORK_WAKE_TOPIC } from '../constants/networking.constants';

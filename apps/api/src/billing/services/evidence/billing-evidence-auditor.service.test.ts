@@ -17,12 +17,12 @@ import {
 } from '../../constants/billing-audit.constants';
 import type { BillingEvidenceBundle } from '../../entities/billing-evidence-bundle.entity';
 import type { BillingLineItem } from '../../entities/billing-line-item.entity';
+import { windowLease } from '../../testing/billable-window.fixtures';
 import {
 	auditedComputeLine,
 	evidenceBundle,
 	tamperedReceiptBundle,
 } from '../../testing/billing-audit.fixtures';
-import { windowLease } from '../../usage/testing/billable-window.fixtures';
 import {
 	type BillingAuditVerdict,
 	BillingEvidenceAuditorService,

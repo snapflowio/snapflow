@@ -8,8 +8,8 @@
  */
 
 import { ECR_CREDENTIALS } from '../constants/ecr-credentials.constants';
-import type { DockerRegistry } from '../persistence/entities/docker-registry.entity';
-import { registryHost } from '../persistence/utils/docker-registry-url.util';
+import type { DockerRegistry } from '../entities/docker-registry.entity';
+import { registryHost } from './docker-registry-url.util';
 
 export interface EcrRole {
 	region: string;

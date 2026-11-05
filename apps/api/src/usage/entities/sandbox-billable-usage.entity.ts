@@ -20,11 +20,11 @@ import {
 	BillingEvidenceStatus,
 	type BillingEvidenceStatus as BillingEvidenceStatusValue,
 } from '../../billing/constants/billing.constants';
+import { Machine } from '../../machine/entities/machine.entity';
 import { SandboxLease } from '../../marketplace/entities/sandbox-lease.entity';
 import { Organization } from '../../organization/entities/organization.entity';
 import { Sandbox } from '../../sandbox/entities/sandbox.entity';
 import { SandboxPlacement } from '../../sandbox/entities/sandbox-placement.entity';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
 import {
 	INITIAL_RECONCILE_ATTEMPTS,
 	INITIAL_USAGE_RECEIPT_COUNT,

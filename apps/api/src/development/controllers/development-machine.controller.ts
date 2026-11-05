@@ -23,7 +23,7 @@ import { CustomHeaders } from '../../common/constants/header.constants';
 import {
 	MachineRegistrationDto,
 	RegisterMachineDto,
-} from '../../sandbox/machine/dto/machine-registration.dto';
+} from '../../machine/dto/machine-registration.dto';
 import { DevelopmentMachineEnrollmentGuard } from '../guards/development-machine-enrollment.guard';
 import { DevelopmentMachineEnrollmentService } from '../services/development-machine-enrollment.service';
 

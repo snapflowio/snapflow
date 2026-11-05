@@ -11,13 +11,14 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
 import { BillingModule } from '../billing/billing.module';
+import { CloudflareModule } from '../cloudflare/cloudflare.module';
 import { IdempotencyModule } from '../idempotency/idempotency.module';
 import { ControlWakeModule } from '../infra/control-wake/control-wake.module';
 import { RedisConnectionModule } from '../infra/redis/redis.module';
-import { MachineModule } from '../sandbox/machine/machine.module';
+import { MachineModule } from '../machine/machine.module';
+import { NetworkUsageModule } from '../network-usage/network-usage.module';
 import { SandboxModule } from '../sandbox/sandbox.module';
 import { SettingsModule } from '../settings/settings.module';
-import { NetworkingCloudflareModule } from './cloudflare/cloudflare.module';
 import { AdminEdgeController } from './controllers/admin-edge.controller';
 import { AdminExposureCutoverController } from './controllers/admin-exposure-cutover.controller';
 import { EdgeHeartbeatController } from './controllers/edge-heartbeat.controller';
@@ -74,7 +75,6 @@ import { ProtectedAccessSessionStandingService } from './services/protected-acce
 import { SandboxNetworkLifecycleService } from './services/sandbox-network-lifecycle.service';
 import { SshRelayService } from './services/ssh-relay.service';
 import { TUNNEL_CERTIFICATE_SIGNER } from './types/tunnel-certificate-signer.types';
-import { NetworkingUsageModule } from './usage/usage.module';
 
 const NETWORKING_ENTITIES = [
 	Edge,
@@ -97,8 +97,8 @@ const NETWORKING_ENTITIES = [
 		RedisConnectionModule,
 		SandboxModule,
 		MachineModule,
-		NetworkingCloudflareModule,
-		NetworkingUsageModule,
+		CloudflareModule,
+		NetworkUsageModule,
 		SettingsModule,
 	],
 	controllers: [

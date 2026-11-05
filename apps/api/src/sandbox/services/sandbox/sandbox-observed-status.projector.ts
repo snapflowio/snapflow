@@ -18,7 +18,15 @@ import {
 import { truncateErrorMessage } from '../../../common/utils/error/truncate-error-message.util';
 import { millisecondsBetween } from '../../../common/utils/time.util';
 import { recordOperationDuration } from '../../../infra/logging/utils/operation-observability.util';
+import { MACHINE_OBSERVED_STATUS_LIMITS } from '../../../machine/constants/machine-desired-state.constants';
+import {
+	decodeSandboxDirectives,
+	type SandboxRuntimeIntent,
+} from '../../../machine/utils/proto/sandbox-runtime-intent.util';
+import { decodeSandboxSpec } from '../../../machine/utils/proto/sandbox-runtime-spec.util';
 import { OrganizationUsageService } from '../../../organization/services/organization-usage.service';
+import { BackupState } from '../../../volume/enums/backup-state.enum';
+import { VolumeAttachmentService } from '../../../volume/services/volume-attachment.service';
 import { SandboxEvents } from '../../constants/sandbox-events.constants';
 import {
 	OBSERVED_TRANSITION,
@@ -28,17 +36,9 @@ import { Sandbox } from '../../entities/sandbox.entity';
 import { SandboxDesiredState } from '../../enums/sandbox-desired-state.enum';
 import { SandboxState } from '../../enums/sandbox-state.enum';
 import { SandboxStartedEvent } from '../../events/sandbox-started.event';
-import { MACHINE_OBSERVED_STATUS_LIMITS } from '../../machine/constants/machine-desired-state.constants';
-import {
-	decodeSandboxDirectives,
-	type SandboxRuntimeIntent,
-} from '../../machine/utils/proto/sandbox-runtime-intent.util';
-import { decodeSandboxSpec } from '../../machine/utils/proto/sandbox-runtime-spec.util';
 import { SandboxRepository } from '../../repositories/sandbox.repository';
 import { runtimeConvergenceErrorReason } from '../../utils/runtime/runtime-convergence.util';
 import { SandboxStateMachine } from '../../values/sandbox-state-machine.value';
-import { BackupState } from '../../volume/enums/backup-state.enum';
-import { VolumeAttachmentService } from '../../volume/services/volume-attachment.service';
 
 const RESETTABLE_BACKUP_STATES: ReadonlySet<BackupState> = new Set([
 	BackupState.ERROR,

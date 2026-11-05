@@ -14,7 +14,7 @@ import {
 	JOB_CONTROLLER_PATH,
 	JOB_STATUS_REQUEST_BODY_LIMIT,
 	JOB_STATUS_ROUTE,
-} from '../sandbox/machine-job/constants/job-execution.constants';
+} from '../machine-job/constants/job-execution.constants';
 
 export const REQUEST_BODY_LIMIT = '100kb';
 

@@ -17,11 +17,11 @@ import { TrackJobExecution } from '../../../common/decorators/track-job-executio
 import { settleSequentially } from '../../../common/utils/concurrency/sequential-async.util';
 import { TrackedJobs } from '../../../common/utils/concurrency/tracked-jobs.util';
 import { RedisLockProvider } from '../../../infra/redis/providers/redis-lock.provider';
+import type { Machine } from '../../../machine/entities/machine.entity';
+import { MachineService } from '../../../machine/services/machine.service';
 import { DrainingMode } from '../../../settings/constants/settings.constants';
 import { SettingsService } from '../../../settings/services/settings.service';
 import { SANDBOX_WORKER_LIMITS } from '../../constants/sandbox.constants';
-import type { Machine } from '../../machine/entities/machine.entity';
-import { MachineService } from '../../machine/services/machine.service';
 import { DrainingMachineEvictionService } from '../../services/draining-machine/draining-machine-eviction.service';
 import { DrainingMachineRecoveryService } from '../../services/draining-machine/draining-machine-recovery.service';
 

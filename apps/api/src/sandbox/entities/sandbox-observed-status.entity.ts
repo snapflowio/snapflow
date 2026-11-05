@@ -14,8 +14,8 @@ import {
 	Property,
 } from '@mikro-orm/decorators/legacy';
 import { SandboxRuntimeState } from '@snapflow/machine-proto';
-import { Machine } from '../machine/entities/machine.entity';
-import { protoEnumCheckExpression } from '../machine/utils/proto/proto-enum.util';
+import { Machine } from '../../machine/entities/machine.entity';
+import { protoEnumCheckExpression } from '../../machine/utils/proto/proto-enum.util';
 import { Sandbox } from './sandbox.entity';
 
 @Entity({ tableName: 'sandbox_observed_status' })

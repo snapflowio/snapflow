@@ -14,7 +14,7 @@ import { MicroUsd } from '../../../common/values/micro-usd.value';
 import {
 	signedUsageChain,
 	USAGE_MACHINE_ID,
-} from '../../../sandbox/machine/testing/signed-usage-readings.fixtures';
+} from '../../../machine/testing/signed-usage-readings.fixtures';
 import { verifyMachineUsageReceipt } from '../../../usage/utils/evidence/machine-usage-evidence.util';
 import type { ComputeEvidenceBundle } from '../../schemas/billing-evidence-bundle.schema';
 import {
@@ -22,7 +22,7 @@ import {
 	computeLine,
 	WINDOW_TERMS,
 	windowLease,
-} from '../../usage/testing/billable-window.fixtures';
+} from '../../testing/billable-window.fixtures';
 import { computeEvidenceBundle } from './compute-evidence.util';
 import { auditComputeEvidence } from './compute-evidence-audit.util';
 import { attestUsageWindow } from './usage-attestation.util';

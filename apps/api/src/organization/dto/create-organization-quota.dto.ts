@@ -9,8 +9,8 @@
 
 import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
 import { IsArray, IsEnum, IsNumber, IsOptional } from 'class-validator';
+import { GpuType } from '../../machine/enums/gpu-type.enum';
 import { SandboxClass } from '../../sandbox/enums/sandbox-class.enum';
-import { GpuType } from '../../sandbox/machine/enums/gpu-type.enum';
 
 @ApiSchema({ name: 'CreateOrganizationQuota' })
 export class CreateOrganizationQuotaDto {

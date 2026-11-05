@@ -8,24 +8,24 @@
  */
 
 import { Module } from '@nestjs/common';
+import { AdminModule } from './admin/admin.module';
 import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
 import { BillingModule } from './billing/billing.module';
-import { BillingUsageModule } from './billing/usage/usage.module';
+import { BillingUsageModule } from './billing/billing-usage.module';
+import { CustomDomainModule } from './custom-domain/custom-domain.module';
 import { AppDevelopmentModule } from './development/development.module';
 import { DockerRegistryModule } from './docker-registry/docker-registry.module';
 import { AppHttpModule } from './http/http.module';
 import { IdempotencyModule } from './idempotency/idempotency.module';
 import { InfraModule } from './infra/infra.module';
-import { MarketplaceBrowseModule } from './marketplace/browse/browse.module';
 import { MarketplaceModule } from './marketplace/marketplace.module';
-import { NetworkingCustomDomainModule } from './networking/custom-domain/custom-domain.module';
+import { MarketplaceBrowseModule } from './marketplace/marketplace-browse.module';
+import { NetworkUsageModule } from './network-usage/network-usage.module';
 import { NetworkingModule } from './networking/networking.module';
-import { NetworkingUsageModule } from './networking/usage/usage.module';
 import { NotificationModule } from './notification/notification.module';
-import { NotificationRedisEmitterModule } from './notification/redis-emitter/redis-emitter.module';
+import { NotificationRedisEmitterModule } from './notification/notification-redis-emitter.module';
 import { ObjectStorageModule } from './object-storage/object-storage.module';
-import { OrganizationAdminModule } from './organization/admin/admin.module';
 import { OrganizationModule } from './organization/organization.module';
 import { PaymentsModule } from './payments/payments.module';
 import { SandboxModule } from './sandbox/sandbox.module';
@@ -45,13 +45,13 @@ const FEATURE_MODULES = [
 	IdempotencyModule,
 	MarketplaceModule,
 	MarketplaceBrowseModule,
-	NetworkingCustomDomainModule,
+	CustomDomainModule,
 	NetworkingModule,
-	NetworkingUsageModule,
+	NetworkUsageModule,
 	NotificationModule,
 	ObjectStorageModule,
 	OrganizationModule,
-	OrganizationAdminModule,
+	AdminModule,
 	PaymentsModule,
 	SandboxModule,
 	SecretsModule,

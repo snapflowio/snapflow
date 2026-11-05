@@ -24,28 +24,28 @@ import { IsMachineAuthContext } from '../../common/decorators/auth-context.decor
 import { CursorPageQueryDto } from '../../common/dto/cursor-page.dto';
 import { AuthenticatedRateLimitGuard } from '../../common/guards/authenticated-rate-limit.guard';
 import type { MachineAuthContext } from '../../common/types/machine-auth-context.types';
-import { ActiveMachineSession } from '../machine/decorators/machine-session.decorator';
-import { MachineDto } from '../machine/dto/machine.dto';
-import { MachineControlPolicyDto } from '../machine/dto/machine-control-policy.dto';
-import { MachineFullDto } from '../machine/dto/machine-full.dto';
-import { MachineHealthcheckDto } from '../machine/dto/machine-health.dto';
-import { MachineUpdateStatusDto } from '../machine/dto/machine-update-status.dto';
+import { ActiveMachineSession } from '../../machine/decorators/machine-session.decorator';
+import { MachineDto } from '../../machine/dto/machine.dto';
+import { MachineControlPolicyDto } from '../../machine/dto/machine-control-policy.dto';
+import { MachineFullDto } from '../../machine/dto/machine-full.dto';
+import { MachineHealthcheckDto } from '../../machine/dto/machine-health.dto';
+import { MachineUpdateStatusDto } from '../../machine/dto/machine-update-status.dto';
 import {
 	AcceptedMachineUsageReceiptDto,
 	MachineReportablePlacementPageDto,
 	MachineUsageReceiptDto,
-} from '../machine/dto/machine-usage.dto';
-import type { MachineSession } from '../machine/entities/machine-session.entity';
-import { MachineSessionGuard } from '../machine/guards/machine-session.guard';
-import { MachineService } from '../machine/services/machine.service';
-import { MachineAdministrationService } from '../machine/services/machine-administration.service';
-import { MachineControlPolicyService } from '../machine/services/machine-control-policy.service';
-import { MachineDirectoryService } from '../machine/services/machine-directory.service';
-import { MachineHealthService } from '../machine/services/machine-health.service';
-import { MachineUsageService } from '../machine/services/machine-usage.service';
-import { MachineQualificationService } from '../machine/services/qualification/machine-qualification.service';
-import { MachineCapacityService } from '../placement/services/machine-capacity.service';
-import { SnapshotPrewarmService } from '../snapshot/services/snapshot-prewarm.service';
+} from '../../machine/dto/machine-usage.dto';
+import type { MachineSession } from '../../machine/entities/machine-session.entity';
+import { MachineSessionGuard } from '../../machine/guards/machine-session.guard';
+import { MachineService } from '../../machine/services/machine.service';
+import { MachineAdministrationService } from '../../machine/services/machine-administration.service';
+import { MachineControlPolicyService } from '../../machine/services/machine-control-policy.service';
+import { MachineDirectoryService } from '../../machine/services/machine-directory.service';
+import { MachineHealthService } from '../../machine/services/machine-health.service';
+import { MachineUsageService } from '../../machine/services/machine-usage.service';
+import { MachineQualificationService } from '../../machine/services/qualification/machine-qualification.service';
+import { MachineCapacityService } from '../../placement/services/machine-capacity.service';
+import { SnapshotPrewarmService } from '../../snapshot/services/snapshot-prewarm.service';
 
 @Controller('machines')
 @ApiTags('machines')

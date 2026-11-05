@@ -12,8 +12,8 @@ import type { EntityManager } from '@mikro-orm/postgresql';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { MicroUsd } from '../../../common/values/micro-usd.value';
 import { databaseNow } from '../../../infra/database/utils/database-time.util';
-import type { Machine } from '../../../sandbox/machine/entities/machine.entity';
-import { MachineAssessment } from '../../../sandbox/machine/entities/machine-assessment.entity';
+import type { Machine } from '../../../machine/entities/machine.entity';
+import { MachineAssessment } from '../../../machine/entities/machine-assessment.entity';
 import type { Settings } from '../../../settings/entities/settings.entity';
 import { SettingsService } from '../../../settings/services/settings.service';
 import {

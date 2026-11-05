@@ -15,7 +15,7 @@ import {
 	BenchmarkProfile,
 } from '@snapflow/machine-proto';
 import { canonicalJson } from '../../common/utils/canonical-json.util';
-import { protoJsonObject } from '../../sandbox/machine/utils/proto/proto-json.util';
+import { protoJsonObject } from '../../machine/utils/proto/proto-json.util';
 import { BENCHMARK_SUITE_VERSION } from '../constants/benchmark-policy.constants';
 import {
 	SPOT_CHECK,

@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { MachineUsageRuntimeState } from '../../sandbox/machine/constants/machine-usage.constants';
+import { MachineUsageRuntimeState } from '../../machine/constants/machine-usage.constants';
 import type { VerifiedMachineUsageReceipt } from './evidence/machine-usage-evidence.util';
 
 export type ReceiptMeterEvidence = Pick<

@@ -19,9 +19,9 @@ import {
 } from '@mikro-orm/decorators/legacy';
 import { BILLING_COLUMN_LENGTH } from '../../billing/constants/billing.constants';
 import { sqlValueList } from '../../infra/database/utils/sql-value-list.util';
+import { MACHINE_USAGE_NUMERIC_PRECISION } from '../../machine/constants/machine-usage.constants';
+import { Machine } from '../../machine/entities/machine.entity';
 import { Sandbox } from '../../sandbox/entities/sandbox.entity';
-import { MACHINE_USAGE_NUMERIC_PRECISION } from '../../sandbox/machine/constants/machine-usage.constants';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
 import { SpotCheckState } from '../enums/spot-check-state.enum';
 
 const nullableTimestampColumn = (fieldName: string) =>

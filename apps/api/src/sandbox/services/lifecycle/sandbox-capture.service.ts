@@ -15,19 +15,19 @@ import {
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { DockerRegistryService } from '../../../docker-registry/services/docker-registry.service';
+import { MachineService } from '../../../machine/services/machine.service';
+import { MachineJobDispatchService } from '../../../machine-job/services/machine-job-dispatch.service';
 import { OrganizationService } from '../../../organization/services/organization.service';
+import { CreateSandboxSnapshotDto } from '../../../snapshot/dto/create-sandbox-snapshot.dto';
+import { SnapshotQuotaService } from '../../../snapshot/services/snapshot-quota.service';
+import { BackupState } from '../../../volume/enums/backup-state.enum';
 import { SandboxEvents } from '../../constants/sandbox-events.constants';
 import { Sandbox } from '../../entities/sandbox.entity';
 import { SandboxState } from '../../enums/sandbox-state.enum';
 import { SandboxBackupCreatedEvent } from '../../events/sandbox-backup-created.event';
 import { StateChangeInProgressException } from '../../exceptions/state-change-in-progress.exception';
-import { MachineService } from '../../machine/services/machine.service';
-import { MachineJobDispatchService } from '../../machine-job/services/machine-job-dispatch.service';
 import { SandboxRepository } from '../../repositories/sandbox.repository';
-import { CreateSandboxSnapshotDto } from '../../snapshot/dto/create-sandbox-snapshot.dto';
-import { SnapshotQuotaService } from '../../snapshot/services/snapshot-quota.service';
 import { isEphemeral } from '../../utils/runtime/ephemeral.util';
-import { BackupState } from '../../volume/enums/backup-state.enum';
 import { SandboxService } from '../sandbox/sandbox.service';
 
 const CAPTURED_SNAPSHOT_COUNT = 1;

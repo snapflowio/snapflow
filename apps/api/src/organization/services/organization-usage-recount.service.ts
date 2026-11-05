@@ -10,8 +10,8 @@
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { SandboxDesiredState } from '../../sandbox/enums/sandbox-desired-state.enum';
-import { Snapshot } from '../../sandbox/snapshot/entities/snapshot.entity';
-import { Volume } from '../../sandbox/volume/entities/volume.entity';
+import { Snapshot } from '../../snapshot/entities/snapshot.entity';
+import { Volume } from '../../volume/entities/volume.entity';
 import {
 	SANDBOX_STATES_CONDITIONALLY_CONSUMING_COMPUTE,
 	SANDBOX_STATES_CONSUMING_COMPUTE,

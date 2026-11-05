@@ -15,10 +15,10 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { TrackJobExecution } from '../../common/decorators/track-job-execution.decorator';
 import { TrackedJobs } from '../../common/utils/concurrency/tracked-jobs.util';
 import { databaseNow } from '../../infra/database/utils/database-time.util';
+import { Machine } from '../../machine/entities/machine.entity';
+import { Job } from '../../machine-job/entities/job.entity';
+import { JobStatus } from '../../machine-job/enums/job-status.enum';
 import { MachineMarketplaceService } from '../../marketplace/services/machine-marketplace.service';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
-import { Job } from '../../sandbox/machine-job/entities/job.entity';
-import { JobStatus } from '../../sandbox/machine-job/enums/job-status.enum';
 import {
 	BENCHMARK_FAILURE,
 	BENCHMARK_PARAMETERS,

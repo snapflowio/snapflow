@@ -12,21 +12,21 @@ import { Injectable } from '@nestjs/common';
 import { SandboxLifecycle } from '@snapflow/machine-proto';
 import { MILLISECONDS_PER_MINUTE } from '../../../common/constants/time.constants';
 import { millisecondsBetween } from '../../../common/utils/time.util';
+import { CONVERGENCE_TIMEOUT_MINUTES } from '../../../machine/constants/machine-desired-state.constants';
+import { MACHINE_RELIABILITY_EVENT_KIND } from '../../../machine/constants/machine-reliability.constants';
+import { Machine } from '../../../machine/entities/machine.entity';
+import { MachineState } from '../../../machine/enums/machine-state.enum';
+import { MachineService } from '../../../machine/services/machine.service';
+import { MachinePlatformObservationService } from '../../../machine/services/machine-platform-observation.service';
 import { PlacementKind } from '../../../marketplace/enums/placement-kind.enum';
+import { MachineSchedulingService } from '../../../placement/services/machine-scheduling.service';
+import { sandboxSchedulingParameters } from '../../../placement/utils/sandbox-scheduling.util';
+import { BackupState } from '../../../volume/enums/backup-state.enum';
 import { Sandbox } from '../../entities/sandbox.entity';
 import { SandboxState } from '../../enums/sandbox-state.enum';
-import { CONVERGENCE_TIMEOUT_MINUTES } from '../../machine/constants/machine-desired-state.constants';
-import { MACHINE_RELIABILITY_EVENT_KIND } from '../../machine/constants/machine-reliability.constants';
-import { Machine } from '../../machine/entities/machine.entity';
-import { MachineState } from '../../machine/enums/machine-state.enum';
-import { MachineService } from '../../machine/services/machine.service';
-import { MachinePlatformObservationService } from '../../machine/services/machine-platform-observation.service';
-import { MachineSchedulingService } from '../../placement/services/machine-scheduling.service';
-import { sandboxSchedulingParameters } from '../../placement/utils/sandbox-scheduling.util';
 import { SandboxRepository } from '../../repositories/sandbox.repository';
 import { SandboxActivityService } from '../../services/sandbox/sandbox-activity.service';
 import { SandboxRuntimeSpecService } from '../../services/sandbox/sandbox-runtime-spec.service';
-import { BackupState } from '../../volume/enums/backup-state.enum';
 import {
 	DONT_SYNC_AGAIN,
 	SandboxAction,

@@ -15,10 +15,10 @@ import {
 	PrimaryKey,
 	Property,
 } from '@mikro-orm/decorators/legacy';
+import { Machine } from '../../machine/entities/machine.entity';
+import { MachineSession } from '../../machine/entities/machine-session.entity';
 import { Sandbox } from '../../sandbox/entities/sandbox.entity';
 import { SandboxPlacement } from '../../sandbox/entities/sandbox-placement.entity';
-import { Machine } from '../../sandbox/machine/entities/machine.entity';
-import { MachineSession } from '../../sandbox/machine/entities/machine-session.entity';
 import {
 	SECRET_DELIVERY_OUTCOME,
 	SECRET_LIMITS,

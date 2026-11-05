@@ -23,15 +23,15 @@ import { PublicEndpoint } from '../../auth/decorators/public-endpoint.decorator'
 import { IsMachineAuthContext } from '../../common/decorators/auth-context.decorator';
 import { AuthenticatedRateLimitGuard } from '../../common/guards/authenticated-rate-limit.guard';
 import type { MachineAuthContext } from '../../common/types/machine-auth-context.types';
-import { ActiveMachineSession } from '../machine/decorators/machine-session.decorator';
+import { ActiveMachineSession } from '../../machine/decorators/machine-session.decorator';
 import {
 	MachineSnapshotInventoryReportDto,
 	MachineSnapshotRegistryCredentialsDto,
-} from '../machine/dto/machine-snapshot-control.dto';
-import type { MachineSession } from '../machine/entities/machine-session.entity';
-import { MachineSessionGuard } from '../machine/guards/machine-session.guard';
-import { MachineSnapshotCredentialsService } from '../machine/services/desired-state/machine-snapshot-credentials.service';
-import { MachineSnapshotInventoryService } from '../snapshot/services/machine-snapshot-inventory.service';
+} from '../../machine/dto/machine-snapshot-control.dto';
+import type { MachineSession } from '../../machine/entities/machine-session.entity';
+import { MachineSessionGuard } from '../../machine/guards/machine-session.guard';
+import { MachineSnapshotCredentialsService } from '../../machine/services/desired-state/machine-snapshot-credentials.service';
+import { MachineSnapshotInventoryService } from '../../snapshot/services/machine-snapshot-inventory.service';
 
 @Controller('machines/snapshots')
 @ApiTags('machine-snapshot-control')

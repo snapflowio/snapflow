@@ -18,8 +18,8 @@ import {
 import { Redis } from 'ioredis';
 import { fakeInstance } from '../../common/testing/instance.fake';
 import { ECR_REGISTRY_ROLE_FORBIDDEN } from '../constants/ecr-credentials.constants';
-import { DockerRegistry } from '../persistence/entities/docker-registry.entity';
-import { RegistryType } from '../persistence/enums/registry-type.enum';
+import { DockerRegistry } from '../entities/docker-registry.entity';
+import { RegistryType } from '../enums/registry-type.enum';
 import { EcrCredentialsService } from './ecr-credentials.service';
 
 const PLATFORM_ACCOUNT = '111111111111';

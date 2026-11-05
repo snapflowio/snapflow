@@ -10,8 +10,8 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression } from '@nestjs/schedule';
 import { ScheduledJob } from '../../../common/decorators/scheduled-job.decorator';
-import { MACHINE_HEALTH_CHECK } from '../../machine/constants/machine.constants';
-import { MachineHealthService } from '../../machine/services/machine-health.service';
+import { MACHINE_HEALTH_CHECK } from '../../../machine/constants/machine.constants';
+import { MachineHealthService } from '../../../machine/services/machine-health.service';
 
 @Injectable()
 export class MachineHealthJob {

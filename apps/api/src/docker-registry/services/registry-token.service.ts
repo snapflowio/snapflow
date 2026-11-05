@@ -11,7 +11,7 @@ import { randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 import { MILLISECONDS_PER_SECOND } from '../../common/constants/time.constants';
 import { REGISTRY_TOKEN } from '../constants/registry-token.constants';
-import type { DockerRegistry } from '../persistence/entities/docker-registry.entity';
+import type { DockerRegistry } from '../entities/docker-registry.entity';
 import {
 	mergeRegistryAccess,
 	type RegistryGrant,

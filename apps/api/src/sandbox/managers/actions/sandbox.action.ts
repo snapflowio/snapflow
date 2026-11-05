@@ -8,18 +8,18 @@
  */
 
 import { Injectable, Logger } from '@nestjs/common';
+import { MachineService } from '../../../machine/services/machine.service';
 import type { LeaseEndReason } from '../../../marketplace/enums/lease-end-reason.enum';
+import { BackupState } from '../../../volume/enums/backup-state.enum';
 import { Sandbox } from '../../entities/sandbox.entity';
 import { SandboxDesiredState } from '../../enums/sandbox-desired-state.enum';
 import { SandboxState } from '../../enums/sandbox-state.enum';
 import { SandboxConflictException } from '../../exceptions/sandbox-conflict.exception';
-import { MachineService } from '../../machine/services/machine.service';
 import {
 	type MachineReservation,
 	type RuntimeIntentSource,
 	SandboxRepository,
 } from '../../repositories/sandbox.repository';
-import { BackupState } from '../../volume/enums/backup-state.enum';
 
 export const SYNC_AGAIN = 'sync-again';
 export const DONT_SYNC_AGAIN = 'dont-sync-again';
