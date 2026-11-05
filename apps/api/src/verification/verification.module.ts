@@ -15,9 +15,9 @@ import { RedisConnectionModule } from '../infra/redis/redis.module';
 import { MachineJobModule } from '../machine-job/machine-job.module';
 import { MarketplaceModule } from '../marketplace/marketplace.module';
 import { NetworkingModule } from '../networking/networking.module';
-import { PaymentsModule } from '../payments/payments.module';
 import { SandboxModule } from '../sandbox/sandbox.module';
 import { SettingsModule } from '../settings/settings.module';
+import { SettlementModule } from '../settlement/settlement.module';
 import { AdminVerificationController } from './controllers/admin-verification.controller';
 import { EdgeSpeedtestController } from './controllers/edge-speedtest.controller';
 import { HostVerificationController } from './controllers/host-verification.controller';
@@ -56,10 +56,10 @@ import { VerificationReviewService } from './services/verification-review.servic
 		MachineJobModule,
 		MarketplaceModule,
 		NetworkingModule,
-		PaymentsModule,
 		RedisConnectionModule,
 		SandboxModule,
 		SettingsModule,
+		SettlementModule,
 	],
 	controllers: [
 		AdminVerificationController,

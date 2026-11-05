@@ -39,7 +39,7 @@ export interface MeasuredListingFacts {
 
 export interface TierEvaluationInput {
 	listingPublic: boolean;
-	kycComplete: boolean;
+	payoutWalletReady: boolean;
 	benchmarkPassed: boolean;
 	inventoryCurrent: boolean;
 	fingerprintConflict: boolean;
@@ -100,7 +100,10 @@ function unmet(requirements: readonly TierRequirement[]): TierReason[] {
 export function communityReasons(input: TierEvaluationInput): TierReason[] {
 	return unmet([
 		{ satisfied: input.listingPublic, reason: TIER_REASON.LISTING_NOT_PUBLIC },
-		{ satisfied: input.kycComplete, reason: TIER_REASON.KYC_INCOMPLETE },
+		{
+			satisfied: input.payoutWalletReady,
+			reason: TIER_REASON.PAYOUT_WALLET_REQUIRED,
+		},
 		{ satisfied: input.benchmarkPassed, reason: TIER_REASON.BENCHMARK_MISSING },
 		{
 			satisfied: input.inventoryCurrent,

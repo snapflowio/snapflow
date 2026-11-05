@@ -11,8 +11,8 @@ import { LockMode } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { databaseNow } from '../../infra/database/utils/database-time.util';
-import { PaymentAccount } from '../../payments/entities/payment-account.entity';
-import { payoutAccountEligible } from '../../payments/utils/payout.util';
+import { PayoutReadiness } from '../../settlement/enums/payout-readiness.enum';
+import { PayoutReadinessService } from '../../settlement/services/payout-readiness.service';
 import type { UpdateMachineListingDto } from '../dto/host-machine.dto';
 import { MachineListing } from '../entities/machine-listing.entity';
 import { MarketplaceErrorCode } from '../enums/marketplace-error-code.enum';
@@ -27,8 +27,8 @@ const LISTING_TRANSITION_MESSAGES: Partial<
 > = {
 	[MarketplaceErrorCode.PRICE_CARD_REQUIRED]:
 		'Publish a price card before listing the machine publicly',
-	[MarketplaceErrorCode.PAYOUT_ACCOUNT_REQUIRED]:
-		'Finish setting up the payout account before listing the machine publicly',
+	[MarketplaceErrorCode.PAYOUT_WALLET_REQUIRED]:
+		'Link a payout wallet that passes sanctions screening before listing the machine publicly',
 	[MarketplaceErrorCode.MACHINE_RESTRICTED]:
 		'A restricted machine cannot be listed publicly',
 };
@@ -37,7 +37,8 @@ const LISTING_TRANSITION_MESSAGES: Partial<
 export class MachineListingService {
 	constructor(
 		private readonly entityManager: EntityManager,
-		private readonly machines: MachineMarketplaceService
+		private readonly machines: MachineMarketplaceService,
+		private readonly payoutReadiness: PayoutReadinessService
 	) {}
 
 	async update(
@@ -65,14 +66,14 @@ export class MachineListingService {
 					currentVersion: locked.version,
 				});
 			}
-			const payoutAccount = await manager.findOne(PaymentAccount, {
+			const payouts = await this.payoutReadiness.forOrganization(
 				organizationId,
-			});
+				manager
+			);
 			const error = listingTransitionError(input, {
 				currentState: locked.state,
 				hasPriceCard: locked.currentPriceCardId !== null,
-				payoutReady:
-					payoutAccount !== null && payoutAccountEligible(payoutAccount),
+				payoutReady: payouts === PayoutReadiness.READY,
 				restricted: machine.restrictedAt !== null,
 			});
 			if (error !== null) {

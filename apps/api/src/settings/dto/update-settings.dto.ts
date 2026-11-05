@@ -15,7 +15,6 @@ import {
 	IsBoolean,
 	IsEnum,
 	IsInt,
-	IsISO31661Alpha2,
 	IsNotEmpty,
 	IsOptional,
 	IsString,
@@ -33,7 +32,6 @@ import { SandboxClass } from '../../sandbox/enums/sandbox-class.enum';
 import {
 	DrainingMode,
 	EDGE_TRUSTED_HTTP_PROXY_CIDRS_MAXIMUM,
-	ISO_WEEKDAY,
 	SETTINGS_POSITIVE_MINIMUM,
 } from '../constants/settings.constants';
 
@@ -250,71 +248,6 @@ export class UpdateSettingsDto {
 	@OptionalNullable('Organization that runs and pays for spot checks')
 	@IsUUID()
 	spotCheckOrganizationId?: string | null;
-
-	@OptionalPositiveQuantity('Smallest top-up, cents')
-	topUpMinimumCents?: number;
-
-	@OptionalPositiveQuantity('Largest top-up, cents')
-	topUpMaximumCents?: number;
-
-	@ApiPropertyOptional({
-		type: [Number],
-		description: 'Suggested top-ups, cents',
-	})
-	@IsOptional()
-	@IsArray()
-	@IsInt({ each: true })
-	@Min(SETTINGS_POSITIVE_MINIMUM, { each: true })
-	topUpPresetsCents?: number[];
-
-	@OptionalQuantity('Smallest automatic top-up, cents')
-	autoTopUpMinimumCents?: number;
-
-	@OptionalQuantity('Minutes between automatic top-up attempts')
-	autoTopUpMinimumIntervalMinutes?: number;
-
-	@OptionalQuantity('Top-up attempts per organization per hour')
-	topUpAttemptsPerHour?: number;
-
-	@OptionalQuantity('Payment methods per organization per day')
-	paymentMethodsPerDay?: number;
-
-	@OptionalQuantity('Organizations that may share one card')
-	organizationsPerCardFingerprint?: number;
-
-	@OptionalQuantity('Smallest payout, cents')
-	payoutMinimumCents?: number;
-
-	@OptionalBoundedInteger(
-		'ISO weekday payouts run on (1 is Monday)',
-		ISO_WEEKDAY.MONDAY,
-		ISO_WEEKDAY.SUNDAY
-	)
-	payoutWeekday?: number;
-
-	@OptionalQuantity('Earnings hold for Community machines, days')
-	payoutHoldCommunityDays?: number;
-
-	@OptionalQuantity('Earnings hold for Verified machines, days')
-	payoutHoldVerifiedDays?: number;
-
-	@OptionalQuantity('Earnings hold for Datacenter machines, days')
-	payoutHoldDatacenterDays?: number;
-
-	@OptionalQuantity('Days credit from a new card cannot fund payouts')
-	newFundingHoldDays?: number;
-
-	@OptionalSwitch('Calculate sales tax on top-ups with Stripe Tax')
-	stripeTaxEnabled?: boolean;
-
-	@ApiPropertyOptional({
-		type: [String],
-		description: 'ISO 3166-1 alpha-2 countries hosts may be paid in',
-	})
-	@IsOptional()
-	@IsArray()
-	@IsISO31661Alpha2({ each: true })
-	payoutCountries?: string[];
 
 	@ApiPropertyOptional({
 		type: [String],

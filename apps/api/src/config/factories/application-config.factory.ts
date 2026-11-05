@@ -7,6 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 import { BUILD_PROVENANCE } from '../constants/build-provenance.constants';
+import { SETTLEMENT_CHAIN_ID } from '../constants/settlement-chain.constants';
 import type { LogLevel } from '../environment/namespaces/observability.environment';
 import type { ConfigurationInput } from '../types/configuration-input.types';
 import { createTrustedWebOrigins } from '../utils/trusted-web-origins.util';
@@ -37,6 +38,14 @@ export function createApplicationConfig({
 	) {
 		throw new Error(
 			`API_URL, WEBSITE_URL and ADMIN_URL must use HTTPS in ${profile.name}`
+		);
+	}
+	if (
+		profile.hosted &&
+		values.SETTLEMENT_CHAIN_ID === SETTLEMENT_CHAIN_ID.LOCAL
+	) {
+		throw new Error(
+			`SETTLEMENT_CHAIN_ID must not be the local chain in ${profile.name}`
 		);
 	}
 	const authBaseUrl = apiUrl ?? `http://localhost:${values.PORT}`;
@@ -78,11 +87,15 @@ export function createApplicationConfig({
 				values.GITHUB_CLIENT_SECRET
 			),
 		},
-		stripe: {
-			secretKey: values.STRIPE_SECRET_KEY,
-			publishableKey: values.STRIPE_PUBLISHABLE_KEY,
-			platformWebhookSecret: values.STRIPE_PLATFORM_WEBHOOK_SECRET,
-			connectWebhookSecret: values.STRIPE_CONNECT_WEBHOOK_SECRET,
+		settlement: {
+			chainId: values.SETTLEMENT_CHAIN_ID,
+			rpcUrl: values.SETTLEMENT_RPC_URL,
+			escrowAddress: values.SETTLEMENT_ESCROW_ADDRESS,
+			usdcAddress: values.SETTLEMENT_USDC_ADDRESS,
+			sanctions: {
+				apiKey: values.SANCTIONS_API_KEY,
+				apiUrl: values.SANCTIONS_API_URL,
+			},
 		},
 		audit: { consoleLogEnabled: profile.developerConsole },
 		log: {

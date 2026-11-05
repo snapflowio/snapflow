@@ -186,6 +186,9 @@ catalogs:
     '@types/webpack-node-externals':
       specifier: ^3.0.4
       version: 3.0.4
+    abitype:
+      specifier: 1.2.3
+      version: 1.2.3
     astro:
       specifier: ^7.3.5
       version: 7.3.5
@@ -270,9 +273,6 @@ catalogs:
     socket.io-client:
       specifier: ^4.8.3
       version: 4.8.3
-    stripe:
-      specifier: ^23.0.0
-      version: 23.0.0
     svelte:
       specifier: 5.57.2
       version: 5.57.2
@@ -620,15 +620,15 @@ importers:
       socket.io:
         specifier: 'catalog:'
         version: 4.8.3(supports-color@8.1.1)
-      stripe:
-        specifier: 'catalog:'
-        version: 23.0.0(@types/node@22.20.1)
       tldts:
         specifier: 'catalog:'
         version: 6.1.86
       uuid:
         specifier: ^14.0.0
         version: 14.0.2
+      viem:
+        specifier: 'catalog:'
+        version: 2.57.16(typescript@6.0.3)(zod@4.6.6)
       zod:
         specifier: 'catalog:'
         version: 4.6.6
@@ -877,6 +877,10 @@ importers:
         version: 6.0.3
 
   libs/contracts:
+    dependencies:
+      abitype:
+        specifier: 'catalog:'
+        version: 1.2.3(typescript@6.0.3)(zod@4.6.6)
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -6835,15 +6839,6 @@ packages:
   strip-json-comments@5.0.3:
     resolution: {integrity: sha512-1tB5mhVo7U+ETBKNf92xT4hrQa3pm0MZ0PQvuDnWgAAGHDsfp4lPSpiS6psrSiet87wyGPh9ft6wmhOMQ0hDiw==}
     engines: {node: '>=14.16'}
-
-  stripe@23.0.0:
-    resolution: {integrity: sha512-MDE2A5ZVVluYURORaZEVghSmnLJc3w6aHAlZSxDQMsOjOb3V0O6ro/CiaeFlJS4N7uIVmsg98ocRsPmUK6YfyA==}
-    engines: {node: '>=20'}
-    peerDependencies:
-      '@types/node': '>=20'
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
 
   strtok3@10.3.5:
     resolution: {integrity: sha512-ki4hZQfh5rX0QDLLkOCj+h+CVNkqmp/CMf8v8kZpkNVK6jGQooMytqzLZYUVYIZcFZ6yDB70EfD8POcFXiF5oA==}
@@ -13918,10 +13913,6 @@ snapshots:
   strip-bom@3.0.0: {}
 
   strip-json-comments@5.0.3: {}
-
-  stripe@23.0.0(@types/node@22.20.1):
-    optionalDependencies:
-      '@types/node': 22.20.1
 
   strtok3@10.3.5:
     dependencies:

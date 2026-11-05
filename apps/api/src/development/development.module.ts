@@ -14,8 +14,8 @@ import { MachineModule } from '../machine/machine.module';
 import { MarketplaceModule } from '../marketplace/marketplace.module';
 import { NetworkingModule } from '../networking/networking.module';
 import { OrganizationModule } from '../organization/organization.module';
-import { PaymentsModule } from '../payments/payments.module';
 import { SettingsModule } from '../settings/settings.module';
+import { SettlementModule } from '../settlement/settlement.module';
 import { UserModule } from '../user/user.module';
 import { VerificationModule } from '../verification/verification.module';
 import { DevelopmentMachineController } from './controllers/development-machine.controller';
@@ -32,8 +32,8 @@ import { DevelopmentSeedService } from './services/development-seed.service';
 		MarketplaceModule,
 		NetworkingModule,
 		OrganizationModule,
-		PaymentsModule,
 		SettingsModule,
+		SettlementModule,
 		UserModule,
 		VerificationModule,
 	],

@@ -125,23 +125,11 @@ describe('GET /billing/config', () => {
 	it('serves the customer-facing values from the runtime settings', async () => {
 		const service = new BillingConfigService(
 			fakeSettings({
-				topUpPresetsCents: [1_500, 3_000],
-				topUpMinimumCents: 1_500,
-				topUpMaximumCents: 90_000,
-				autoTopUpMinimumCents: 3_000,
-				autoTopUpMinimumIntervalMinutes: 90,
-				payoutCountries: ['US', 'CA'],
 				platformMarkupBasisPoints: 2_000,
 			})
 		);
 
 		assert.deepEqual(await service.get(), {
-			topUpPresetsCents: [1_500, 3_000],
-			topUpMinimumCents: 1_500,
-			topUpMaximumCents: 90_000,
-			autoTopUpMinimumCents: 3_000,
-			autoTopUpMinimumIntervalMinutes: 90,
-			payoutCountries: ['US', 'CA'],
 			platformMarkupBasisPoints: 2_000,
 		});
 	});

@@ -34,7 +34,11 @@ export class PublicConfigController {
 		return {
 			websiteUrl: this.config.getOrThrow('websiteUrl'),
 			socialProviders: enabledSocialProviders(this.config),
-			stripePublishableKey: this.config.get('stripe.publishableKey'),
+			settlement: {
+				chainId: this.config.get('settlement.chainId'),
+				escrowAddress: this.config.get('settlement.escrowAddress'),
+				usdcAddress: this.config.get('settlement.usdcAddress'),
+			},
 		};
 	}
 }

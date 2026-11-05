@@ -42,7 +42,7 @@ export function listingTransitionError(
 	}
 	if (!isListedPublicly(target)) return null;
 	if (!facts.hasPriceCard) return MarketplaceErrorCode.PRICE_CARD_REQUIRED;
-	if (!facts.payoutReady) return MarketplaceErrorCode.PAYOUT_ACCOUNT_REQUIRED;
+	if (!facts.payoutReady) return MarketplaceErrorCode.PAYOUT_WALLET_REQUIRED;
 	return facts.restricted ? MarketplaceErrorCode.MACHINE_RESTRICTED : null;
 }
 

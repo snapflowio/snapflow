@@ -27,11 +27,11 @@ import { NotificationModule } from './notification/notification.module';
 import { NotificationRedisEmitterModule } from './notification/notification-redis-emitter.module';
 import { ObjectStorageModule } from './object-storage/object-storage.module';
 import { OrganizationModule } from './organization/organization.module';
-import { PaymentsModule } from './payments/payments.module';
 import { SandboxModule } from './sandbox/sandbox.module';
 import { AppSchedulerModule } from './scheduler/scheduler.module';
 import { SecretsModule } from './secrets/secrets.module';
 import { SettingsModule } from './settings/settings.module';
+import { SettlementModule } from './settlement/settlement.module';
 import { UsageModule } from './usage/usage.module';
 import { UserModule } from './user/user.module';
 import { VerificationModule } from './verification/verification.module';
@@ -52,10 +52,10 @@ const FEATURE_MODULES = [
 	ObjectStorageModule,
 	OrganizationModule,
 	AdminModule,
-	PaymentsModule,
 	SandboxModule,
 	SecretsModule,
 	SettingsModule,
+	SettlementModule,
 	UsageModule,
 	UserModule,
 	VerificationModule,

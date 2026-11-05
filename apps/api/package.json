@@ -77,9 +77,9 @@
 		"resend": "catalog:",
 		"rxjs": "^7.8.0",
 		"socket.io": "catalog:",
-		"stripe": "catalog:",
 		"tldts": "catalog:",
 		"uuid": "^14.0.0",
+		"viem": "catalog:",
 		"zod": "catalog:"
 	},
 	"devDependencies": {

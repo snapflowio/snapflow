@@ -21,13 +21,10 @@ import { MachineAssessment } from '../../machine/entities/machine-assessment.ent
 import { MachineListing } from '../../marketplace/entities/machine-listing.entity';
 import { ListingVisibility } from '../../marketplace/enums/listing-visibility.enum';
 import { MachineMarketplaceService } from '../../marketplace/services/machine-marketplace.service';
-import { PaymentAccount } from '../../payments/entities/payment-account.entity';
-import {
-	PaymentAccountRequirementsStatus,
-	PaymentAccountTransfersStatus,
-} from '../../payments/enums/payment-account-status.enum';
 import { SettingsService } from '../../settings/services/settings.service';
 import type { SettingsSnapshot } from '../../settings/types/settings.types';
+import { PayoutReadiness } from '../../settlement/enums/payout-readiness.enum';
+import { PayoutReadinessService } from '../../settlement/services/payout-readiness.service';
 import { MACHINE_TIER_POLICY } from '../constants/machine-tier.constants';
 import {
 	AdminListingDto,
@@ -52,12 +49,6 @@ import {
 	type TierEvaluationInput,
 } from '../utils/tier-evaluation.util';
 
-const KYC_REQUIREMENTS_SATISFIED: ReadonlySet<PaymentAccountRequirementsStatus> =
-	new Set([
-		PaymentAccountRequirementsStatus.NONE,
-		PaymentAccountRequirementsStatus.EVENTUALLY_DUE,
-	]);
-
 interface TierFacts {
 	input: TierEvaluationInput;
 	latestBenchmark: MachineBenchmark | null;
@@ -70,7 +61,8 @@ export class MachineTierService extends TrackedJobs {
 	constructor(
 		private readonly entityManager: EntityManager,
 		private readonly machines: MachineMarketplaceService,
-		private readonly settings: SettingsService
+		private readonly settings: SettingsService,
+		private readonly payoutReadiness: PayoutReadinessService
 	) {
 		super();
 	}
@@ -133,7 +125,7 @@ export class MachineTierService extends TrackedJobs {
 			tier: machine.tier,
 			reasons: machine.tierReasons,
 			checklist: {
-				kyc: facts.input.kycComplete,
+				payoutWallet: facts.input.payoutWalletReady,
 				benchmark: facts.input.benchmarkPassed && facts.input.inventoryCurrent,
 				fingerprintUnique: !facts.input.fingerprintConflict,
 				networkMinimum: facts.input.networkMinimumMet,
@@ -234,12 +226,10 @@ export class MachineTierService extends TrackedJobs {
 			now,
 			-MACHINE_TIER_POLICY.EVALUATION_WINDOW_DAYS
 		);
-		const [listing, account, latestBenchmark, assessment, passed, failed] =
+		const [listing, payouts, latestBenchmark, assessment, passed, failed] =
 			await Promise.all([
 				manager.findOne(MachineListing, { machineId: machine.id }),
-				manager.findOne(PaymentAccount, {
-					organizationId: machine.organizationId,
-				}),
+				this.payoutReadiness.forOrganization(machine.organizationId, manager),
 				manager.findOne(
 					MachineBenchmark,
 					{
@@ -268,9 +258,7 @@ export class MachineTierService extends TrackedJobs {
 			latestBenchmark,
 			input: {
 				listingPublic: listing?.visibility === ListingVisibility.PUBLIC,
-				kycComplete:
-					account?.transfersStatus === PaymentAccountTransfersStatus.ACTIVE &&
-					KYC_REQUIREMENTS_SATISFIED.has(account.requirementsStatus),
+				payoutWalletReady: payouts === PayoutReadiness.READY,
 				benchmarkPassed: benchmarkStanding(
 					machine.latestBenchmarkId,
 					latestBenchmark

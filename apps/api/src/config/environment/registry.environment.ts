@@ -19,10 +19,10 @@ import { observabilityEnvironment } from './namespaces/observability.environment
 import { processEnvironment } from './namespaces/process.environment';
 import { publicUrlsEnvironment } from './namespaces/public-urls.environment';
 import { redisEnvironment } from './namespaces/redis.environment';
+import { settlementEnvironment } from './namespaces/settlement.environment';
 import { snapshotManagerEnvironment } from './namespaces/snapshot-manager.environment';
 import { socialSignInEnvironment } from './namespaces/social-sign-in.environment';
 import { objectStorageEnvironment } from './namespaces/storage.environment';
-import { stripeEnvironment } from './namespaces/stripe.environment';
 import { vaultEnvironment } from './namespaces/vault.environment';
 
 export const BASE_ENVIRONMENT_NAMESPACES = [
@@ -44,7 +44,7 @@ export const ENVIRONMENT_NAMESPACES = [
 	geoIpEnvironment,
 	vaultEnvironment,
 	cloudflareEnvironment,
-	stripeEnvironment,
+	settlementEnvironment,
 	developmentEnvironment,
 ] as const;
 

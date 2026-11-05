@@ -1,0 +1,30 @@
+/*
+ * Copyright (c) 2026 Snapflow. All rights reserved.
+ *
+ * Snapflow is licensed under the GNU Affero General Public License v3.0.
+ * You may obtain a copy of the license at https://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * SPDX-License-Identifier: AGPL-3.0
+ */
+
+import type { Chain } from 'viem';
+import { base, baseSepolia, foundry } from 'viem/chains';
+import { MILLISECONDS_PER_SECOND } from '../../common/constants/time.constants';
+import {
+	SETTLEMENT_CHAIN_ID,
+	type SettlementChainId,
+} from '../../config/constants/settlement-chain.constants';
+
+export const SETTLEMENT_PUBLIC_CLIENT = Symbol('SETTLEMENT_PUBLIC_CLIENT');
+
+export const SETTLEMENT_CHAINS: Readonly<Record<SettlementChainId, Chain>> = {
+	[SETTLEMENT_CHAIN_ID.BASE]: base,
+	[SETTLEMENT_CHAIN_ID.BASE_SEPOLIA]: baseSepolia,
+	[SETTLEMENT_CHAIN_ID.LOCAL]: foundry,
+};
+
+export const SETTLEMENT_RPC_TIMEOUT_MILLISECONDS = 10 * MILLISECONDS_PER_SECOND;
+
+export const SANCTIONS_API_KEY_HEADER = 'X-API-Key';
+export const SANCTIONS_REQUEST_TIMEOUT_MILLISECONDS =
+	10 * MILLISECONDS_PER_SECOND;

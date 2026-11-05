@@ -57,11 +57,11 @@ describe('listing transitions', () => {
 		assert.equal(listingTransitionError(PUBLIC_LISTING, PRICED), null);
 	});
 
-	it('requires a ready payout account to list publicly', () => {
+	it('requires a ready payout wallet to list publicly', () => {
 		const unpaid = { ...PRICED, payoutReady: false };
 		assert.equal(
 			listingTransitionError(PUBLIC_LISTING, unpaid),
-			MarketplaceErrorCode.PAYOUT_ACCOUNT_REQUIRED
+			MarketplaceErrorCode.PAYOUT_WALLET_REQUIRED
 		);
 		assert.equal(listingTransitionError(PRIVATE_LISTING, unpaid), null);
 		assert.equal(

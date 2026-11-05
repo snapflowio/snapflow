@@ -9,9 +9,8 @@
 
 import { RequestContext } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import Stripe from 'stripe';
 import { DeploymentEnvironment } from '../../config/enums/deployment-environment.enum';
 import { TypedConfigService } from '../../config/services/typed-config.service';
 import { Machine } from '../../machine/entities/machine.entity';
@@ -22,21 +21,21 @@ import { MachineListingService } from '../../marketplace/services/machine-listin
 import { PriceCardService } from '../../marketplace/services/price-card.service';
 import { PriceFloorService } from '../../marketplace/services/price-floor.service';
 import { requirePriceClass } from '../../marketplace/utils/price-class.util';
-import { STRIPE_CLIENT } from '../../payments/constants/stripe.constants';
-import { PaymentAccountService } from '../../payments/services/payment-account.service';
+import { PaymentWalletPurpose } from '../../settlement/enums/payment-wallet-purpose.enum';
+import { PayoutReadiness } from '../../settlement/enums/payout-readiness.enum';
+import { SanctionsStatus } from '../../settlement/enums/sanctions-status.enum';
+import { PaymentWalletService } from '../../settlement/services/payment-wallet.service';
+import { PayoutReadinessService } from '../../settlement/services/payout-readiness.service';
 import { UserService } from '../../user/services/user.service';
 import { VerificationEvents } from '../../verification/constants/verification-events.constants';
 import { BenchmarkPassedEvent } from '../../verification/events/benchmark-passed.event';
 import { MachineTierService } from '../../verification/services/machine-tier.service';
 import {
-	DEVELOPMENT_HOST_ACCOUNT,
 	DEVELOPMENT_MARKET_REFERENCE_PRICE,
+	DEVELOPMENT_PAYOUT_WALLET_ADDRESS,
 	DEVELOPMENT_PRICE_CARD,
 	DEVELOPMENT_TIER_REASON,
 } from '../constants/development-machine-seed.constants';
-import { developmentHostAccountFields } from '../utils/development-host-account.util';
-
-const SINGLE_RESULT = 1;
 
 @Injectable()
 export class DevelopmentMachineSeedService {
@@ -44,8 +43,8 @@ export class DevelopmentMachineSeedService {
 
 	constructor(
 		private readonly entityManager: EntityManager,
-		@Inject(STRIPE_CLIENT) private readonly stripe: Stripe,
-		private readonly accounts: PaymentAccountService,
+		private readonly wallets: PaymentWalletService,
+		private readonly payoutReadiness: PayoutReadinessService,
 		private readonly config: TypedConfigService,
 		private readonly users: UserService,
 		private readonly floors: PriceFloorService,
@@ -90,7 +89,7 @@ export class DevelopmentMachineSeedService {
 			DEVELOPMENT_MARKET_REFERENCE_PRICE,
 			administrator.id
 		);
-		await this.ensureHostAccount(machine.organizationId, administrator.email);
+		await this.ensurePayoutWallet(machine.organizationId);
 		await this.ensurePriceCard(machine, administrator.id);
 		await this.ensurePublicListing(machine);
 		await this.tiers.updateAdminTier(machine.id, {
@@ -99,27 +98,20 @@ export class DevelopmentMachineSeedService {
 		});
 	}
 
-	private async ensureHostAccount(
-		organizationId: string,
-		contactEmail: string
-	): Promise<void> {
-		const account = await this.accounts.ensurePrefilledRecipient(
-			{ organizationId, contactEmail },
-			developmentHostAccountFields(contactEmail, new Date())
-		);
-		const banks = await this.stripe.accounts.listExternalAccounts(
-			account.stripeAccountId,
-			{ limit: SINGLE_RESULT }
-		);
-		if (banks.data.length === 0) {
-			await this.stripe.accounts.createExternalAccount(
-				account.stripeAccountId,
-				{
-					external_account: DEVELOPMENT_HOST_ACCOUNT.verifiedBankToken,
-				}
-			);
+	// Development has no sanctions screening, so the seeded wallet is unchecked.
+	private async ensurePayoutWallet(organizationId: string): Promise<void> {
+		if (
+			(await this.payoutReadiness.forOrganization(organizationId)) !==
+			PayoutReadiness.NOT_SET_UP
+		) {
+			return;
 		}
-		await this.accounts.synchronize(account.stripeAccountId);
+		await this.wallets.record(
+			organizationId,
+			PaymentWalletPurpose.PAYOUT,
+			DEVELOPMENT_PAYOUT_WALLET_ADDRESS,
+			{ sanctionsStatus: SanctionsStatus.UNCHECKED, sanctionsCheckedAt: null }
+		);
 	}
 
 	private async ensurePriceCard(

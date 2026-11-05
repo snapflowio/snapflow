@@ -7,7 +7,6 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { ArrayType } from '@mikro-orm/core';
 import {
 	Check,
 	Entity,
@@ -24,7 +23,6 @@ import {
 import { SandboxClass } from '../../sandbox/enums/sandbox-class.enum';
 import {
 	DrainingMode,
-	ISO_WEEKDAY,
 	SETTINGS_ID,
 	SETTINGS_POSITIVE_MINIMUM,
 	SETTINGS_RESOURCE_VERSION_INITIAL,
@@ -57,16 +55,6 @@ const NON_NEGATIVE_COLUMNS = [
 	'spotCheckIntervalHoursVerified',
 	'spotCheckMonthlyBudgetCents',
 	'spotCheckToleranceBasisPoints',
-	'autoTopUpMinimumCents',
-	'autoTopUpMinimumIntervalMinutes',
-	'topUpAttemptsPerHour',
-	'paymentMethodsPerDay',
-	'organizationsPerCardFingerprint',
-	'payoutMinimumCents',
-	'payoutHoldCommunityDays',
-	'payoutHoldVerifiedDays',
-	'payoutHoldDatacenterDays',
-	'newFundingHoldDays',
 ] as const;
 
 const POSITIVE_COLUMNS = [
@@ -79,7 +67,6 @@ const POSITIVE_COLUMNS = [
 	'exposureCeilingProbationaryCents',
 	'exposureCeilingEstablishedCents',
 	'exposureCeilingHostCents',
-	'topUpMinimumCents',
 ] as const;
 
 const BASIS_POINTS_COLUMNS = [
@@ -121,14 +108,6 @@ const booleanColumn = (fieldName: string) =>
 @Check({
 	name: 'CHK_settings_network_budget_throttle',
 	expression: `"networkBudgetThrottleBandwidthBps" >= ${MINIMUM_EGRESS_BANDWIDTH_BPS} and "networkBudgetThrottleBandwidthBps" <= ${MAXIMUM_EGRESS_BANDWIDTH_BPS}`,
-})
-@Check({
-	name: 'CHK_settings_top_up_range',
-	expression: '"topUpMaximumCents" >= "topUpMinimumCents"',
-})
-@Check({
-	name: 'CHK_settings_payout_weekday',
-	expression: `"payoutWeekday" >= ${ISO_WEEKDAY.MONDAY} and "payoutWeekday" <= ${ISO_WEEKDAY.SUNDAY}`,
 })
 @Check({
 	name: 'CHK_settings_draining_mode',
@@ -290,62 +269,6 @@ export class Settings {
 		foreignKeyName: 'settings_spotCheckOrganizationId_fk',
 	})
 	spotCheckOrganizationId: string | null;
-
-	@Property(integerColumn('topUpMinimumCents'))
-	topUpMinimumCents: number;
-
-	@Property(integerColumn('topUpMaximumCents'))
-	topUpMaximumCents: number;
-
-	@Property({
-		type: new ArrayType<number>(Number),
-		columnType: 'integer[]',
-		fieldName: 'topUpPresetsCents',
-	})
-	topUpPresetsCents: number[];
-
-	@Property(integerColumn('autoTopUpMinimumCents'))
-	autoTopUpMinimumCents: number;
-
-	@Property(integerColumn('autoTopUpMinimumIntervalMinutes'))
-	autoTopUpMinimumIntervalMinutes: number;
-
-	@Property(integerColumn('topUpAttemptsPerHour'))
-	topUpAttemptsPerHour: number;
-
-	@Property(integerColumn('paymentMethodsPerDay'))
-	paymentMethodsPerDay: number;
-
-	@Property(integerColumn('organizationsPerCardFingerprint'))
-	organizationsPerCardFingerprint: number;
-
-	@Property(integerColumn('payoutMinimumCents'))
-	payoutMinimumCents: number;
-
-	@Property(integerColumn('payoutWeekday'))
-	payoutWeekday: number;
-
-	@Property(integerColumn('payoutHoldCommunityDays'))
-	payoutHoldCommunityDays: number;
-
-	@Property(integerColumn('payoutHoldVerifiedDays'))
-	payoutHoldVerifiedDays: number;
-
-	@Property(integerColumn('payoutHoldDatacenterDays'))
-	payoutHoldDatacenterDays: number;
-
-	@Property(integerColumn('newFundingHoldDays'))
-	newFundingHoldDays: number;
-
-	@Property(booleanColumn('stripeTaxEnabled'))
-	stripeTaxEnabled: boolean;
-
-	@Property({
-		type: 'string[]',
-		columnType: 'text[]',
-		fieldName: 'payoutCountries',
-	})
-	payoutCountries: string[];
 
 	@Property({
 		type: 'string[]',

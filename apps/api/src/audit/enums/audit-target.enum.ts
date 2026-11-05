@@ -16,6 +16,7 @@ export enum AuditTarget {
 	USER = 'user',
 	VOLUME = 'volume',
 	BILLING = 'billing',
+	PAYMENT_WALLET = 'payment_wallet',
 	SECRET = 'secret',
 	SETTINGS = 'settings',
 	API_KEY = 'api_key',

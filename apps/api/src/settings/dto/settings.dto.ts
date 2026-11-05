@@ -13,7 +13,6 @@ import { SandboxClass } from '../../sandbox/enums/sandbox-class.enum';
 import {
 	DrainingMode,
 	EDGE_TRUSTED_HTTP_PROXY_CIDRS_MAXIMUM,
-	ISO_WEEKDAY,
 } from '../constants/settings.constants';
 import type { SettingsSnapshot } from '../types/settings.types';
 
@@ -199,65 +198,6 @@ export class SettingsDto {
 		description: 'Organization that runs and pays for spot checks',
 	})
 	spotCheckOrganizationId: string | null;
-
-	@ApiProperty({ description: 'Smallest top-up, cents' })
-	topUpMinimumCents: number;
-
-	@ApiProperty({ description: 'Largest top-up, cents' })
-	topUpMaximumCents: number;
-
-	@ApiProperty({ type: [Number], description: 'Suggested top-ups, cents' })
-	topUpPresetsCents: number[];
-
-	@ApiProperty({ description: 'Smallest automatic top-up, cents' })
-	autoTopUpMinimumCents: number;
-
-	@ApiProperty({ description: 'Minutes between automatic top-up attempts' })
-	autoTopUpMinimumIntervalMinutes: number;
-
-	@ApiProperty({ description: 'Top-up attempts per organization per hour' })
-	topUpAttemptsPerHour: number;
-
-	@ApiProperty({ description: 'Payment methods per organization per day' })
-	paymentMethodsPerDay: number;
-
-	@ApiProperty({ description: 'Organizations that may share one card' })
-	organizationsPerCardFingerprint: number;
-
-	@ApiProperty({ description: 'Smallest payout, cents' })
-	payoutMinimumCents: number;
-
-	@ApiProperty({
-		description: 'ISO weekday payouts run on (1 is Monday)',
-		minimum: ISO_WEEKDAY.MONDAY,
-		maximum: ISO_WEEKDAY.SUNDAY,
-	})
-	payoutWeekday: number;
-
-	@ApiProperty({ description: 'Earnings hold for Community machines, days' })
-	payoutHoldCommunityDays: number;
-
-	@ApiProperty({ description: 'Earnings hold for Verified machines, days' })
-	payoutHoldVerifiedDays: number;
-
-	@ApiProperty({ description: 'Earnings hold for Datacenter machines, days' })
-	payoutHoldDatacenterDays: number;
-
-	@ApiProperty({
-		description: 'Days credit from a new card cannot fund payouts',
-	})
-	newFundingHoldDays: number;
-
-	@ApiProperty({
-		description: 'Calculate sales tax on top-ups with Stripe Tax',
-	})
-	stripeTaxEnabled: boolean;
-
-	@ApiProperty({
-		type: [String],
-		description: 'ISO 3166-1 alpha-2 countries hosts may be paid in',
-	})
-	payoutCountries: string[];
 
 	@ApiProperty({
 		type: [String],

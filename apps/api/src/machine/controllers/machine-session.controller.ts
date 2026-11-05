@@ -22,6 +22,7 @@ import type { Request } from 'express';
 import { PublicEndpoint } from '../../auth/decorators/public-endpoint.decorator';
 import { AnonymousRateLimitGuard } from '../../common/guards/anonymous-rate-limit.guard';
 import { AuthenticatedRateLimitGuard } from '../../common/guards/authenticated-rate-limit.guard';
+import { PayoutReadinessService } from '../../settlement/services/payout-readiness.service';
 import { ActiveMachineSession } from '../decorators/machine-session.decorator';
 import { MachineIdentityStatusDto } from '../dto/machine-identity-status.dto';
 import {
@@ -33,7 +34,6 @@ import type { MachineSession } from '../entities/machine-session.entity';
 import { MachineSessionGuard } from '../guards/machine-session.guard';
 import { MachineService } from '../services/machine.service';
 import { MachineDirectoryService } from '../services/machine-directory.service';
-import { MachinePayoutReadinessService } from '../services/machine-payout-readiness.service';
 import { MachineProofService } from '../services/machine-proof.service';
 import { MachineSessionService } from '../services/machine-session.service';
 
@@ -47,7 +47,7 @@ export class MachineSessionController {
 		private readonly machineDirectory: MachineDirectoryService,
 		private readonly machineSessionService: MachineSessionService,
 		private readonly machineProofService: MachineProofService,
-		private readonly payoutReadiness: MachinePayoutReadinessService
+		private readonly payoutReadiness: PayoutReadinessService
 	) {}
 
 	@Post('session')

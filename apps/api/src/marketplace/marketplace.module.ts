@@ -12,6 +12,7 @@ import { Module } from '@nestjs/common';
 import { IdempotencyModule } from '../idempotency/idempotency.module';
 import { OrganizationModule } from '../organization/organization.module';
 import { SettingsModule } from '../settings/settings.module';
+import { SettlementModule } from '../settlement/settlement.module';
 import { AdminMarketPriceController } from './controllers/admin-market-price.controller';
 import { HostMachineController } from './controllers/host-machine.controller';
 import { MachineListing } from './entities/machine-listing.entity';
@@ -37,6 +38,7 @@ import { SandboxLeaseService } from './services/sandbox-lease.service';
 		IdempotencyModule,
 		OrganizationModule,
 		SettingsModule,
+		SettlementModule,
 	],
 	controllers: [HostMachineController, AdminMarketPriceController],
 	providers: [

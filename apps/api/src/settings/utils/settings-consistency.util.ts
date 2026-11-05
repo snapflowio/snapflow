@@ -10,32 +10,18 @@
 import type { Settings } from '../entities/settings.entity';
 
 type OrderedSettingKey =
-	| 'topUpMinimumCents'
-	| 'topUpMaximumCents'
-	| 'autoTopUpMinimumCents'
 	| 'exposureCeilingProbationaryCents'
 	| 'exposureCeilingEstablishedCents'
-	| 'exposureCeilingHostCents'
-	| 'payoutHoldDatacenterDays'
-	| 'payoutHoldVerifiedDays'
-	| 'payoutHoldCommunityDays';
+	| 'exposureCeilingHostCents';
 
-export type ConsistencySettings = Pick<
-	Settings,
-	OrderedSettingKey | 'topUpPresetsCents'
->;
+export type ConsistencySettings = Pick<Settings, OrderedSettingKey>;
 
 const ORDERED_SETTINGS: readonly (readonly [
 	OrderedSettingKey,
 	OrderedSettingKey,
 ])[] = [
-	['topUpMinimumCents', 'topUpMaximumCents'],
-	['topUpMinimumCents', 'autoTopUpMinimumCents'],
-	['autoTopUpMinimumCents', 'topUpMaximumCents'],
 	['exposureCeilingProbationaryCents', 'exposureCeilingEstablishedCents'],
 	['exposureCeilingEstablishedCents', 'exposureCeilingHostCents'],
-	['payoutHoldDatacenterDays', 'payoutHoldVerifiedDays'],
-	['payoutHoldVerifiedDays', 'payoutHoldCommunityDays'],
 ];
 
 export function settingsInconsistency(
@@ -45,13 +31,6 @@ export function settingsInconsistency(
 		if (settings[upper] < settings[lower]) {
 			return `${upper} must be at least ${lower}`;
 		}
-	}
-	const outOfRange = settings.topUpPresetsCents.find(
-		(preset) =>
-			preset < settings.topUpMinimumCents || preset > settings.topUpMaximumCents
-	);
-	if (outOfRange !== undefined) {
-		return `Top-up preset ${outOfRange} must be between topUpMinimumCents and topUpMaximumCents`;
 	}
 	return null;
 }

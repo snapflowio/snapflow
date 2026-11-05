@@ -9,7 +9,7 @@
 
 export const TIER_REASON = {
 	LISTING_NOT_PUBLIC: 'listing_not_public',
-	KYC_INCOMPLETE: 'kyc_incomplete',
+	PAYOUT_WALLET_REQUIRED: 'payout_wallet_required',
 	BENCHMARK_MISSING: 'benchmark_missing',
 	INVENTORY_CHANGED: 'inventory_changed',
 	FINGERPRINT_CONFLICT: 'fingerprint_conflict',

@@ -15,7 +15,7 @@ export enum MarketplaceErrorCode {
 	PRICE_BELOW_FLOOR = 'price_below_floor',
 	PRICE_ABOVE_CEILING = 'price_above_ceiling',
 	PRICE_CARD_REQUIRED = 'price_card_required',
-	PAYOUT_ACCOUNT_REQUIRED = 'payout_account_required',
+	PAYOUT_WALLET_REQUIRED = 'payout_wallet_required',
 	GPU_RATE_REQUIRED = 'gpu_rate_required',
 	PRICE_CLASS_INVALID = 'price_class_invalid',
 	LISTING_TRANSITION_INVALID = 'listing_transition_invalid',

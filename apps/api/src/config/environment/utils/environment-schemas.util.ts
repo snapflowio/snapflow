@@ -9,6 +9,7 @@
 
 import { isIP } from 'node:net';
 import type { BetterAuthOptions } from 'better-auth';
+import { type Address, getAddress, isAddress } from 'viem';
 import { z } from 'zod';
 
 const HTTP_PROTOCOLS: ReadonlySet<string> = new Set(['http:', 'https:']);
@@ -90,6 +91,18 @@ export const iamRoleArnText = () =>
 			IAM_ROLE_ARN_PATTERN,
 			'must be an IAM role ARN (arn:aws:iam::<account>:role/<name>)'
 		);
+
+export const integerChoiceText = <const Choices extends readonly number[]>(
+	choices: Choices
+) => integerText().pipe(z.literal(choices));
+
+export const evmAddressText = () =>
+	parsed((value): Address => {
+		if (!isAddress(value)) {
+			throw new Error('must be an EVM address (0x followed by 40 hex digits)');
+		}
+		return getAddress(value);
+	});
 
 export const portText = () =>
 	integerText({ minimum: 1, maximum: MAXIMUM_PORT });

@@ -108,10 +108,6 @@ describe('usage corroboration posting', () => {
 			balances.get(BillingLedgerAccountCode.HOST_EARNINGS_PENDING),
 			host.negate()
 		);
-		assert.equal(
-			balances.get(BillingLedgerAccountCode.HOST_EARNINGS_PAYABLE),
-			undefined
-		);
 		assert.deepEqual(
 			balances.get(BillingLedgerAccountCode.PLATFORM_MARKUP_REVENUE),
 			markup.negate()

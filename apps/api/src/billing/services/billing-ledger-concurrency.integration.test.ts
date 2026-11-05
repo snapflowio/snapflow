@@ -17,20 +17,21 @@ import { integrationDatabaseUrl } from '../../common/testing/integration-databas
 import { MicroUsd } from '../../common/values/micro-usd.value';
 import { ENTITY_MAPPING_OPTIONS } from '../../infra/database/config/entity-mapping.config';
 import {
-	disputeFreezePosting,
-	disputeWithdrawalPosting,
-} from '../../payments/utils/postings/dispute-posting.util';
-import { topUpPosting } from '../../payments/utils/postings/top-up-posting.util';
-import {
 	BillingLedgerAccountCode,
+	BillingLedgerDescriptionCode,
 	BillingLedgerOwnerKind,
 	BillingLedgerSide,
+	BillingLedgerSourceType,
 } from '../constants/billing.constants';
 import { BillingLedgerAccount } from '../entities/billing-ledger-account.entity';
 import { BillingLedgerEntry } from '../entities/billing-ledger-entry.entity';
 import { BillingLedgerTransaction } from '../entities/billing-ledger-transaction.entity';
 import { ledgerBalance } from '../queries/ledger-balance.query';
-import { customerCreditAccount } from '../utils/ledger/billing-ledger-accounts.util';
+import {
+	customerCreditAccount,
+	platformAccount,
+} from '../utils/ledger/billing-ledger-accounts.util';
+import { LedgerPostingBuilder } from '../utils/ledger/ledger-posting-builder.util';
 import {
 	type BillingLedgerAccountReference,
 	type BillingLedgerPosting,
@@ -41,10 +42,8 @@ const DATABASE_URL = integrationDatabaseUrl();
 const BARRIER_TIMEOUT_MILLISECONDS = 5 * MILLISECONDS_PER_SECOND;
 const PARALLEL_ORGANIZATIONS = 6;
 const OPPOSITE_ORDER_ROUNDS = 20;
-const TOP_UP_MICRO_USD = MicroUsd.of(10_000_000n);
-const TAX_MICRO_USD = MicroUsd.of(500_000n);
-const FROZEN_MICRO_USD = MicroUsd.of(4_000_000n);
-const DISPUTE_FEE_MICRO_USD = MicroUsd.of(15_000_000n);
+const GRANT_MICRO_USD = MicroUsd.of(10_000_000n);
+const CHARGE_MICRO_USD = MicroUsd.of(4_000_000n);
 const SWAP_AMOUNT = '1000';
 const EFFECTIVE_AT = new Date('2026-10-19T12:00:00.000Z');
 
@@ -95,20 +94,18 @@ describe('billing ledger concurrency', {
 		if (orm) await orm.close(true);
 	});
 
-	it('posts a top-up and a dispute for one organization concurrently', async () => {
+	it('posts a credit grant and a charge for one organization concurrently', async () => {
 		const organizationId = randomUUID();
-		await postAll([topUp(organizationId), dispute(organizationId)].flat());
+		await postAll([grant(organizationId), charge(organizationId)]);
 
 		const meeting = barrier(2);
 		const outcomes = await Promise.allSettled([
-			postTogether(meeting, [topUp(organizationId)]),
-			postTogether(meeting, dispute(organizationId)),
+			postTogether(meeting, [grant(organizationId)]),
+			postTogether(meeting, [charge(organizationId)]),
 		]);
 
 		assert.deepEqual(statuses(outcomes), ['fulfilled', 'fulfilled']);
-		const credit = TOP_UP_MICRO_USD.subtract(TAX_MICRO_USD)
-			.subtract(FROZEN_MICRO_USD)
-			.multiply(2n);
+		const credit = GRANT_MICRO_USD.subtract(CHARGE_MICRO_USD).multiply(2n);
 		assert.equal(
 			(
 				await ledgerBalance(
@@ -124,11 +121,11 @@ describe('billing ledger concurrency', {
 		const organizationIds = Array.from({ length: PARALLEL_ORGANIZATIONS }, () =>
 			randomUUID()
 		);
-		await postAll(organizationIds.map((id) => topUp(id)));
+		await postAll(organizationIds.map((id) => grant(id)));
 
 		const meeting = barrier(organizationIds.length);
 		const outcomes = await Promise.allSettled(
-			organizationIds.map((id) => postTogether(meeting, [topUp(id)]))
+			organizationIds.map((id) => postTogether(meeting, [grant(id)]))
 		);
 
 		assert.deepEqual(
@@ -163,7 +160,7 @@ describe('billing ledger concurrency', {
 
 	it('records a concurrently repeated source exactly once', async () => {
 		const organizationId = randomUUID();
-		const posting = topUp(organizationId);
+		const posting = grant(organizationId);
 		const outcomes = await Promise.allSettled([
 			postAll([posting]),
 			postAll([posting]),
@@ -205,41 +202,40 @@ describe('billing ledger concurrency', {
 		}
 	}
 
-	function topUp(organizationId: string): BillingLedgerPosting {
+	function grant(organizationId: string): BillingLedgerPosting {
 		return relocated(
-			topUpPosting({
-				paymentIntentId: `pi_${randomUUID()}`,
-				topUpId: randomUUID(),
-				organizationId,
-				grossMicroUsd: TOP_UP_MICRO_USD,
-				taxMicroUsd: TAX_MICRO_USD,
+			LedgerPostingBuilder.for({
+				sourceType: BillingLedgerSourceType.ADMIN_CREDIT_GRANT,
+				descriptionCode: BillingLedgerDescriptionCode.ADMIN_CREDIT_GRANTED,
+				sourceReference: randomUUID(),
 				effectiveAt: EFFECTIVE_AT,
+				metadata: { organizationId },
 			})
+				.debit(
+					platformAccount(BillingLedgerAccountCode.ADMIN_CREDIT_GRANTS),
+					GRANT_MICRO_USD
+				)
+				.credit(customerCreditAccount(organizationId), GRANT_MICRO_USD)
+				.build()
 		);
 	}
 
-	function dispute(organizationId: string): BillingLedgerPosting[] {
-		const disputeId = `dp_${randomUUID()}`;
-		return [
-			relocated(
-				disputeFreezePosting({
-					disputeId,
-					organizationId,
-					frozenMicroUsd: FROZEN_MICRO_USD,
-					effectiveAt: EFFECTIVE_AT,
-				})
-			),
-			relocated(
-				disputeWithdrawalPosting({
-					disputeId,
-					balanceTransactionId: `txn_${randomUUID()}`,
-					organizationId,
-					disputedMicroUsd: FROZEN_MICRO_USD,
-					feeMicroUsd: DISPUTE_FEE_MICRO_USD,
-					effectiveAt: EFFECTIVE_AT,
-				})
-			),
-		];
+	function charge(organizationId: string): BillingLedgerPosting {
+		return relocated(
+			LedgerPostingBuilder.for({
+				sourceType: BillingLedgerSourceType.LINE_USAGE,
+				descriptionCode: BillingLedgerDescriptionCode.USAGE_CHARGED,
+				sourceReference: randomUUID(),
+				effectiveAt: EFFECTIVE_AT,
+				metadata: { organizationId },
+			})
+				.debit(customerCreditAccount(organizationId), CHARGE_MICRO_USD)
+				.credit(
+					platformAccount(BillingLedgerAccountCode.PLATFORM_MARKUP_REVENUE),
+					CHARGE_MICRO_USD
+				)
+				.build()
+		);
 	}
 
 	function relocated(posting: BillingLedgerPosting): BillingLedgerPosting {
@@ -261,7 +257,7 @@ describe('billing ledger concurrency', {
 			ownerKind: BillingLedgerOwnerKind.PLATFORM,
 			ownerReference,
 			accountCode:
-				account?.accountCode ?? BillingLedgerAccountCode.STRIPE_BALANCE,
+				account?.accountCode ?? BillingLedgerAccountCode.ADMIN_CREDIT_GRANTS,
 		};
 	}
 

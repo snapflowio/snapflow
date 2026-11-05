@@ -39,52 +39,6 @@ export const EDGE_TRUSTED_HTTP_PROXY_CIDRS_MAXIMUM = 64;
 
 export const SETTINGS_POSITIVE_MINIMUM = 1;
 
-export const ISO_WEEKDAY = {
-	MONDAY: 1,
-	SUNDAY: 7,
-} as const;
-
-const DEFAULT_TOP_UP_PRESETS_CENTS: number[] = [
-	1_000, 2_500, 5_000, 10_000, 25_000, 50_000, 100_000,
-];
-
-const DEFAULT_PAYOUT_COUNTRIES: string[] = [
-	'US',
-	'GB',
-	'CA',
-	'CH',
-	'AT',
-	'BE',
-	'BG',
-	'HR',
-	'CY',
-	'CZ',
-	'DK',
-	'EE',
-	'FI',
-	'FR',
-	'DE',
-	'GR',
-	'HU',
-	'IS',
-	'IE',
-	'IT',
-	'LV',
-	'LI',
-	'LT',
-	'LU',
-	'MT',
-	'NL',
-	'NO',
-	'PL',
-	'PT',
-	'RO',
-	'SK',
-	'SI',
-	'ES',
-	'SE',
-];
-
 const DEFAULT_MARKETPLACE_SETTINGS = {
 	priceFloorBasisPoints: 2_500,
 	priceFloorMinimumSamples: 5,
@@ -115,25 +69,6 @@ const DEFAULT_VERIFICATION_SETTINGS = {
 	spotCheckOrganizationId: null,
 } as const;
 
-const DEFAULT_PAYMENT_SETTINGS = {
-	topUpMinimumCents: 1_000,
-	topUpMaximumCents: 100_000,
-	topUpPresetsCents: DEFAULT_TOP_UP_PRESETS_CENTS,
-	autoTopUpMinimumCents: 2_500,
-	autoTopUpMinimumIntervalMinutes: 60,
-	topUpAttemptsPerHour: 5,
-	paymentMethodsPerDay: 3,
-	organizationsPerCardFingerprint: 2,
-	payoutMinimumCents: 5_000,
-	payoutWeekday: ISO_WEEKDAY.MONDAY,
-	payoutHoldCommunityDays: 14,
-	payoutHoldVerifiedDays: 7,
-	payoutHoldDatacenterDays: 3,
-	newFundingHoldDays: 30,
-	stripeTaxEnabled: false,
-	payoutCountries: DEFAULT_PAYOUT_COUNTRIES,
-} as const;
-
 export const SETTINGS_FIRST_RUN_ACTOR_ID = 'settings-first-run';
 
 const DEFAULT_ORGANIZATION_QUOTA = {
@@ -160,7 +95,6 @@ export const SETTINGS_DEFAULTS = {
 	platformMarkupBasisPoints: 2_500,
 	...DEFAULT_MARKETPLACE_SETTINGS,
 	...DEFAULT_VERIFICATION_SETTINGS,
-	...DEFAULT_PAYMENT_SETTINGS,
 	maintenanceMode: false,
 	drainingMode: DrainingMode.MIGRATE,
 	drainingForce: false,

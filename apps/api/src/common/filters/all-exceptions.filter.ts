@@ -19,10 +19,6 @@ import {
 import { isAPIError } from 'better-auth/api';
 import { Request, Response } from 'express';
 import { normalizeHttpExceptionResponse } from '../utils/error/http-exception-response.util';
-import {
-	stripeErrorDetails,
-	stripeErrorResponse,
-} from '../utils/error/stripe-error.util';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -33,7 +29,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
 		const response = ctx.getResponse<Response>();
 		const request = ctx.getRequest<Request>();
 		const normalizedException = exception;
-		const stripeError = stripeErrorResponse(normalizedException);
 
 		let statusCode: number;
 		let error: string;
@@ -54,19 +49,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
 				normalizedException.body ?? {},
 				normalizedException.message
 			));
-		} else if (stripeError) {
-			this.logger.warn(
-				`Stripe request failed with ${stripeError.statusCode}: ${stripeErrorDetails(normalizedException)}`
-			);
-			statusCode = stripeError.statusCode;
-			error = STATUS_CODES[statusCode] ?? 'HTTP Error';
-			message = stripeError.message;
-			details = {
-				...(stripeError.code ? { code: stripeError.code } : {}),
-				...(stripeError.requestId
-					? { stripeRequestId: stripeError.requestId }
-					: {}),
-			};
 		} else {
 			this.logger.error(normalizedException);
 			error =

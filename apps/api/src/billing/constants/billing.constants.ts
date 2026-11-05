@@ -122,21 +122,9 @@ export type BillingLedgerSide =
 export const BillingLedgerAccountCode = {
 	CUSTOMER_CREDIT: 'customer_credit',
 	ADMIN_CREDIT_GRANTS: 'admin_credit_grants',
-	HOST_EARNINGS_PAYABLE: 'host_earnings_payable',
 	PLATFORM_MARKUP_REVENUE: 'platform_markup_revenue',
 	PLATFORM_QUALIFICATION_EXPENSE: 'platform_qualification_expense',
 	HOST_EARNINGS_PENDING: 'host_earnings_pending',
-	STRIPE_BALANCE: 'stripe_balance',
-	PAYMENT_PROCESSING_FEES: 'payment_processing_fees',
-	STRIPE_PLATFORM_FEES: 'stripe_platform_fees',
-	DISPUTE_FEES: 'dispute_fees',
-	DISPUTED_FUNDS: 'disputed_funds',
-	DISPUTE_LOSSES: 'dispute_losses',
-	REFUND_LOSSES: 'refund_losses',
-	HOST_TRANSFERS_PENDING: 'host_transfers_pending',
-	STRIPE_PAYOUTS_IN_TRANSIT: 'stripe_payouts_in_transit',
-	PLATFORM_BANK_CASH: 'platform_bank_cash',
-	SALES_TAX_PAYABLE: 'sales_tax_payable',
 } as const;
 
 export type BillingLedgerAccountCode =
@@ -147,22 +135,10 @@ export const BILLING_LEDGER_NORMAL_SIDE: Readonly<
 > = {
 	[BillingLedgerAccountCode.CUSTOMER_CREDIT]: BillingLedgerSide.CREDIT,
 	[BillingLedgerAccountCode.ADMIN_CREDIT_GRANTS]: BillingLedgerSide.DEBIT,
-	[BillingLedgerAccountCode.HOST_EARNINGS_PAYABLE]: BillingLedgerSide.CREDIT,
 	[BillingLedgerAccountCode.PLATFORM_MARKUP_REVENUE]: BillingLedgerSide.CREDIT,
 	[BillingLedgerAccountCode.PLATFORM_QUALIFICATION_EXPENSE]:
 		BillingLedgerSide.DEBIT,
 	[BillingLedgerAccountCode.HOST_EARNINGS_PENDING]: BillingLedgerSide.CREDIT,
-	[BillingLedgerAccountCode.STRIPE_BALANCE]: BillingLedgerSide.DEBIT,
-	[BillingLedgerAccountCode.PAYMENT_PROCESSING_FEES]: BillingLedgerSide.DEBIT,
-	[BillingLedgerAccountCode.STRIPE_PLATFORM_FEES]: BillingLedgerSide.DEBIT,
-	[BillingLedgerAccountCode.DISPUTE_FEES]: BillingLedgerSide.DEBIT,
-	[BillingLedgerAccountCode.DISPUTED_FUNDS]: BillingLedgerSide.DEBIT,
-	[BillingLedgerAccountCode.DISPUTE_LOSSES]: BillingLedgerSide.DEBIT,
-	[BillingLedgerAccountCode.REFUND_LOSSES]: BillingLedgerSide.DEBIT,
-	[BillingLedgerAccountCode.HOST_TRANSFERS_PENDING]: BillingLedgerSide.CREDIT,
-	[BillingLedgerAccountCode.STRIPE_PAYOUTS_IN_TRANSIT]: BillingLedgerSide.DEBIT,
-	[BillingLedgerAccountCode.PLATFORM_BANK_CASH]: BillingLedgerSide.DEBIT,
-	[BillingLedgerAccountCode.SALES_TAX_PAYABLE]: BillingLedgerSide.CREDIT,
 };
 
 export const BillingLedgerOwnerKind = {
@@ -180,48 +156,14 @@ export const BILLING_LEDGER_SOURCE_VERSION = 1;
 export const BillingLedgerSourceType = {
 	LINE_USAGE: 'billing_line_usage',
 	ADMIN_CREDIT_GRANT: 'admin_credit_grant',
-	EARNINGS_MATURITY: 'earnings_maturity',
 	EARNINGS_FORFEITURE: 'earnings_forfeiture',
-	STRIPE_TOP_UP: 'stripe_top_up',
-	STRIPE_CHARGE_FEE: 'stripe_charge_fee',
-	STRIPE_DISPUTE_WITHDRAWAL: 'stripe_dispute_withdrawal',
-	STRIPE_DISPUTE_FREEZE: 'stripe_dispute_freeze',
-	STRIPE_DISPUTE_REINSTATEMENT: 'stripe_dispute_reinstatement',
-	STRIPE_DISPUTE_LOSS: 'stripe_dispute_loss',
-	STRIPE_REFUND: 'stripe_refund',
-	STRIPE_REFUND_FAILURE: 'stripe_refund_failure',
-	PAYOUT_COMMIT: 'payout_commit',
-	PAYOUT_TRANSFER: 'payout_transfer',
-	PAYOUT_TRANSFER_REVERSAL: 'payout_transfer_reversal',
-	PAYOUT_FAILURE: 'payout_failure',
-	STRIPE_PLATFORM_PAYOUT: 'stripe_platform_payout',
-	STRIPE_PLATFORM_PAYOUT_PAID: 'stripe_platform_payout_paid',
-	STRIPE_PLATFORM_PAYOUT_FAILED: 'stripe_platform_payout_failed',
-	STRIPE_PLATFORM_FEE: 'stripe_platform_fee',
 	QUALIFICATION_CREDIT: 'qualification_credit',
 } as const;
 
 export const BillingLedgerDescriptionCode = {
 	USAGE_CHARGED: 'usage_charged',
 	ADMIN_CREDIT_GRANTED: 'admin_credit_granted',
-	EARNINGS_MATURED: 'earnings_matured',
 	EARNINGS_FORFEITED: 'earnings_forfeited',
-	TOP_UP_SUCCEEDED: 'top_up_succeeded',
-	CARD_FEE_CHARGED: 'card_fee_charged',
-	DISPUTE_FUNDS_WITHDRAWN: 'dispute_funds_withdrawn',
-	DISPUTE_CREDIT_FROZEN: 'dispute_credit_frozen',
-	DISPUTE_FUNDS_REINSTATED: 'dispute_funds_reinstated',
-	DISPUTE_LOST: 'dispute_lost',
-	TOP_UP_REFUNDED: 'top_up_refunded',
-	TOP_UP_REFUND_FAILED: 'top_up_refund_failed',
-	PAYOUT_COMMITTED: 'payout_committed',
-	PAYOUT_TRANSFERRED: 'payout_transferred',
-	PAYOUT_TRANSFER_REVERSED: 'payout_transfer_reversed',
-	PAYOUT_FAILED: 'payout_failed',
-	PLATFORM_PAYOUT_CREATED: 'platform_payout_created',
-	PLATFORM_PAYOUT_PAID: 'platform_payout_paid',
-	PLATFORM_PAYOUT_FAILED: 'platform_payout_failed',
-	STRIPE_FEE_CHARGED: 'stripe_fee_charged',
 	QUALIFICATION_CREDIT_GRANTED: 'qualification_credit_granted',
 } as const;
 
