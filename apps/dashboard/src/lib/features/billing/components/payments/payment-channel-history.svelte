@@ -8,19 +8,24 @@
 -->
 
 <script lang="ts" module>
-import type { PaymentChannel } from '@snapflow/api-client';
+import type { PaymentChannel, SettlementParty } from '@snapflow/api-client';
 import { renderResourceLabel } from '#lib/components/resource/table/resource-cell.ts';
 import { resourceColumnHelper } from '#lib/components/resource/table/resource-table-model.ts';
 import { timeCell } from '#lib/components/resource/table/time-cell.ts';
 import {
+	PARTY_CHANNEL_COPY,
 	paymentChannelSubject,
 	SIGNING_MODE_LABELS,
-	voucherTotalMicroUsd,
+	voucherAmountMicroUsd,
 } from '#lib/features/billing/lib/payment-channel.ts';
 import { formatUsd } from '#lib/utils/usd.ts';
 
 const CHANNEL_PARAM = 'channel';
 const column = resourceColumnHelper<PaymentChannel>();
+
+interface PaymentChannelHistoryProps {
+	party: SettlementParty;
+}
 </script>
 
 <script lang="ts">
@@ -39,8 +44,14 @@ import { paymentChannelIssue } from '#lib/features/billing/lib/payment-channel.t
 import { OpenRowParam } from '#lib/routing/open-row-param.svelte.ts';
 import PaymentChannelDetailsModal from './payment-channel-details-modal.svelte';
 
+let { party }: PaymentChannelHistoryProps = $props();
+
+const copy = $derived(PARTY_CHANNEL_COPY[party]);
 const channels = createInfiniteQuery(() => ({
-	...paymentChannelsInfiniteQueryOptions({ limit: CURSOR_PAGE_SIZE }),
+	...paymentChannelsInfiniteQueryOptions({
+		limit: CURSOR_PAGE_SIZE,
+		role: party,
+	}),
 	initialPageParam: {},
 	getNextPageParam: nextCursorPage,
 	placeholderData: keepPreviousData,
@@ -52,7 +63,7 @@ const panel = new OpenRowParam(
 	{ param: CHANNEL_PARAM, closeWithBack: true }
 );
 
-const columns = [
+const columns = $derived([
 	column.accessor('openedAt', {
 		id: 'opened',
 		header: 'Opened',
@@ -77,12 +88,12 @@ const columns = [
 	}),
 	column.accessor('latestVoucher', {
 		id: 'paid',
-		header: 'Signed total',
+		header: copy.amountHeader,
 		cell: ({ getValue }) => {
 			const voucher = getValue();
 			return renderResourceLabel({
 				label: voucher
-					? formatUsd(voucherTotalMicroUsd(voucher.message))
+					? formatUsd(voucherAmountMicroUsd(voucher.message, party))
 					: null,
 			});
 		},
@@ -92,7 +103,7 @@ const columns = [
 		header: 'Covered until',
 		cell: ({ getValue }) => renderResourceLabel(timeCell(getValue())),
 	}),
-];
+]);
 </script>
 
 {#snippet stateBadge(
@@ -107,7 +118,7 @@ const columns = [
 {#snippet empty()}
 	<EmptyState
 		title="No payment channels yet"
-		description="Each priced sandbox gets a channel that pays its host through vouchers."
+		description={copy.emptyDescription}
 	/>
 {/snippet}
 

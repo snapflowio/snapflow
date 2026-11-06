@@ -8,10 +8,9 @@
 -->
 
 <script lang="ts">
-import { EscrowEventParty } from '@snapflow/api-client';
+import { SettlementParty } from '@snapflow/api-client';
 import BillingHeader from '#lib/features/billing/components/billing-header.svelte';
 import EscrowEventHistory from '#lib/features/billing/components/payments/escrow-event-history.svelte';
-import { isCustomerEvent } from '#lib/features/billing/lib/escrow-event.ts';
 </script>
 
 <svelte:head>
@@ -21,8 +20,7 @@ import { isCustomerEvent } from '#lib/features/billing/lib/escrow-event.ts';
 <BillingHeader />
 <EscrowEventHistory
 	caption="Escrow activity"
-	party={EscrowEventParty.Customer}
-	select={isCustomerEvent}
+	party={SettlementParty.Customer}
 	emptyTitle="No escrow activity yet"
 	emptyDescription="Deposits, withdrawals, claims and authorizations appear here once they are confirmed on chain."
 />

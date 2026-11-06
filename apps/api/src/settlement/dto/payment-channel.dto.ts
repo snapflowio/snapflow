@@ -11,10 +11,7 @@ import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import type { EscrowDomain } from '@snapflow/contracts';
 import type { Address, Hex } from 'viem';
 import { PageLimit } from '../../common/decorators/page-limit.decorator';
-import {
-	CursorPageDto,
-	CursorPageQueryDto,
-} from '../../common/dto/cursor-page.dto';
+import { CursorPageDto } from '../../common/dto/cursor-page.dto';
 import { PAYMENT_CHANNEL_QUERY } from '../constants/payment-channel.constants';
 import type { PaymentChannel } from '../entities/payment-channel.entity';
 import type { PaymentVoucher } from '../entities/payment-voucher.entity';
@@ -22,6 +19,7 @@ import { PaymentChannelKind } from '../enums/payment-channel-kind.enum';
 import { PaymentChannelState } from '../enums/payment-channel-state.enum';
 import { VoucherSigningMode } from '../enums/voucher-signing-mode.enum';
 import { PaymentVoucherDto } from './payment-voucher.dto';
+import { SettlementPartyPageQueryDto } from './settlement-party-query.dto';
 
 const ADDRESS_PROPERTY = {
 	type: String,
@@ -169,7 +167,7 @@ export class PaymentChannelPageDto extends CursorPageDto<PaymentChannelDto> {
 	declare items: PaymentChannelDto[];
 }
 
-export class ListPaymentChannelsQueryDto extends CursorPageQueryDto {
+export class ListPaymentChannelsQueryDto extends SettlementPartyPageQueryDto {
 	@PageLimit(
 		PAYMENT_CHANNEL_QUERY.defaultLimit,
 		PAYMENT_CHANNEL_QUERY.maximumLimit

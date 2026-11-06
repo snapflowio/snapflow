@@ -13,7 +13,8 @@ import { CONTENT_WIDTH, DISPLAY_FONT, MONO_FONT } from '@/lib/marketing-styles';
 
 const SETUP_COMMAND = 'curl -fsSL https://snapflow.io/install.sh | sh';
 const PERCENT = 100;
-const PLATFORM_FEE_PERCENT = 25;
+const PLATFORM_FEE_PERCENT = 20;
+const VERIFIED_FEE_PERCENT = 30;
 const CUSTOMER_PERCENT = PERCENT + PLATFORM_FEE_PERCENT;
 const EXAMPLE_RATE_USD = 1;
 const EXAMPLE_FEE_USD = (EXAMPLE_RATE_USD * PLATFORM_FEE_PERCENT) / PERCENT;
@@ -38,24 +39,24 @@ const hostFacts = [
 		'01',
 		'Rates',
 		'Your rates, your call.',
-		'Price vCPU, memory, GPU, disk, and data transfer.',
+		'Price vCPU, memory, GPU, disk, and data transfer within set ranges.',
 	],
 	[
 		'02',
 		'Payouts',
-		'Paid every Monday.',
-		'Weekly through Stripe once you reach $50.',
+		'Paid to your wallet.',
+		'USDC on Base, sent to your payout wallet as vouchers are claimed.',
 	],
 	[
 		'03',
-		'Trust tiers',
-		'Reliability pays sooner.',
-		'Earnings clear in 14, 7, or 3 days by tier.',
+		'Escrow',
+		'Funded up front.',
+		'Customers fund a USDC escrow and pay each sandbox with signed vouchers.',
 	],
 ] as const;
 
 const hostSteps = [
-	['01', 'Sign up.', 'Create an account and connect Stripe for payouts.'],
+	['01', 'Sign up.', 'Create an account and link a payout wallet.'],
 	['02', 'Install.', null],
 	['03', 'Approve.', 'Confirm the one-time code in the dashboard.'],
 	['04', 'List.', 'Pass the benchmark, set your rates, and go public.'],
@@ -102,7 +103,8 @@ function FeeSplit() {
 			<figcaption
 				className={`${MONO_FONT} mt-8 text-[.6rem] uppercase tracking-[.2em] text-snapflow-paper/40`}
 			>
-				Example at a {usd.format(EXAMPLE_RATE_USD)}/h rate
+				Example at a {usd.format(EXAMPLE_RATE_USD)}/h rate ·{' '}
+				{VERIFIED_FEE_PERCENT}% fee on verified and datacenter hosts
 			</figcaption>
 			<dl
 				className={`${MONO_FONT} m-0 mt-2 grid text-[.75rem] min-[481px]:grid-cols-3 min-[481px]:gap-x-6`}
@@ -141,11 +143,11 @@ export function HostsSection() {
 						>
 							Your machine. Your price.
 							<br />
-							Paid weekly.
+							Paid in USDC.
 						</h2>
 						<p className="mt-6 max-w-150 text-base leading-[1.6] text-snapflow-paper-dim">
 							Rent out a Linux machine for isolated sandboxes and keep every
-							dollar of your rate.
+							dollar of your rate, paid straight to your own wallet.
 						</p>
 					</div>
 

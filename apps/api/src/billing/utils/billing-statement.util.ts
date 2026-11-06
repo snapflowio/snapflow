@@ -37,6 +37,7 @@ export interface StatementPeriod {
 export interface CustomerStatementInput {
 	totals: readonly StatementTotalRow[];
 	openingCreditMicroUsd: MicroUsd;
+	claimsPaidMicroUsd: MicroUsd;
 	usageBySandbox: readonly StatementSandboxUsageRow[];
 }
 
@@ -147,6 +148,15 @@ export function customerStatement(
 	return {
 		openingCreditMicroUsd: input.openingCreditMicroUsd.toString(),
 		closingCreditMicroUsd: input.openingCreditMicroUsd.add(change).toString(),
+		depositsMicroUsd: total(rows, credit, [
+			BillingLedgerSourceType.ESCROW_DEPOSIT,
+		]).toString(),
+		withdrawalsMicroUsd: total(rows, credit, [
+			BillingLedgerSourceType.ESCROW_WITHDRAWAL,
+		])
+			.absolute()
+			.toString(),
+		claimsPaidMicroUsd: input.claimsPaidMicroUsd.toString(),
 		adminGrantsMicroUsd: total(rows, credit, [
 			BillingLedgerSourceType.ADMIN_CREDIT_GRANT,
 		]).toString(),
@@ -178,6 +188,11 @@ export function hostStatement(
 			BillingLedgerSourceType.LINE_USAGE,
 			BillingLedgerSourceType.QUALIFICATION_CREDIT,
 		]).toString(),
+		claimedMicroUsd: total(rows, pending, [
+			BillingLedgerSourceType.ESCROW_CLAIM,
+		])
+			.absolute()
+			.toString(),
 		forfeitedMicroUsd: total(rows, pending, [
 			BillingLedgerSourceType.EARNINGS_FORFEITURE,
 		])

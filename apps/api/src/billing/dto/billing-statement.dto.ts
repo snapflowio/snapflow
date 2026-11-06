@@ -39,6 +39,15 @@ export class BillingStatementSandboxUsageDto {
 export class BillingStatementCustomerDto {
 	@ApiProperty() openingCreditMicroUsd: string;
 	@ApiProperty() closingCreditMicroUsd: string;
+	@ApiProperty({ description: 'USDC deposited into the escrow' })
+	depositsMicroUsd: string;
+	@ApiProperty({ description: 'USDC withdrawn from the escrow' })
+	withdrawalsMicroUsd: string;
+	@ApiProperty({
+		description:
+			'USDC that claims paid from the escrow to hosts and Snapflow; settles usage already charged, so it does not change the credit',
+	})
+	claimsPaidMicroUsd: string;
 	@ApiProperty() adminGrantsMicroUsd: string;
 	@ApiProperty() usageMicroUsd: string;
 	@ApiProperty({ type: BillingStatementSandboxUsageDto, isArray: true })
@@ -57,6 +66,10 @@ export class BillingStatementCustomerDto {
 export class BillingStatementHostDto {
 	@ApiProperty({ description: 'Host earnings recorded in the month' })
 	earningsMicroUsd: string;
+	@ApiProperty({
+		description: 'Earnings that claims paid to the payout wallet',
+	})
+	claimedMicroUsd: string;
 	@ApiProperty({ description: 'Earnings forfeited after fraud reviews' })
 	forfeitedMicroUsd: string;
 }

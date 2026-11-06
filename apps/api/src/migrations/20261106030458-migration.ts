@@ -1,8 +1,8 @@
 import { Migration } from '@mikro-orm/migrations';
 
-export class Migration20261106000614 extends Migration {
+export class Migration20261106030458 extends Migration {
 
-  override name = 'Migration20261106000614';
+  override name = 'Migration20261106030458';
 
   override up(): void | Promise<void> {
     this.addSql(`create type "job_status_enum" as enum ('pending', 'in_progress', 'completed', 'failed');`);
@@ -347,6 +347,7 @@ export class Migration20261106000614 extends Migration {
     this.addSql(`create index "IDX_payment_channel_issue_due" on "payment_channel" ("nextIssueAt") where "state" <> 'closed';`);
     this.addSql(`create index "IDX_payment_channel_machine" on "payment_channel" ("machineId", "state");`);
     this.addSql(`create index "IDX_payment_channel_customer_address" on "payment_channel" ("customerAddress");`);
+    this.addSql(`create index "IDX_payment_channel_host" on "payment_channel" ("hostOrganizationId", "openedAt", "id");`);
     this.addSql(`create index "IDX_payment_channel_customer" on "payment_channel" ("customerOrganizationId", "openedAt", "id");`);
     this.addSql(`alter table "payment_channel" add constraint "UQ_payment_channel_service_period" unique ("chainId", "contractAddress", "customerOrganizationId", "servicePeriodStart");`);
     this.addSql(`alter table "payment_channel" add constraint "UQ_payment_channel_lease" unique ("leaseId");`);

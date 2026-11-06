@@ -14,6 +14,8 @@ import {
 	SETTLEMENT_CHAIN_ID,
 	type SettlementChainId,
 } from '../../config/constants/settlement-chain.constants';
+import type { PermissionPair } from '../../organization/utils/organization-permissions.util';
+import { SettlementParty } from '../enums/settlement-party.enum';
 
 export const SETTLEMENT_PUBLIC_CLIENT = Symbol('SETTLEMENT_PUBLIC_CLIENT');
 export const SETTLEMENT_VOUCHER_SIGNER = Symbol('SETTLEMENT_VOUCHER_SIGNER');
@@ -33,6 +35,17 @@ export const ESCROW_MAXIMUM_FEE_BASIS_POINTS = 3_000;
 
 export const EVM_ADDRESS_LENGTH = 42;
 export const EVM_HASH_LENGTH = 66;
+
+// The customer side of the escrow is billing data and the host side payout
+// data.
+export const SETTLEMENT_PARTY_READ_PERMISSION: Readonly<
+	Record<SettlementParty, PermissionPair>
+> = {
+	[SettlementParty.CUSTOMER]: { resource: 'billing', action: 'read' },
+	[SettlementParty.HOST]: { resource: 'payouts', action: 'read' },
+};
+
+export const SETTLEMENT_PARTIES = Object.values(SettlementParty);
 
 export const SANCTIONS_API_KEY_HEADER = 'X-API-Key';
 export const SANCTIONS_REQUEST_TIMEOUT_MILLISECONDS =

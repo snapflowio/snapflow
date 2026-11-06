@@ -10,6 +10,7 @@
 import {
 	type PaymentChannel,
 	PaymentChannelKind,
+	SettlementParty,
 	type VoucherMessage,
 	VoucherSigningMode,
 } from '@snapflow/api-client';
@@ -31,11 +32,33 @@ export function paymentChannelSubject(channel: PaymentChannel): string {
 		: 'Private pool';
 }
 
-export function voucherTotalMicroUsd(message: VoucherMessage): string {
+interface PartyChannelCopy {
+	amountHeader: string;
+	emptyDescription: string;
+}
+
+export const PARTY_CHANNEL_COPY = {
+	[SettlementParty.Customer]: {
+		amountHeader: 'Signed total',
+		emptyDescription:
+			'Each priced sandbox gets a channel that pays its host through vouchers.',
+	},
+	[SettlementParty.Host]: {
+		amountHeader: 'Earned',
+		emptyDescription:
+			'Each sandbox rented on your machines gets a channel that pays you through vouchers.',
+	},
+} as const satisfies Record<SettlementParty, PartyChannelCopy>;
+
+export function voucherAmountMicroUsd(
+	message: VoucherMessage,
+	party: SettlementParty
+): string {
+	const hostAmount = BigInt(message.hostAmount);
 	return (
-		BigInt(message.hostAmount) +
-		BigInt(message.feeAmount) +
-		BigInt(message.serviceAmount)
+		party === SettlementParty.Host
+			? hostAmount
+			: hostAmount + BigInt(message.feeAmount) + BigInt(message.serviceAmount)
 	).toString();
 }
 

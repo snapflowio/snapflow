@@ -29,7 +29,10 @@
 #  7. After the first image publish, make each ghcr.io/snapflowio/snapflow/*
 #     package public (Package settings > Change visibility), so neither the
 #     cluster nor Flux needs a registry token.
-# Flux retries each stage until its prerequisites exist, so steps 5 to 7 may
+#  8. Deploy the escrow on Base (apps/contracts/script/DeployEscrow.s.sol) and
+#     set its address and deployment block, and the Reown Cloud project id,
+#     under settlement in deploy/apps/production/snapflow.yaml.
+# Flux retries each stage until its prerequisites exist, so steps 5 to 8 may
 # come in any order. moon run deploy:status shows progress.
 
 set -euo pipefail

@@ -30,7 +30,10 @@ import type { Hex } from 'viem';
 import { IsOrganizationAuthContext } from '../../common/decorators/auth-context.decorator';
 import { AuthenticatedRateLimitGuard } from '../../common/guards/authenticated-rate-limit.guard';
 import type { OrganizationAuthContext } from '../../common/types/organization-auth-context.types';
-import { RequiredOrganizationPermissions } from '../../organization/decorators/required-organization-permissions.decorator';
+import {
+	RequiredAnyOrganizationPermissions,
+	RequiredOrganizationPermissions,
+} from '../../organization/decorators/required-organization-permissions.decorator';
 import { PaymentChannelErrorCode } from '../constants/payment-channel.constants';
 import {
 	ListPaymentChannelsQueryDto,
@@ -44,12 +47,14 @@ import {
 } from '../dto/payment-voucher.dto';
 import { VoucherDelegationDto } from '../dto/voucher-delegation.dto';
 import { PaymentChannelReadService } from '../services/payment-channel-read.service';
+import { SettlementPartyAccessService } from '../services/settlement-party-access.service';
 import { VoucherDelegationService } from '../services/voucher-delegation.service';
 import { VoucherSubmissionService } from '../services/voucher-submission.service';
 import { parseChannelId } from '../utils/voucher-message.util';
 
-// The customer side of the escrow channels that pay for its sandboxes. API
-// keys work here so an SDK or agent can sign client-mode vouchers.
+// The escrow channels that pay for the organization's sandboxes or pay it as
+// a host. API keys work here so an SDK or agent can sign client-mode
+// vouchers.
 @Controller('settlement')
 @ApiTags('settlement')
 @ApiBearerAuth()
@@ -58,7 +63,8 @@ export class PaymentChannelController {
 	constructor(
 		private readonly channels: PaymentChannelReadService,
 		private readonly submissions: VoucherSubmissionService,
-		private readonly delegations: VoucherDelegationService
+		private readonly delegations: VoucherDelegationService,
+		private readonly partyAccess: SettlementPartyAccessService
 	) {}
 
 	@Get('channels')
@@ -68,12 +74,19 @@ export class PaymentChannelController {
 		operationId: 'listPaymentChannels',
 	})
 	@ApiResponse({ status: HttpStatus.OK, type: PaymentChannelPageDto })
-	@RequiredOrganizationPermissions({ billing: ['read'] })
-	listChannels(
+	@RequiredAnyOrganizationPermissions({
+		billing: ['read'],
+		payouts: ['read'],
+	})
+	async listChannels(
 		@IsOrganizationAuthContext() authContext: OrganizationAuthContext,
 		@Query() query: ListPaymentChannelsQueryDto
 	): Promise<PaymentChannelPageDto> {
-		return this.channels.list(authContext.organizationId, query);
+		return this.channels.list(
+			authContext.organizationId,
+			await this.partyAccess.readableParties(authContext, query.role),
+			query
+		);
 	}
 
 	@Get('channels/:channelId')
@@ -83,13 +96,17 @@ export class PaymentChannelController {
 	})
 	@ApiParam({ name: 'channelId', description: 'The escrow channel id' })
 	@ApiResponse({ status: HttpStatus.OK, type: PaymentChannelDto })
-	@RequiredOrganizationPermissions({ billing: ['read'] })
-	getChannel(
+	@RequiredAnyOrganizationPermissions({
+		billing: ['read'],
+		payouts: ['read'],
+	})
+	async getChannel(
 		@IsOrganizationAuthContext() authContext: OrganizationAuthContext,
 		@Param('channelId') channelId: string
 	): Promise<PaymentChannelDto> {
 		return this.channels.get(
 			authContext.organizationId,
+			await this.partyAccess.readableParties(authContext),
 			requiredChannelId(channelId)
 		);
 	}

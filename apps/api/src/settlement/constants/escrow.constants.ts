@@ -13,8 +13,6 @@ import {
 	MILLISECONDS_PER_SECOND,
 	SECONDS_PER_MINUTE,
 } from '../../common/constants/time.constants';
-import type { PermissionPair } from '../../organization/utils/organization-permissions.util';
-import { EscrowEventParty } from '../enums/escrow-event-party.enum';
 import type { EscrowEventKind } from '../types/escrow.types';
 
 export const ESCROW_EVENT_KINDS: readonly EscrowEventKind[] =
@@ -47,14 +45,6 @@ export const ESCROW_EVENT_QUERY = {
 	defaultLimit: 25,
 	maximumLimit: 100,
 } as const;
-
-// Customer-side events are billing data and host-side events payout data.
-export const ESCROW_EVENT_READ_PERMISSION: Readonly<
-	Record<EscrowEventParty, PermissionPair>
-> = {
-	[EscrowEventParty.CUSTOMER]: { resource: 'billing', action: 'read' },
-	[EscrowEventParty.HOST]: { resource: 'payouts', action: 'read' },
-};
 
 // The latest instant a JavaScript Date can hold; a session key expiry beyond
 // it (customers may pick the uint64 maximum) is stored as this instant.

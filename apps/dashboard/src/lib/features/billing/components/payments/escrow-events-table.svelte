@@ -8,7 +8,7 @@
 -->
 
 <script lang="ts" module>
-import type { EscrowEvent, EscrowEventParty } from '@snapflow/api-client';
+import type { EscrowEvent, SettlementParty } from '@snapflow/api-client';
 import type { Snippet } from 'svelte';
 import { renderResourceLabel } from '#lib/components/resource/table/resource-cell.ts';
 import { resourceColumnHelper } from '#lib/components/resource/table/resource-table-model.ts';
@@ -27,7 +27,7 @@ const column = resourceColumnHelper<EscrowEvent>();
 interface EscrowEventsTableProps {
 	caption: string;
 	events: readonly EscrowEvent[];
-	party: EscrowEventParty;
+	party: SettlementParty;
 	errorMessage?: string;
 	isLoading: boolean;
 	onRetry: () => void;

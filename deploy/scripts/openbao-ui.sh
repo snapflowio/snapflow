@@ -65,10 +65,13 @@ Sign in with method "Token" and this token (valid for one hour):
 Secrets you supply, one key per field (Create secret under secret/snapflow/):
   snapflow/api              BETTER_AUTH_SECRETS RESEND_API_KEY SNAPFLOW_CLOUDFLARE_API_TOKEN
                             SNAPFLOW_CLOUDFLARE_WEBHOOK_SECRET SANCTIONS_API_KEY
-                            SETTLEMENT_SIGNER_PRIVATE_KEY SETTLEMENT_RELAYER_PRIVATE_KEY;
+                            SETTLEMENT_SIGNER_PRIVATE_KEY SETTLEMENT_RPC_URL (a Base
+                            mainnet endpoint with its provider key);
                             optionally HEALTH_CHECK_API_KEY
                             GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET GITHUB_CLIENT_ID
                             GITHUB_CLIENT_SECRET (the names apps/api/.env uses)
+  snapflow/worker           SETTLEMENT_RELAYER_PRIVATE_KEY (the claim relayer's gas
+                            wallet; only the worker reads it)
   snapflow/alerts           discord-webhook-url
   snapflow/backups          access-key-id secret-access-key (R2 S3 credentials)
   snapflow/cloudflare-dns   api-token (Zone:DNS:Edit on the public zone)

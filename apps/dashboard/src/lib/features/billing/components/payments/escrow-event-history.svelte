@@ -8,7 +8,7 @@
 -->
 
 <script lang="ts">
-import type { EscrowEvent, EscrowEventParty } from '@snapflow/api-client';
+import type { EscrowEventKind, SettlementParty } from '@snapflow/api-client';
 import { createInfiniteQuery, keepPreviousData } from '@tanstack/svelte-query';
 import { escrowEventsInfiniteQueryOptions } from '#lib/api/settlement/escrow.ts';
 import EmptyState from '#lib/components/empty-state.svelte';
@@ -21,8 +21,8 @@ import EscrowEventsTable from './escrow-events-table.svelte';
 
 interface EscrowEventHistoryProps {
 	caption: string;
-	party: EscrowEventParty;
-	select: (event: EscrowEvent) => boolean;
+	party: SettlementParty;
+	kinds?: EscrowEventKind[];
 	emptyTitle: string;
 	emptyDescription: string;
 }
@@ -30,18 +30,22 @@ interface EscrowEventHistoryProps {
 let {
 	caption,
 	party,
-	select,
+	kinds,
 	emptyTitle,
 	emptyDescription,
 }: EscrowEventHistoryProps = $props();
 
 const events = createInfiniteQuery(() => ({
-	...escrowEventsInfiniteQueryOptions({ limit: CURSOR_PAGE_SIZE }),
+	...escrowEventsInfiniteQueryOptions({
+		limit: CURSOR_PAGE_SIZE,
+		role: party,
+		kind: kinds,
+	}),
 	initialPageParam: {},
 	getNextPageParam: nextCursorPage,
 	placeholderData: keepPreviousData,
 }));
-const rows = $derived(cursorPageItems(events.data).filter(select));
+const rows = $derived(cursorPageItems(events.data));
 </script>
 
 {#snippet empty()}

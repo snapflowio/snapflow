@@ -25,12 +25,14 @@ import {
 } from '../dto/payment-channel.dto';
 import { PaymentChannel } from '../entities/payment-channel.entity';
 import type { PaymentVoucher } from '../entities/payment-voucher.entity';
+import type { SettlementParty } from '../enums/settlement-party.enum';
 import {
 	latestVouchers,
 	VoucherSelection,
 } from '../queries/latest-vouchers.query';
 import { recentChannels } from '../queries/recent-channels.query';
 import { configuredEscrow } from '../utils/escrow-identity.util';
+import { partyFilter } from '../utils/settlement-party.util';
 
 @Injectable()
 export class PaymentChannelReadService {
@@ -43,13 +45,14 @@ export class PaymentChannelReadService {
 	// Newest first, each with its latest voucher.
 	async list(
 		organizationId: string,
+		parties: readonly SettlementParty[],
 		query: ListPaymentChannelsQueryDto
 	): Promise<PaymentChannelPageDto> {
 		const manager = this.entityManager.fork();
 		const page = await findCursorPage(manager, PaymentChannel, {
 			where: {
 				...configuredEscrow(this.config),
-				customerOrganizationId: organizationId,
+				...partyFilter(organizationId, parties),
 			},
 			orderBy: { openedAt: QueryOrder.DESC, id: QueryOrder.DESC },
 			cursor: query.cursor,
@@ -70,13 +73,14 @@ export class PaymentChannelReadService {
 
 	async get(
 		organizationId: string,
+		parties: readonly SettlementParty[],
 		channelId: Hex
 	): Promise<PaymentChannelDto> {
 		const manager = this.entityManager.fork();
 		const channel = await manager.findOne(PaymentChannel, {
 			...configuredEscrow(this.config),
+			...partyFilter(organizationId, parties),
 			channelId,
-			customerOrganizationId: organizationId,
 		});
 		if (!channel) {
 			throw new NotFoundException({

@@ -38,6 +38,7 @@ import { PaymentChannelReadService } from './services/payment-channel-read.servi
 import { PaymentWalletService } from './services/payment-wallet.service';
 import { PayoutReadinessService } from './services/payout-readiness.service';
 import { SanctionsScreeningService } from './services/sanctions-screening.service';
+import { SettlementPartyAccessService } from './services/settlement-party-access.service';
 import { VoucherDelegationService } from './services/voucher-delegation.service';
 import { VoucherIssuanceService } from './services/voucher-issuance.service';
 import { VoucherSigningService } from './services/voucher-signing.service';
@@ -80,6 +81,7 @@ import { WalletChallengeService } from './services/wallet-challenge.service';
 		PaymentWalletService,
 		PayoutReadinessService,
 		SanctionsScreeningService,
+		SettlementPartyAccessService,
 		VoucherDelegationService,
 		VoucherIssuanceService,
 		VoucherSigningService,

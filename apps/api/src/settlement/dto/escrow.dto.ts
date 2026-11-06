@@ -7,20 +7,21 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { ApiProperty, ApiSchema } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, ApiSchema } from '@nestjs/swagger';
+import { IsArray, IsIn, IsOptional } from 'class-validator';
 import type { Address, Hash } from 'viem';
 import { PageLimit } from '../../common/decorators/page-limit.decorator';
-import {
-	CursorPageDto,
-	CursorPageQueryDto,
-} from '../../common/dto/cursor-page.dto';
+import { ToArray } from '../../common/decorators/to-array.decorator';
+import { CursorPageDto } from '../../common/dto/cursor-page.dto';
 import {
 	ESCROW_EVENT_KINDS,
 	ESCROW_EVENT_QUERY,
 } from '../constants/escrow.constants';
 import type { EscrowEvent } from '../entities/escrow-event.entity';
-import { EscrowEventParty } from '../enums/escrow-event-party.enum';
+import { SettlementParty } from '../enums/settlement-party.enum';
 import type { EscrowEventKind, StoredEscrowArgs } from '../types/escrow.types';
+import { partiesOf } from '../utils/settlement-party.util';
+import { SettlementPartyPageQueryDto } from './settlement-party-query.dto';
 
 const ADDRESS_PROPERTY = {
 	type: String,
@@ -80,12 +81,12 @@ export class EscrowEventDto {
 	kind: EscrowEventKind;
 
 	@ApiProperty({
-		enum: EscrowEventParty,
-		enumName: 'EscrowEventParty',
+		enum: SettlementParty,
+		enumName: 'SettlementParty',
 		isArray: true,
 		description: 'The roles the organization played in the event',
 	})
-	parties: EscrowEventParty[];
+	parties: SettlementParty[];
 
 	@ApiProperty({ type: 'integer' })
 	blockNumber: number;
@@ -111,14 +112,7 @@ export class EscrowEventDto {
 		return {
 			id: event.id,
 			kind: event.kind,
-			parties: [
-				...(event.customerOrganizationId === organizationId
-					? [EscrowEventParty.CUSTOMER]
-					: []),
-				...(event.hostOrganizationId === organizationId
-					? [EscrowEventParty.HOST]
-					: []),
-			],
+			parties: partiesOf(event, organizationId),
 			blockNumber: event.blockNumber,
 			blockTimestamp: event.blockTimestamp,
 			transactionHash: event.transactionHash,
@@ -134,7 +128,19 @@ export class EscrowEventPageDto extends CursorPageDto<EscrowEventDto> {
 	declare items: EscrowEventDto[];
 }
 
-export class ListEscrowEventsQueryDto extends CursorPageQueryDto {
+export class ListEscrowEventsQueryDto extends SettlementPartyPageQueryDto {
 	@PageLimit(ESCROW_EVENT_QUERY.defaultLimit, ESCROW_EVENT_QUERY.maximumLimit)
 	override limit = ESCROW_EVENT_QUERY.defaultLimit;
+
+	@ApiPropertyOptional({
+		enum: ESCROW_EVENT_KINDS,
+		enumName: 'EscrowEventKind',
+		isArray: true,
+		description: 'Only events of these kinds',
+	})
+	@IsOptional()
+	@ToArray()
+	@IsArray()
+	@IsIn(ESCROW_EVENT_KINDS, { each: true })
+	kind?: EscrowEventKind[];
 }

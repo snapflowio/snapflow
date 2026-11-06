@@ -13,6 +13,7 @@ import { parseDatabaseTimestamp } from '../../infra/database/utils/database-time
 import { SOFT_DELETED_SANDBOX_NAME_PREFIX } from '../../sandbox/constants/sandbox.constants';
 import {
 	BILLING_LEDGER_CURRENCY,
+	BILLING_LEDGER_PLATFORM_OWNER,
 	BillingLedgerAccountCode,
 	BillingLedgerOwnerKind,
 	BillingLedgerSide,
@@ -102,6 +103,43 @@ export async function customerCreditBefore(
 		]
 	);
 	return row ? MicroUsd.parse(row.balance) : MicroUsd.ZERO;
+}
+
+// What escrow claims paid out of the organization's funding wallet: the
+// custody each claim released, attributed to the customer its metadata names.
+export async function statementEscrowClaimsPaid(
+	manager: EntityManager,
+	organizationId: string,
+	periodStart: Date,
+	periodEnd: Date
+): Promise<MicroUsd> {
+	const [row] = await manager.execute<{ amount: string }[]>(
+		`SELECT COALESCE(SUM(${SIDE_SIGNED_AMOUNT_SQL}), 0) AS amount
+		 FROM "billing_ledger_entry" entry
+		 INNER JOIN "billing_ledger_account" account ON account.id = entry."accountId"
+		 INNER JOIN "billing_ledger_transaction" ledger_transaction
+			ON ledger_transaction.id = entry."transactionId"
+		 WHERE account."ownerKind" = ?
+		   AND account."ownerReference" = ?
+		   AND account."accountCode" = ?
+		   AND account.currency = ?
+		   AND ledger_transaction."sourceType" = ?
+		   AND ledger_transaction.metadata->>'customerOrganizationId' = ?
+		   AND ledger_transaction."effectiveAt" >= ?
+		   AND ledger_transaction."effectiveAt" < ?`,
+		[
+			BillingLedgerSide.CREDIT,
+			BillingLedgerOwnerKind.PLATFORM,
+			BILLING_LEDGER_PLATFORM_OWNER,
+			BillingLedgerAccountCode.ESCROW_CUSTODY,
+			BILLING_LEDGER_CURRENCY,
+			BillingLedgerSourceType.ESCROW_CLAIM,
+			organizationId,
+			periodStart,
+			periodEnd,
+		]
+	);
+	return row ? MicroUsd.parse(row.amount) : MicroUsd.ZERO;
 }
 
 export async function statementUsageBySandbox(

@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { type FilterQuery, QueryOrder } from '@mikro-orm/core';
+import { QueryOrder } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { findCursorPage } from '../../common/utils/pagination/cursor-page.util';
@@ -23,20 +23,10 @@ import { EscrowAccount } from '../entities/escrow-account.entity';
 import { EscrowEvent } from '../entities/escrow-event.entity';
 import { PaymentWallet } from '../entities/payment-wallet.entity';
 import { SettlementChainCursor } from '../entities/settlement-chain-cursor.entity';
-import { EscrowEventParty } from '../enums/escrow-event-party.enum';
 import { PaymentWalletPurpose } from '../enums/payment-wallet-purpose.enum';
+import type { SettlementParty } from '../enums/settlement-party.enum';
 import { configuredEscrow } from '../utils/escrow-identity.util';
-
-const PARTY_FILTER: Readonly<
-	Record<EscrowEventParty, (organizationId: string) => FilterQuery<EscrowEvent>>
-> = {
-	[EscrowEventParty.CUSTOMER]: (organizationId) => ({
-		customerOrganizationId: organizationId,
-	}),
-	[EscrowEventParty.HOST]: (organizationId) => ({
-		hostOrganizationId: organizationId,
-	}),
-};
+import { partyFilter } from '../utils/settlement-party.util';
 
 @Injectable()
 export class EscrowAccountService {
@@ -73,17 +63,16 @@ export class EscrowAccountService {
 		};
 	}
 
-	// Newest first; the organization sees the events it took part in through
-	// the roles the caller may read.
 	async events(
 		organizationId: string,
-		parties: readonly EscrowEventParty[],
+		parties: readonly SettlementParty[],
 		query: ListEscrowEventsQueryDto
 	): Promise<EscrowEventPageDto> {
 		const page = await findCursorPage(this.entityManager.fork(), EscrowEvent, {
 			where: {
 				...configuredEscrow(this.config),
-				$or: parties.map((party) => PARTY_FILTER[party](organizationId)),
+				...partyFilter(organizationId, parties),
+				...(query.kind ? { kind: { $in: query.kind } } : {}),
 			},
 			orderBy: { blockNumber: QueryOrder.DESC, logIndex: QueryOrder.DESC },
 			cursor: query.cursor,

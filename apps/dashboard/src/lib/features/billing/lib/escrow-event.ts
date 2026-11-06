@@ -10,7 +10,7 @@
 import {
 	type EscrowEvent,
 	EscrowEventKind,
-	EscrowEventParty,
+	SettlementParty,
 } from '@snapflow/api-client';
 
 const EVENT_ARGUMENT = {
@@ -50,25 +50,14 @@ export function escrowEventLabel(event: EscrowEvent): string {
 	return EVENT_LABELS[event.kind] ?? event.kind;
 }
 
-export function isCustomerEvent(event: EscrowEvent): boolean {
-	return event.parties.includes(EscrowEventParty.Customer);
-}
-
-export function isHostClaim(event: EscrowEvent): boolean {
-	return (
-		event.kind === EscrowEventKind.Claimed &&
-		event.parties.includes(EscrowEventParty.Host)
-	);
-}
-
 export function escrowEventAmountMicroUsd(
 	event: EscrowEvent,
-	party: EscrowEventParty
+	party: SettlementParty
 ): string | null {
 	if (event.kind === EscrowEventKind.Claimed) {
 		const hostPaid = argument(event, EVENT_ARGUMENT.hostPaid);
 		const amount =
-			party === EscrowEventParty.Host
+			party === SettlementParty.Host
 				? hostPaid
 				: hostPaid +
 					argument(event, EVENT_ARGUMENT.feePaid) +

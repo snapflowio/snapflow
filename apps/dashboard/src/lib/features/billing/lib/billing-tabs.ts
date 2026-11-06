@@ -20,6 +20,7 @@ type BillingTabPath =
 	| typeof Path.BILLING_ACTIVITY
 	| typeof Path.BILLING_STATEMENTS
 	| typeof Path.EARNINGS
+	| typeof Path.EARNINGS_CHANNELS
 	| typeof Path.EARNINGS_CLAIMS
 	| typeof Path.EARNINGS_NETWORK
 	| typeof Path.EARNINGS_PAYOUTS;
@@ -41,6 +42,7 @@ const BILLING_TABS: readonly BillingTabDefinition[] = [
 
 const EARNINGS_TABS: readonly BillingTabDefinition[] = [
 	{ label: 'Overview', to: Path.EARNINGS, exact: true },
+	{ label: 'Channels', to: Path.EARNINGS_CHANNELS },
 	{ label: 'Claims', to: Path.EARNINGS_CLAIMS },
 	{ label: 'Network transfer', to: Path.EARNINGS_NETWORK },
 	{ label: 'Payout wallet', to: Path.EARNINGS_PAYOUTS },

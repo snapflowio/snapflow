@@ -2,9 +2,6 @@ layer: "library"
 stack: "backend"
 tags: ["contracts", "payments"]
 
-dependsOn:
-  - "contracts"
-
 tasks:
   generate:
     command: "node"

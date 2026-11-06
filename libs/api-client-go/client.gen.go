@@ -523,24 +523,6 @@ func (e EscrowEventKind) Valid() bool {
 	}
 }
 
-// Defines values for EscrowEventParty.
-const (
-	EscrowEventPartyCustomer EscrowEventParty = "customer"
-	EscrowEventPartyHost     EscrowEventParty = "host"
-)
-
-// Valid indicates whether the value is a known member of the EscrowEventParty enum.
-func (e EscrowEventParty) Valid() bool {
-	switch e {
-	case EscrowEventPartyCustomer:
-		return true
-	case EscrowEventPartyHost:
-		return true
-	default:
-		return false
-	}
-}
-
 // Defines values for ExposureBackendState.
 const (
 	ExposureBackendStateActive   ExposureBackendState = "active"
@@ -2143,6 +2125,24 @@ func (e SandboxState) Valid() bool {
 	}
 }
 
+// Defines values for SettlementParty.
+const (
+	SettlementPartyCustomer SettlementParty = "customer"
+	SettlementPartyHost     SettlementParty = "host"
+)
+
+// Valid indicates whether the value is a known member of the SettlementParty enum.
+func (e SettlementParty) Valid() bool {
+	switch e {
+	case SettlementPartyCustomer:
+		return true
+	case SettlementPartyHost:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for SnapshotState.
 const (
 	SnapshotStateActive      SnapshotState = "active"
@@ -2973,8 +2973,14 @@ type BillingStatement struct {
 
 // BillingStatementCustomer defines model for BillingStatementCustomer.
 type BillingStatementCustomer struct {
-	AdminGrantsMicroUsd   string `json:"adminGrantsMicroUsd"`
+	AdminGrantsMicroUsd string `json:"adminGrantsMicroUsd"`
+
+	// ClaimsPaidMicroUsd USDC that claims paid from the escrow to hosts and Snapflow; settles usage already charged, so it does not change the credit
+	ClaimsPaidMicroUsd    string `json:"claimsPaidMicroUsd"`
 	ClosingCreditMicroUsd string `json:"closingCreditMicroUsd"`
+
+	// DepositsMicroUsd USDC deposited into the escrow
+	DepositsMicroUsd string `json:"depositsMicroUsd"`
 
 	// ForfeitureCreditsMicroUsd Credit returned by forfeited host earnings
 	ForfeitureCreditsMicroUsd string `json:"forfeitureCreditsMicroUsd"`
@@ -2984,10 +2990,16 @@ type BillingStatementCustomer struct {
 	PrivatePoolMicroUsd string                         `json:"privatePoolMicroUsd"`
 	UsageBySandbox      []BillingStatementSandboxUsage `json:"usageBySandbox"`
 	UsageMicroUsd       string                         `json:"usageMicroUsd"`
+
+	// WithdrawalsMicroUsd USDC withdrawn from the escrow
+	WithdrawalsMicroUsd string `json:"withdrawalsMicroUsd"`
 }
 
 // BillingStatementHost defines model for BillingStatementHost.
 type BillingStatementHost struct {
+	// ClaimedMicroUsd Earnings that claims paid to the payout wallet
+	ClaimedMicroUsd string `json:"claimedMicroUsd"`
+
 	// EarningsMicroUsd Host earnings recorded in the month
 	EarningsMicroUsd string `json:"earningsMicroUsd"`
 
@@ -3997,8 +4009,8 @@ type EscrowEvent struct {
 	LogIndex       int                `json:"logIndex"`
 
 	// Parties The roles the organization played in the event
-	Parties         []EscrowEventParty `json:"parties"`
-	TransactionHash string             `json:"transactionHash"`
+	Parties         []SettlementParty `json:"parties"`
+	TransactionHash string            `json:"transactionHash"`
 }
 
 // EscrowEventKind defines model for EscrowEventKind.
@@ -4009,9 +4021,6 @@ type EscrowEventPage struct {
 	Items      []EscrowEvent `json:"items"`
 	NextCursor *string       `json:"nextCursor"`
 }
-
-// EscrowEventParty The roles the organization played in the event
-type EscrowEventParty string
 
 // ExposureBackendState defines model for ExposureBackendState.
 type ExposureBackendState string
@@ -6924,6 +6933,9 @@ type Settings struct {
 	VoucherLifetimeHours float32 `json:"voucherLifetimeHours"`
 }
 
+// SettlementParty defines model for SettlementParty.
+type SettlementParty string
+
 // SnapshotDto defines model for SnapshotDto.
 type SnapshotDto struct {
 	// BuildInfo Build information for the snapshot
@@ -8386,6 +8398,9 @@ type ListPaymentChannelsParams struct {
 
 	// Limit Number of results per page
 	Limit *float32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Role Only where the organization took this part: customer needs billing:read and host payouts:read; omitted, every part the caller may read
+	Role *SettlementParty `form:"role,omitempty" json:"role,omitempty"`
 }
 
 // ListEscrowEventsParams defines parameters for ListEscrowEvents.
@@ -8395,6 +8410,12 @@ type ListEscrowEventsParams struct {
 
 	// Limit Number of results per page
 	Limit *float32 `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Role Only where the organization took this part: customer needs billing:read and host payouts:read; omitted, every part the caller may read
+	Role *SettlementParty `form:"role,omitempty" json:"role,omitempty"`
+
+	// Kind Only events of these kinds
+	Kind *[]EscrowEventKind `form:"kind,omitempty" json:"kind,omitempty"`
 }
 
 // GetAllSnapshotsParams defines parameters for GetAllSnapshots.
@@ -25523,6 +25544,18 @@ func NewListPaymentChannelsRequest(server string, params *ListPaymentChannelsPar
 
 		}
 
+		if params.Role != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "role", *params.Role, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
@@ -25668,6 +25701,30 @@ func NewListEscrowEventsRequest(server string, params *ListEscrowEventsParams) (
 		if params.Limit != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "number", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Role != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "role", *params.Role, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Kind != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "kind", *params.Kind, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {

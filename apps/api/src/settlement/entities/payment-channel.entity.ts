@@ -87,6 +87,10 @@ const columnsAre = (columns: readonly string[], test: string) =>
 	properties: ['customerOrganizationId', 'openedAt', 'id'],
 })
 @Index({
+	name: 'IDX_payment_channel_host',
+	properties: ['hostOrganizationId', 'openedAt', 'id'],
+})
+@Index({
 	name: 'IDX_payment_channel_customer_address',
 	properties: ['customerAddress'],
 })

@@ -7,10 +7,10 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-export const EscrowEventParty = {
+export const SettlementParty = {
 	CUSTOMER: 'customer',
 	HOST: 'host',
 } as const;
 
-export type EscrowEventParty =
-	(typeof EscrowEventParty)[keyof typeof EscrowEventParty];
+export type SettlementParty =
+	(typeof SettlementParty)[keyof typeof SettlementParty];

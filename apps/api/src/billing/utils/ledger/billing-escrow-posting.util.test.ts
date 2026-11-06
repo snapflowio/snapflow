@@ -90,11 +90,16 @@ describe('escrow postings', () => {
 	it('settles a claim from custody to the host and the fee wallet', () => {
 		const posting = escrowClaimPosting({
 			...SOURCE,
+			customerOrganizationId: CUSTOMER,
 			hostOrganizationId: HOST,
 			hostMicroUsd: MicroUsd.of(80n),
 			platformMicroUsd: MicroUsd.of(20n),
 		});
 		assert.equal(posting.sourceType, BillingLedgerSourceType.ESCROW_CLAIM);
+		assert.deepEqual(posting.metadata, {
+			...SOURCE.metadata,
+			customerOrganizationId: CUSTOMER,
+		});
 		assert.deepEqual(entries(posting), [
 			[
 				HOST,
@@ -120,6 +125,7 @@ describe('escrow postings', () => {
 	it('omits the side of a claim that paid nothing', () => {
 		const posting = escrowClaimPosting({
 			...SOURCE,
+			customerOrganizationId: CUSTOMER,
 			hostOrganizationId: HOST,
 			hostMicroUsd: MicroUsd.ZERO,
 			platformMicroUsd: MicroUsd.of(3n),
@@ -130,6 +136,7 @@ describe('escrow postings', () => {
 	it('settles a platform service claim without a host organization', () => {
 		const posting = escrowClaimPosting({
 			...SOURCE,
+			customerOrganizationId: CUSTOMER,
 			hostOrganizationId: null,
 			hostMicroUsd: MicroUsd.ZERO,
 			platformMicroUsd: MicroUsd.of(5_000_000n),
@@ -155,6 +162,7 @@ describe('escrow postings', () => {
 			() =>
 				escrowClaimPosting({
 					...SOURCE,
+					customerOrganizationId: CUSTOMER,
 					hostOrganizationId: null,
 					hostMicroUsd: MicroUsd.of(1n),
 					platformMicroUsd: MicroUsd.ZERO,

@@ -410,6 +410,18 @@ export type BillingStatement = {
 export type BillingStatementCustomer = {
     openingCreditMicroUsd: string;
     closingCreditMicroUsd: string;
+    /**
+     * USDC deposited into the escrow
+     */
+    depositsMicroUsd: string;
+    /**
+     * USDC withdrawn from the escrow
+     */
+    withdrawalsMicroUsd: string;
+    /**
+     * USDC that claims paid from the escrow to hosts and Snapflow; settles usage already charged, so it does not change the credit
+     */
+    claimsPaidMicroUsd: string;
     adminGrantsMicroUsd: string;
     usageMicroUsd: string;
     usageBySandbox: Array<BillingStatementSandboxUsage>;
@@ -428,6 +440,10 @@ export type BillingStatementHost = {
      * Host earnings recorded in the month
      */
     earningsMicroUsd: string;
+    /**
+     * Earnings that claims paid to the payout wallet
+     */
+    claimedMicroUsd: string;
     /**
      * Earnings forfeited after fraud reviews
      */
@@ -1390,7 +1406,7 @@ export type EscrowEvent = {
     /**
      * The roles the organization played in the event
      */
-    parties: Array<EscrowEventParty>;
+    parties: Array<SettlementParty>;
     blockNumber: number;
     blockTimestamp: string;
     transactionHash: string;
@@ -1435,16 +1451,6 @@ export type EscrowEventPage = {
     items: Array<EscrowEvent>;
     nextCursor: string | null;
 };
-
-/**
- * The roles the organization played in the event
- */
-export const EscrowEventParty = { Customer: 'customer', Host: 'host' } as const;
-
-/**
- * The roles the organization played in the event
- */
-export type EscrowEventParty = typeof EscrowEventParty[keyof typeof EscrowEventParty];
 
 export const ExposureBackendState = {
     Pending: 'pending',
@@ -4635,6 +4641,10 @@ export type Settings = {
     updatedBy: string | null;
     updatedAt: string;
 };
+
+export const SettlementParty = { Customer: 'customer', Host: 'host' } as const;
+
+export type SettlementParty = typeof SettlementParty[keyof typeof SettlementParty];
 
 export type SnapshotDto = {
     id: string;
@@ -9285,6 +9295,10 @@ export type ListPaymentChannelsData = {
          * Number of results per page
          */
         limit?: number;
+        /**
+         * Only where the organization took this part: customer needs billing:read and host payouts:read; omitted, every part the caller may read
+         */
+        role?: SettlementParty;
     };
     url: '/settlement/channels';
 };
@@ -9351,6 +9365,14 @@ export type ListEscrowEventsData = {
          * Number of results per page
          */
         limit?: number;
+        /**
+         * Only where the organization took this part: customer needs billing:read and host payouts:read; omitted, every part the caller may read
+         */
+        role?: SettlementParty;
+        /**
+         * Only events of these kinds
+         */
+        kind?: Array<EscrowEventKind>;
     };
     url: '/settlement/events';
 };

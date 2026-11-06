@@ -19,6 +19,7 @@ import type {
 import {
 	customerCreditBefore,
 	firstLedgerActivity,
+	statementEscrowClaimsPaid,
 	statementTotals,
 	statementUsageBySandbox,
 } from '../queries/billing-statement.query';
@@ -73,6 +74,12 @@ export class BillingStatementService {
 							manager,
 							organizationId,
 							periodStart
+						),
+						claimsPaidMicroUsd: await statementEscrowClaimsPaid(
+							manager,
+							organizationId,
+							periodStart,
+							periodEnd
 						),
 						usageBySandbox: await statementUsageBySandbox(
 							manager,

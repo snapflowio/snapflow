@@ -2,9 +2,6 @@ layer: "library"
 stack: "systems"
 tags: ["contracts", "payments"]
 
-dependsOn:
-  - "contracts"
-
 fileGroups:
   production:
     - "**/*"

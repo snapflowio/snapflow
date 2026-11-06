@@ -33,8 +33,11 @@ export interface EscrowTransfer extends EscrowPostingSource {
 }
 
 // A claim that pays the host nothing, as a platform service channel's
-// claims never do, needs no host organization.
+// claims never do, needs no host organization. The paying customer touches
+// none of the claim's accounts and is recorded in its metadata, so its
+// statement can show what claims took from its escrow balance.
 export interface EscrowClaim extends EscrowPostingSource {
+	customerOrganizationId: string;
 	hostOrganizationId: string | null;
 	hostMicroUsd: MicroUsd;
 	platformMicroUsd: MicroUsd;
@@ -103,7 +106,10 @@ export function escrowClaimPosting(claim: EscrowClaim): BillingLedgerPosting {
 		descriptionCode: BillingLedgerDescriptionCode.ESCROW_CLAIMED,
 		sourceReference: claim.sourceReference,
 		effectiveAt: claim.effectiveAt,
-		metadata: claim.metadata,
+		metadata: {
+			...claim.metadata,
+			customerOrganizationId: claim.customerOrganizationId,
+		},
 	});
 	if (claim.hostMicroUsd.isPositive()) {
 		if (claim.hostOrganizationId === null) {

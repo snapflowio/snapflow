@@ -43,6 +43,8 @@ export function escrowEventsInfiniteQueryOptions(
 	return listEscrowEventsInfiniteOptions({ query });
 }
 
-export function recentEscrowEventsQueryOptions(limit: number) {
-	return listEscrowEventsOptions({ query: { limit } });
+export function recentEscrowEventsQueryOptions(
+	query: ListEscrowEventsData['query']
+) {
+	return listEscrowEventsOptions({ query });
 }

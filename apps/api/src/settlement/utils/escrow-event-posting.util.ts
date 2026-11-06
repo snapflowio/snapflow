@@ -125,6 +125,10 @@ export function escrowEventPosting(
 		case 'Claimed':
 			return escrowClaimPosting({
 				...source,
+				customerOrganizationId: requireOrganization(
+					event.customerOrganizationId,
+					event
+				),
 				hostOrganizationId: event.hostOrganizationId,
 				hostMicroUsd: storedAmount<'Claimed'>(event.args, 'hostPaid'),
 				platformMicroUsd: storedAmount<'Claimed'>(event.args, 'feePaid').add(

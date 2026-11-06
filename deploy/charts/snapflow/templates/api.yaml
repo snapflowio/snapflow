@@ -24,6 +24,25 @@ spec:
   dataFrom:
     - extract:
         key: snapflow/api
+---
+# Secrets only the worker holds: the claim relayer's gas wallet key.
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: snapflow-worker
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "worker") | nindent 4 }}
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: {{ .Values.secretStore }}
+  target:
+    name: snapflow-worker
+    creationPolicy: Owner
+  dataFrom:
+    - extract:
+        key: snapflow/worker
 {{- range $role := list "api" "worker" }}
 {{- $values := index $root.Values $role }}
 ---
@@ -87,6 +106,10 @@ spec:
           envFrom:
             - secretRef:
                 name: snapflow-api
+            {{- if eq $role "worker" }}
+            - secretRef:
+                name: snapflow-worker
+            {{- end }}
           {{- if eq $role "api" }}
           ports:
             - name: http

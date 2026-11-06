@@ -8,15 +8,16 @@
 -->
 
 <script lang="ts" module>
-const RECENT_EVENTS_LIMIT = 50;
+const RECENT_CLAIMS_LIMIT = 10;
 </script>
 
 <script lang="ts">
 import HandCoins from '@lucide/svelte/icons/hand-coins';
 import {
-	EscrowEventParty,
+	EscrowEventKind,
 	type PaymentWallet,
 	PayoutReadiness,
+	SettlementParty,
 } from '@snapflow/api-client';
 import { createQuery } from '@tanstack/svelte-query';
 import { recentEscrowEventsQueryOptions } from '#lib/api/settlement/escrow.ts';
@@ -28,7 +29,6 @@ import BillingHeading from '#lib/features/billing/components/billing-heading.sve
 import {
 	escrowEventAmountMicroUsd,
 	escrowEventChannelId,
-	isHostClaim,
 } from '#lib/features/billing/lib/escrow-event.ts';
 import { formatBillingDate } from '#lib/features/billing/lib/format.ts';
 import {
@@ -49,15 +49,19 @@ let { readiness, payoutWallet, canManage }: EarningsOverviewProps = $props();
 
 const copy = $derived(PAYOUT_READINESS[readiness]);
 const events = createQuery(() =>
-	recentEscrowEventsQueryOptions(RECENT_EVENTS_LIMIT)
+	recentEscrowEventsQueryOptions({
+		limit: RECENT_CLAIMS_LIMIT,
+		role: SettlementParty.Host,
+		kind: [EscrowEventKind.Claimed],
+	})
 );
-const claims = $derived((events.data?.items ?? []).filter(isHostClaim));
+const claims = $derived(events.data?.items ?? []);
 const claimedTotal = $derived(
 	claims
 		.reduce(
 			(total, claim) =>
 				total +
-				BigInt(escrowEventAmountMicroUsd(claim, EscrowEventParty.Host) ?? 0),
+				BigInt(escrowEventAmountMicroUsd(claim, SettlementParty.Host) ?? 0),
 			0n
 		)
 		.toString()
@@ -93,7 +97,7 @@ const claimedTotal = $derived(
 				{#each claims as claim (claim.id)}
 					{const channelId = $derived(escrowEventChannelId(claim))}
 					{const amount = $derived(
-						escrowEventAmountMicroUsd(claim, EscrowEventParty.Host)
+						escrowEventAmountMicroUsd(claim, SettlementParty.Host)
 					)}
 					<div class="flex items-center gap-2.5 rounded-lg p-2">
 						<span class="w-28 shrink-0 text-(--text-body) text-sm">

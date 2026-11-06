@@ -14,7 +14,9 @@ import { SnapflowEscrow } from "../src/SnapflowEscrow.sol";
 /// starts the delayed hand-over of the admin role to `ESCROW_ADMIN`, which must accept it after the delay.
 ///
 /// Environment: ESCROW_USDC, ESCROW_ADMIN, ESCROW_FEE_RECIPIENT, ESCROW_COMPLIANCE, ESCROW_PAUSER,
-/// ESCROW_FEE_CAP_BPS, ESCROW_DISPUTE_WINDOW_SECONDS.
+/// ESCROW_FEE_CAP_BPS, ESCROW_DISPUTE_WINDOW_SECONDS. In production ESCROW_USDC is Circle's USDC on Base
+/// (0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913); the deployed address and its block go under `settlement` in
+/// deploy/apps/production/snapflow.yaml.
 contract DeployEscrow is Script {
     function run() external returns (SnapflowEscrow escrow) {
         address finalAdmin = vm.envAddress("ESCROW_ADMIN");

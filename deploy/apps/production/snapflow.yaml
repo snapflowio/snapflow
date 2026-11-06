@@ -23,6 +23,17 @@ spec:
       platform: ${PLATFORM_DOMAIN}
     email:
       from: Snapflow <noreply@${EMAIL_DOMAIN}>
+    # Base mainnet and Circle's USDC on it. The escrow address and its
+    # deployment block come from apps/contracts/script/DeployEscrow.s.sol's
+    # broadcast; the Reown Cloud project id is public. The chart refuses to
+    # render while any of them is empty. The RPC URL carries a provider key,
+    # so it lives in OpenBao (moon run deploy:openbao).
+    settlement:
+      chainId: 8453
+      escrowAddress: ""
+      escrowDeploymentBlock: ""
+      usdcAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      reownProjectId: ""
     images:
       api:
         tag: "" # {"$imagepolicy": "flux-system:snapflow-api:tag"}

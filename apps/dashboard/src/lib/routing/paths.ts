@@ -35,6 +35,7 @@ export const Path = {
 	BILLING_ACTIVITY: 'billing/activity',
 	BILLING_STATEMENTS: 'billing/statements',
 	EARNINGS: 'earnings',
+	EARNINGS_CHANNELS: 'earnings/channels',
 	EARNINGS_CLAIMS: 'earnings/claims',
 	EARNINGS_NETWORK: 'earnings/network',
 	EARNINGS_PAYOUTS: 'earnings/payouts',

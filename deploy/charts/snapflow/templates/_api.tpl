@@ -43,6 +43,16 @@
 - name: EMAIL_REPLY_TO
   value: {{ . | quote }}
 {{- end }}
+- name: SETTLEMENT_CHAIN_ID
+  value: {{ required "settlement.chainId is required" $root.Values.settlement.chainId | int64 | quote }}
+- name: SETTLEMENT_ESCROW_ADDRESS
+  value: {{ required "settlement.escrowAddress is required" $root.Values.settlement.escrowAddress | quote }}
+- name: SETTLEMENT_ESCROW_DEPLOYMENT_BLOCK
+  value: {{ required "settlement.escrowDeploymentBlock is required" $root.Values.settlement.escrowDeploymentBlock | int64 | quote }}
+- name: SETTLEMENT_USDC_ADDRESS
+  value: {{ required "settlement.usdcAddress is required" $root.Values.settlement.usdcAddress | quote }}
+- name: REOWN_PROJECT_ID
+  value: {{ required "settlement.reownProjectId is required" $root.Values.settlement.reownProjectId | quote }}
 - name: SNAPFLOW_VAULT_PROXY_URL
   value: http://127.0.0.1:8100
 - name: SNAPFLOW_SNAPSHOT_MANAGER_URL

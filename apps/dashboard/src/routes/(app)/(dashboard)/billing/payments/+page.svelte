@@ -8,6 +8,7 @@
 -->
 
 <script lang="ts">
+import { SettlementParty } from '@snapflow/api-client';
 import BillingHeader from '#lib/features/billing/components/billing-header.svelte';
 import PaymentChannelHistory from '#lib/features/billing/components/payments/payment-channel-history.svelte';
 </script>
@@ -17,4 +18,4 @@ import PaymentChannelHistory from '#lib/features/billing/components/payments/pay
 </svelte:head>
 
 <BillingHeader />
-<PaymentChannelHistory />
+<PaymentChannelHistory party={SettlementParty.Customer} />

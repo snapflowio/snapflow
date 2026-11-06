@@ -8,10 +8,9 @@
 -->
 
 <script lang="ts">
-import { EscrowEventParty } from '@snapflow/api-client';
+import { EscrowEventKind, SettlementParty } from '@snapflow/api-client';
 import EarningsHeader from '#lib/features/billing/components/earnings-header.svelte';
 import EscrowEventHistory from '#lib/features/billing/components/payments/escrow-event-history.svelte';
-import { isHostClaim } from '#lib/features/billing/lib/escrow-event.ts';
 </script>
 
 <svelte:head>
@@ -21,8 +20,8 @@ import { isHostClaim } from '#lib/features/billing/lib/escrow-event.ts';
 <EarningsHeader />
 <EscrowEventHistory
 	caption="Claims"
-	party={EscrowEventParty.Host}
-	select={isHostClaim}
+	party={SettlementParty.Host}
+	kinds={[EscrowEventKind.Claimed]}
 	emptyTitle="No claims yet"
 	emptyDescription="Snapflow claims the vouchers your machines earn from the escrow and pays them to your payout wallet."
 />

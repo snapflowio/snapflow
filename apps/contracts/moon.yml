@@ -1,4 +1,4 @@
-layer: "library"
+layer: "application"
 stack: "backend"
 tags: ["contracts", "payments"]
 

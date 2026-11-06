@@ -18132,6 +18132,18 @@
           "unique": false
         },
         {
+          "columnNames": [
+            "hostOrganizationId",
+            "openedAt",
+            "id"
+          ],
+          "composite": true,
+          "constraint": false,
+          "keyName": "IDX_payment_channel_host",
+          "primary": false,
+          "unique": false
+        },
+        {
           "columnNames": [],
           "composite": false,
           "constraint": false,
