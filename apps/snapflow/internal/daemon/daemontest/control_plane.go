@@ -44,6 +44,7 @@ const (
 	healthcheckRoute       = "/api/machines/healthcheck"
 	placementsRoute        = "/api/machines/usage/placements"
 	desiredStateRoute      = "/api/machines/sandboxes/desired-state"
+	vouchersRoute          = "/api/machines/settlement/vouchers"
 	observedStatusRoute    = "/api/machines/sandboxes/observed-status"
 	snapshotInventoryRoute = "/api/machines/snapshots/observed-inventory"
 	jobsPollRoute          = "/api/jobs/poll"
@@ -73,6 +74,7 @@ func newControlPlane(t testing.TB, machineID uuid.UUID) *ControlPlane {
 	mux.HandleFunc(http.MethodPost+" "+healthcheckRoute, controlPlane.healthcheck)
 	mux.HandleFunc(http.MethodGet+" "+placementsRoute, controlPlane.placements)
 	mux.HandleFunc(http.MethodGet+" "+desiredStateRoute, controlPlane.notModifiedAfterWait)
+	mux.HandleFunc(http.MethodGet+" "+vouchersRoute, controlPlane.notModifiedAfterWait)
 	mux.HandleFunc(http.MethodPost+" "+observedStatusRoute, controlPlane.acknowledge)
 	mux.HandleFunc(http.MethodPost+" "+snapshotInventoryRoute, controlPlane.acknowledge)
 	mux.HandleFunc(http.MethodGet+" "+jobsPollRoute, controlPlane.pollJobs)

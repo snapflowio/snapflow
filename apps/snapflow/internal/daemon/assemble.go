@@ -17,6 +17,7 @@ import (
 	"github.com/snapflowio/snapflow/internal/localapi"
 	"github.com/snapflowio/snapflow/internal/meter"
 	"github.com/snapflowio/snapflow/internal/sandbox"
+	"github.com/snapflowio/snapflow/internal/settlement"
 	"github.com/snapflowio/snapflow/internal/snapshot"
 	"github.com/snapflowio/snapflow/internal/sshgateway"
 	"github.com/snapflowio/snapflow/internal/telemetry"
@@ -38,6 +39,8 @@ type services struct {
 	converger       *sandbox.Converger
 	jobResults      *jobs.Outbox
 	localRuntimes   *sandbox.LocalRuntimes
+	paymentHolds    *sandbox.PaymentHolds
+	settlement      *settlement.Service
 	runtimeIdentity string
 	health          *health.Reporter
 	poller          *jobs.Poller
@@ -68,6 +71,7 @@ func (daemon *Daemon) assemble(
 		{PhasePrepareUsage, func() error { return daemon.prepareUsage(ready, prepared) }},
 		{PhasePrepareSnapshots, func() error { return daemon.prepareSnapshots(ready, prepared) }},
 		{PhasePrepareConvergence, func() error { return daemon.prepareConvergence(ready, prepared) }},
+		{PhasePrepareSettlement, func() error { return daemon.prepareSettlement(preparationContext, ready, prepared) }},
 		{PhasePrepareHealth, func() error { return daemon.prepareHealth(prepared) }},
 		{PhasePrepareExecutor, func() error { return daemon.prepareJobs(ready, prepared) }},
 		{PhasePrepareAPI, func() error { return daemon.prepareAPI(preparationContext, ready, prepared) }},
@@ -95,6 +99,7 @@ func (prepared *services) register(ready *foundation) {
 	prepared.intake.register("healthcheck", prepared.health)
 	prepared.intake.register("usage reporting", prepared.usage)
 	prepared.intake.register("sandbox convergence", prepared.convergence)
+	prepared.intake.register("payment vouchers", prepared.settlement)
 	prepared.intake.register("job results", prepared.jobResults)
 	prepared.intake.register("job poller", prepared.poller)
 }

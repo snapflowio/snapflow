@@ -76,6 +76,7 @@ type convergeCase struct {
 	final       microvmtypes.RuntimeState
 	missing     bool
 	wantCPUVCPU int64
+	held        bool
 }
 
 func TestConvergeDecisionTable(t *testing.T) {
@@ -212,6 +213,41 @@ func TestConvergeDecisionTable(t *testing.T) {
 			hosted: microvmtypes.RuntimeStateStarted, generation: 1, record: convergedRecord,
 			operations: []string{operationMeter, operationDestroy},
 		},
+		"payment hold pauses a started runtime": {
+			desired: func(t *testing.T) *machinev1alpha1.SandboxDesiredState {
+				return desiredSandbox(t, testSandboxID, 1, 2, started)
+			},
+			hosted: microvmtypes.RuntimeStateStarted, generation: 1, record: convergedRecord, held: true,
+			operations: []string{operationPause, operationMeter}, final: microvmtypes.RuntimeStateStandby,
+		},
+		"payment hold keeps a paused runtime paused": {
+			desired: func(t *testing.T) *machinev1alpha1.SandboxDesiredState {
+				return desiredSandbox(t, testSandboxID, 1, 2, started)
+			},
+			hosted: microvmtypes.RuntimeStateStandby, generation: 1, record: convergedRecord, held: true,
+			final: microvmtypes.RuntimeStateStandby,
+		},
+		"payment hold never boots a stopped runtime": {
+			desired: func(t *testing.T) *machinev1alpha1.SandboxDesiredState {
+				return desiredSandbox(t, testSandboxID, 1, 2, started)
+			},
+			hosted: microvmtypes.RuntimeStateStopped, generation: 1, record: convergedRecord, held: true,
+			final: microvmtypes.RuntimeStateStopped,
+		},
+		"payment hold still lets the API stop the sandbox": {
+			desired: func(t *testing.T) *machinev1alpha1.SandboxDesiredState {
+				return desiredSandbox(t, testSandboxID, 1, 2, stopped)
+			},
+			hosted: microvmtypes.RuntimeStateStandby, generation: 1, record: convergedRecord, held: true,
+			operations: []string{operationStop, operationMeter}, final: microvmtypes.RuntimeStateStopped,
+		},
+		"payment hold creates a sandbox without starting it": {
+			desired: func(t *testing.T) *machinev1alpha1.SandboxDesiredState {
+				return desiredSandbox(t, testSandboxID, 1, 1, started)
+			},
+			held:       true,
+			operations: []string{operationMaterialize, operationSample}, final: microvmtypes.RuntimeStateStopped,
+		},
 	}
 	for name, test := range tests {
 		t.Run(name, test.run)
@@ -224,7 +260,7 @@ func (test convergeCase) run(t *testing.T) {
 		runtime.host(testSandboxID, test.generation, test.hosted)
 	}
 	desired := test.desired(t)
-	target := Target{Desired: desired}
+	target := Target{Desired: desired, PaymentHeld: test.held}
 	if test.record != nil {
 		target.Record = test.record(desired)
 	}
@@ -233,19 +269,10 @@ func (test convergeCase) run(t *testing.T) {
 		t.Fatalf("Converge() error = %v", err)
 	}
 	if record.FailureReason != "" || record.ObservedSpecGeneration != desired.GetSpecGeneration() ||
-		record.AssignmentGeneration != desired.GetAssignmentGeneration() {
+		record.AssignmentGeneration != desired.GetAssignmentGeneration() || record.PaymentHeld != test.held {
 		t.Fatalf("record = %+v", record)
 	}
-	if got := runtime.recorded(); !slices.Equal(got, test.operations) {
-		t.Fatalf("operations = %v, want %v", got, test.operations)
-	}
-	current, hosted := runtime.state(testSandboxID)
-	if test.final != "" && current != test.final {
-		t.Fatalf("runtime state = %s, want %s", current, test.final)
-	}
-	if cpu := runtime.cpu(testSandboxID); test.wantCPUVCPU != 0 && cpu != test.wantCPUVCPU {
-		t.Fatalf("runtime vCPUs = %d, want %d", cpu, test.wantCPUVCPU)
-	}
+	hosted := test.assertRuntime(t, runtime)
 	wantCode := machinev1alpha1.MachineErrorCode_MACHINE_ERROR_CODE_NONE
 	if test.missing {
 		wantCode = machinev1alpha1.MachineErrorCode_MACHINE_ERROR_CODE_RUNTIME_MISSING
@@ -256,6 +283,21 @@ func (test convergeCase) run(t *testing.T) {
 	if record.Result.GetErrorCode() != wantCode {
 		t.Fatalf("result error code = %q, want %q", record.Result.GetErrorCode(), wantCode)
 	}
+}
+
+func (test convergeCase) assertRuntime(t *testing.T, runtime *fakeRuntime) (hosted bool) {
+	t.Helper()
+	if got := runtime.recorded(); !slices.Equal(got, test.operations) {
+		t.Fatalf("operations = %v, want %v", got, test.operations)
+	}
+	current, hosted := runtime.state(testSandboxID)
+	if test.final != "" && current != test.final {
+		t.Fatalf("runtime state = %s, want %s", current, test.final)
+	}
+	if cpu := runtime.cpu(testSandboxID); test.wantCPUVCPU != 0 && cpu != test.wantCPUVCPU {
+		t.Fatalf("runtime vCPUs = %d, want %d", cpu, test.wantCPUVCPU)
+	}
+	return hosted
 }
 
 func withSecrets(desired *machinev1alpha1.SandboxDesiredState) *machinev1alpha1.SandboxDesiredState {

@@ -342,6 +342,7 @@ func testManager(t *testing.T, runtime *fakeRuntime, control *fakeControl, store
 		ManagerDependencies{
 			Control: control, Converger: testConverger(t, runtime, control), Runtime: runtime, Records: store,
 			LocalRuntimes: NewLocalRuntimes(), Snapshots: &fakeSnapshots{}, Meter: fakeMeter{runtime: runtime},
+			PaymentHolds: NewPaymentHolds(),
 		},
 		WithLogger(slog.New(slog.NewTextHandler(io.Discard, nil))),
 	)

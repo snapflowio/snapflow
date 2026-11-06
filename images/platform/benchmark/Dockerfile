@@ -11,6 +11,7 @@ WORKDIR /src
 COPY apps/snapflow ./apps/snapflow
 COPY libs/api-client-go ./libs/api-client-go
 COPY libs/common-go ./libs/common-go
+COPY libs/contracts-go ./libs/contracts-go
 COPY libs/machine-proto ./libs/machine-proto
 COPY libs/microvm-go ./libs/microvm-go
 COPY libs/tunnel-go ./libs/tunnel-go

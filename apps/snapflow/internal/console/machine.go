@@ -21,6 +21,8 @@ func newMachineCommand(application *App) *cobra.Command {
 	group.AddCommand(
 		newSetupCommand(application),
 		newStatusCommand(application),
+		newPayoutCommand(application),
+		newVouchersCommand(application),
 		newDoctorCommand(application),
 		newLogsCommand(application),
 		newStartCommand(application),

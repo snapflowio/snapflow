@@ -13,7 +13,8 @@
   Release       1.4.2 · ✓ verified
   Updates       idle · stable channel · maintenance window 04:00-06:00 UTC
   Earnings      earnings are in the dashboard · https://snapflow.io/dashboard/machines
-  Payouts       not set up; open Billing → Payouts in the dashboard to get paid
+  Payouts       not set up; link a payout wallet in Earnings → Payouts in the dashboard to get paid
+  Payment holds ! 1 paused until their customers pay: 0b9d4f62-5d1c-4f0e-9a51-3c7e2f8b6a14
   Marketplace   Private tier · draft · private
   Benchmark     ○ in progress
   Tier notes    listing_not_public, kyc_incomplete

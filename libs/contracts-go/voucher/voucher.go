@@ -48,28 +48,6 @@ type Voucher = escrow.Voucher
 // ErrInvalidSignature is returned when a signature is malformed or does not recover to a public key.
 var ErrInvalidSignature = errors.New("invalid voucher signature")
 
-var (
-	voucherTypeHash = crypto.Keccak256Hash([]byte(voucherType))
-	domainTypeHash  = crypto.Keccak256Hash([]byte(domainType))
-	nameHash        = crypto.Keccak256Hash([]byte(DomainName))
-	versionHash     = crypto.Keccak256Hash([]byte(DomainVersion))
-
-	bytes32Type = mustType("bytes32")
-	addressType = mustType("address")
-	uint256Type = mustType("uint256")
-	uint64Type  = mustType("uint64")
-	stringType  = mustType("string")
-
-	domainArguments = abi.Arguments{
-		{Type: bytes32Type}, {Type: bytes32Type}, {Type: bytes32Type}, {Type: uint256Type}, {Type: addressType},
-	}
-	voucherArguments = abi.Arguments{
-		{Type: bytes32Type}, {Type: bytes32Type}, {Type: addressType}, {Type: addressType},
-		{Type: uint256Type}, {Type: uint256Type}, {Type: uint256Type}, {Type: uint64Type}, {Type: uint64Type},
-	}
-	channelArguments = abi.Arguments{{Type: addressType}, {Type: addressType}, {Type: stringType}}
-)
-
 // Domain identifies one deployment of the escrow.
 type Domain struct {
 	ChainID           *big.Int
@@ -78,7 +56,13 @@ type Domain struct {
 
 // Separator is the EIP-712 domain separator of the deployment.
 func (d Domain) Separator() (common.Hash, error) {
-	encoded, err := domainArguments.Pack(domainTypeHash, nameHash, versionHash, d.ChainID, d.VerifyingContract)
+	arguments, err := encoding("bytes32", "bytes32", "bytes32", "uint256", "address")
+	if err != nil {
+		return common.Hash{}, err
+	}
+	encoded, err := arguments.Pack(
+		typeHash(domainType), typeHash(DomainName), typeHash(DomainVersion), d.ChainID, d.VerifyingContract,
+	)
 	if err != nil {
 		return common.Hash{}, fmt.Errorf("encode domain: %w", err)
 	}
@@ -91,8 +75,14 @@ func Digest(domain Domain, v Voucher) (common.Hash, error) {
 	if err != nil {
 		return common.Hash{}, err
 	}
-	encoded, err := voucherArguments.Pack(
-		voucherTypeHash, v.ChannelId, v.Customer, v.Host, v.HostAmount, v.FeeAmount, v.ServiceAmount, v.Sequence, v.Expiry,
+	arguments, err := encoding(
+		"bytes32", "bytes32", "address", "address", "uint256", "uint256", "uint256", "uint64", "uint64",
+	)
+	if err != nil {
+		return common.Hash{}, err
+	}
+	encoded, err := arguments.Pack(
+		typeHash(voucherType), v.ChannelId, v.Customer, v.Host, v.HostAmount, v.FeeAmount, v.ServiceAmount, v.Sequence, v.Expiry,
 	)
 	if err != nil {
 		return common.Hash{}, fmt.Errorf("encode voucher: %w", err)
@@ -123,17 +113,31 @@ func RecoverSigner(domain Domain, v Voucher, signature []byte) (common.Address, 
 
 // ChannelID derives the channel for one sandbox lease, matching channelIdFor in @snapflow/contracts.
 func ChannelID(customer, host common.Address, leaseID string) (common.Hash, error) {
-	encoded, err := channelArguments.Pack(customer, host, leaseID)
+	arguments, err := encoding("address", "address", "string")
+	if err != nil {
+		return common.Hash{}, err
+	}
+	encoded, err := arguments.Pack(customer, host, leaseID)
 	if err != nil {
 		return common.Hash{}, fmt.Errorf("encode channel: %w", err)
 	}
 	return crypto.Keccak256Hash(encoded), nil
 }
 
-func mustType(name string) abi.Type {
-	t, err := abi.NewType(name, "", nil)
-	if err != nil {
-		panic(fmt.Sprintf("abi type %s: %v", name, err))
+// typeHash is keccak256 of a type string or domain field, as EIP-712 encodes them.
+func typeHash(value string) common.Hash {
+	return crypto.Keccak256Hash([]byte(value))
+}
+
+// encoding builds ABI arguments for abi.encode of the given Solidity types, in order.
+func encoding(typeNames ...string) (abi.Arguments, error) {
+	arguments := make(abi.Arguments, 0, len(typeNames))
+	for _, name := range typeNames {
+		t, err := abi.NewType(name, "", nil)
+		if err != nil {
+			return nil, fmt.Errorf("abi type %s: %w", name, err)
+		}
+		arguments = append(arguments, abi.Argument{Type: t})
 	}
-	return t
+	return arguments, nil
 }

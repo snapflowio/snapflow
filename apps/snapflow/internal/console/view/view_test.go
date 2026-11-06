@@ -86,6 +86,7 @@ func TestStatusQualifyingWithProblems(t *testing.T) {
 	status.Daemon = admin.DaemonStatus{Error: "connection refused"}
 	status.Service = &admin.ServiceStatus{Active: false, Enabled: true}
 	status.RecentErrors = []string{"level=ERROR msg=\"edge tunnel closed\""}
+	status.PaymentHolds = []admin.PaymentHold{{SandboxID: testSandboxID, HeldAt: testHeldAt()}}
 	status.Errors = []string{"the Snapflow service is not active and enabled"}
 	pending := apiclient.BenchmarkStatePending
 	status.ControlPlane.Marketplace = &apiclient.MachineMarketplaceStatus{
@@ -105,6 +106,57 @@ func TestStatusBeforeTheMachineExists(t *testing.T) {
 func TestStatusNotRegistered(t *testing.T) {
 	status := admin.StatusResult{Profile: string(config.Production), DashboardURL: testDashboard}
 	clitest.Assert(t, "status_not_registered", Status(style.New(false), status))
+}
+
+const (
+	testSandboxID = "0b9d4f62-5d1c-4f0e-9a51-3c7e2f8b6a14"
+	testLeaseID   = "5e0c7a1b-8d42-4c9f-b6e3-2f1a9d7c4b08"
+	testChannelID = "0x706f247b800ddcfc035df6460f09a2d3a7b2f718ef245fe540e82e2277a23255"
+	testPayoutURL = "https://snapflow.io/dashboard/earnings/payouts"
+)
+
+func testHeldAt() time.Time {
+	return time.Date(2026, time.November, 5, 9, 15, 0, 0, time.UTC)
+}
+
+func TestPayout(t *testing.T) {
+	for name, readiness := range map[string]apiclient.PayoutReadiness{
+		"payout_ready":   apiclient.PayoutReadinessReady,
+		"payout_blocked": apiclient.PayoutReadinessBlocked,
+	} {
+		result := admin.PayoutResult{Profile: "production", Readiness: readiness, PayoutURL: testPayoutURL}
+		clitest.Assert(t, name, Payout(style.New(true), result))
+	}
+}
+
+func TestVouchers(t *testing.T) {
+	heldAt := testHeldAt()
+	acceptedAt := heldAt.Add(-time.Hour)
+	result := admin.VouchersResult{Profile: "production", Vouchers: []admin.PaymentVoucher{
+		{
+			ChannelID: testChannelID, SandboxID: testSandboxID, LeaseID: testLeaseID,
+			State: apiclient.PaymentChannelStateOpen, AcceptedAt: &acceptedAt, HeldAt: &heldAt,
+			Domain: &apiclient.EscrowDomain{ChainId: 84532, Name: "SnapflowEscrow", Version: "1"},
+			Voucher: &apiclient.MachineSignedVoucher{
+				ChannelId: testChannelID, Sequence: "2", HostAmount: "123456789", FeeAmount: "24691357",
+				ServiceAmount: "0", Expiry: "1900000000",
+			},
+		},
+		{
+			ChannelID: testChannelID, SandboxID: testMachineID, LeaseID: testLeaseID,
+			State: apiclient.PaymentChannelStateOpen,
+		},
+	}}
+	clitest.Assert(t, "vouchers", Vouchers(style.New(true), result))
+	clitest.Assert(t, "vouchers_none", Vouchers(style.New(true), admin.VouchersResult{Profile: "production"}))
+}
+
+func TestUSDCKeepsEveryBaseUnit(t *testing.T) {
+	for baseUnits, want := range map[string]string{"0": "0.000000", "1": "0.000001", "123456789": "123.456789", "bogus": "bogus"} {
+		if got := usdc(baseUnits); got != want {
+			t.Errorf("usdc(%q) = %q, want %q", baseUnits, got, want)
+		}
+	}
 }
 
 func TestChecks(t *testing.T) {

@@ -47,6 +47,37 @@ func TestSynchronizeNeverRestartsARuntimeThatExitedOnItsOwn(t *testing.T) {
 	}
 }
 
+func TestSynchronizeAppliesAndReleasesPaymentHoldsOnce(t *testing.T) {
+	runtime := newFakeRuntime()
+	store := newMemoryRecords()
+	service := testManager(t, runtime, &fakeControl{}, store)
+	desired := desiredSandbox(t, testSandboxID, 1, 1, started)
+	service.synchronize(t.Context(), authorizedWork(desired, testSandboxID))
+	converged := len(runtime.recorded())
+
+	service.holds.Set(testSandboxID, true)
+	service.synchronize(t.Context(), authorizedWork(desired, testSandboxID))
+	if current, _ := runtime.state(testSandboxID); current != microvmtypes.RuntimeStateStandby {
+		t.Fatalf("held runtime is %s, want paused", current)
+	}
+	held := len(runtime.recorded())
+	service.synchronize(t.Context(), authorizedWork(desired, testSandboxID))
+	if len(runtime.recorded()) != held || held == converged {
+		t.Fatalf("a hold was applied %d times: %v", len(runtime.recorded())-converged, runtime.recorded())
+	}
+	restarted := testManager(t, runtime, &fakeControl{}, store)
+	restarted.holds.Set(testSandboxID, true)
+	restarted.synchronize(t.Context(), authorizedWork(desired, testSandboxID))
+	if len(runtime.recorded()) != held {
+		t.Fatalf("a restart with the restored hold acted again: %v", runtime.recorded())
+	}
+	restarted.holds.Set(testSandboxID, false)
+	restarted.synchronize(t.Context(), authorizedWork(desired, testSandboxID))
+	if current, _ := runtime.state(testSandboxID); current != microvmtypes.RuntimeStateStarted {
+		t.Fatalf("released runtime is %s, want started", current)
+	}
+}
+
 func TestSynchronizeRemovesUnlistedRuntimesExceptLocalOnes(t *testing.T) {
 	runtime := newFakeRuntime()
 	runtime.host(testSandboxID, 1, microvmtypes.RuntimeStateStarted)

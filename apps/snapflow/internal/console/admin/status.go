@@ -48,6 +48,7 @@ type StatusResult struct {
 	Update       update.Status                    `json:"update"`
 	Service      *ServiceStatus                   `json:"service,omitempty"`
 	RecentErrors []string                         `json:"recentErrors"`
+	PaymentHolds []PaymentHold                    `json:"paymentHolds"`
 	DashboardURL string                           `json:"dashboardUrl"`
 	Errors       []string                         `json:"errors"`
 }
@@ -61,9 +62,10 @@ func Status(ctx context.Context, cfg StatusConfig) StatusResult {
 	configuration := cfg.Config
 	result := StatusResult{
 		Profile: string(configuration.Profile.Name), Ready: true, RecentErrors: []string{},
-		DashboardURL: configuration.Profile.DashboardURL, Errors: []string{},
+		PaymentHolds: []PaymentHold{}, DashboardURL: configuration.Profile.DashboardURL, Errors: []string{},
 	}
 	result.inspectRegistration(ctx, configuration)
+	result.inspectPaymentHolds(ctx, configuration)
 	result.inspectControlPlane(ctx, configuration)
 	result.inspectDaemon(ctx, configuration)
 	result.inspectRelease(configuration)

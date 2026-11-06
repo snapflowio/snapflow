@@ -33,6 +33,7 @@ type ManagerDependencies struct {
 	LocalRuntimes *LocalRuntimes
 	Snapshots     Snapshots
 	Meter         UsageMeter
+	PaymentHolds  *PaymentHolds
 }
 
 type Manager struct {
@@ -45,6 +46,7 @@ type Manager struct {
 	records        *records
 	activity       *activity
 	local          *LocalRuntimes
+	holds          *PaymentHolds
 	reporter       *statusReporter
 	current        atomic.Pointer[machinev1alpha1.MachineDesiredState]
 	observedDigest string
@@ -53,8 +55,8 @@ type Manager struct {
 
 func NewManager(cfg ManagerConfig, deps ManagerDependencies, opts ...Option) (*Manager, error) {
 	if deps.Control == nil || deps.Converger == nil || deps.Runtime == nil || deps.Records == nil ||
-		deps.LocalRuntimes == nil || deps.Snapshots == nil || deps.Meter == nil {
-		return nil, errors.New("convergence control plane, converger, runtime, records, local runtimes, snapshots and meter are required")
+		deps.LocalRuntimes == nil || deps.Snapshots == nil || deps.Meter == nil || deps.PaymentHolds == nil {
+		return nil, errors.New("convergence control plane, converger, runtime, records, local runtimes, snapshots, meter and payment holds are required")
 	}
 	if cfg.ReportInterval <= 0 || cfg.RequestTimeout <= 0 {
 		return nil, errors.New("convergence report interval and request timeout must be positive")
@@ -62,7 +64,7 @@ func NewManager(cfg ManagerConfig, deps ManagerDependencies, opts ...Option) (*M
 	logger := newOptions(opts).logger.With(slog.String("component", "sandbox_convergence"))
 	service := &Manager{
 		log: logger, control: deps.Control, runtime: deps.Runtime, converger: deps.Converger, snapshots: deps.Snapshots, meter: deps.Meter,
-		records: newRecords(deps.Records), activity: newActivity(), local: deps.LocalRuntimes,
+		records: newRecords(deps.Records), activity: newActivity(), local: deps.LocalRuntimes, holds: deps.PaymentHolds,
 	}
 	service.reporter = &statusReporter{
 		log: logger, control: deps.Control, runtime: deps.Runtime, records: service.records,
@@ -89,8 +91,15 @@ func (manager *Manager) Run(ctx context.Context) error {
 		manager.reporter.run(reporterContext)
 	}()
 
+	holdsDone := make(chan struct{})
+	go func() {
+		defer close(holdsDone)
+		manager.followHolds(lifecycleContext)
+	}()
+
 	watchErr := manager.watch(lifecycleContext)
 	stopLifecycle()
+	<-holdsDone
 	manager.workers.stop()
 	stopReporter()
 	<-reporterDone
@@ -99,6 +108,19 @@ func (manager *Manager) Run(ctx context.Context) error {
 	manager.reporter.reportLogged(finalContext)
 	manager.log.InfoContext(ctx, "Sandbox convergence stopped")
 	return watchErr
+}
+
+// followHolds redispatches the desired state whenever a payment hold changes,
+// because a hold alone does not change the document the watch loop waits on.
+func (manager *Manager) followHolds(ctx context.Context) {
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-manager.holds.changed:
+			manager.dispatch(ctx)
+		}
+	}
 }
 
 func drainingContext(ctx context.Context, timeout time.Duration) (context.Context, context.CancelFunc) {

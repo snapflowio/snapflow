@@ -53,6 +53,9 @@ func Status(theme style.Theme, result admin.StatusResult) string {
 	if machine != nil {
 		lines = append(lines, Row(theme, text.LabelPayouts, Payouts(theme, machine.Payouts)))
 	}
+	if result.Registration.Registered {
+		lines = append(lines, Row(theme, text.LabelPaymentHolds, paymentHolds(theme, result.PaymentHolds)))
+	}
 	lines = append(lines, marketplaceRows(theme, machine)...)
 	lines = append(lines, list(theme, text.RecentErrorsTitle, result.RecentErrors, theme.Warning, style.SymbolBullet)...)
 	lines = append(lines, list(theme, text.ProblemsTitle, result.Errors, theme.Danger, style.SymbolFail)...)
@@ -63,10 +66,8 @@ func Payouts(theme style.Theme, readiness apiclient.PayoutReadiness) string {
 	switch readiness {
 	case apiclient.PayoutReadinessReady:
 		return theme.Success.Render(text.PayoutsReady)
-	case apiclient.PayoutReadinessPending:
-		return theme.Secondary.Render(text.PayoutsPending)
-	case apiclient.PayoutReadinessActionRequired:
-		return theme.Danger.Render(text.PayoutsActionRequired)
+	case apiclient.PayoutReadinessBlocked:
+		return theme.Danger.Render(text.PayoutsBlocked)
 	case apiclient.PayoutReadinessNotSetUp:
 		return theme.Warning.Render(text.PayoutsNotSetUp)
 	default:

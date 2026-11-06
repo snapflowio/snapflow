@@ -39,7 +39,7 @@ func TestSandboxConvergenceRecordsRoundTrip(t *testing.T) {
 	database := openTestDatabase(t)
 	record := SandboxConvergence{
 		SandboxID: testSandboxID, AssignmentGeneration: 2, Materialized: true, ObservedSpecGeneration: 5,
-		SpecDigest: "digest", DaemonVersion: "1.4.2",
+		SpecDigest: "digest", DaemonVersion: "1.4.2", PaymentHeld: true,
 		Result: &machinev1alpha1.ConvergenceResult{ErrorCode: testErrorCode},
 	}
 	if err := database.SaveSandboxConvergence(t.Context(), record); err != nil {
@@ -49,7 +49,7 @@ func TestSandboxConvergenceRecordsRoundTrip(t *testing.T) {
 	if err != nil || len(loaded) != 1 {
 		t.Fatalf("load records = %v, %v", loaded, err)
 	}
-	if got := loaded[0]; got.ObservedSpecGeneration != 5 || !got.Materialized || got.Result.GetErrorCode() != testErrorCode {
+	if got := loaded[0]; got.ObservedSpecGeneration != 5 || !got.Materialized || !got.PaymentHeld || got.Result.GetErrorCode() != testErrorCode {
 		t.Fatalf("loaded record = %+v", got)
 	}
 	if err := database.DeleteSandboxConvergence(t.Context(), testSandboxID); err != nil {

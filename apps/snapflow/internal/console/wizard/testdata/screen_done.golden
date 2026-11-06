@@ -13,7 +13,7 @@
   Profile       production
   Dashboard     https://snapflow.io/dashboard/machines
   Location      DE
-  Payouts       not set up; open Billing → Payouts in the dashboard to get paid
+  Payouts       not set up; link a payout wallet in Earnings → Payouts in the dashboard to get paid
 
   Next steps
   sudo snapflow status --watch    watch it work
