@@ -39,6 +39,10 @@ export const ESCROW_INDEXER = {
 	},
 } as const;
 
+// The escrow's admin may lower the fee cap at any moment; re-reading it every
+// minute bounds how long a lease can open at a markup the escrow would refuse.
+export const ESCROW_FEE_POLICY_CACHE_MILLISECONDS = MILLISECONDS_PER_MINUTE;
+
 export const ESCROW_EVENT_QUERY = {
 	defaultLimit: 25,
 	maximumLimit: 100,

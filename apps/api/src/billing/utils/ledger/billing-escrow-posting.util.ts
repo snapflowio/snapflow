@@ -32,8 +32,10 @@ export interface EscrowTransfer extends EscrowPostingSource {
 	amountMicroUsd: MicroUsd;
 }
 
+// A claim that pays the host nothing, as a platform service channel's
+// claims never do, needs no host organization.
 export interface EscrowClaim extends EscrowPostingSource {
-	hostOrganizationId: string;
+	hostOrganizationId: string | null;
 	hostMicroUsd: MicroUsd;
 	platformMicroUsd: MicroUsd;
 }
@@ -96,17 +98,25 @@ export function escrowWithdrawalPosting(
 export function escrowClaimPosting(claim: EscrowClaim): BillingLedgerPosting {
 	const total = claim.hostMicroUsd.add(claim.platformMicroUsd);
 	requirePositive(total, claim.sourceReference);
-	return LedgerPostingBuilder.for({
+	const posting = LedgerPostingBuilder.for({
 		sourceType: BillingLedgerSourceType.ESCROW_CLAIM,
 		descriptionCode: BillingLedgerDescriptionCode.ESCROW_CLAIMED,
 		sourceReference: claim.sourceReference,
 		effectiveAt: claim.effectiveAt,
 		metadata: claim.metadata,
-	})
-		.debitIfPositive(
+	});
+	if (claim.hostMicroUsd.isPositive()) {
+		if (claim.hostOrganizationId === null) {
+			throw new Error(
+				`Escrow claim ${claim.sourceReference} pays a host without an organization`
+			);
+		}
+		posting.debit(
 			hostPendingEarningsAccount(claim.hostOrganizationId),
 			claim.hostMicroUsd
-		)
+		);
+	}
+	return posting
 		.debitIfPositive(
 			platformAccount(BillingLedgerAccountCode.PLATFORM_WALLET),
 			claim.platformMicroUsd

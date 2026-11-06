@@ -14,6 +14,7 @@ import { LocationDto } from '../../location/dto/location.dto';
 import { GpuType } from '../../machine/enums/gpu-type.enum';
 import type { MachineBenchmark } from '../../verification/entities/machine-benchmark.entity';
 import { BenchmarkState } from '../../verification/enums/benchmark-state.enum';
+import { MARKUP_BASIS_POINTS_DESCRIPTION } from '../constants/marketplace.constants';
 import { ListingState } from '../enums/listing-state.enum';
 import { ListingVisibility } from '../enums/listing-visibility.enum';
 import { MachineCategory } from '../enums/machine-category.enum';
@@ -213,7 +214,8 @@ export class MachineDetailDto extends MachineListingDto {
 		description: 'Platform fee share of the egress price per GiB',
 	})
 	markupEgressMicroUsdPerGiB: string;
-	@ApiProperty() markupBasisPoints: number;
+	@ApiProperty({ description: MARKUP_BASIS_POINTS_DESCRIPTION })
+	markupBasisPoints: number;
 
 	static fromDetail(
 		machine: BrowseMachine,

@@ -29,6 +29,7 @@ import { chainClientProvider } from './providers/chain-client.provider';
 import { voucherSignerProvider } from './providers/voucher-signer.provider';
 import { EscrowAccountService } from './services/escrow-account.service';
 import { EscrowAttributionService } from './services/escrow-attribution.service';
+import { EscrowFeePolicyService } from './services/escrow-fee-policy.service';
 import { EscrowIngestionService } from './services/escrow-ingestion.service';
 import { EscrowLedgerService } from './services/escrow-ledger.service';
 import { EscrowProjectionService } from './services/escrow-projection.service';
@@ -70,6 +71,7 @@ import { WalletChallengeService } from './services/wallet-challenge.service';
 		voucherSignerProvider,
 		EscrowAccountService,
 		EscrowAttributionService,
+		EscrowFeePolicyService,
 		EscrowIngestionService,
 		EscrowLedgerService,
 		EscrowProjectionService,
@@ -86,6 +88,7 @@ import { WalletChallengeService } from './services/wallet-challenge.service';
 	],
 	exports: [
 		SETTLEMENT_PUBLIC_CLIENT,
+		EscrowFeePolicyService,
 		EscrowIngestionService,
 		PaymentChannelService,
 		PaymentWalletService,

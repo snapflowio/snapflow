@@ -10,6 +10,7 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { BASIS_POINTS_SCALE } from '../../common/constants/money.constants';
 import { SandboxClass } from '../../sandbox/enums/sandbox-class.enum';
+import { ESCROW_MAXIMUM_FEE_BASIS_POINTS } from '../../settlement/constants/settlement.constants';
 import {
 	DrainingMode,
 	EDGE_TRUSTED_HTTP_PROXY_CIDRS_MAXIMUM,
@@ -80,10 +81,65 @@ export class SettingsDto {
 
 	@ApiProperty({
 		description:
-			'Markup added to host prices, in basis points of the host price',
-		maximum: BASIS_POINTS_SCALE,
+			'Markup added to the host price of machines below the Verified tier, in basis points of the host price',
+		maximum: ESCROW_MAXIMUM_FEE_BASIS_POINTS,
 	})
-	platformMarkupBasisPoints: number;
+	standardMarkupBasisPoints: number;
+
+	@ApiProperty({
+		description:
+			'Markup added to the host price of Verified and Datacenter machines, in basis points of the host price',
+		maximum: ESCROW_MAXIMUM_FEE_BASIS_POINTS,
+	})
+	verifiedMarkupBasisPoints: number;
+
+	@ApiProperty({
+		description:
+			'Monthly fee per machine an organization keeps in its private pool, micro-USD, prorated by UTC day',
+	})
+	privatePoolMachineMonthlyMicroUsd: number;
+
+	@ApiProperty({
+		description: 'Lowest vCPU-hour price a host may set, micro-USD',
+	})
+	vcpuHourPriceMinimumMicroUsd: number;
+
+	@ApiProperty({
+		description: 'Highest vCPU-hour price a host may set, micro-USD',
+	})
+	vcpuHourPriceMaximumMicroUsd: number;
+
+	@ApiProperty({
+		description: 'Lowest memory price a host may set, micro-USD per GiB-hour',
+	})
+	memoryGibHourPriceMinimumMicroUsd: number;
+
+	@ApiProperty({
+		description: 'Highest memory price a host may set, micro-USD per GiB-hour',
+	})
+	memoryGibHourPriceMaximumMicroUsd: number;
+
+	@ApiProperty({
+		description: 'Lowest GPU-hour price a host may set, micro-USD',
+	})
+	gpuHourPriceMinimumMicroUsd: number;
+
+	@ApiProperty({
+		description: 'Highest GPU-hour price a host may set, micro-USD',
+	})
+	gpuHourPriceMaximumMicroUsd: number;
+
+	@ApiProperty({
+		description:
+			'Lowest running or stopped disk price a host may set, micro-USD per GiB-month',
+	})
+	diskGibMonthPriceMinimumMicroUsd: number;
+
+	@ApiProperty({
+		description:
+			'Highest running or stopped disk price a host may set, micro-USD per GiB-month',
+	})
+	diskGibMonthPriceMaximumMicroUsd: number;
 
 	@ApiProperty({
 		description:

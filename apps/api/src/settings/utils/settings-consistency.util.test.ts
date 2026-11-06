@@ -25,6 +25,18 @@ const defaults: ConsistencySettings = {
 	voucherGraceIntervals: SETTINGS_DEFAULTS.voucherGraceIntervals,
 	voucherLifetimeHours: SETTINGS_DEFAULTS.voucherLifetimeHours,
 	claimIntervalMinutes: SETTINGS_DEFAULTS.claimIntervalMinutes,
+	vcpuHourPriceMinimumMicroUsd: SETTINGS_DEFAULTS.vcpuHourPriceMinimumMicroUsd,
+	vcpuHourPriceMaximumMicroUsd: SETTINGS_DEFAULTS.vcpuHourPriceMaximumMicroUsd,
+	memoryGibHourPriceMinimumMicroUsd:
+		SETTINGS_DEFAULTS.memoryGibHourPriceMinimumMicroUsd,
+	memoryGibHourPriceMaximumMicroUsd:
+		SETTINGS_DEFAULTS.memoryGibHourPriceMaximumMicroUsd,
+	gpuHourPriceMinimumMicroUsd: SETTINGS_DEFAULTS.gpuHourPriceMinimumMicroUsd,
+	gpuHourPriceMaximumMicroUsd: SETTINGS_DEFAULTS.gpuHourPriceMaximumMicroUsd,
+	diskGibMonthPriceMinimumMicroUsd:
+		SETTINGS_DEFAULTS.diskGibMonthPriceMinimumMicroUsd,
+	diskGibMonthPriceMaximumMicroUsd:
+		SETTINGS_DEFAULTS.diskGibMonthPriceMaximumMicroUsd,
 };
 
 describe('settingsInconsistency', () => {
@@ -40,6 +52,24 @@ describe('settingsInconsistency', () => {
 					defaults.exposureCeilingEstablishedCents + 1,
 			}),
 			'exposureCeilingEstablishedCents must be at least exposureCeilingProbationaryCents'
+		);
+	});
+
+	it('rejects a price limit whose minimum exceeds its maximum', () => {
+		assert.equal(
+			settingsInconsistency({
+				...defaults,
+				gpuHourPriceMinimumMicroUsd: defaults.gpuHourPriceMaximumMicroUsd + 1,
+			}),
+			'gpuHourPriceMaximumMicroUsd must be at least gpuHourPriceMinimumMicroUsd'
+		);
+		assert.equal(
+			settingsInconsistency({
+				...defaults,
+				diskGibMonthPriceMinimumMicroUsd:
+					defaults.diskGibMonthPriceMaximumMicroUsd,
+			}),
+			null
 		);
 	});
 

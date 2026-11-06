@@ -14,7 +14,8 @@ import { MarketplaceErrorCode } from '../enums/marketplace-error-code.enum';
 import type { PriceCardRates } from '../types/pricing.types';
 import { priceTerms, referencePrice } from './pricing.util';
 
-const HOST_MARKUP_BASIS_POINTS = 0;
+// Hosts are quoted their own price, without the customer's markup.
+export const HOST_MARKUP_BASIS_POINTS = 0;
 
 export interface PriceCardFacts {
 	category: MachineCategory;

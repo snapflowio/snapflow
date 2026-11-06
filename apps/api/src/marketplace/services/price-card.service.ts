@@ -13,6 +13,7 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { v4 } from 'uuid';
 import { findCursorPage } from '../../common/utils/pagination/cursor-page.util';
 import { MicroUsd } from '../../common/values/micro-usd.value';
+import { SettingsService } from '../../settings/services/settings.service';
 import {
 	type CreatePriceCardDto,
 	PriceCardDto,
@@ -23,11 +24,13 @@ import { MachinePriceCard } from '../entities/machine-price-card.entity';
 import { MarketplaceErrorCode } from '../enums/marketplace-error-code.enum';
 import { PriceAboveCeilingException } from '../exceptions/price-above-ceiling.exception';
 import { PriceBelowFloorException } from '../exceptions/price-below-floor.exception';
+import { PriceOutOfRangeException } from '../exceptions/price-out-of-range.exception';
 import {
 	evaluatePriceCard,
 	nextPriceCardVersion,
 } from '../utils/price-card.util';
 import { requirePriceClass } from '../utils/price-class.util';
+import { priceRangeViolation } from '../utils/price-limit.util';
 import { EgressCeilingService } from './egress-ceiling.service';
 import { MachineMarketplaceService } from './machine-marketplace.service';
 import { PriceFloorService } from './price-floor.service';
@@ -38,7 +41,8 @@ export class PriceCardService {
 		private readonly entityManager: EntityManager,
 		private readonly machines: MachineMarketplaceService,
 		private readonly floors: PriceFloorService,
-		private readonly egressCeilings: EgressCeilingService
+		private readonly egressCeilings: EgressCeilingService,
+		private readonly settings: SettingsService
 	) {}
 
 	async list(
@@ -74,6 +78,12 @@ export class PriceCardService {
 			machineId
 		);
 		const { priceClass, category } = requirePriceClass(machine);
+		const violation = priceRangeViolation(
+			input,
+			await this.settings.get(),
+			machine.gpuCount
+		);
+		if (violation) throw new PriceOutOfRangeException(violation);
 		const [floor, ceiling] = await Promise.all([
 			this.floors.effectiveFloor(priceClass, manager),
 			this.egressCeilings.current(manager),

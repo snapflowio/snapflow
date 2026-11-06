@@ -125,12 +125,16 @@ describe('GET /billing/config', () => {
 	it('serves the customer-facing values from the runtime settings', async () => {
 		const service = new BillingConfigService(
 			fakeSettings({
-				platformMarkupBasisPoints: 2_000,
+				standardMarkupBasisPoints: 1_500,
+				verifiedMarkupBasisPoints: 2_500,
+				privatePoolMachineMonthlyMicroUsd: 4_000_000,
 			})
 		);
 
 		assert.deepEqual(await service.get(), {
-			platformMarkupBasisPoints: 2_000,
+			standardMarkupBasisPoints: 1_500,
+			verifiedMarkupBasisPoints: 2_500,
+			privatePoolMachineMonthlyMicroUsd: '4000000',
 		});
 	});
 

@@ -18,6 +18,7 @@ import {
 import { PAYMENT_CHANNEL_QUERY } from '../constants/payment-channel.constants';
 import type { PaymentChannel } from '../entities/payment-channel.entity';
 import type { PaymentVoucher } from '../entities/payment-voucher.entity';
+import { PaymentChannelKind } from '../enums/payment-channel-kind.enum';
 import { PaymentChannelState } from '../enums/payment-channel-state.enum';
 import { VoucherSigningMode } from '../enums/voucher-signing-mode.enum';
 import { PaymentVoucherDto } from './payment-voucher.dto';
@@ -25,6 +26,27 @@ import { PaymentVoucherDto } from './payment-voucher.dto';
 const ADDRESS_PROPERTY = {
 	type: String,
 	description: 'EIP-55 checksummed address',
+} as const;
+
+const LEASE_ID_PROPERTY = {
+	type: String,
+	format: 'uuid',
+	nullable: true,
+	description: 'The paid lease; null for a platform service channel',
+} as const;
+
+const SANDBOX_ID_PROPERTY = {
+	type: String,
+	nullable: true,
+	description: "The paid lease's sandbox; null for a platform service channel",
+} as const;
+
+const SERVICE_PERIOD_PROPERTY = {
+	type: String,
+	format: 'date-time',
+	nullable: true,
+	description:
+		'Start of the UTC month a platform service channel bills; null for a lease channel',
 } as const;
 
 @ApiSchema({ name: 'EscrowDomain' })
@@ -51,11 +73,17 @@ export class PaymentChannelDto {
 	@ApiProperty({ type: String, description: 'The escrow channel id' })
 	channelId: Hex;
 
-	@ApiProperty({ format: 'uuid' })
-	leaseId: string;
+	@ApiProperty({ enum: PaymentChannelKind, enumName: 'PaymentChannelKind' })
+	kind: PaymentChannelKind;
 
-	@ApiProperty()
-	sandboxId: string;
+	@ApiProperty(LEASE_ID_PROPERTY)
+	leaseId: string | null;
+
+	@ApiProperty(SANDBOX_ID_PROPERTY)
+	sandboxId: string | null;
+
+	@ApiProperty(SERVICE_PERIOD_PROPERTY)
+	servicePeriodStart: Date | null;
 
 	@ApiProperty({ enum: VoucherSigningMode, enumName: 'VoucherSigningMode' })
 	signingMode: VoucherSigningMode;
@@ -66,7 +94,11 @@ export class PaymentChannelDto {
 	@ApiProperty({ ...ADDRESS_PROPERTY, description: 'Paying funding wallet' })
 	customerAddress: Address;
 
-	@ApiProperty({ ...ADDRESS_PROPERTY, description: 'Paid payout wallet' })
+	@ApiProperty({
+		...ADDRESS_PROPERTY,
+		description:
+			"Paid payout wallet, or Snapflow's fee recipient for a platform service channel",
+	})
 	hostAddress: Address;
 
 	@ApiProperty({ type: String, format: 'date-time' })
@@ -79,7 +111,7 @@ export class PaymentChannelDto {
 		type: String,
 		format: 'date-time',
 		description:
-			'Until when a signed voucher covered everything the lease owed',
+			'Until when a signed voucher covered everything the channel owed',
 	})
 	coveredAt: Date;
 
@@ -112,8 +144,10 @@ export class PaymentChannelDto {
 	): PaymentChannelDto {
 		return {
 			channelId: channel.channelId,
+			kind: channel.kind,
 			leaseId: channel.leaseId,
 			sandboxId: channel.sandboxId,
+			servicePeriodStart: channel.servicePeriodStart,
 			signingMode: channel.signingMode,
 			state: channel.state,
 			customerAddress: channel.customerAddress,
@@ -148,11 +182,17 @@ export class PendingVoucherDto {
 	@ApiProperty({ type: String })
 	channelId: Hex;
 
-	@ApiProperty()
-	sandboxId: string;
+	@ApiProperty({ enum: PaymentChannelKind, enumName: 'PaymentChannelKind' })
+	kind: PaymentChannelKind;
 
-	@ApiProperty({ format: 'uuid' })
-	leaseId: string;
+	@ApiProperty(SANDBOX_ID_PROPERTY)
+	sandboxId: string | null;
+
+	@ApiProperty(LEASE_ID_PROPERTY)
+	leaseId: string | null;
+
+	@ApiProperty(SERVICE_PERIOD_PROPERTY)
+	servicePeriodStart: Date | null;
 
 	@ApiProperty({ type: PaymentVoucherDto })
 	voucher: PaymentVoucherDto;
@@ -163,8 +203,10 @@ export class PendingVoucherDto {
 	): PendingVoucherDto {
 		return {
 			channelId: channel.channelId,
+			kind: channel.kind,
 			sandboxId: channel.sandboxId,
 			leaseId: channel.leaseId,
+			servicePeriodStart: channel.servicePeriodStart,
 			voucher: PaymentVoucherDto.from(channel, voucher),
 		};
 	}

@@ -29,6 +29,7 @@ import {
 	MINIMUM_EGRESS_BANDWIDTH_BPS,
 } from '../../sandbox/constants/network.constants';
 import { SandboxClass } from '../../sandbox/enums/sandbox-class.enum';
+import { ESCROW_MAXIMUM_FEE_BASIS_POINTS } from '../../settlement/constants/settlement.constants';
 import {
 	DrainingMode,
 	EDGE_TRUSTED_HTTP_PROXY_CIDRS_MAXIMUM,
@@ -74,6 +75,16 @@ function OptionalBasisPoints(description: string) {
 		description,
 		MINIMUM_QUANTITY,
 		BASIS_POINTS_SCALE
+	);
+}
+
+// The escrow refuses any fee above its fixed maximum, so no markup may exceed
+// it; the live fee cap, which may be lower, is checked when a lease opens.
+function OptionalMarkup(description: string) {
+	return OptionalBoundedInteger(
+		description,
+		MINIMUM_QUANTITY,
+		ESCROW_MAXIMUM_FEE_BASIS_POINTS
 	);
 }
 
@@ -151,10 +162,52 @@ export class UpdateSettingsDto {
 	@OptionalSwitch('Allow public (unauthenticated) exposures')
 	publicIngressEnabled?: boolean;
 
-	@OptionalBasisPoints(
-		'Markup added to host prices, in basis points of the host price'
+	@OptionalMarkup(
+		'Markup added to the host price of machines below the Verified tier, in basis points of the host price'
 	)
-	platformMarkupBasisPoints?: number;
+	standardMarkupBasisPoints?: number;
+
+	@OptionalMarkup(
+		'Markup added to the host price of Verified and Datacenter machines, in basis points of the host price'
+	)
+	verifiedMarkupBasisPoints?: number;
+
+	@OptionalQuantity(
+		'Monthly fee per machine an organization keeps in its private pool, micro-USD, prorated by UTC day'
+	)
+	privatePoolMachineMonthlyMicroUsd?: number;
+
+	@OptionalQuantity('Lowest vCPU-hour price a host may set, micro-USD')
+	vcpuHourPriceMinimumMicroUsd?: number;
+
+	@OptionalQuantity('Highest vCPU-hour price a host may set, micro-USD')
+	vcpuHourPriceMaximumMicroUsd?: number;
+
+	@OptionalQuantity(
+		'Lowest memory price a host may set, micro-USD per GiB-hour'
+	)
+	memoryGibHourPriceMinimumMicroUsd?: number;
+
+	@OptionalQuantity(
+		'Highest memory price a host may set, micro-USD per GiB-hour'
+	)
+	memoryGibHourPriceMaximumMicroUsd?: number;
+
+	@OptionalQuantity('Lowest GPU-hour price a host may set, micro-USD')
+	gpuHourPriceMinimumMicroUsd?: number;
+
+	@OptionalQuantity('Highest GPU-hour price a host may set, micro-USD')
+	gpuHourPriceMaximumMicroUsd?: number;
+
+	@OptionalQuantity(
+		'Lowest running or stopped disk price a host may set, micro-USD per GiB-month'
+	)
+	diskGibMonthPriceMinimumMicroUsd?: number;
+
+	@OptionalQuantity(
+		'Highest running or stopped disk price a host may set, micro-USD per GiB-month'
+	)
+	diskGibMonthPriceMaximumMicroUsd?: number;
 
 	@OptionalBasisPoints(
 		'Price floor, in basis points of the market reference price median'

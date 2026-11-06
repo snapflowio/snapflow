@@ -25,6 +25,7 @@ import { MachineListingService } from './services/machine-listing.service';
 import { MachineMarketplaceService } from './services/machine-marketplace.service';
 import { PriceCardService } from './services/price-card.service';
 import { PriceFloorService } from './services/price-floor.service';
+import { PriceHintService } from './services/price-hint.service';
 import { SandboxLeaseService } from './services/sandbox-lease.service';
 
 @Module({
@@ -47,6 +48,7 @@ import { SandboxLeaseService } from './services/sandbox-lease.service';
 		HostMachineService,
 		PriceCardService,
 		PriceFloorService,
+		PriceHintService,
 		EgressCeilingService,
 		SandboxLeaseService,
 	],

@@ -12,6 +12,7 @@ import { randomUUID } from 'node:crypto';
 import { after, before, describe, it } from 'node:test';
 import { type EntityManager, MikroORM } from '@mikro-orm/postgresql';
 import {
+	ConflictException,
 	NotFoundException,
 	UnprocessableEntityException,
 } from '@nestjs/common';
@@ -45,13 +46,17 @@ import { BillingLedgerAccount } from '../../billing/entities/billing-ledger-acco
 import { BillingLedgerEntry } from '../../billing/entities/billing-ledger-entry.entity';
 import { BillingLedgerTransaction } from '../../billing/entities/billing-ledger-transaction.entity';
 import { BillingLineItem } from '../../billing/entities/billing-line-item.entity';
+import { PrivatePoolCharge } from '../../billing/entities/private-pool-charge.entity';
 import { ledgerBalance } from '../../billing/queries/ledger-balance.query';
 import { BillingLedgerService } from '../../billing/services/billing-ledger.service';
+import { PrivatePoolBillingService } from '../../billing/services/private-pool-billing.service';
+import { utcBillingMonth } from '../../billing/utils/billing-period.util';
 import {
 	customerCreditAccount,
 	hostPendingEarningsAccount,
 	platformAccount,
 } from '../../billing/utils/ledger/billing-ledger-accounts.util';
+import { privatePoolDayFee } from '../../billing/utils/private-pool-fee.util';
 import {
 	HOURS_PER_DAY,
 	MILLISECONDS_PER_DAY,
@@ -66,8 +71,11 @@ import { ControlWakeService } from '../../infra/control-wake/services/control-wa
 import { ENTITY_MAPPING_OPTIONS } from '../../infra/database/config/entity-mapping.config';
 import { RedisLockProvider } from '../../infra/redis/providers/redis-lock.provider';
 import { Machine } from '../../machine/entities/machine.entity';
+import { MachineListing } from '../../marketplace/entities/machine-listing.entity';
 import { MachinePriceCard } from '../../marketplace/entities/machine-price-card.entity';
 import { SandboxLease } from '../../marketplace/entities/sandbox-lease.entity';
+import { ListingState } from '../../marketplace/enums/listing-state.enum';
+import { ListingVisibility } from '../../marketplace/enums/listing-visibility.enum';
 import { PlacementKind } from '../../marketplace/enums/placement-kind.enum';
 import { Organization } from '../../organization/entities/organization.entity';
 import { Sandbox } from '../../sandbox/entities/sandbox.entity';
@@ -77,6 +85,7 @@ import { SandboxState } from '../../sandbox/enums/sandbox-state.enum';
 import type { SettingsService } from '../../settings/services/settings.service';
 import { fakeSettings } from '../../settings/testing/settings.fake';
 import { SandboxUsagePeriod } from '../../usage/entities/sandbox-usage-period.entity';
+import { PaymentChannelErrorCode } from '../constants/payment-channel.constants';
 import { EscrowAccount } from '../entities/escrow-account.entity';
 import { EscrowEvent } from '../entities/escrow-event.entity';
 import { EscrowSessionKey } from '../entities/escrow-session-key.entity';
@@ -84,10 +93,12 @@ import { PaymentChannel } from '../entities/payment-channel.entity';
 import { PaymentVoucher } from '../entities/payment-voucher.entity';
 import { PaymentWallet } from '../entities/payment-wallet.entity';
 import { SettlementChainCursor } from '../entities/settlement-chain-cursor.entity';
+import { PaymentChannelKind } from '../enums/payment-channel-kind.enum';
 import { PaymentWalletPurpose } from '../enums/payment-wallet-purpose.enum';
 import { SanctionsStatus } from '../enums/sanctions-status.enum';
 import { VoucherRejection } from '../enums/voucher-rejection.enum';
 import { VoucherSigningMode } from '../enums/voucher-signing-mode.enum';
+import { unbilledServicePeriods } from '../queries/unbilled-service-periods.query';
 import { ClaimRelayerService } from '../scheduler/services/claim-relayer.service';
 import { EscrowIndexerService } from '../scheduler/services/escrow-indexer.service';
 import {
@@ -95,6 +106,7 @@ import {
 	integrationChain,
 } from '../testing/integration-chain.util';
 import { channelDomain, voucherMessage } from '../utils/voucher-message.util';
+import { EscrowFeePolicyService } from './escrow-fee-policy.service';
 import { EscrowIngestionService } from './escrow-ingestion.service';
 import { EscrowLedgerService } from './escrow-ledger.service';
 import { EscrowProjectionService } from './escrow-projection.service';
@@ -122,6 +134,8 @@ const MARKUP_BASIS_POINTS = 2_500;
 const LEASE_AGE_MILLISECONDS = 2 * MILLISECONDS_PER_HOUR;
 const RATE_MICRO_USD = '100000';
 const SANDBOX_SHAPE = { cpu: 1, memoryGib: 1, diskGib: 1, gpu: 0 };
+// Fees and service the first claims of the two lease channels pay Snapflow.
+const LEASE_PLATFORM_PAID = 333_333n + 10_001n + 125_000n;
 
 interface SeededLease {
 	sandbox: Sandbox;
@@ -371,6 +385,8 @@ describe('escrow payment channels end to end', {
 				BillingLedgerAccount,
 				BillingLedgerEntry,
 				BillingLedgerTransaction,
+				MachineListing,
+				PrivatePoolCharge,
 				PaymentWallet,
 				EscrowAccount,
 				EscrowEvent,
@@ -409,7 +425,8 @@ describe('escrow payment channels end to end', {
 		);
 		channels = new PaymentChannelService(
 			config,
-			fakeInstance(ControlWakeService, { notifyAfterCommit: () => undefined })
+			fakeInstance(ControlWakeService, { notifyAfterCommit: () => undefined }),
+			new EscrowFeePolicyService(publicClient, config)
 		);
 		issuance = new VoucherIssuanceService(signing);
 		submissions = new VoucherSubmissionService(orm.em, config, signing);
@@ -540,6 +557,29 @@ describe('escrow payment channels end to end', {
 		assert.equal(
 			(await channelOf(client)).signingMode,
 			VoucherSigningMode.CLIENT
+		);
+	});
+
+	it('refuses a lease whose markup is above the on-chain fee cap', async () => {
+		const feeCapBasisPoints = await publicClient.readContract({
+			address: chain.escrowAddress,
+			abi: snapflowEscrowAbi,
+			functionName: 'feeCapBps',
+		});
+		await assert.rejects(
+			channels.open(
+				orm.em.fork(),
+				Object.assign(new SandboxLease(), {
+					...delegated.lease,
+					id: randomUUID(),
+					markupBasisPoints: feeCapBasisPoints + 1,
+				})
+			),
+			(error: unknown) =>
+				error instanceof ConflictException &&
+				JSON.stringify(error.getResponse()).includes(
+					PaymentChannelErrorCode.MARKUP_ABOVE_FEE_CAP
+				)
 		);
 	});
 
@@ -687,7 +727,7 @@ describe('escrow payment channels end to end', {
 			args: [host],
 		});
 		const hostPaid = 1_333_333n + 500_000n;
-		const platformPaid = 333_333n + 10_001n + 125_000n;
+		const platformPaid = LEASE_PLATFORM_PAID;
 		assert.equal(hostUsdc - hostOpeningUsdc, hostPaid);
 
 		await indexChain();
@@ -733,6 +773,149 @@ describe('escrow payment channels end to end', {
 		await relayer.relayClaims();
 		assert.equal((await channelOf(delegated)).claimError, null);
 		assert.equal((await channelOf(delegated)).claimedSequence, 2);
+	});
+
+	it('bills a private pool month through a platform service channel', async () => {
+		const manager = orm.em.fork();
+		const poolMachine = new Machine({
+			name: `private-pool-${randomUUID()}`,
+			apiVersion: '1',
+			organizationId: customerOrganizationId,
+		});
+		manager.persist(poolMachine);
+		await manager.flush();
+		manager.persist(
+			Object.assign(new MachineListing(), {
+				machineId: poolMachine.id,
+				state: ListingState.LISTED,
+				visibility: ListingVisibility.PRIVATE,
+			})
+		);
+		await manager.flush();
+
+		const pools = new PrivatePoolBillingService(
+			settings,
+			new BillingLedgerService()
+		);
+		for (let run = 0; run < 2; run += 1) {
+			await orm.em
+				.fork()
+				.transactional((transaction) => pools.chargeCurrentDay(transaction));
+		}
+		const charges = await orm.em
+			.fork()
+			.find(PrivatePoolCharge, { organizationId: customerOrganizationId });
+		assert.equal(charges.length, 1);
+		const [dayCharge] = charges;
+		assert.ok(dayCharge);
+		const { privatePoolMachineMonthlyMicroUsd } = await settings.get();
+		const fee = privatePoolDayFee(
+			MicroUsd.of(BigInt(privatePoolMachineMonthlyMicroUsd)),
+			dayCharge.serviceDay
+		);
+		assert.equal(dayCharge.amountMicroUsd, fee.toString());
+		assert.deepEqual(
+			await ledgerBalance(
+				orm.em.fork(),
+				customerCreditAccount(customerOrganizationId)
+			),
+			MicroUsd.of(DEPOSIT_MICRO_USD).subtract(fee)
+		);
+
+		const escrowIdentity = {
+			chainId: foundry.id,
+			contractAddress: chain.escrowAddress,
+		};
+		const [unbilled, ...others] = await unbilledServicePeriods(
+			orm.em.fork(),
+			escrowIdentity
+		);
+		assert.ok(unbilled);
+		assert.deepEqual(others, []);
+		assert.equal(unbilled.organizationId, customerOrganizationId);
+		await orm.em
+			.fork()
+			.transactional((transaction) =>
+				channels.openPlatformService(
+					transaction,
+					unbilled.organizationId,
+					utcBillingMonth(unbilled.periodStart)
+				)
+			);
+		assert.deepEqual(
+			await unbilledServicePeriods(orm.em.fork(), escrowIdentity),
+			[]
+		);
+
+		const feeRecipient = await publicClient.readContract({
+			address: chain.escrowAddress,
+			abi: snapflowEscrowAbi,
+			functionName: 'feeRecipient',
+		});
+		const serviceChannel = await orm.em.fork().findOneOrFail(PaymentChannel, {
+			customerOrganizationId,
+			kind: PaymentChannelKind.PLATFORM_SERVICE,
+		});
+		assert.equal(serviceChannel.hostAddress, feeRecipient);
+		assert.equal(serviceChannel.leaseId, null);
+		const voucherSettings = await settings.get();
+		await orm.em
+			.fork()
+			.transactional((transaction) =>
+				issuance.evaluate(transaction, serviceChannel.id, voucherSettings)
+			);
+		const [voucher] = await orm.em
+			.fork()
+			.find(PaymentVoucher, { paymentChannelId: serviceChannel.id });
+		assert.ok(voucher?.signature);
+		assert.deepEqual(
+			[
+				voucher.hostAmountMicroUsd,
+				voucher.feeAmountMicroUsd,
+				voucher.serviceAmountMicroUsd,
+			],
+			['0', '0', fee.toString()]
+		);
+
+		const recipientUsdc = () =>
+			publicClient.readContract({
+				address: chain.usdcAddress,
+				abi: erc20Abi,
+				functionName: 'balanceOf',
+				args: [feeRecipient],
+			});
+		const recipientOpening = await recipientUsdc();
+		// A channel is first claimed a claim interval after it opened.
+		await orm.em
+			.fork()
+			.nativeUpdate(
+				PaymentChannel,
+				{ id: serviceChannel.id },
+				{ openedAt: new Date(Date.now() - LEASE_AGE_MILLISECONDS) }
+			);
+		await relayer.relayClaims();
+		const claimed = await orm.em
+			.fork()
+			.findOneOrFail(PaymentChannel, { id: serviceChannel.id });
+		assert.equal(claimed.claimError, null);
+		assert.equal(claimed.claimedSequence, 1);
+		assert.equal((await recipientUsdc()) - recipientOpening, fee.toBigInt());
+
+		await indexChain();
+		assert.deepEqual(
+			await ledgerBalance(
+				orm.em.fork(),
+				platformAccount(BillingLedgerAccountCode.PLATFORM_WALLET)
+			),
+			MicroUsd.of(LEASE_PLATFORM_PAID).add(fee)
+		);
+		assert.deepEqual(
+			await ledgerBalance(
+				orm.em.fork(),
+				platformAccount(BillingLedgerAccountCode.PLATFORM_SERVICE_REVENUE)
+			),
+			fee
+		);
 	});
 
 	it('still claims the others when the escrow refuses one voucher', async () => {

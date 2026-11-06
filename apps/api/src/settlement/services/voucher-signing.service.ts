@@ -158,9 +158,12 @@ export class VoucherSigningService {
 	): void {
 		manager.assign(voucher, signed);
 		channel.voucherError = null;
-		this.wakes.notifyAfterCommit(manager, SETTLEMENT_VOUCHER_WAKE_TOPIC, [
-			channel.machineId,
-		]);
+		// Only a lease's machine enforces its vouchers.
+		if (channel.machineId !== null) {
+			this.wakes.notifyAfterCommit(manager, SETTLEMENT_VOUCHER_WAKE_TOPIC, [
+				channel.machineId,
+			]);
+		}
 	}
 
 	private async committed(

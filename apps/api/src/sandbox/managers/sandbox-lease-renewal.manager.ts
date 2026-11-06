@@ -22,10 +22,12 @@ import { addMilliseconds } from '../../common/utils/time.util';
 import { MicroUsd } from '../../common/values/micro-usd.value';
 import { databaseNow } from '../../infra/database/utils/database-time.util';
 import { RedisLockProvider } from '../../infra/redis/providers/redis-lock.provider';
+import { Machine } from '../../machine/entities/machine.entity';
 import { MachineListing } from '../../marketplace/entities/machine-listing.entity';
 import { MachinePriceCard } from '../../marketplace/entities/machine-price-card.entity';
 import { SandboxLease } from '../../marketplace/entities/sandbox-lease.entity';
 import { LeaseRenewalState } from '../../marketplace/enums/lease-renewal-state.enum';
+import { marketMarkupBasisPoints } from '../../marketplace/utils/markup.util';
 import {
 	egressPricePerGiB,
 	priceTerms,
@@ -164,8 +166,15 @@ export class SandboxLeaseRenewalManager extends TrackedJobs {
 		const card = await manager.findOneOrFail(MachinePriceCard, {
 			id: listing.currentPriceCardId,
 		});
-		const { platformMarkupBasisPoints } = await this.settings.get();
-		const terms = priceTerms(card, platformMarkupBasisPoints);
+		const machine = await manager.findOneOrFail(
+			Machine,
+			{ id: lease.machineId },
+			{ fields: ['tier'] }
+		);
+		const terms = priceTerms(
+			card,
+			marketMarkupBasisPoints(await this.settings.get(), machine.tier)
+		);
 		return {
 			hourlyGrossMicroUsd: runningHourlyPrice(terms, leaseShape(lease))
 				.grossMicroUsd,

@@ -127,6 +127,42 @@ describe('escrow postings', () => {
 		assert.equal(posting.entries.length, 2);
 	});
 
+	it('settles a platform service claim without a host organization', () => {
+		const posting = escrowClaimPosting({
+			...SOURCE,
+			hostOrganizationId: null,
+			hostMicroUsd: MicroUsd.ZERO,
+			platformMicroUsd: MicroUsd.of(5_000_000n),
+		});
+		assert.deepEqual(entries(posting), [
+			[
+				'snapflow',
+				BillingLedgerAccountCode.PLATFORM_WALLET,
+				BillingLedgerSide.DEBIT,
+				'5000000',
+			],
+			[
+				'snapflow',
+				BillingLedgerAccountCode.ESCROW_CUSTODY,
+				BillingLedgerSide.CREDIT,
+				'5000000',
+			],
+		]);
+	});
+
+	it('refuses a claim paying a host it cannot attribute', () => {
+		assert.throws(
+			() =>
+				escrowClaimPosting({
+					...SOURCE,
+					hostOrganizationId: null,
+					hostMicroUsd: MicroUsd.of(1n),
+					platformMicroUsd: MicroUsd.ZERO,
+				}),
+			/pays a host without an organization/
+		);
+	});
+
 	it('refuses an event that moves nothing', () => {
 		assert.throws(() =>
 			escrowDepositPosting({

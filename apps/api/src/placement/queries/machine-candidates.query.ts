@@ -51,6 +51,7 @@ export interface MachineCandidateRow {
 	latitude: number | null;
 	longitude: number | null;
 	host_organization_id: string;
+	tier: MachineTier;
 	price_card_id: string | null;
 	vcpu_hour_micro_usd: string | null;
 	memory_gib_hour_micro_usd: string | null;
@@ -351,7 +352,7 @@ export function machineCandidatesQuery(
 	return {
 		sql: `SELECT machine.id, machine.country, machine.continent,
 				machine.latitude, machine.longitude,
-				machine."organizationId" AS host_organization_id,
+				machine."organizationId" AS host_organization_id, machine.tier,
 				listing."currentPriceCardId" AS price_card_id,
 				card."vcpuHourMicroUsd"::text AS vcpu_hour_micro_usd,
 				card."memoryGibHourMicroUsd"::text AS memory_gib_hour_micro_usd,

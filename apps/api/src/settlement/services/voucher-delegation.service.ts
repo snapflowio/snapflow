@@ -24,6 +24,7 @@ import {
 } from '../dto/voucher-delegation.dto';
 import { PaymentChannel } from '../entities/payment-channel.entity';
 import { PaymentWallet } from '../entities/payment-wallet.entity';
+import { PaymentChannelKind } from '../enums/payment-channel-kind.enum';
 import { PaymentChannelState } from '../enums/payment-channel-state.enum';
 import { PaymentWalletPurpose } from '../enums/payment-wallet-purpose.enum';
 import { VoucherSigningMode } from '../enums/voucher-signing-mode.enum';
@@ -88,12 +89,15 @@ export class VoucherDelegationService {
 			{
 				...configuredEscrow(this.config),
 				customerOrganizationId: organizationId,
+				kind: PaymentChannelKind.LEASE,
 				state: PaymentChannelState.OPEN,
 				signingMode: VoucherSigningMode.DELEGATED,
 			},
 			{ fields: ['leaseId'] }
 		);
-		const leaseIds = channels.map(({ leaseId }) => leaseId);
+		const leaseIds = channels.flatMap(({ leaseId }) =>
+			leaseId === null ? [] : [leaseId]
+		);
 		if (leaseIds.length === 0) return MicroUsd.ZERO;
 		const terms = await pricedLeases(manager, leaseIds);
 		const leases = await manager.find(SandboxLease, { id: { $in: leaseIds } });

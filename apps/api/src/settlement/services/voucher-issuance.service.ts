@@ -21,12 +21,18 @@ import { PaymentVoucher } from '../entities/payment-voucher.entity';
 import { PaymentChannelState } from '../enums/payment-channel-state.enum';
 import { VoucherSigningMode } from '../enums/voucher-signing-mode.enum';
 import { leaseCharges } from '../queries/lease-charges.query';
+import { platformServiceCharges } from '../queries/platform-service-charges.query';
 import type { VoucherAmounts } from '../types/payment-channel.types';
+import {
+	channelLease,
+	channelServicePeriod,
+} from '../utils/payment-channel-kind.util';
 import {
 	amountColumns,
 	amountsExceed,
 	cumulativeAmounts,
 	owedAmounts,
+	serviceAmounts,
 	storedAmounts,
 	voucherTotal,
 	ZERO_VOUCHER_AMOUNTS,
@@ -62,7 +68,7 @@ function stillCurrent(
 	);
 }
 
-// Brings one channel's vouchers up to what its lease owes: a new voucher
+// Brings one channel's vouchers up to what it owes: a new voucher
 // when an amount grew or the latest one nears expiry, signed at once in
 // delegated mode and left for the customer in client mode.
 @Injectable()
@@ -82,17 +88,13 @@ export class VoucherIssuanceService {
 		if (channel.state === PaymentChannelState.CLOSED) return;
 		const now = await databaseNow(manager);
 		channel.nextIssueAt = addSeconds(now, settings.voucherIntervalSeconds);
-		const { lease, terms } = await pricedLease(manager, channel.leaseId);
 		const latest = await manager.findOne(
 			PaymentVoucher,
 			{ paymentChannelId: channel.id },
 			{ orderBy: { sequence: QueryOrder.DESC } }
 		);
 		const amounts = cumulativeAmounts(
-			owedAmounts(
-				await leaseCharges(manager, lease, terms, now),
-				BasisPoints.of(lease.markupBasisPoints, 'Markup')
-			),
+			await this.owed(manager, channel, now),
 			latest ? storedAmounts(latest) : ZERO_VOUCHER_AMOUNTS
 		);
 		if (voucherTotal(amounts).isZero()) {
@@ -108,9 +110,57 @@ export class VoucherIssuanceService {
 			);
 			if (voucher.signature !== null) channel.coveredAt = now;
 		}
+		this.endServicePeriod(channel, now);
 		if (this.settled(channel, now)) {
 			channel.state = PaymentChannelState.CLOSED;
 		}
+	}
+
+	// A lease channel owes its lease's charges; a platform service channel
+	// owes the platform fees of its month, all of them service.
+	private async owed(
+		manager: EntityManager,
+		channel: PaymentChannel,
+		now: Date
+	): Promise<VoucherAmounts> {
+		const period = channelServicePeriod(channel);
+		if (period !== null) {
+			return serviceAmounts(
+				await platformServiceCharges(
+					manager,
+					channel.customerOrganizationId,
+					period
+				)
+			);
+		}
+		const leased = channelLease(channel);
+		if (leased === null) {
+			throw new Error(`Payment channel ${channel.channelId} pays for nothing`);
+		}
+		const { lease, terms } = await pricedLease(manager, leased.leaseId);
+		return owedAmounts(
+			await leaseCharges(manager, lease, terms, now),
+			BasisPoints.of(lease.markupBasisPoints, 'Markup')
+		);
+	}
+
+	// A platform service channel stops accruing when its month ends and
+	// closes like a lease channel once that month's last fees are in. One
+	// opened after its month, when the customer linked a funding wallet late,
+	// counts as closed when it opened, so its customer still has a voucher
+	// lifetime to sign the voucher.
+	private endServicePeriod(channel: PaymentChannel, now: Date): void {
+		const period = channelServicePeriod(channel);
+		if (
+			period === null ||
+			channel.state !== PaymentChannelState.OPEN ||
+			now < period.end
+		) {
+			return;
+		}
+		channel.state = PaymentChannelState.CLOSING;
+		channel.closedAt =
+			channel.openedAt > period.end ? channel.openedAt : period.end;
 	}
 
 	// The voucher that carries amounts: the latest one while it still does

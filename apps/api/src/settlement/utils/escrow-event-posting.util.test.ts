@@ -144,6 +144,42 @@ describe('escrowEventPostable', () => {
 	});
 });
 
+describe('platform service claims', () => {
+	const serviceClaim = escrowLog('Claimed', {
+		channelId: CHANNEL_ID,
+		customer: CUSTOMER_ADDRESS,
+		host: HOST_ADDRESS,
+		hostPaid: 0n,
+		feePaid: 0n,
+		servicePaid: 5_000_000n,
+		sequence: 1n,
+	});
+
+	it('waits for the customer alone when the host is paid nothing', () => {
+		assert.equal(escrowEventPostable(event(serviceClaim)), true);
+		assert.equal(
+			escrowEventPostable(
+				event(serviceClaim, { customerOrganizationId: null })
+			),
+			false
+		);
+	});
+
+	it('moves the service payment from custody to the fee wallet', () => {
+		const posting = escrowEventPosting(event(serviceClaim));
+		assert.deepEqual(
+			posting?.entries.map(({ account, amount }) => [
+				account.accountCode,
+				amount,
+			]),
+			[
+				[BillingLedgerAccountCode.PLATFORM_WALLET, '5000000'],
+				[BillingLedgerAccountCode.ESCROW_CUSTODY, '5000000'],
+			]
+		);
+	});
+});
+
 describe('movesLedgerFunds', () => {
 	it('separates fund movements from account changes', () => {
 		assert.equal(movesLedgerFunds('Deposited'), true);

@@ -26,6 +26,7 @@ import {
 } from '../queries/latest-vouchers.query';
 import { recentChannels } from '../queries/recent-channels.query';
 import { configuredEscrow } from '../utils/escrow-identity.util';
+import { channelLease } from '../utils/payment-channel-kind.util';
 
 const DIGEST_ALGORITHM = 'sha256';
 const DIGEST_ENCODING = 'hex';
@@ -61,17 +62,23 @@ export class MachineVoucherRelayService {
 			),
 			voucherIntervalSeconds: settings.voucherIntervalSeconds,
 			voucherGraceIntervals: settings.voucherGraceIntervals,
-			channels: channels.map((channel) => {
+			// Channels of a machine are lease channels: a platform service
+			// channel has no machine.
+			channels: channels.flatMap((channel) => {
+				const leased = channelLease(channel);
+				if (leased === null) return [];
 				const voucher = latest.get(channel.id);
-				return {
-					sandboxId: channel.sandboxId,
-					leaseId: channel.leaseId,
-					channelId: channel.channelId,
-					state: channel.state,
-					voucher: voucher
-						? MachineSignedVoucherDto.fromSigned(channel, voucher)
-						: null,
-				};
+				return [
+					{
+						sandboxId: leased.sandboxId,
+						leaseId: leased.leaseId,
+						channelId: channel.channelId,
+						state: channel.state,
+						voucher: voucher
+							? MachineSignedVoucherDto.fromSigned(channel, voucher)
+							: null,
+					},
+				];
 			}),
 		};
 		return {

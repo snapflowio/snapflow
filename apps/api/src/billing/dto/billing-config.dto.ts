@@ -8,21 +8,38 @@
  */
 
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
-import { BASIS_POINTS_SCALE } from '../../common/constants/money.constants';
 import type { SettingsSnapshot } from '../../settings/types/settings.types';
+import { ESCROW_MAXIMUM_FEE_BASIS_POINTS } from '../../settlement/constants/settlement.constants';
 
 @ApiSchema({ name: 'BillingConfig' })
 export class BillingConfigDto {
 	@ApiProperty({
 		description:
-			'Markup added to host prices, in basis points of the host price',
-		maximum: BASIS_POINTS_SCALE,
+			'Markup added to the host price of machines below the Verified tier, in basis points of the host price',
+		maximum: ESCROW_MAXIMUM_FEE_BASIS_POINTS,
 	})
-	platformMarkupBasisPoints: number;
+	standardMarkupBasisPoints: number;
+
+	@ApiProperty({
+		description:
+			'Markup added to the host price of Verified and Datacenter machines, in basis points of the host price',
+		maximum: ESCROW_MAXIMUM_FEE_BASIS_POINTS,
+	})
+	verifiedMarkupBasisPoints: number;
+
+	@ApiProperty({
+		description:
+			"Monthly fee per machine kept in the private pool, micro-USD, prorated by UTC day; the organization's own machines carry no markup",
+	})
+	privatePoolMachineMonthlyMicroUsd: string;
 
 	static from(settings: SettingsSnapshot): BillingConfigDto {
 		return {
-			platformMarkupBasisPoints: settings.platformMarkupBasisPoints,
+			standardMarkupBasisPoints: settings.standardMarkupBasisPoints,
+			verifiedMarkupBasisPoints: settings.verifiedMarkupBasisPoints,
+			privatePoolMachineMonthlyMicroUsd: String(
+				settings.privatePoolMachineMonthlyMicroUsd
+			),
 		};
 	}
 }

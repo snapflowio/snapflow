@@ -62,6 +62,12 @@ export function owedAmounts(
 	return { hostMicroUsd, feeMicroUsd, serviceMicroUsd };
 }
 
+// Platform fees owed outside any lease pay no host and carry no markup, so
+// the escrow's fee cap never applies to them.
+export function serviceAmounts(serviceMicroUsd: MicroUsd): VoucherAmounts {
+	return { ...ZERO_VOUCHER_AMOUNTS, serviceMicroUsd };
+}
+
 // A voucher may never lower an amount the previous one carried: a charge
 // corrected downward after it was signed stays paid. Taking the larger fee
 // keeps it the rounded-down markup of the larger host amount.

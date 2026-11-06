@@ -27,6 +27,10 @@ export const SETTLEMENT_CHAINS: Readonly<Record<SettlementChainId, Chain>> = {
 
 export const SETTLEMENT_RPC_TIMEOUT_MILLISECONDS = 10 * MILLISECONDS_PER_SECOND;
 
+// EscrowLimits.MAX_FEE_BPS: the escrow never accepts a fee above 30% of the
+// host's amount, whatever fee cap its admin schedules.
+export const ESCROW_MAXIMUM_FEE_BASIS_POINTS = 3_000;
+
 export const EVM_ADDRESS_LENGTH = 42;
 export const EVM_HASH_LENGTH = 66;
 

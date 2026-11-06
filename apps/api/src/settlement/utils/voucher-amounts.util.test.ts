@@ -25,9 +25,20 @@ import {
 	amountsExceed,
 	cumulativeAmounts,
 	owedAmounts,
+	serviceAmounts,
 	voucherTotal,
 	ZERO_VOUCHER_AMOUNTS,
 } from './voucher-amounts.util';
+
+describe('serviceAmounts', () => {
+	it('carries platform fees as service alone, so no fee cap applies', () => {
+		assert.deepEqual(serviceAmounts(MicroUsd.of(5_000_000n)), {
+			hostMicroUsd: MicroUsd.ZERO,
+			feeMicroUsd: MicroUsd.ZERO,
+			serviceMicroUsd: MicroUsd.of(5_000_000n),
+		});
+	});
+});
 
 const MARKUP_BASIS_POINTS = 2_500;
 const MARKUP = BasisPoints.of(MARKUP_BASIS_POINTS);

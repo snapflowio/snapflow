@@ -158,6 +158,11 @@ export function customerStatement(
 			sandboxName: row.sandboxName ?? undefined,
 			amountMicroUsd: row.amountMicroUsd.toString(),
 		})),
+		privatePoolMicroUsd: total(rows, credit, [
+			BillingLedgerSourceType.PRIVATE_POOL_FEE,
+		])
+			.absolute()
+			.toString(),
 		forfeitureCreditsMicroUsd: total(rows, credit, [
 			BillingLedgerSourceType.EARNINGS_FORFEITURE,
 		]).toString(),

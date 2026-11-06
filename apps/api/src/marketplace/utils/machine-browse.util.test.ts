@@ -54,6 +54,11 @@ const PARIS = {
 };
 const HOST = 'host-organization';
 const MARKUP_BASIS_POINTS = 2_500;
+const VERIFIED_MARKUP_BASIS_POINTS = 3_000;
+const MARKUPS = {
+	standardMarkupBasisPoints: MARKUP_BASIS_POINTS,
+	verifiedMarkupBasisPoints: VERIFIED_MARKUP_BASIS_POINTS,
+};
 const SHAPE: ResourceShapeFields = {
 	cpu: 2,
 	memoryGiB: 4,
@@ -119,7 +124,7 @@ function row(changes: Partial<MachineBrowseRow> = {}): MachineBrowseRow {
 
 function machine(changes: Partial<MachineBrowseRow> = {}): BrowseMachine {
 	const browseRow = row(changes);
-	const offer = machineOffer(browseRow, SHAPE, CUSTOMER, MARKUP_BASIS_POINTS);
+	const offer = machineOffer(browseRow, SHAPE, CUSTOMER, MARKUPS);
 	assert.ok(offer);
 	return {
 		row: browseRow,
@@ -145,8 +150,8 @@ function ids(machines: readonly BrowseMachine[]): string[] {
 }
 
 describe('machine offers', () => {
-	it('prices the shape all-in with the platform markup', () => {
-		const offer = machineOffer(row(), SHAPE, CUSTOMER, MARKUP_BASIS_POINTS);
+	it('prices the shape all-in with the standard markup below Verified', () => {
+		const offer = machineOffer(row(), SHAPE, CUSTOMER, MARKUPS);
 
 		assert.deepEqual(offer?.hourly.hostMicroUsd, HOST_HOURLY_MICRO_USD);
 		assert.deepEqual(offer?.hourly.grossMicroUsd, GROSS_HOURLY_MICRO_USD);
@@ -154,12 +159,25 @@ describe('machine offers', () => {
 		assert.equal(offer?.markupBasisPoints, MARKUP_BASIS_POINTS);
 	});
 
+	it('adds the verified markup on a Verified machine, leaving the host price', () => {
+		const offer = machineOffer(
+			row({ tier: MachineTier.VERIFIED }),
+			SHAPE,
+			CUSTOMER,
+			MARKUPS
+		);
+
+		assert.deepEqual(offer?.hourly.hostMicroUsd, HOST_HOURLY_MICRO_USD);
+		assert.deepEqual(offer?.hourly.grossMicroUsd, MicroUsd.of(39_000n));
+		assert.equal(offer?.markupBasisPoints, VERIFIED_MARKUP_BASIS_POINTS);
+	});
+
 	it('shows the own machines unpriced', () => {
 		const offer = machineOffer(
 			row({ organization_id: CUSTOMER, price_card_id: null }),
 			SHAPE,
 			CUSTOMER,
-			MARKUP_BASIS_POINTS
+			MARKUPS
 		);
 
 		assert.equal(offer?.priceCardId, null);
@@ -172,7 +190,7 @@ describe('machine offers', () => {
 				row({ price_card_id: null, vcpu_hour_micro_usd: null }),
 				SHAPE,
 				CUSTOMER,
-				MARKUP_BASIS_POINTS
+				MARKUPS
 			),
 			null
 		);
@@ -275,6 +293,54 @@ describe('browse ranking and pagination', () => {
 		);
 
 		assert.deepEqual(ids(page.items), ids([paris, frankfurt, unknown]));
+	});
+
+	it('ranks by value: performance per dollar weighted by reliability', () => {
+		const fastFair = machine({ cpu_score_per_vcpu: 2_000 });
+		const slowCheap = machine({
+			cpu_score_per_vcpu: 500,
+			vcpu_hour_micro_usd: '5000',
+		});
+		const fastUnreliable = machine({
+			cpu_score_per_vcpu: 2_000,
+			reliability_basis_points: 1_000,
+		});
+		const unbenchmarked = machine({
+			cpu_score_per_vcpu: null,
+			vcpu_hour_micro_usd: '1000',
+		});
+		const own = machine({ organization_id: CUSTOMER, price_card_id: null });
+		const page = selectBrowsePage(
+			[unbenchmarked, slowCheap, fastUnreliable, fastFair, own],
+			selection({ sort: MachineBrowseSort.VALUE })
+		);
+
+		assert.deepEqual(
+			ids(page.items),
+			ids([own, fastFair, slowCheap, fastUnreliable, unbenchmarked])
+		);
+	});
+
+	it('ranks GPU shapes by GPU throughput per dollar', () => {
+		const gpuShape = { ...SHAPE, gpu: 1 };
+		const gpuMachine = (tflops: number, gpuHourMicroUsd: string) => {
+			const browseRow = row({
+				gpu_count: 1,
+				gpu_tflops: tflops,
+				gpu_hour_micro_usd: gpuHourMicroUsd,
+			});
+			const offer = machineOffer(browseRow, gpuShape, CUSTOMER, MARKUPS);
+			assert.ok(offer);
+			return { row: browseRow, offer, selfUse: false, unavailableReason: null };
+		};
+		const fast = gpuMachine(400, '2000000');
+		const slow = gpuMachine(100, '1000000');
+		const page = selectBrowsePage(
+			[slow, fast],
+			selection({ sort: MachineBrowseSort.VALUE, shape: gpuShape })
+		);
+
+		assert.deepEqual(ids(page.items), ids([fast, slow]));
 	});
 
 	it('breaks price ties by machine id', () => {

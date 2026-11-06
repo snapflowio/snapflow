@@ -36,7 +36,20 @@ export function toSettingsSnapshot(settings: Settings): SettingsSnapshot {
 		machineDesktopEnabled: settings.machineDesktopEnabled,
 		machineSerialConsoleEnabled: settings.machineSerialConsoleEnabled,
 		publicIngressEnabled: settings.publicIngressEnabled,
-		platformMarkupBasisPoints: settings.platformMarkupBasisPoints,
+		standardMarkupBasisPoints: settings.standardMarkupBasisPoints,
+		verifiedMarkupBasisPoints: settings.verifiedMarkupBasisPoints,
+		privatePoolMachineMonthlyMicroUsd:
+			settings.privatePoolMachineMonthlyMicroUsd,
+		vcpuHourPriceMinimumMicroUsd: settings.vcpuHourPriceMinimumMicroUsd,
+		vcpuHourPriceMaximumMicroUsd: settings.vcpuHourPriceMaximumMicroUsd,
+		memoryGibHourPriceMinimumMicroUsd:
+			settings.memoryGibHourPriceMinimumMicroUsd,
+		memoryGibHourPriceMaximumMicroUsd:
+			settings.memoryGibHourPriceMaximumMicroUsd,
+		gpuHourPriceMinimumMicroUsd: settings.gpuHourPriceMinimumMicroUsd,
+		gpuHourPriceMaximumMicroUsd: settings.gpuHourPriceMaximumMicroUsd,
+		diskGibMonthPriceMinimumMicroUsd: settings.diskGibMonthPriceMinimumMicroUsd,
+		diskGibMonthPriceMaximumMicroUsd: settings.diskGibMonthPriceMaximumMicroUsd,
 		priceFloorBasisPoints: settings.priceFloorBasisPoints,
 		priceFloorMinimumSamples: settings.priceFloorMinimumSamples,
 		priceLockDays: settings.priceLockDays,

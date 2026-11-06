@@ -30,6 +30,10 @@ import type {
 	PriceTerms,
 } from '../../marketplace/types/pricing.types';
 import {
+	type MarkupSettings,
+	marketMarkupBasisPoints,
+} from '../../marketplace/utils/markup.util';
+import {
 	egressPricePerGiB,
 	runningHourlyPrice,
 } from '../../marketplace/utils/pricing.util';
@@ -113,12 +117,15 @@ function rowRates(row: MachineCandidateRow): PriceCardRates | null {
 export function placementCandidate(
 	row: MachineCandidateRow,
 	params: GetMachineParams,
-	markupBasisPoints: number
+	markups: MarkupSettings
 ): PlacementCandidate | null {
 	const selfUse = row.host_organization_id === params.customerOrganizationId;
 	const rates = rowRates(row);
 	if (!selfUse && !rates) return null;
-	const terms = placementPriceTerms(selfUse ? null : rates, markupBasisPoints);
+	const terms = placementPriceTerms(
+		selfUse ? null : rates,
+		marketMarkupBasisPoints(markups, row.tier)
+	);
 	const hourly = runningHourlyPrice(terms, requestedShape(params));
 	return {
 		machineId: row.id,
@@ -161,13 +168,9 @@ export class MachineSchedulingService {
 			},
 			() => manager.execute<MachineCandidateRow[]>(query.sql, query.bindings)
 		);
-		const { platformMarkupBasisPoints } = await this.settings.get();
+		const settings = await this.settings.get();
 		return rows.flatMap((row) => {
-			const candidate = placementCandidate(
-				row,
-				params,
-				platformMarkupBasisPoints
-			);
+			const candidate = placementCandidate(row, params, settings);
 			return candidate ? [candidate] : [];
 		});
 	}

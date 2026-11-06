@@ -7,8 +7,9 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-// open: the lease runs. closing: the lease ended and its last usage is still
-// being billed. closed: the final voucher was issued.
+// open: the lease runs, or the service month is under way. closing: the lease
+// or month ended and its last charges are still being billed. closed: the
+// final voucher was issued.
 export const PaymentChannelState = {
 	OPEN: 'open',
 	CLOSING: 'closing',

@@ -25,6 +25,7 @@ import { MachineUnavailableReason } from '../../marketplace/enums/machine-unavai
 import { PlacementKind } from '../../marketplace/enums/placement-kind.enum';
 import type { LeaseTermsUnavailableError } from '../../marketplace/exceptions/lease-terms-unavailable.exception';
 import type { PriceTerms } from '../../marketplace/types/pricing.types';
+import { marketMarkupBasisPoints } from '../../marketplace/utils/markup.util';
 import { runningHourlyPrice } from '../../marketplace/utils/pricing.util';
 import { MACHINE_ALTERNATIVE_LIMIT } from '../../sandbox/constants/sandbox-placement.constants';
 import type { SandboxPlacementAlternativeDto } from '../../sandbox/dto/sandbox-quote.dto';
@@ -65,11 +66,13 @@ export class MachineAvailabilityService {
 						id: listing.currentPriceCardId,
 					})
 				: null;
-		const { platformMarkupBasisPoints } = await this.settings.get();
 		return {
 			machine,
 			priceCardId: card?.id ?? null,
-			terms: placementPriceTerms(card, platformMarkupBasisPoints),
+			terms: placementPriceTerms(
+				card,
+				marketMarkupBasisPoints(await this.settings.get(), machine.tier)
+			),
 		};
 	}
 

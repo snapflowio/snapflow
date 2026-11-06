@@ -123,6 +123,7 @@ export const BillingLedgerAccountCode = {
 	CUSTOMER_CREDIT: 'customer_credit',
 	ADMIN_CREDIT_GRANTS: 'admin_credit_grants',
 	PLATFORM_MARKUP_REVENUE: 'platform_markup_revenue',
+	PLATFORM_SERVICE_REVENUE: 'platform_service_revenue',
 	PLATFORM_QUALIFICATION_EXPENSE: 'platform_qualification_expense',
 	HOST_EARNINGS_PENDING: 'host_earnings_pending',
 	ESCROW_CUSTODY: 'escrow_custody',
@@ -139,12 +140,15 @@ export type BillingLedgerAccountCode =
 // nonnegative and nothing reads this one as spendable, so that is allowed.
 // escrow_custody is the USDC the contract holds for attributed customers and
 // platform_wallet the USDC the escrow paid to Snapflow's fee recipient.
+// platform_service_revenue is what customers owe Snapflow itself, outside any
+// lease: the private pool's monthly machine fees.
 export const BILLING_LEDGER_NORMAL_SIDE: Readonly<
 	Record<BillingLedgerAccountCode, BillingLedgerSide>
 > = {
 	[BillingLedgerAccountCode.CUSTOMER_CREDIT]: BillingLedgerSide.CREDIT,
 	[BillingLedgerAccountCode.ADMIN_CREDIT_GRANTS]: BillingLedgerSide.DEBIT,
 	[BillingLedgerAccountCode.PLATFORM_MARKUP_REVENUE]: BillingLedgerSide.CREDIT,
+	[BillingLedgerAccountCode.PLATFORM_SERVICE_REVENUE]: BillingLedgerSide.CREDIT,
 	[BillingLedgerAccountCode.PLATFORM_QUALIFICATION_EXPENSE]:
 		BillingLedgerSide.DEBIT,
 	[BillingLedgerAccountCode.HOST_EARNINGS_PENDING]: BillingLedgerSide.CREDIT,
@@ -172,6 +176,7 @@ export const BillingLedgerSourceType = {
 	ESCROW_DEPOSIT: 'escrow_deposit',
 	ESCROW_WITHDRAWAL: 'escrow_withdrawal',
 	ESCROW_CLAIM: 'escrow_claim',
+	PRIVATE_POOL_FEE: 'private_pool_fee',
 } as const;
 
 export const BillingLedgerDescriptionCode = {
@@ -182,6 +187,7 @@ export const BillingLedgerDescriptionCode = {
 	ESCROW_DEPOSITED: 'escrow_deposited',
 	ESCROW_WITHDRAWN: 'escrow_withdrawn',
 	ESCROW_CLAIMED: 'escrow_claimed',
+	PRIVATE_POOL_CHARGED: 'private_pool_charged',
 } as const;
 
 export const ADMIN_CREDIT_GRANT_LIMITS = {

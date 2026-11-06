@@ -14,6 +14,7 @@ export enum MarketplaceErrorCode {
 	MARKET_REFERENCE_MISSING = 'market_reference_missing',
 	PRICE_BELOW_FLOOR = 'price_below_floor',
 	PRICE_ABOVE_CEILING = 'price_above_ceiling',
+	PRICE_OUT_OF_RANGE = 'price_out_of_range',
 	PRICE_CARD_REQUIRED = 'price_card_required',
 	PAYOUT_WALLET_REQUIRED = 'payout_wallet_required',
 	GPU_RATE_REQUIRED = 'gpu_rate_required',

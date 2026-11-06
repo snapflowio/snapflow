@@ -168,11 +168,13 @@ export class ListListingsQueryDto extends MachineShapeQueryDto {
 	@ApiPropertyOptional({
 		enum: MachineBrowseSort,
 		enumName: 'MachineBrowseSort',
-		default: MachineBrowseSort.PRICE,
+		default: MachineBrowseSort.VALUE,
+		description:
+			'value ranks benchmarked performance per dollar, weighted by reliability',
 	})
 	@IsOptional()
 	@IsEnum(MachineBrowseSort)
-	sort: MachineBrowseSort = MachineBrowseSort.PRICE;
+	sort: MachineBrowseSort = MachineBrowseSort.VALUE;
 
 	@ApiPropertyOptional({
 		type: String,

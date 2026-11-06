@@ -44,6 +44,10 @@ export class BillingStatementCustomerDto {
 	@ApiProperty({ type: BillingStatementSandboxUsageDto, isArray: true })
 	usageBySandbox: BillingStatementSandboxUsageDto[];
 	@ApiProperty({
+		description: 'Monthly fees of the machines kept in the private pool',
+	})
+	privatePoolMicroUsd: string;
+	@ApiProperty({
 		description: 'Credit returned by forfeited host earnings',
 	})
 	forfeitureCreditsMicroUsd: string;

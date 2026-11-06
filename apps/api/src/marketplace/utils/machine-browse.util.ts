@@ -35,6 +35,7 @@ import type {
 } from '../queries/machine-browse.query';
 import type { LinePrice } from '../types/pricing.types';
 import { tiersAtLeast } from './machine-tier.util';
+import { type MarkupSettings, marketMarkupBasisPoints } from './markup.util';
 import {
 	egressPricePerGiB,
 	priceTerms,
@@ -46,6 +47,11 @@ import {
 const CURSOR_KEY_PATTERN = /^-?\d+$/;
 
 const UNKNOWN_DISTANCE_KEY = BigInt(Number.MAX_SAFE_INTEGER);
+
+const MINIMUM_VALUE_PRICE = MicroUsd.of(1n);
+
+// Value scores are fractional; the cursor key keeps six decimals of them.
+const VALUE_KEY_SCALE = 1_000_000;
 
 export interface MachineOffer {
 	priceCardId: string | null;
@@ -146,7 +152,7 @@ export function machineOffer(
 	row: MachineBrowseRow,
 	shape: ResourceShapeFields,
 	customerOrganizationId: string,
-	markupBasisPoints: number
+	markups: MarkupSettings
 ): MachineOffer | null {
 	if (row.organization_id === customerOrganizationId) {
 		return {
@@ -168,6 +174,7 @@ export function machineOffer(
 	) {
 		return null;
 	}
+	const markupBasisPoints = marketMarkupBasisPoints(markups, row.tier);
 	const terms = priceTerms(
 		{
 			vcpuHourMicroUsd: row.vcpu_hour_micro_usd,
@@ -205,6 +212,25 @@ function performanceScore(
 	return shape.gpu > 0 ? row.gpu_tflops : (row.cpu_score_per_vcpu ?? 0);
 }
 
+// Performance per dollar, discounted by how reliably the machine delivers it:
+//   value = performance * reliabilityBasisPoints / hourlyPriceMicroUsd
+// performance is the benchmark score the sort by performance uses (GPU
+// TFLOPS for a GPU shape, CPU score per vCPU otherwise) and the price is the
+// all-in hourly price of the requested shape, at least one micro-USD so the
+// customer's own unpriced machines rank first. A fast machine at a fair
+// price beats a slow cheap one; an unbenchmarked or unproven one scores 0.
+function valueScore(
+	machine: BrowseMachine,
+	shape: ResourceShapeFields
+): number {
+	const price = machine.offer.hourly.grossMicroUsd.max(MINIMUM_VALUE_PRICE);
+	return (
+		(performanceScore(machine.row, shape) *
+			machine.row.reliability_basis_points) /
+		Number(price.toBigInt())
+	);
+}
+
 function distanceKey(machine: BrowseMachine, origin: GeoPoint | null): bigint {
 	const point = geoPoint(machine.row);
 	if (!origin) return 0n;
@@ -217,6 +243,8 @@ export function rankKey(
 	{ sort, shape, origin }: Pick<BrowseSelection, 'sort' | 'shape' | 'origin'>
 ): bigint {
 	switch (sort) {
+		case MachineBrowseSort.VALUE:
+			return -BigInt(Math.round(valueScore(machine, shape) * VALUE_KEY_SCALE));
 		case MachineBrowseSort.PRICE:
 			return machine.offer.hourly.grossMicroUsd.toBigInt();
 		case MachineBrowseSort.RELIABILITY:

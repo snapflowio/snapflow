@@ -22,6 +22,7 @@ import { BillingLineAdjustment } from './entities/billing-line-adjustment.entity
 import { BillingLineItem } from './entities/billing-line-item.entity';
 import { BillingLineQuarantine } from './entities/billing-line-quarantine.entity';
 import { PlacementBillingAuthorization } from './entities/placement-billing-authorization.entity';
+import { PrivatePoolCharge } from './entities/private-pool-charge.entity';
 import { BillingBudgetService } from './services/billing-budget.service';
 import { BillingConfigService } from './services/billing-config.service';
 import { BillingCreditGrantService } from './services/billing-credit-grant.service';
@@ -39,6 +40,7 @@ import { BillingEvidenceRetentionService } from './services/evidence/billing-evi
 import { BillingQuarantineService } from './services/evidence/billing-quarantine.service';
 import { PlacementBillingAuthorizationService } from './services/placement/placement-billing-authorization.service';
 import { PlacementBillingCapacityService } from './services/placement/placement-billing-capacity.service';
+import { PrivatePoolBillingService } from './services/private-pool-billing.service';
 
 @Module({
 	imports: [
@@ -53,6 +55,7 @@ import { PlacementBillingCapacityService } from './services/placement/placement-
 			BillingLineItem,
 			BillingLineQuarantine,
 			PlacementBillingAuthorization,
+			PrivatePoolCharge,
 		]),
 		SettingsModule,
 	],
@@ -74,6 +77,7 @@ import { PlacementBillingCapacityService } from './services/placement/placement-
 		BillingStatementService,
 		PlacementBillingAuthorizationService,
 		PlacementBillingCapacityService,
+		PrivatePoolBillingService,
 		BillingLedgerService,
 	],
 	exports: [
@@ -85,6 +89,7 @@ import { PlacementBillingCapacityService } from './services/placement/placement-
 		BillingOverviewService,
 		PlacementBillingAuthorizationService,
 		PlacementBillingCapacityService,
+		PrivatePoolBillingService,
 		BillingQuarantineService,
 		BillingLedgerService,
 		BillingEvidenceRetentionService,

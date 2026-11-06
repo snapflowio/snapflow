@@ -25,6 +25,7 @@ import {
 	EVM_ADDRESS_LENGTH,
 	EVM_HASH_LENGTH,
 } from '../constants/settlement.constants';
+import { PaymentChannelKind } from '../enums/payment-channel-kind.enum';
 import { PaymentChannelState } from '../enums/payment-channel-state.enum';
 import { VoucherSigningMode } from '../enums/voucher-signing-mode.enum';
 
@@ -51,8 +52,19 @@ const organizationColumn = (joinColumn: string, foreignKeyName: string) =>
 
 const UNSETTLED_CHANNEL = `"state" <> '${PaymentChannelState.CLOSED}'`;
 
-// The escrow payment channel of one sandbox lease: the customer's funding
-// wallet pays the host's payout wallet through cumulative vouchers. The
+const LEASE_COLUMNS = [
+	'leaseId',
+	'sandboxId',
+	'machineId',
+	'hostOrganizationId',
+] as const;
+
+const columnsAre = (columns: readonly string[], test: string) =>
+	columns.map((column) => `"${column}" ${test}`).join(' and ');
+
+// An escrow payment channel: the customer's funding wallet pays through
+// cumulative vouchers either one sandbox lease's host (payout wallet) or, for
+// one calendar month, Snapflow's platform services (the fee recipient). The
 // relayer's in-flight claim and the last sequence it saw confirmed live here
 // so a claim is never sent twice.
 @Entity({ tableName: 'payment_channel' })
@@ -61,6 +73,15 @@ const UNSETTLED_CHANNEL = `"state" <> '${PaymentChannelState.CLOSED}'`;
 	properties: ['chainId', 'contractAddress', 'channelId'],
 })
 @Unique({ name: 'UQ_payment_channel_lease', properties: ['leaseId'] })
+@Unique({
+	name: 'UQ_payment_channel_service_period',
+	properties: [
+		'chainId',
+		'contractAddress',
+		'customerOrganizationId',
+		'servicePeriodStart',
+	],
+})
 @Index({
 	name: 'IDX_payment_channel_customer',
 	properties: ['customerOrganizationId', 'openedAt', 'id'],
@@ -80,6 +101,11 @@ const UNSETTLED_CHANNEL = `"state" <> '${PaymentChannelState.CLOSED}'`;
 @Check({
 	name: 'CHK_payment_channel_state',
 	expression: `"state" in (${sqlValueList(PaymentChannelState)})`,
+})
+@Check({
+	name: 'CHK_payment_channel_kind',
+	expression: `("kind" = '${PaymentChannelKind.LEASE}' and ${columnsAre(LEASE_COLUMNS, 'is not null')} and "servicePeriodStart" is null)
+		or ("kind" = '${PaymentChannelKind.PLATFORM_SERVICE}' and ${columnsAre(LEASE_COLUMNS, 'is null')} and "servicePeriodStart" is not null)`,
 })
 @Check({
 	name: 'CHK_payment_channel_signing_mode',
@@ -116,22 +142,40 @@ export class PaymentChannel {
 	})
 	channelId: Hex;
 
+	@Property({ type: 'string', columnType: 'varchar', fieldName: 'kind' })
+	kind: PaymentChannelKind;
+
 	@ManyToOne({
 		entity: () => SandboxLease,
 		mapToPk: true,
 		joinColumn: 'leaseId',
 		columnType: 'uuid',
+		nullable: true,
 		deleteRule: 'restrict',
 		updateRule: 'no action',
 		foreignKeyName: 'FK_payment_channel_lease',
 	})
-	leaseId: string;
+	leaseId: string | null;
 
-	@Property({ type: 'string', columnType: 'varchar', fieldName: 'sandboxId' })
-	sandboxId: string;
+	@Property({
+		type: 'string',
+		columnType: 'varchar',
+		fieldName: 'sandboxId',
+		nullable: true,
+	})
+	sandboxId: string | null;
 
-	@Property({ type: 'uuid', columnType: 'uuid', fieldName: 'machineId' })
-	machineId: string;
+	@Property({
+		type: 'uuid',
+		columnType: 'uuid',
+		fieldName: 'machineId',
+		nullable: true,
+	})
+	machineId: string | null;
+
+	// The first instant of the UTC month a platform service channel bills.
+	@Property({ ...timestampColumn('servicePeriodStart'), nullable: true })
+	servicePeriodStart: Date | null;
 
 	@ManyToOne(
 		organizationColumn(
@@ -141,13 +185,14 @@ export class PaymentChannel {
 	)
 	customerOrganizationId: string;
 
-	@ManyToOne(
-		organizationColumn(
+	@ManyToOne({
+		...organizationColumn(
 			'hostOrganizationId',
 			'FK_payment_channel_host_organization'
-		)
-	)
-	hostOrganizationId: string;
+		),
+		nullable: true,
+	})
+	hostOrganizationId: string | null;
 
 	@Property(addressColumn('customerAddress'))
 	customerAddress: Address;
@@ -167,8 +212,9 @@ export class PaymentChannel {
 	@Property({ ...timestampColumn('closedAt'), nullable: true })
 	closedAt: Date | null;
 
-	// Until when a signed voucher is known to cover everything the lease owed;
-	// the funding policy treats the sandbox as unfunded once it falls behind.
+	// Until when a signed voucher is known to cover everything the channel
+	// owed; the funding policy treats a lease's sandbox as unfunded once its
+	// channel falls behind.
 	@Property(timestampColumn('coveredAt'))
 	coveredAt: Date;
 

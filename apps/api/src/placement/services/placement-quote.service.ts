@@ -18,6 +18,7 @@ import type { PriceTerms } from '../../marketplace/types/pricing.types';
 import { runningHourlyPrice } from '../../marketplace/utils/pricing.util';
 import type { SandboxQuoteDto } from '../../sandbox/dto/sandbox-quote.dto';
 import { SettingsService } from '../../settings/services/settings.service';
+import { EscrowFeePolicyService } from '../../settlement/services/escrow-fee-policy.service';
 import { requestedShape } from '../queries/machine-candidates.query';
 import { type QuotedMachine, sandboxQuote } from '../utils/sandbox-quote.util';
 import type { PlacementCandidate } from './machine-scheduling.service';
@@ -33,7 +34,8 @@ export interface QuoteDetails {
 export class PlacementQuoteService {
 	constructor(
 		private readonly capacity: PlacementBillingCapacityService,
-		private readonly settings: SettingsService
+		private readonly settings: SettingsService,
+		private readonly feePolicy: EscrowFeePolicyService
 	) {}
 
 	quoteCandidate(
@@ -57,6 +59,9 @@ export class PlacementQuoteService {
 		terms: PriceTerms,
 		details: QuoteDetails
 	): Promise<SandboxQuoteDto> {
+		await this.feePolicy.assertMarkupAllowed(
+			terms.markupBasisPoints.toNumber()
+		);
 		const shape = requestedShape(params);
 		const funding = await this.capacity.runwayReservation(
 			manager,

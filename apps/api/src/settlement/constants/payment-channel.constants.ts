@@ -36,12 +36,20 @@ export const CLAIM_RELAYER = {
 	LOCK_TTL_SECONDS: 5 * SECONDS_PER_MINUTE,
 } as const;
 
+export const PLATFORM_SERVICE_BILLER = {
+	JOB: 'bill-platform-services',
+	LOCK_TTL_SECONDS: 5 * SECONDS_PER_MINUTE,
+} as const;
+
 export const ClaimFailure = {
 	BATCH_REVERTED: 'claim_batch_reverted',
 	TRANSACTION_DROPPED: 'claim_transaction_dropped',
 } as const;
 
 export type ClaimFailure = (typeof ClaimFailure)[keyof typeof ClaimFailure];
+
+// Stands in for the lease id when deriving a platform service channel's id.
+export const PLATFORM_SERVICE_CHANNEL_PREFIX = 'platform-service';
 
 // Long-poll topic the machine voucher relay waits on, keyed by machine id.
 export const SETTLEMENT_VOUCHER_WAKE_TOPIC = 'settlement-vouchers';
@@ -79,6 +87,7 @@ export const PaymentChannelErrorCode = {
 	VOUCHER_ALREADY_SIGNED: 'voucher_already_signed',
 	VOUCHER_SUPERSEDED: 'voucher_superseded',
 	VOUCHER_EXPIRED: 'voucher_expired',
+	MARKUP_ABOVE_FEE_CAP: 'markup_above_fee_cap',
 } as const;
 
 export const VOUCHER_REJECTION_MESSAGES: Readonly<

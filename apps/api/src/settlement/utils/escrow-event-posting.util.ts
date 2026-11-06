@@ -48,10 +48,16 @@ export function movesLedgerFunds(kind: EscrowEventKind): boolean {
 
 // A claim waits for both parties even though it only touches the host's
 // accounts: posting it before the customer's deposits would take from
-// escrow_custody funds that were never put there.
+// escrow_custody funds that were never put there. A claim paying no host,
+// from a platform service channel whose host is Snapflow's fee recipient,
+// waits for the customer alone.
 export function escrowEventPostable(event: PostableEscrowEvent): boolean {
 	if (event.customerOrganizationId === null) return false;
-	return event.kind !== 'Claimed' || event.hostOrganizationId !== null;
+	return (
+		event.kind !== 'Claimed' ||
+		event.hostOrganizationId !== null ||
+		storedAmount<'Claimed'>(event.args, 'hostPaid').isZero()
+	);
 }
 
 function storedAmount<Kind extends EscrowEventKind>(
@@ -119,10 +125,7 @@ export function escrowEventPosting(
 		case 'Claimed':
 			return escrowClaimPosting({
 				...source,
-				hostOrganizationId: requireOrganization(
-					event.hostOrganizationId,
-					event
-				),
+				hostOrganizationId: event.hostOrganizationId,
 				hostMicroUsd: storedAmount<'Claimed'>(event.args, 'hostPaid'),
 				platformMicroUsd: storedAmount<'Claimed'>(event.args, 'feePaid').add(
 					storedAmount<'Claimed'>(event.args, 'servicePaid')

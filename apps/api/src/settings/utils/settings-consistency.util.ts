@@ -16,7 +16,15 @@ import type { Settings } from '../entities/settings.entity';
 type OrderedSettingKey =
 	| 'exposureCeilingProbationaryCents'
 	| 'exposureCeilingEstablishedCents'
-	| 'exposureCeilingHostCents';
+	| 'exposureCeilingHostCents'
+	| 'vcpuHourPriceMinimumMicroUsd'
+	| 'vcpuHourPriceMaximumMicroUsd'
+	| 'memoryGibHourPriceMinimumMicroUsd'
+	| 'memoryGibHourPriceMaximumMicroUsd'
+	| 'gpuHourPriceMinimumMicroUsd'
+	| 'gpuHourPriceMaximumMicroUsd'
+	| 'diskGibMonthPriceMinimumMicroUsd'
+	| 'diskGibMonthPriceMaximumMicroUsd';
 
 type VoucherSettingKey =
 	| 'voucherIntervalSeconds'
@@ -35,6 +43,10 @@ const ORDERED_SETTINGS: readonly (readonly [
 ])[] = [
 	['exposureCeilingProbationaryCents', 'exposureCeilingEstablishedCents'],
 	['exposureCeilingEstablishedCents', 'exposureCeilingHostCents'],
+	['vcpuHourPriceMinimumMicroUsd', 'vcpuHourPriceMaximumMicroUsd'],
+	['memoryGibHourPriceMinimumMicroUsd', 'memoryGibHourPriceMaximumMicroUsd'],
+	['gpuHourPriceMinimumMicroUsd', 'gpuHourPriceMaximumMicroUsd'],
+	['diskGibMonthPriceMinimumMicroUsd', 'diskGibMonthPriceMaximumMicroUsd'],
 ];
 
 // Vouchers are reissued once half their lifetime has passed, so a voucher a

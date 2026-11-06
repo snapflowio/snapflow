@@ -8,6 +8,7 @@
  */
 
 export enum MachineBrowseSort {
+	VALUE = 'value',
 	PRICE = 'price',
 	RELIABILITY = 'reliability',
 	PERFORMANCE = 'performance',

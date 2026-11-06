@@ -39,6 +39,28 @@ export const EDGE_TRUSTED_HTTP_PROXY_CIDRS_MAXIMUM = 64;
 
 export const SETTINGS_POSITIVE_MINIMUM = 1;
 
+// Hosts keep their whole price; the markup is added on top for the customer,
+// higher on Verified machines, whose checks cost more to run. A private pool
+// pays a flat monthly fee per machine instead.
+const DEFAULT_FEE_SETTINGS = {
+	standardMarkupBasisPoints: 2_000,
+	verifiedMarkupBasisPoints: 3_000,
+	privatePoolMachineMonthlyMicroUsd: 5_000_000,
+} as const;
+
+// Sanity limits on what a host may charge per resource, micro-USD; the disk
+// limits apply to running and stopped disk alike.
+const DEFAULT_PRICE_LIMIT_SETTINGS = {
+	vcpuHourPriceMinimumMicroUsd: 1_000,
+	vcpuHourPriceMaximumMicroUsd: 500_000,
+	memoryGibHourPriceMinimumMicroUsd: 500,
+	memoryGibHourPriceMaximumMicroUsd: 100_000,
+	gpuHourPriceMinimumMicroUsd: 50_000,
+	gpuHourPriceMaximumMicroUsd: 20_000_000,
+	diskGibMonthPriceMinimumMicroUsd: 10_000,
+	diskGibMonthPriceMaximumMicroUsd: 1_000_000,
+} as const;
+
 const DEFAULT_MARKETPLACE_SETTINGS = {
 	priceFloorBasisPoints: 2_500,
 	priceFloorMinimumSamples: 5,
@@ -102,7 +124,8 @@ export const SETTINGS_DEFAULTS = {
 	machineDesktopEnabled: false,
 	machineSerialConsoleEnabled: false,
 	publicIngressEnabled: false,
-	platformMarkupBasisPoints: 2_500,
+	...DEFAULT_FEE_SETTINGS,
+	...DEFAULT_PRICE_LIMIT_SETTINGS,
 	...DEFAULT_MARKETPLACE_SETTINGS,
 	...DEFAULT_VERIFICATION_SETTINGS,
 	// About three minutes of 2-second Base blocks, in line with how long

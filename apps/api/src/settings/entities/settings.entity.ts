@@ -21,6 +21,7 @@ import {
 	MINIMUM_EGRESS_BANDWIDTH_BPS,
 } from '../../sandbox/constants/network.constants';
 import { SandboxClass } from '../../sandbox/enums/sandbox-class.enum';
+import { ESCROW_MAXIMUM_FEE_BASIS_POINTS } from '../../settlement/constants/settlement.constants';
 import {
 	DrainingMode,
 	SETTINGS_ID,
@@ -42,7 +43,17 @@ const NON_NEGATIVE_COLUMNS = [
 	'maxSnapshotSize',
 	'volumeQuota',
 	'egressPriceCeilingMicroUsdPerGiB',
-	'platformMarkupBasisPoints',
+	'standardMarkupBasisPoints',
+	'verifiedMarkupBasisPoints',
+	'privatePoolMachineMonthlyMicroUsd',
+	'vcpuHourPriceMinimumMicroUsd',
+	'vcpuHourPriceMaximumMicroUsd',
+	'memoryGibHourPriceMinimumMicroUsd',
+	'memoryGibHourPriceMaximumMicroUsd',
+	'gpuHourPriceMinimumMicroUsd',
+	'gpuHourPriceMaximumMicroUsd',
+	'diskGibMonthPriceMinimumMicroUsd',
+	'diskGibMonthPriceMaximumMicroUsd',
 	'priceFloorBasisPoints',
 	'listingMinimumDownlinkMbps',
 	'listingMinimumUplinkMbps',
@@ -75,10 +86,14 @@ const POSITIVE_COLUMNS = [
 ] as const;
 
 const BASIS_POINTS_COLUMNS = [
-	'platformMarkupBasisPoints',
 	'priceFloorBasisPoints',
 	'verifiedMinimumUptimeBasisPoints',
 	'spotCheckToleranceBasisPoints',
+] as const;
+
+const MARKUP_COLUMNS = [
+	'standardMarkupBasisPoints',
+	'verifiedMarkupBasisPoints',
 ] as const;
 
 const integerColumn = (fieldName: string) =>
@@ -108,6 +123,12 @@ const booleanColumn = (fieldName: string) =>
 	name: 'CHK_settings_basis_points',
 	expression: BASIS_POINTS_COLUMNS.map(
 		(column) => `"${column}" <= ${BASIS_POINTS_SCALE}`
+	).join(' and '),
+})
+@Check({
+	name: 'CHK_settings_markup',
+	expression: MARKUP_COLUMNS.map(
+		(column) => `"${column}" <= ${ESCROW_MAXIMUM_FEE_BASIS_POINTS}`
 	).join(' and '),
 })
 @Check({
@@ -192,8 +213,38 @@ export class Settings {
 	@Property(booleanColumn('publicIngressEnabled'))
 	publicIngressEnabled: boolean;
 
-	@Property(integerColumn('platformMarkupBasisPoints'))
-	platformMarkupBasisPoints: number;
+	@Property(integerColumn('standardMarkupBasisPoints'))
+	standardMarkupBasisPoints: number;
+
+	@Property(integerColumn('verifiedMarkupBasisPoints'))
+	verifiedMarkupBasisPoints: number;
+
+	@Property(integerColumn('privatePoolMachineMonthlyMicroUsd'))
+	privatePoolMachineMonthlyMicroUsd: number;
+
+	@Property(integerColumn('vcpuHourPriceMinimumMicroUsd'))
+	vcpuHourPriceMinimumMicroUsd: number;
+
+	@Property(integerColumn('vcpuHourPriceMaximumMicroUsd'))
+	vcpuHourPriceMaximumMicroUsd: number;
+
+	@Property(integerColumn('memoryGibHourPriceMinimumMicroUsd'))
+	memoryGibHourPriceMinimumMicroUsd: number;
+
+	@Property(integerColumn('memoryGibHourPriceMaximumMicroUsd'))
+	memoryGibHourPriceMaximumMicroUsd: number;
+
+	@Property(integerColumn('gpuHourPriceMinimumMicroUsd'))
+	gpuHourPriceMinimumMicroUsd: number;
+
+	@Property(integerColumn('gpuHourPriceMaximumMicroUsd'))
+	gpuHourPriceMaximumMicroUsd: number;
+
+	@Property(integerColumn('diskGibMonthPriceMinimumMicroUsd'))
+	diskGibMonthPriceMinimumMicroUsd: number;
+
+	@Property(integerColumn('diskGibMonthPriceMaximumMicroUsd'))
+	diskGibMonthPriceMaximumMicroUsd: number;
 
 	@Property(integerColumn('priceFloorBasisPoints'))
 	priceFloorBasisPoints: number;
