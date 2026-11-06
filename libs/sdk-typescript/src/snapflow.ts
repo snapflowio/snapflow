@@ -31,6 +31,7 @@ import type {
 	ListSandboxesQuery,
 	StartSandboxOptions,
 } from './sandbox.types.js';
+import { SettlementService } from './settlement.js';
 import {
 	createApiClient,
 	resolveClientConfig,
@@ -72,11 +73,13 @@ export class Snapflow {
 	private readonly client: Client;
 	public readonly volume: VolumeService;
 	public readonly snapshot: SnapshotService;
+	public readonly settlement: SettlementService;
 
 	constructor(config?: SnapflowConfig) {
 		this.client = createApiClient(resolveClientConfig(config), SDK_VERSION);
 		this.volume = new VolumeService(this.client);
 		this.snapshot = new SnapshotService(this.client);
+		this.settlement = new SettlementService(this.client);
 	}
 
 	public async quote(params: QuoteSandboxParams = {}): Promise<SandboxQuote> {

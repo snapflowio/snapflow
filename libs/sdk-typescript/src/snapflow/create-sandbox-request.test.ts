@@ -21,6 +21,7 @@ import {
 	MachineTier,
 	PlacementKind,
 	SandboxMode,
+	VoucherSigningMode,
 } from '@snapflow/api-client';
 import {
 	toCreateSandboxRequest,
@@ -94,6 +95,25 @@ describe('placement mapping', () => {
 			machineId: MACHINE_ID,
 		});
 		expect(request.gpuType).toEqual([GpuType.H100]);
+	});
+
+	it('passes the voucher signing mode through and leaves the default to the API', () => {
+		const clientSigned = toCreateSandboxRequest(
+			{
+				mode: SandboxMode.Ephemeral,
+				voucherSigning: VoucherSigningMode.Client,
+			},
+			{},
+			undefined
+		);
+		const defaulted = toCreateSandboxRequest(
+			{ mode: SandboxMode.Ephemeral },
+			{},
+			undefined
+		);
+
+		expect(clientSigned.voucherSigning).toBe(VoucherSigningMode.Client);
+		expect(defaulted.voucherSigning).toBeUndefined();
 	});
 
 	it('builds a quote request from the placement and resources', () => {

@@ -178,5 +178,6 @@ export function toCreateSandboxRequest(
 		domainAllowList: params.domainAllowList,
 		egressBandwidthBps: params.egressBandwidthBps,
 		linkedSandbox: params.linkedSandbox,
+		voucherSigning: params.voucherSigning,
 	};
 }

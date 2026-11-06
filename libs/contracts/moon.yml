@@ -16,8 +16,8 @@ tasks:
     outputs: ["src/generated"]
 
   build:
-    script: "rm -rf ../../dist/libs/contracts && pnpm exec tsc -p tsconfig.lib.json --outDir ../../dist/libs/contracts && cp package.json ../../dist/libs/contracts/package.json"
-    inputs: ["src/**/*", "package.json", "tsconfig*.json"]
+    script: "rm -rf ../../dist/libs/contracts && pnpm exec tsc -p tsconfig.lib.json --outDir ../../dist/libs/contracts && node scripts/post-build.mts ../../dist/libs/contracts ../.."
+    inputs: ["src/**/*", "package.json", "tsconfig*.json", "scripts/post-build.mts", "/scripts/catalog.mjs", "/pnpm-workspace.yaml"]
     outputs: ["/dist/libs/contracts"]
 
   typecheck:

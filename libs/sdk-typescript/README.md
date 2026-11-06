@@ -197,6 +197,82 @@ use, when its grant is revoked, when the principal loses access to the
 sandbox, or at its fixed absolute lifetime, and the Edge then closes its
 live connections.
 
+## Paying with USDC escrow
+
+Sandboxes are paid from the organization's funding wallet through the
+SnapflowEscrow contract. `snapflow.settlement.escrow(...)` binds the wallet to
+the escrow, USDC token and chain Snapflow reports, so no address is hardcoded.
+Amounts are USDC base units (6 decimals, micro-USD). Every write waits for its
+receipt and rejects with `SnapflowEscrowError`, which names the contract's
+custom error in `contractError` when the call reverts.
+
+```ts
+import { createPublicClient, createWalletClient, custom, http } from 'viem';
+import { base } from 'viem/chains';
+
+const walletClient = createWalletClient({
+  account,
+  chain: base,
+  transport: custom(window.ethereum),
+});
+const publicClient = createPublicClient({ chain: base, transport: http() });
+const escrow = await snapflow.settlement.escrow({ walletClient, publicClient });
+
+await escrow.deposit(50_000_000n); // approves USDC first when needed
+await escrow.deposit(10_000_000n, { permit: true }); // EIP-2612 permit instead
+const { balance, withdrawal } = await escrow.readBalance();
+
+await escrow.requestWithdrawal(5_000_000n);
+await escrow.withdraw(); // after the dispute window
+```
+
+By default (`voucherSigning: 'delegated'`) Snapflow's signer signs the
+vouchers that pay hosts, within a session key the funding wallet grants it:
+
+```ts
+await snapflow.settlement.authorizeDelegatedSigner(escrow);
+```
+
+To sign vouchers yourself, create sandboxes with
+`voucherSigning: VoucherSigningMode.Client`, authorize a session key you hold
+and run a `VoucherSigner`. It polls the pending vouchers, signs only those it
+verified locally (the EIP-712 domain is the escrow `getEscrowAccount`
+reports, the channel is a lease of one of the organization's
+sandboxes paid by `fundingWallet`, its id derives from the lease, amounts
+never decrease and grow no faster than `maxHourlySpend` per channel, plus
+`SPEND_RATE_TOLERANCE_MILLISECONDS`, up to the optional `maxChannelSpend`)
+and backs off exponentially while the API fails. The SDK never stores the
+key; persisting it is up to you.
+
+```ts
+import { generateSessionKey, VoucherSigningMode } from '@snapflow/sdk';
+
+const sessionKey = generateSessionKey(); // store sessionKey.privateKey securely
+await escrow.authorizeSessionKey(sessionKey.account.address, {
+  spendCap: 100_000_000n,
+  hourlyCap: 2_000_000n,
+  expiry: BigInt(Math.floor(Date.now() / 1000) + 30 * 24 * 3600),
+});
+
+const signer = snapflow.settlement.createVoucherSigner({
+  sessionKey: sessionKey.privateKey,
+  fundingWallet: escrow.account,
+  policy: { maxHourlySpend: 2_000_000n, maxChannelSpend: 50_000_000n },
+  onError: (error) => console.error(error),
+});
+signer.start();
+
+await snapflow.create({
+  mode: SandboxMode.Standard,
+  voucherSigning: VoucherSigningMode.Client,
+});
+// ...
+await signer.stop();
+```
+
+Refused vouchers reach `onError` once as `SnapflowVoucherRejectedError` with a
+`reason` from `VoucherRejectionReason`.
+
 ## Lifecycle and cancellation
 
 Creation accepts an `AbortSignal`. Aborting a local wait does not imply that an
