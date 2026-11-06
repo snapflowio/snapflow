@@ -67,6 +67,10 @@ export const settlementEnvironment = defineEnvironment(
 				secret: true,
 			}
 		),
+		REOWN_PROJECT_ID: environmentVariable(text().optional(), {
+			description:
+				'Reown Cloud project id the dashboard connects wallets with (WalletConnect relay and wallet list); without it the dashboard cannot link wallets or move funds.',
+		}),
 		SANCTIONS_API_KEY: environmentVariable(text().optional(), {
 			description:
 				'Chainalysis sanctions screening API key; without it (development only) linked wallets are recorded as unchecked.',

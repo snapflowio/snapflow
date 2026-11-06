@@ -15,12 +15,13 @@ import type {
 } from '#lib/features/admin/lib/settings/settings-fields.ts';
 import {
 	EDGE_INGRESS_SECTION,
+	HOST_PRICE_LIMITS_SECTION,
 	MACHINE_POLICY_SECTION,
 	MACHINE_REGISTRY_SECTION,
 	MARKETPLACE_SECTION,
-	PAYMENTS_SECTION,
 	PRICING_SECTION,
 	QUOTA_SECTION,
+	SETTLEMENT_SECTION,
 	VERIFICATION_SECTION,
 } from '#lib/features/admin/lib/settings/settings-sections.ts';
 import { formatDateTime } from '#lib/utils/format.ts';
@@ -67,8 +68,6 @@ function fieldCaption(field: SettingField): string | undefined {
 	switch (field.kind) {
 		case 'quantity':
 			return field.unit;
-		case 'quantityList':
-			return `${field.unit}, one per line`;
 		case 'list':
 			return field.hint ?? 'One per line';
 		case 'text':
@@ -81,11 +80,7 @@ function fieldCaption(field: SettingField): string | undefined {
 }
 
 function isStacked(field: SettingField): boolean {
-	return (
-		field.kind === 'list' ||
-		field.kind === 'quantityList' ||
-		field.kind === 'text'
-	);
+	return field.kind === 'list' || field.kind === 'text';
 }
 </script>
 
@@ -137,9 +132,10 @@ const sections: readonly SettingsSection[] = $derived([
 	DEFAULTS_SECTION,
 	QUOTA_SECTION,
 	PRICING_SECTION,
+	HOST_PRICE_LIMITS_SECTION,
 	MARKETPLACE_SECTION,
 	VERIFICATION_SECTION,
-	PAYMENTS_SECTION,
+	SETTLEMENT_SECTION,
 	EDGE_INGRESS_SECTION,
 	MACHINE_REGISTRY_SECTION,
 	MACHINE_POLICY_SECTION,
@@ -237,7 +233,7 @@ const actions = $derived(
 								(value) => field.handleChange(value ?? '')
 							}
 						/>
-					{:else if setting.kind === 'list' || setting.kind === 'quantityList'}
+					{:else if setting.kind === 'list'}
 						<ChipTextarea
 							id={controlId}
 							name={field.name}

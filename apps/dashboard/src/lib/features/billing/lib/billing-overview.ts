@@ -49,16 +49,16 @@ const ADMISSION_BLOCKER_NOTICES = [
 		'funding_exhausted',
 		notice(
 			'error',
-			'Credit is exhausted',
-			'New billable workloads are paused until credit is added. Running workloads follow the configured billing cutoff.'
+			'Funds are exhausted',
+			'New billable workloads are paused until you deposit more USDC. Running workloads follow the configured billing cutoff.'
 		),
 	],
 	[
 		'funding_required',
 		notice(
 			'default',
-			'Credit required',
-			'Your account needs credit before starting billable workloads.'
+			'Funding required',
+			'Link a funding wallet and deposit USDC before starting billable workloads.'
 		),
 	],
 ] as const satisfies readonly (readonly [AdmissionBlocker, BillingNotice])[];
@@ -67,13 +67,13 @@ const FUNDING_STATE_NOTICES = {
 	healthy: null,
 	warning: notice(
 		'warning',
-		'Credit is running low',
-		'Reduce active usage to preserve your desired funding runway.'
+		'Funds are running low',
+		'Deposit more USDC or reduce active usage to keep your desired funding runway.'
 	),
 	restricted: notice(
 		'error',
 		'New sandbox placements are blocked',
-		'Credit or a spend limit is exhausted. Running sandboxes are not deleted.',
+		'Funds or a spend limit are exhausted. Running sandboxes are not deleted.',
 		true
 	),
 } as const satisfies Record<FundingState, BillingNotice | null>;

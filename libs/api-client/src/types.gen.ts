@@ -3631,6 +3631,10 @@ export type PublicConfig = {
      */
     socialProviders: Array<SocialProvider>;
     settlement: PublicSettlementConfig;
+    /**
+     * Reown Cloud project id the dashboard connects wallets with; null when the deployment has none
+     */
+    reownProjectId: string | null;
 };
 
 export type PublicSettlementConfig = {

@@ -8,46 +8,69 @@
 -->
 
 <script lang="ts">
-import EmptyState from '#lib/components/empty-state.svelte';
+import Landmark from '@lucide/svelte/icons/landmark';
+import { PaymentWalletPurpose } from '@snapflow/api-client';
+import { createQuery } from '@tanstack/svelte-query';
+import { paymentWalletsQueryOptions } from '#lib/api/settlement/wallets.ts';
+import PageColumn from '#lib/components/page/page-column.svelte';
 import QueryFeedbackState from '#lib/components/query-feedback-state.svelte';
-import Chip from '#lib/components/ui/chip/chip.svelte';
+import Badge from '#lib/components/ui/badge.svelte';
+import BillingHeading from '#lib/features/billing/components/billing-heading.svelte';
 import EarningsHeader from '#lib/features/billing/components/earnings-header.svelte';
-import PayoutHistory from '#lib/features/billing/components/payouts/payout-history.svelte';
-import { PAYOUT_SETUP_PARAM } from '#lib/features/billing/lib/payout-onboarding.ts';
-import { PayoutOnboarding } from '#lib/features/billing/state/payout-onboarding.svelte.ts';
-import { Path } from '#lib/routing/paths.ts';
-import { resolve } from '$app/paths';
+import PaymentWalletSection from '#lib/features/billing/components/wallet/payment-wallet-section.svelte';
+import WalletGate from '#lib/features/billing/components/wallet/wallet-gate.svelte';
+import {
+	linkedWallet,
+	PAYOUT_READINESS,
+} from '#lib/features/billing/lib/payment-wallet.ts';
+import { Wallet } from '#lib/features/billing/state/wallet.svelte.ts';
+import { payoutReadiness } from '#lib/features/listings/lib/payout-readiness.ts';
+import { getOrganizationPermission } from '#lib/features/organizations/state/organization-permission.svelte.ts';
 
-const onboarding = new PayoutOnboarding();
+const permission = getOrganizationPermission();
+const canManage = $derived(permission.can({ payouts: ['manage'] }));
+const wallets = createQuery(() => paymentWalletsQueryOptions());
+const wallet = new Wallet();
+const payoutWallet = $derived(
+	linkedWallet(wallets.data, PaymentWalletPurpose.Payout)
+);
 </script>
 
 <svelte:head>
-	<title>Payouts · Earnings · Snapflow</title>
+	<title>Payout wallet · Earnings · Snapflow</title>
 </svelte:head>
 
 <EarningsHeader />
-{#if onboarding.account}
-	<PayoutHistory />
-{:else if onboarding.missing}
-	<EmptyState
-		title="No payout account"
-		description="Set up payouts to receive what your machines earn."
-	>
-		{#snippet actions()}
-			{#if onboarding.canManage}
-				<Chip
-					variant="primary"
-					href={`${resolve(Path.EARNINGS_ACCOUNT)}?${PAYOUT_SETUP_PARAM}`}
-				>
-					Set up payouts
-				</Chip>
-			{/if}
-		{/snippet}
-	</EmptyState>
+{#if wallets.isSuccess}
+	{const copy = $derived(PAYOUT_READINESS[payoutReadiness(wallets.data)])}
+	{#snippet readinessBadge()}
+		<Badge dot size="sm" variant={copy.badge.variant}>{copy.badge.label}</Badge>
+	{/snippet}
+	<PageColumn>
+		<BillingHeading
+			icon={Landmark}
+			title={copy.title}
+			detail={copy.description}
+			trailing={readinessBadge}
+		/>
+		<WalletGate {wallet}>
+			{#snippet children(
+				connection
+			)}
+				<PaymentWalletSection
+					purpose={PaymentWalletPurpose.Payout}
+					linked={payoutWallet}
+					{connection}
+					{canManage}
+					description="Claims pay your machines' earnings to this wallet in USDC. It must pass sanctions screening before your listings accept rentals."
+				/>
+			{/snippet}
+		</WalletGate>
+	</PageColumn>
 {:else}
 	<QueryFeedbackState
-		query={onboarding.query}
-		loadingMessage="Loading the payout account..."
-		errorMessage="The payout account could not be loaded."
+		query={wallets}
+		loadingMessage="Loading the payout wallet..."
+		errorMessage="The payout wallet could not be loaded."
 	/>
 {/if}

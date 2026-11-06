@@ -11,6 +11,7 @@
 		"rootDir": "../..",
 		"paths": {
 			"@snapflow/api-client": ["../../libs/api-client/src/index.ts"],
+			"@snapflow/contracts": ["../../libs/contracts/src/index.ts"],
 			"@snapflow/organization-access": [
 				"../../libs/organization-access/src/index.ts"
 			],

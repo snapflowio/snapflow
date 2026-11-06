@@ -85,6 +85,8 @@ minimumReleaseAgeExclude:
   - 'mikro-orm@7.2.0'
 
 peerDependencyRules:
+  ignoreMissing:
+    - wagmi
   allowedVersions:
     typescript: ^6.0.0
     'use-sync-external-store>react': ^19.0.0
@@ -114,8 +116,9 @@ catalog:
   cloudflare: 7.0.0
   '@react-three/fiber': ^9.7.0
   '@socket.io/redis-adapter': ^8.3.0
-  '@stripe/connect-js': ^3.4.6
-  '@stripe/stripe-js': ^10.0.0
+  '@reown/appkit': 1.8.24
+  '@reown/appkit-adapter-wagmi': 1.8.24
+  '@wagmi/core': 3.6.9
   '@tailwindcss/vite': ^4.3.3
   '@tanstack/svelte-form': 1.33.5
   '@tanstack/svelte-query': 6.3.4

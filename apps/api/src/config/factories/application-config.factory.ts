@@ -95,6 +95,7 @@ export function createApplicationConfig({
 			usdcAddress: values.SETTLEMENT_USDC_ADDRESS,
 			signerPrivateKey: values.SETTLEMENT_SIGNER_PRIVATE_KEY,
 			relayerPrivateKey: values.SETTLEMENT_RELAYER_PRIVATE_KEY,
+			reownProjectId: values.REOWN_PROJECT_ID,
 			sanctions: {
 				apiKey: values.SANCTIONS_API_KEY,
 				apiUrl: values.SANCTIONS_API_URL,

@@ -59,12 +59,7 @@ const statement = createQuery(() => billingStatementQueryOptions(month));
 {#if statement.isSuccess}
 	{const { customer, host } = $derived(statement.data)}
 	{const hosted = $derived(
-		[
-			host.earningsMicroUsd,
-			host.maturedMicroUsd,
-			host.paidOutMicroUsd,
-			host.forfeitedMicroUsd,
-		].some(nonZero)
+		[host.earningsMicroUsd, host.forfeitedMicroUsd].some(nonZero)
 	)}
 	<div class="flex flex-col gap-2.5 pt-1">
 		<div class="grid grid-cols-2 gap-x-3 pb-0.5">
@@ -86,22 +81,15 @@ const statement = createQuery(() => billingStatementQueryOptions(month));
 				'Opening balance',
 				formatUsd(customer.openingCreditMicroUsd)
 			)}
-			{@render row(
-				'Top-ups',
-				formatUsd(customer.topUpsMicroUsd),
-				nonZero(customer.taxMicroUsd)
-					? `${formatUsd(customer.taxMicroUsd)} sales tax`
-					: undefined
-			)}
 			{#if nonZero(customer.adminGrantsMicroUsd)}
 				{@render row('Granted credit', formatUsd(customer.adminGrantsMicroUsd))}
 			{/if}
 			{@render row('Usage', formatUsd(customer.usageMicroUsd))}
-			{#if nonZero(customer.disputeFreezesMicroUsd)}
+			{#if nonZero(customer.privatePoolMicroUsd)}
 				{@render row(
-					'Held for disputes',
-					formatUsd(customer.disputeFreezesMicroUsd),
-					`${formatUsd(customer.disputeReinstatementsMicroUsd)} returned`
+					'Private pool',
+					formatUsd(customer.privatePoolMicroUsd),
+					'Monthly fees of machines kept private'
 				)}
 			{/if}
 			{#if nonZero(customer.forfeitureCreditsMicroUsd)}
@@ -129,9 +117,11 @@ const statement = createQuery(() => billingStatementQueryOptions(month));
 		{#if hosted}
 			{@render heading('Hosting')}
 			<KeyValueList>
-				{@render row('Earned', formatUsd(host.earningsMicroUsd))}
-				{@render row('Available', formatUsd(host.maturedMicroUsd))}
-				{@render row('Paid out', formatUsd(host.paidOutMicroUsd))}
+				{@render row(
+					'Earned',
+					formatUsd(host.earningsMicroUsd),
+					'Paid to your payout wallet as claims settle'
+				)}
 				{#if nonZero(host.forfeitedMicroUsd)}
 					{@render row('Forfeited', formatUsd(host.forfeitedMicroUsd))}
 				{/if}

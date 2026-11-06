@@ -14,6 +14,7 @@ import { SnapflowError } from '#lib/api/errors/snapflow-error.ts';
 import {
 	machinePriceCardsQueryOptions,
 	machinePriceFloorQueryOptions,
+	machinePriceHintQueryOptions,
 	publishPriceCardMutationOptions,
 } from '#lib/api/listings.ts';
 import { createAppForm } from '#lib/components/form/create-app-form.ts';
@@ -37,12 +38,16 @@ import {
 	initialRates,
 	parseRates,
 	priceCardErrorMessage,
+	priceRangeViolation,
 	RATE_FIELDS,
+	RATE_LABELS,
 	type RateInputs,
+	rateFieldError,
 } from '#lib/features/listings/lib/price-card-rates.ts';
 import { formatDateTime } from '#lib/utils/format.ts';
 import { formatHourlyPrice } from '#lib/utils/usd.ts';
 import PriceCardPreview from './price-card-preview.svelte';
+import PriceHintSection from './price-hint-section.svelte';
 
 interface MachinePriceCardFormProps {
 	machine: HostMachine;
@@ -58,6 +63,9 @@ const floorQuery = createQuery(() =>
 );
 const cardsQuery = createQuery(() =>
 	machinePriceCardsQueryOptions(machine.machineId)
+);
+const hintQuery = createQuery(() =>
+	machinePriceHintQueryOptions(machine.machineId)
 );
 const form = createAppForm(() => ({
 	defaultValues: initialRates(machine),
@@ -76,8 +84,11 @@ const form = createAppForm(() => ({
 const values = form.useStore((state) => state.values);
 const rates = $derived(parseRates(values.current));
 const cards = $derived(cardsQuery.data?.items ?? []);
+const rangeViolation = $derived(
+	publish.error ? priceRangeViolation(publish.error) : null
+);
 const errorMessage = $derived(
-	publish.error ? priceCardErrorMessage(publish.error) : null
+	publish.error && !rangeViolation ? priceCardErrorMessage(publish.error) : null
 );
 </script>
 
@@ -97,12 +108,26 @@ const errorMessage = $derived(
 		{#snippet children(
 			field
 		)}
-			<ChipModalField {label} for={id} required {hint} flush>
+			{const rangeError = $derived(
+				rateFieldError(rangeViolation, key, field.state.value)
+			)}
+			<ChipModalField
+				{label}
+				for={id}
+				required
+				{hint}
+				error={rangeError}
+				errorId={`${id}-error`}
+				flush
+			>
 				<ChipInput
 					{id}
 					{title}
 					name={field.name}
 					required
+					error={rangeError !== null}
+					aria-invalid={rangeError !== null || undefined}
+					aria-describedby={rangeError ? `${id}-error` : undefined}
 					inputmode="decimal"
 					value={field.state.value}
 					onblur={field.handleBlur}
@@ -132,13 +157,25 @@ const errorMessage = $derived(
 				{/each}
 				{@render rateField(
 					'egressMicroUsdPerGiB',
-					'Egress',
-					'/GB',
+					RATE_LABELS.egressMicroUsdPerGiB.label,
+					RATE_LABELS.egressMicroUsdPerGiB.unit,
 					'Set to $0 to offer free egress. Ingress is never charged.',
 					BINARY_UNITS_NOTE
 				)}
 			</div>
 			<div class="flex flex-col gap-7 px-2">
+				{#if hintQuery.isSuccess}
+					<PriceHintSection hint={hintQuery.data} />
+				{:else if hintQuery.isError}
+					<Notice tone="warning">
+						{#snippet title()}
+							Similar listings are not available
+						{/snippet}
+						{#snippet description()}
+							{SnapflowError.fromUnknown(hintQuery.error).message}
+						{/snippet}
+					</Notice>
+				{/if}
 				{#if floorQuery.isSuccess}
 					<PriceCardPreview floor={floorQuery.data} {rates} />
 				{:else}

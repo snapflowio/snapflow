@@ -39,6 +39,7 @@ export class PublicConfigController {
 				escrowAddress: this.config.get('settlement.escrowAddress'),
 				usdcAddress: this.config.get('settlement.usdcAddress'),
 			},
+			reownProjectId: this.config.get('settlement.reownProjectId') ?? null,
 		};
 	}
 }

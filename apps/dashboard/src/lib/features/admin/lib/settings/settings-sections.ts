@@ -9,14 +9,11 @@
 
 import { quantitySetting, type SettingsSection } from './settings-fields.ts';
 import {
-	COUNTRY_CODE_PATTERN,
 	HTTP_URL_PATTERN,
 	IP_NETWORK_PATTERN,
 	UUID_PATTERN,
 } from './settings-validators.ts';
 
-const TOP_UP_PRESETS_MAXIMUM = 10;
-const PAYOUT_COUNTRIES_MAXIMUM = 64;
 const EDGE_TRUSTED_HTTP_PROXY_CIDRS_MAXIMUM = 64;
 
 export const QUOTA_SECTION: SettingsSection = {
@@ -37,12 +34,22 @@ export const QUOTA_SECTION: SettingsSection = {
 
 export const PRICING_SECTION: SettingsSection = {
 	title: 'Pricing',
-	note: 'Prices apply to usage recorded after saving. Network transfer is billed while either price is above zero.',
+	note: 'Markups apply to leases and quotes created after saving; the private pool fee applies from the next daily posting.',
 	fields: [
 		quantitySetting(
-			'platformMarkupBasisPoints',
-			'Platform markup',
-			'basis points'
+			'standardMarkupBasisPoints',
+			'Standard markup',
+			'basis points of the host price'
+		),
+		quantitySetting(
+			'verifiedMarkupBasisPoints',
+			'Verified and Datacenter markup',
+			'basis points of the host price'
+		),
+		quantitySetting(
+			'privatePoolMachineMonthlyMicroUsd',
+			'Private pool fee',
+			'micro-USD per machine per month'
 		),
 		quantitySetting(
 			'egressPriceCeilingMicroUsdPerGiB',
@@ -165,65 +172,70 @@ export const VERIFICATION_SECTION: SettingsSection = {
 	],
 };
 
-export const PAYMENTS_SECTION: SettingsSection = {
-	title: 'Payments',
-	note: 'Applies to top-ups and payouts after saving.',
+export const HOST_PRICE_LIMITS_SECTION: SettingsSection = {
+	title: 'Host price limits',
+	note: 'New price cards outside these ranges are refused. Existing cards keep their prices.',
 	fields: [
-		quantitySetting('topUpMinimumCents', 'Minimum top-up', 'US cents'),
-		quantitySetting('topUpMaximumCents', 'Maximum top-up', 'US cents'),
-		{
-			kind: 'quantityList',
-			name: 'topUpPresetsCents',
-			label: 'Top-up presets',
-			unit: 'US cents',
-			maximum: TOP_UP_PRESETS_MAXIMUM,
-			placeholder: '2500\n5000\n10000',
-		},
 		quantitySetting(
-			'autoTopUpMinimumCents',
-			'Minimum automatic top-up',
-			'US cents'
+			'vcpuHourPriceMinimumMicroUsd',
+			'Minimum vCPU price',
+			'micro-USD per vCPU-hour'
 		),
 		quantitySetting(
-			'autoTopUpMinimumIntervalMinutes',
-			'Automatic top-up interval',
-			'minutes'
+			'vcpuHourPriceMaximumMicroUsd',
+			'Maximum vCPU price',
+			'micro-USD per vCPU-hour'
 		),
-		quantitySetting('topUpAttemptsPerHour', 'Top-up attempts', 'per hour'),
-		quantitySetting('paymentMethodsPerDay', 'New cards', 'per day'),
 		quantitySetting(
-			'organizationsPerCardFingerprint',
-			'Organizations per card',
-			'count'
+			'memoryGibHourPriceMinimumMicroUsd',
+			'Minimum memory price',
+			'micro-USD per GiB-hour'
 		),
-		quantitySetting('payoutMinimumCents', 'Payout minimum', 'US cents'),
 		quantitySetting(
-			'payoutWeekday',
-			'Payout weekday',
-			'ISO weekday, 1 is Monday'
+			'memoryGibHourPriceMaximumMicroUsd',
+			'Maximum memory price',
+			'micro-USD per GiB-hour'
 		),
-		quantitySetting('payoutHoldCommunityDays', 'Community payout hold', 'days'),
-		quantitySetting('payoutHoldVerifiedDays', 'Verified payout hold', 'days'),
 		quantitySetting(
-			'payoutHoldDatacenterDays',
-			'Datacenter payout hold',
-			'days'
+			'gpuHourPriceMinimumMicroUsd',
+			'Minimum GPU price',
+			'micro-USD per GPU-hour'
 		),
-		quantitySetting('newFundingHoldDays', 'New card hold', 'days'),
-		{
-			kind: 'switch',
-			name: 'stripeTaxEnabled',
-			label: 'Stripe Tax',
-			description: 'Calculate and collect sales tax on top-ups.',
-		},
-		{
-			kind: 'list',
-			name: 'payoutCountries',
-			label: 'Payout countries',
-			maximum: PAYOUT_COUNTRIES_MAXIMUM,
-			placeholder: 'US\nGB\nDE',
-			pattern: COUNTRY_CODE_PATTERN,
-		},
+		quantitySetting(
+			'gpuHourPriceMaximumMicroUsd',
+			'Maximum GPU price',
+			'micro-USD per GPU-hour'
+		),
+		quantitySetting(
+			'diskGibMonthPriceMinimumMicroUsd',
+			'Minimum disk price',
+			'micro-USD per GiB-month'
+		),
+		quantitySetting(
+			'diskGibMonthPriceMaximumMicroUsd',
+			'Maximum disk price',
+			'micro-USD per GiB-month'
+		),
+	],
+};
+
+export const SETTLEMENT_SECTION: SettingsSection = {
+	title: 'Settlement',
+	note: 'Applies to escrow indexing, vouchers and claims after saving.',
+	fields: [
+		quantitySetting(
+			'settlementConfirmations',
+			'Escrow confirmations',
+			'blocks'
+		),
+		quantitySetting('voucherIntervalSeconds', 'Voucher interval', 'seconds'),
+		quantitySetting(
+			'voucherGraceIntervals',
+			'Unsigned voucher grace',
+			'voucher intervals'
+		),
+		quantitySetting('voucherLifetimeHours', 'Voucher lifetime', 'hours'),
+		quantitySetting('claimIntervalMinutes', 'Claim interval', 'minutes'),
 	],
 };
 

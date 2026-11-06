@@ -14,10 +14,8 @@ import PageColumn from '#lib/components/page/page-column.svelte';
 import QueryFeedbackState from '#lib/components/query-feedback-state.svelte';
 import BillingHeader from '#lib/features/billing/components/billing-header.svelte';
 import BillingOverview from '#lib/features/billing/components/overview/billing-overview.svelte';
-import { settleReturnedTopUp } from '#lib/features/billing/state/top-up-return.svelte.ts';
 
 const query = createQuery(() => billingOverviewQueryOptions());
-settleReturnedTopUp();
 </script>
 
 <svelte:head>

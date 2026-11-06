@@ -8,7 +8,6 @@
  */
 
 import Building from '@lucide/svelte/icons/building-2';
-import CircleAlert from '@lucide/svelte/icons/circle-alert';
 import Cpu from '@lucide/svelte/icons/cpu';
 import Database from '@lucide/svelte/icons/database';
 import Gauge from '@lucide/svelte/icons/gauge';
@@ -189,14 +188,6 @@ const adminNavigationGroups = [
 			},
 		],
 	},
-	{
-		id: 'adminPayments',
-		label: 'Payments',
-		items: [
-			{ id: 'adminPayouts', label: 'Payouts', path: Path.ADMIN_PAYOUTS },
-			{ id: 'adminDisputes', label: 'Disputes', path: Path.ADMIN_DISPUTES },
-		],
-	},
 ] as const;
 
 const NO_NAVIGATION_GROUPS: readonly AdminNavigationGroup[] = [];
@@ -224,7 +215,6 @@ export const DASHBOARD_GROUP_ICONS = {
 	adminPlatform: Settings,
 	adminTenants: Users,
 	adminInfrastructure: ServerIcon,
-	adminPayments: Credit,
 } satisfies Record<DashboardNavigationGroupId, IconComponent>;
 
 export const DASHBOARD_ITEM_ICONS = {
@@ -253,8 +243,6 @@ export const DASHBOARD_ITEM_ICONS = {
 	adminListings: Cpu,
 	adminEdges: Connections,
 	adminCutovers: RefreshCw,
-	adminPayouts: Credit,
-	adminDisputes: CircleAlert,
 } satisfies Record<DashboardNavigationItemId, IconComponent>;
 
 export class DashboardNavigation {

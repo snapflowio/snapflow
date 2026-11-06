@@ -5963,7 +5963,9 @@ type ProxyProtocol string
 
 // PublicConfig defines model for PublicConfig.
 type PublicConfig struct {
-	Settlement PublicSettlementConfig `json:"settlement"`
+	// ReownProjectId Reown Cloud project id the dashboard connects wallets with; null when the deployment has none
+	ReownProjectId *string                `json:"reownProjectId"`
+	Settlement     PublicSettlementConfig `json:"settlement"`
 
 	// SocialProviders Social sign-in providers enabled on this deployment
 	SocialProviders []SocialProvider `json:"socialProviders"`

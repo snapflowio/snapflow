@@ -89,8 +89,8 @@ const verification = createQuery(() =>
 			{MACHINE_TIER_LABELS[current.tier]}
 		</Badge>
 	{/snippet}
-	{#snippet kyc()}
-		{@render checkBadge(checklist.kyc)}
+	{#snippet payoutWallet()}
+		{@render checkBadge(checklist.payoutWallet)}
 	{/snippet}
 	{#snippet benchmark()}
 		{@render checkBadge(checklist.benchmark)}
@@ -111,7 +111,7 @@ const verification = createQuery(() =>
 	{/snippet}
 	<SettingsSection
 		title="Tier"
-		description="Tiers are earned from KYC, benchmarks, uptime and spot checks."
+		description="Tiers are earned from a linked payout wallet, benchmarks, uptime and spot checks."
 	>
 		<KeyValueList>
 			{@render contentRow('Current tier', tierBadge)}
@@ -122,7 +122,7 @@ const verification = createQuery(() =>
 	</SettingsSection>
 	<SettingsSection title="Checklist">
 		<KeyValueList>
-			{@render contentRow('Payout account (KYC)', kyc)}
+			{@render contentRow('Payout wallet linked', payoutWallet)}
 			{@render contentRow(
 				'Benchmark passed',
 				benchmark,
