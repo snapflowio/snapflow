@@ -14,6 +14,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import type { EscrowAccount, VoucherDelegation } from '@snapflow/api-client';
 import { snapflowEscrowAbi } from '@snapflow/contracts';
 import {
 	ContractFunctionExecutionError,
@@ -235,7 +236,7 @@ describe('Escrow', () => {
 });
 
 describe('SettlementService', () => {
-	const delegation = {
+	const delegation: VoucherDelegation = {
 		chainId: CHAIN_ID,
 		escrowAddress: ESCROW,
 		signerAddress: SIGNER,
@@ -245,7 +246,7 @@ describe('SettlementService', () => {
 		suggestedSpendCapMicroUsd: '90000000',
 		suggestedExpiry: String(BLOCK_TIMESTAMP),
 	};
-	const escrowAccount = {
+	const escrowAccount: EscrowAccount = {
 		chainId: CHAIN_ID,
 		escrowAddress: ESCROW,
 		usdcAddress: USDC,
@@ -257,7 +258,9 @@ describe('SettlementService', () => {
 		indexedThroughBlock: null,
 	};
 
-	function settlement(body: unknown): SettlementService {
+	function settlement(
+		body: VoucherDelegation | EscrowAccount
+	): SettlementService {
 		vi.spyOn(globalThis, 'fetch').mockImplementation(
 			async () =>
 				new Response(JSON.stringify(body), {

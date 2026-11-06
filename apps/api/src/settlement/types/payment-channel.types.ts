@@ -7,9 +7,12 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
+import type { Address, Hex } from 'viem';
 import type { BillingLineItem } from '../../billing/entities/billing-line-item.entity';
 import type { MicroUsd } from '../../common/values/micro-usd.value';
 import type { LinePrice } from '../../marketplace/types/pricing.types';
+import type { PaymentChannel } from '../entities/payment-channel.entity';
+import type { PaymentVoucher } from '../entities/payment-voucher.entity';
 
 // Cumulative amounts of a lease's channel, as a voucher carries them.
 export interface VoucherAmounts {
@@ -28,4 +31,14 @@ export type ChargedLine = Pick<
 export interface LeaseCharges {
 	lines: readonly ChargedLine[];
 	accruals: readonly LinePrice[];
+}
+
+export interface ChannelVoucher {
+	channel: PaymentChannel;
+	voucher: PaymentVoucher;
+}
+
+export interface SubmittedVoucherSignature {
+	signerAddress: Address;
+	signature: Hex;
 }

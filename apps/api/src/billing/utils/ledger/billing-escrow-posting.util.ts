@@ -19,13 +19,15 @@ import {
 	hostPendingEarningsAccount,
 	platformAccount,
 } from './billing-ledger-accounts.util';
-import { LedgerPostingBuilder } from './ledger-posting-builder.util';
+import {
+	LedgerPostingBuilder,
+	type LedgerPostingSource,
+} from './ledger-posting-builder.util';
 
-export interface EscrowPostingSource {
-	sourceReference: string;
-	effectiveAt: Date;
-	metadata: Record<string, unknown>;
-}
+export type EscrowPostingSource = Pick<
+	LedgerPostingSource,
+	'sourceReference' | 'effectiveAt' | 'metadata'
+>;
 
 export interface EscrowTransfer extends EscrowPostingSource {
 	organizationId: string;

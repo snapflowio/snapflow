@@ -9,14 +9,13 @@
 
 import { QueryOrder } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { escrowDomain } from '@snapflow/contracts';
 import type { Hex } from 'viem';
 import { findCursorPage } from '../../common/utils/pagination/cursor-page.util';
 import { TypedConfigService } from '../../config/services/typed-config.service';
 import { databaseNow } from '../../infra/database/utils/database-time.util';
 import { SettingsService } from '../../settings/services/settings.service';
-import { PaymentChannelErrorCode } from '../constants/payment-channel.constants';
 import {
 	type ListPaymentChannelsQueryDto,
 	PaymentChannelDto,
@@ -24,13 +23,14 @@ import {
 	PendingVouchersDto,
 } from '../dto/payment-channel.dto';
 import { PaymentChannel } from '../entities/payment-channel.entity';
-import type { PaymentVoucher } from '../entities/payment-voucher.entity';
 import type { SettlementParty } from '../enums/settlement-party.enum';
+import { PaymentChannelNotFoundException } from '../exceptions/payment-channel-not-found.exception';
 import {
 	latestVouchers,
 	VoucherSelection,
 } from '../queries/latest-vouchers.query';
 import { recentChannels } from '../queries/recent-channels.query';
+import type { ChannelVoucher } from '../types/payment-channel.types';
 import { configuredEscrow } from '../utils/escrow-identity.util';
 import { partyFilter } from '../utils/settlement-party.util';
 
@@ -42,7 +42,6 @@ export class PaymentChannelReadService {
 		private readonly settings: SettingsService
 	) {}
 
-	// Newest first, each with its latest voucher.
 	async list(
 		organizationId: string,
 		parties: readonly SettlementParty[],
@@ -82,12 +81,7 @@ export class PaymentChannelReadService {
 			...partyFilter(organizationId, parties),
 			channelId,
 		});
-		if (!channel) {
-			throw new NotFoundException({
-				code: PaymentChannelErrorCode.CHANNEL_NOT_FOUND,
-				message: 'Payment channel not found',
-			});
-		}
+		if (!channel) throw new PaymentChannelNotFoundException();
 		const latest = await latestVouchers(
 			manager,
 			[channel.id],
@@ -114,14 +108,12 @@ export class PaymentChannelReadService {
 			channels.map(({ id }) => id),
 			VoucherSelection.ANY
 		);
-		const pending = channels.flatMap(
-			(channel): [PaymentChannel, PaymentVoucher][] => {
-				const voucher = latest.get(channel.id);
-				return voucher && voucher.signature === null && voucher.expiresAt > now
-					? [[channel, voucher]]
-					: [];
-			}
-		);
+		const pending = channels.flatMap((channel): ChannelVoucher[] => {
+			const voucher = latest.get(channel.id);
+			return voucher && voucher.signature === null && voucher.expiresAt > now
+				? [{ channel, voucher }]
+				: [];
+		});
 		return PendingVouchersDto.from(
 			escrowDomain(escrow.chainId, escrow.contractAddress),
 			pending

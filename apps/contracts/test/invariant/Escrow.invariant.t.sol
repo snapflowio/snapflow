@@ -13,7 +13,7 @@ import { MockUSDC } from "../mocks/MockUSDC.sol";
 import { Constants } from "../utils/Constants.sol";
 import { EscrowHandler } from "./handlers/EscrowHandler.sol";
 
-/// @notice The five invariants from the design doc, checked after every random call sequence.
+/// @notice Escrow invariants, checked after every random call sequence.
 contract Escrow_Invariant_Test is Test, Constants {
     MockUSDC private usdc;
     SnapflowEscrow private escrow;

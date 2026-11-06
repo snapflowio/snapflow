@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { DecimalType, OptionalProps } from '@mikro-orm/core';
+import { OptionalProps } from '@mikro-orm/core';
 import {
 	Entity,
 	PrimaryKey,
@@ -15,14 +15,11 @@ import {
 	Unique,
 } from '@mikro-orm/decorators/legacy';
 import type { Address } from 'viem';
-import { EVM_ADDRESS_LENGTH } from '../constants/settlement.constants';
-
-const amountColumn = (fieldName: string) =>
-	({
-		type: new DecimalType('string'),
-		columnType: 'numeric(40,0)',
-		fieldName,
-	}) as const;
+import {
+	addressColumn,
+	amountColumn,
+	timestampColumn,
+} from '../utils/settlement-columns.util';
 
 // Mirror of what the escrow holds for one address, folded from its confirmed
 // events. It is keyed by address rather than organization so relinking a
@@ -46,18 +43,10 @@ export class EscrowAccount {
 	@Property({ type: 'integer', columnType: 'integer', fieldName: 'chainId' })
 	chainId: number;
 
-	@Property({
-		type: 'string',
-		columnType: `varchar(${EVM_ADDRESS_LENGTH})`,
-		fieldName: 'contractAddress',
-	})
+	@Property(addressColumn('contractAddress'))
 	contractAddress: Address;
 
-	@Property({
-		type: 'string',
-		columnType: `varchar(${EVM_ADDRESS_LENGTH})`,
-		fieldName: 'address',
-	})
+	@Property(addressColumn('address'))
 	address: Address;
 
 	@Property(amountColumn('balanceMicroUsd'))
@@ -66,30 +55,21 @@ export class EscrowAccount {
 	@Property(amountColumn('pendingWithdrawalMicroUsd'))
 	pendingWithdrawalMicroUsd: string;
 
-	@Property({
-		type: 'datetime',
-		columnType: 'timestamptz(3)',
-		fieldName: 'withdrawalReadyAt',
-		nullable: true,
-	})
+	@Property({ ...timestampColumn('withdrawalReadyAt'), nullable: true })
 	withdrawalReadyAt: Date | null;
 
 	@Property({ type: 'boolean', fieldName: 'blocked' })
 	blocked: boolean;
 
 	@Property({
-		type: 'datetime',
-		columnType: 'timestamptz(3)',
-		fieldName: 'createdAt',
+		...timestampColumn('createdAt'),
 		defaultRaw: 'now()',
 		onCreate: () => new Date(),
 	})
 	createdAt: Date;
 
 	@Property({
-		type: 'datetime',
-		columnType: 'timestamptz(3)',
-		fieldName: 'updatedAt',
+		...timestampColumn('updatedAt'),
 		defaultRaw: 'now()',
 		onCreate: () => new Date(),
 		onUpdate: () => new Date(),

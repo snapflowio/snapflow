@@ -15,6 +15,8 @@
  */
 
 import {
+	type EscrowAccount,
+	type PaymentChannel,
 	PaymentChannelKind,
 	PaymentChannelState,
 	type PendingVouchers,
@@ -104,7 +106,9 @@ function pending(
 	};
 }
 
-function channel(signingMode: VoucherSigningMode = VoucherSigningMode.Client) {
+function channel(
+	signingMode: VoucherSigningMode = VoucherSigningMode.Client
+): PaymentChannel {
 	return {
 		channelId: CHANNEL_ID,
 		kind: PaymentChannelKind.Lease,
@@ -125,10 +129,15 @@ function channel(signingMode: VoucherSigningMode = VoucherSigningMode.Client) {
 	};
 }
 
+interface FakeResponse {
+	status: number;
+	body: unknown;
+}
+
 interface FakeApi {
-	pending: () => { status: number; body: unknown };
-	channel: () => { status: number; body: unknown };
-	sandbox: () => { status: number; body: unknown };
+	pending: () => FakeResponse;
+	channel: () => FakeResponse;
+	sandbox: () => FakeResponse;
 	escrowAddress: () => string;
 	submissions: SubmitVoucherSignature[];
 	pendingRequests: number;
@@ -151,7 +160,7 @@ function fakeApi(overrides: Partial<FakeApi> = {}): FakeApi {
 	vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
 		const request = input instanceof Request ? input : new Request(input);
 		const path = new URL(request.url).pathname;
-		const reply = ({ status, body }: { status: number; body: unknown }) =>
+		const reply = ({ status, body }: FakeResponse) =>
 			new Response(JSON.stringify(body), {
 				status,
 				headers: { 'Content-Type': 'application/json' },
@@ -166,20 +175,18 @@ function fakeApi(overrides: Partial<FakeApi> = {}): FakeApi {
 		}
 		if (path === '/settlement/escrow') {
 			api.escrowRequests += 1;
-			return reply({
-				status: HTTP_OK,
-				body: {
-					chainId: CHAIN_ID,
-					escrowAddress: api.escrowAddress(),
-					usdcAddress: USDC,
-					fundingWalletAddress: CUSTOMER,
-					balanceMicroUsd: '0',
-					pendingWithdrawalMicroUsd: '0',
-					withdrawalReadyAt: null,
-					blocked: false,
-					indexedThroughBlock: null,
-				},
-			});
+			const account: EscrowAccount = {
+				chainId: CHAIN_ID,
+				escrowAddress: api.escrowAddress(),
+				usdcAddress: USDC,
+				fundingWalletAddress: CUSTOMER,
+				balanceMicroUsd: '0',
+				pendingWithdrawalMicroUsd: '0',
+				withdrawalReadyAt: null,
+				blocked: false,
+				indexedThroughBlock: null,
+			};
+			return reply({ status: HTTP_OK, body: account });
 		}
 		if (path === `/sandbox/${SANDBOX_ID}`) {
 			return reply(api.sandbox());
@@ -194,10 +201,12 @@ function fakeApi(overrides: Partial<FakeApi> = {}): FakeApi {
 	return api;
 }
 
-function signer(options: Partial<VoucherSignerOptions> = {}): {
+interface SignerHarness {
 	signer: VoucherSigner;
 	errors: Error[];
-} {
+}
+
+function signer(options: Partial<VoucherSignerOptions> = {}): SignerHarness {
 	const errors: Error[] = [];
 	const client = createApiClient(
 		{ apiKey: 'api-key', apiUrl: API_URL },

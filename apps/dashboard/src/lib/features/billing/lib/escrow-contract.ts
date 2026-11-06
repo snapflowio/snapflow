@@ -49,6 +49,15 @@ async function confirmed(
 	}
 }
 
+function escrowCall(wallet: EscrowWallet) {
+	return {
+		abi: snapflowEscrowAbi,
+		address: wallet.escrow,
+		account: wallet.account,
+		chainId: wallet.chainId,
+	};
+}
+
 export async function usdcBalance(wallet: EscrowWallet): Promise<bigint> {
 	try {
 		return await readContract(wallet.config, {
@@ -108,12 +117,9 @@ export function depositFor(
 ): Promise<Hash> {
 	return confirmed(wallet, async () => {
 		const { request } = await simulateContract(wallet.config, {
-			abi: snapflowEscrowAbi,
-			address: wallet.escrow,
+			...escrowCall(wallet),
 			functionName: 'depositFor',
 			args: [customer, amount],
-			account: wallet.account,
-			chainId: wallet.chainId,
 		});
 		return writeContract(wallet.config, request);
 	});
@@ -125,12 +131,9 @@ export function requestWithdrawal(
 ): Promise<Hash> {
 	return confirmed(wallet, async () => {
 		const { request } = await simulateContract(wallet.config, {
-			abi: snapflowEscrowAbi,
-			address: wallet.escrow,
+			...escrowCall(wallet),
 			functionName: 'requestWithdrawal',
 			args: [amount],
-			account: wallet.account,
-			chainId: wallet.chainId,
 		});
 		return writeContract(wallet.config, request);
 	});
@@ -139,11 +142,8 @@ export function requestWithdrawal(
 export function cancelWithdrawal(wallet: EscrowWallet): Promise<Hash> {
 	return confirmed(wallet, async () => {
 		const { request } = await simulateContract(wallet.config, {
-			abi: snapflowEscrowAbi,
-			address: wallet.escrow,
+			...escrowCall(wallet),
 			functionName: 'cancelWithdrawal',
-			account: wallet.account,
-			chainId: wallet.chainId,
 		});
 		return writeContract(wallet.config, request);
 	});
@@ -152,11 +152,8 @@ export function cancelWithdrawal(wallet: EscrowWallet): Promise<Hash> {
 export function withdraw(wallet: EscrowWallet): Promise<Hash> {
 	return confirmed(wallet, async () => {
 		const { request } = await simulateContract(wallet.config, {
-			abi: snapflowEscrowAbi,
-			address: wallet.escrow,
+			...escrowCall(wallet),
 			functionName: 'withdraw',
-			account: wallet.account,
-			chainId: wallet.chainId,
 		});
 		return writeContract(wallet.config, request);
 	});
@@ -168,12 +165,9 @@ export function setSessionKey(
 ): Promise<Hash> {
 	return confirmed(wallet, async () => {
 		const { request } = await simulateContract(wallet.config, {
-			abi: snapflowEscrowAbi,
-			address: wallet.escrow,
+			...escrowCall(wallet),
 			functionName: 'setSessionKey',
 			args: [grant.key, grant.spendCap, grant.hourlyCap, grant.expiry],
-			account: wallet.account,
-			chainId: wallet.chainId,
 		});
 		return writeContract(wallet.config, request);
 	});
@@ -185,12 +179,9 @@ export function revokeSessionKey(
 ): Promise<Hash> {
 	return confirmed(wallet, async () => {
 		const { request } = await simulateContract(wallet.config, {
-			abi: snapflowEscrowAbi,
-			address: wallet.escrow,
+			...escrowCall(wallet),
 			functionName: 'revokeSessionKey',
 			args: [key],
-			account: wallet.account,
-			chainId: wallet.chainId,
 		});
 		return writeContract(wallet.config, request);
 	});

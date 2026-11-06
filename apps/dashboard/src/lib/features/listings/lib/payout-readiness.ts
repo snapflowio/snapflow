@@ -13,13 +13,12 @@ import {
 	PayoutReadiness,
 	SanctionsStatus,
 } from '@snapflow/api-client';
+import { linkedWallet } from '#lib/features/billing/lib/payment-wallet.ts';
 
 export function payoutReadiness(
 	wallets: readonly PaymentWallet[]
 ): PayoutReadiness {
-	const wallet = wallets.find(
-		(candidate) => candidate.purpose === PaymentWalletPurpose.Payout
-	);
+	const wallet = linkedWallet(wallets, PaymentWalletPurpose.Payout);
 	if (!wallet) return PayoutReadiness.NotSetUp;
 	return wallet.sanctionsStatus === SanctionsStatus.Blocked
 		? PayoutReadiness.Blocked

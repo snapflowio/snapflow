@@ -11,6 +11,7 @@ import { BigIntType, OptionalProps } from '@mikro-orm/core';
 import { Entity, PrimaryKey, Property } from '@mikro-orm/decorators/legacy';
 import type { Address } from 'viem';
 import { EVM_ADDRESS_LENGTH } from '../constants/settlement.constants';
+import { timestampColumn } from '../utils/settlement-columns.util';
 
 // The last block whose escrow events are stored; it only advances in the
 // transaction that stores them.
@@ -41,9 +42,7 @@ export class SettlementChainCursor {
 	lastIndexedBlock: number;
 
 	@Property({
-		type: 'datetime',
-		columnType: 'timestamptz(3)',
-		fieldName: 'updatedAt',
+		...timestampColumn('updatedAt'),
 		defaultRaw: 'now()',
 		onCreate: () => new Date(),
 		onUpdate: () => new Date(),

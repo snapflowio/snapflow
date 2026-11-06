@@ -13,7 +13,6 @@ import {
 	Get,
 	HttpCode,
 	HttpStatus,
-	NotFoundException,
 	Param,
 	Post,
 	Query,
@@ -34,7 +33,6 @@ import {
 	RequiredAnyOrganizationPermissions,
 	RequiredOrganizationPermissions,
 } from '../../organization/decorators/required-organization-permissions.decorator';
-import { PaymentChannelErrorCode } from '../constants/payment-channel.constants';
 import {
 	ListPaymentChannelsQueryDto,
 	PaymentChannelDto,
@@ -46,15 +44,14 @@ import {
 	SubmitVoucherSignatureDto,
 } from '../dto/payment-voucher.dto';
 import { VoucherDelegationDto } from '../dto/voucher-delegation.dto';
+import { PaymentChannelNotFoundException } from '../exceptions/payment-channel-not-found.exception';
 import { PaymentChannelReadService } from '../services/payment-channel-read.service';
 import { SettlementPartyAccessService } from '../services/settlement-party-access.service';
 import { VoucherDelegationService } from '../services/voucher-delegation.service';
 import { VoucherSubmissionService } from '../services/voucher-submission.service';
 import { parseChannelId } from '../utils/voucher-message.util';
 
-// The escrow channels that pay for the organization's sandboxes or pay it as
-// a host. API keys work here so an SDK or agent can sign client-mode
-// vouchers.
+// API keys are accepted so an SDK or agent can sign client-mode vouchers.
 @Controller('settlement')
 @ApiTags('settlement')
 @ApiBearerAuth()
@@ -162,11 +159,6 @@ export class PaymentChannelController {
 
 function requiredChannelId(value: string): Hex {
 	const channelId = parseChannelId(value);
-	if (channelId === null) {
-		throw new NotFoundException({
-			code: PaymentChannelErrorCode.CHANNEL_NOT_FOUND,
-			message: 'Payment channel not found',
-		});
-	}
+	if (channelId === null) throw new PaymentChannelNotFoundException();
 	return channelId;
 }

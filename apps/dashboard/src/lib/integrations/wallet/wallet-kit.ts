@@ -35,7 +35,12 @@ export interface WalletKit {
 
 export type WalletView = NonNullable<Parameters<AppKit['open']>[0]>['view'];
 
-let current: { key: string; kit: WalletKit } | undefined;
+interface CachedWalletKit {
+	key: string;
+	kit: WalletKit;
+}
+
+let current: CachedWalletKit | undefined;
 
 function optionsKey({ chainId, projectId }: WalletKitOptions): string {
 	return `${chainId}:${projectId}`;

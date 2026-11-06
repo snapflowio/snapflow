@@ -24,6 +24,7 @@ import { priceTerms, priceUsage, usageQuantities } from './pricing.util';
 
 const BILLING_MONTH_MILLIS =
 	BigInt(MILLISECONDS_PER_HOUR) * HOURS_PER_BILLING_MONTH;
+const NO_STOPPED_MILLIS = 0n;
 
 export interface PriceRange {
 	resource: PricedResource;
@@ -66,7 +67,7 @@ export function monthlyEarningsEstimates(
 ): EarningsEstimate[] {
 	const fullMonth = priceUsage(
 		priceTerms(rates, HOST_MARKUP_BASIS_POINTS),
-		usageQuantities(machineShape, BILLING_MONTH_MILLIS, 0n)
+		usageQuantities(machineShape, BILLING_MONTH_MILLIS, NO_STOPPED_MILLIS)
 	).hostMicroUsd;
 	return PRICE_HINT_UTILIZATIONS.map((utilization) => ({
 		utilization,

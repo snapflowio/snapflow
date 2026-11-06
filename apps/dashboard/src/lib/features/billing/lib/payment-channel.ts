@@ -50,15 +50,24 @@ export const PARTY_CHANNEL_COPY = {
 	},
 } as const satisfies Record<SettlementParty, PartyChannelCopy>;
 
+export function partyAmount(
+	party: SettlementParty,
+	host: bigint,
+	fee: bigint,
+	service: bigint
+): bigint {
+	return party === SettlementParty.Host ? host : host + fee + service;
+}
+
 export function voucherAmountMicroUsd(
 	message: VoucherMessage,
 	party: SettlementParty
 ): string {
-	const hostAmount = BigInt(message.hostAmount);
-	return (
-		party === SettlementParty.Host
-			? hostAmount
-			: hostAmount + BigInt(message.feeAmount) + BigInt(message.serviceAmount)
+	return partyAmount(
+		party,
+		BigInt(message.hostAmount),
+		BigInt(message.feeAmount),
+		BigInt(message.serviceAmount)
 	).toString();
 }
 

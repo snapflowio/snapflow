@@ -30,24 +30,33 @@ import {
 
 const VECTORS_PATH = '../../../apps/contracts/test/vectors/vouchers.json';
 
-type VectorEntry = Record<keyof Voucher, string> & {
+/** The vectors JSON writes every integer as a decimal string. */
+type VectorEntry = {
+	[Field in keyof Voucher]: Voucher[Field] extends bigint
+		? string
+		: Voucher[Field];
+} & {
 	digest: Hex;
 	signature: Hex;
 };
 
-const vectors: {
+interface ChannelVector {
+	customer: Address;
+	host: Address;
+	leaseId: string;
+	channelId: Hex;
+}
+
+interface VoucherVectors {
 	chainId: number;
 	verifyingContract: Address;
 	signer: Address;
 	signerKey: Hex;
 	vouchers: VectorEntry[];
-	channels: Array<{
-		customer: Address;
-		host: Address;
-		leaseId: string;
-		channelId: Hex;
-	}>;
-} = JSON.parse(
+	channels: ChannelVector[];
+}
+
+const vectors: VoucherVectors = JSON.parse(
 	readFileSync(fileURLToPath(new URL(VECTORS_PATH, import.meta.url)), 'utf8')
 );
 
@@ -55,7 +64,7 @@ const domain = escrowDomain(vectors.chainId, vectors.verifyingContract);
 
 function toVoucher(entry: VectorEntry): Voucher {
 	return {
-		channelId: entry.channelId as Hex,
+		channelId: entry.channelId,
 		customer: getAddress(entry.customer),
 		host: getAddress(entry.host),
 		hostAmount: BigInt(entry.hostAmount),

@@ -21,23 +21,14 @@ import type { Address, Hash, Hex } from 'viem';
 import { sqlValueList } from '../../infra/database/utils/sql-value-list.util';
 import { SandboxLease } from '../../marketplace/entities/sandbox-lease.entity';
 import { Organization } from '../../organization/entities/organization.entity';
-import {
-	EVM_ADDRESS_LENGTH,
-	EVM_HASH_LENGTH,
-} from '../constants/settlement.constants';
 import { PaymentChannelKind } from '../enums/payment-channel-kind.enum';
 import { PaymentChannelState } from '../enums/payment-channel-state.enum';
 import { VoucherSigningMode } from '../enums/voucher-signing-mode.enum';
-
-const addressColumn = (fieldName: string) =>
-	({
-		type: 'string',
-		columnType: `varchar(${EVM_ADDRESS_LENGTH})`,
-		fieldName,
-	}) as const;
-
-const timestampColumn = (fieldName: string) =>
-	({ type: 'datetime', columnType: 'timestamptz(3)', fieldName }) as const;
+import {
+	addressColumn,
+	hashColumn,
+	timestampColumn,
+} from '../utils/settlement-columns.util';
 
 const organizationColumn = (joinColumn: string, foreignKeyName: string) =>
 	({
@@ -139,11 +130,7 @@ export class PaymentChannel {
 	@Property(addressColumn('contractAddress'))
 	contractAddress: Address;
 
-	@Property({
-		type: 'string',
-		columnType: `varchar(${EVM_HASH_LENGTH})`,
-		fieldName: 'channelId',
-	})
+	@Property(hashColumn('channelId'))
 	channelId: Hex;
 
 	@Property({ type: 'string', columnType: 'varchar', fieldName: 'kind' })
@@ -249,12 +236,7 @@ export class PaymentChannel {
 	})
 	claimSequence: number | null;
 
-	@Property({
-		type: 'string',
-		columnType: `varchar(${EVM_HASH_LENGTH})`,
-		fieldName: 'claimTransactionHash',
-		nullable: true,
-	})
+	@Property({ ...hashColumn('claimTransactionHash'), nullable: true })
 	claimTransactionHash: Hash | null;
 
 	@Property({ ...timestampColumn('claimAttemptedAt'), nullable: true })

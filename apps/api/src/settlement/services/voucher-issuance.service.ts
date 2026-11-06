@@ -11,7 +11,7 @@ import { LockMode, QueryOrder } from '@mikro-orm/core';
 import type { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { pricedLease } from '../../billing/queries/lease-price.query';
-import { addSeconds } from '../../common/utils/time.util';
+import { addSeconds, millisecondsBetween } from '../../common/utils/time.util';
 import { BasisPoints } from '../../common/values/basis-points.value';
 import { databaseNow } from '../../infra/database/utils/database-time.util';
 import type { SettingsSnapshot } from '../../settings/types/settings.types';
@@ -208,7 +208,7 @@ export class VoucherIssuanceService {
 		return (
 			channel.state === PaymentChannelState.CLOSING &&
 			channel.closedAt !== null &&
-			now.getTime() - channel.closedAt.getTime() >=
+			millisecondsBetween(channel.closedAt, now) >=
 				CHANNEL_SETTLE_DELAY_MILLISECONDS
 		);
 	}

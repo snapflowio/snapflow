@@ -23,25 +23,12 @@ import {
 	CLAIMED_EVENT,
 	ESCROW_EVENT_KINDS,
 } from '../constants/escrow.constants';
-import {
-	EVM_ADDRESS_LENGTH,
-	EVM_HASH_LENGTH,
-} from '../constants/settlement.constants';
 import type { EscrowEventKind, StoredEscrowArgs } from '../types/escrow.types';
-
-const addressColumn = (fieldName: string) =>
-	({
-		type: 'string',
-		columnType: `varchar(${EVM_ADDRESS_LENGTH})`,
-		fieldName,
-	}) as const;
-
-const hashColumn = (fieldName: string) =>
-	({
-		type: 'string',
-		columnType: `varchar(${EVM_HASH_LENGTH})`,
-		fieldName,
-	}) as const;
+import {
+	addressColumn,
+	hashColumn,
+	timestampColumn,
+} from '../utils/settlement-columns.util';
 
 const organizationColumn = (joinColumn: string, foreignKeyName: string) =>
 	({
@@ -122,11 +109,7 @@ export class EscrowEvent {
 	@Property(hashColumn('blockHash'))
 	blockHash: Hash;
 
-	@Property({
-		type: 'datetime',
-		columnType: 'timestamptz(3)',
-		fieldName: 'blockTimestamp',
-	})
+	@Property(timestampColumn('blockTimestamp'))
 	blockTimestamp: Date;
 
 	@Property({ type: 'string', columnType: 'varchar', fieldName: 'kind' })
@@ -157,18 +140,11 @@ export class EscrowEvent {
 	)
 	hostOrganizationId: string | null;
 
-	@Property({
-		type: 'datetime',
-		columnType: 'timestamptz(3)',
-		fieldName: 'processedAt',
-		nullable: true,
-	})
+	@Property({ ...timestampColumn('processedAt'), nullable: true })
 	processedAt: Date | null;
 
 	@Property({
-		type: 'datetime',
-		columnType: 'timestamptz(3)',
-		fieldName: 'createdAt',
+		...timestampColumn('createdAt'),
 		defaultRaw: 'now()',
 		onCreate: () => new Date(),
 	})

@@ -19,9 +19,12 @@ import {
 import type { Address } from 'viem';
 import { sqlValueList } from '../../infra/database/utils/sql-value-list.util';
 import { Organization } from '../../organization/entities/organization.entity';
-import { EVM_ADDRESS_LENGTH } from '../constants/settlement.constants';
 import { PaymentWalletPurpose } from '../enums/payment-wallet-purpose.enum';
 import { SanctionsStatus } from '../enums/sanctions-status.enum';
+import {
+	addressColumn,
+	timestampColumn,
+} from '../utils/settlement-columns.util';
 
 @Entity({ tableName: 'payment_wallet' })
 @Unique({
@@ -65,18 +68,10 @@ export class PaymentWallet {
 	purpose: PaymentWalletPurpose;
 
 	// Stored in EIP-55 checksum form so equal addresses compare equal.
-	@Property({
-		type: 'string',
-		columnType: `varchar(${EVM_ADDRESS_LENGTH})`,
-		fieldName: 'address',
-	})
+	@Property(addressColumn('address'))
 	address: Address;
 
-	@Property({
-		type: 'datetime',
-		columnType: 'timestamptz(3)',
-		fieldName: 'verifiedAt',
-	})
+	@Property(timestampColumn('verifiedAt'))
 	verifiedAt: Date;
 
 	@Property({
@@ -86,27 +81,18 @@ export class PaymentWallet {
 	})
 	sanctionsStatus: SanctionsStatus;
 
-	@Property({
-		type: 'datetime',
-		columnType: 'timestamptz(3)',
-		fieldName: 'sanctionsCheckedAt',
-		nullable: true,
-	})
+	@Property({ ...timestampColumn('sanctionsCheckedAt'), nullable: true })
 	sanctionsCheckedAt: Date | null;
 
 	@Property({
-		type: 'datetime',
-		columnType: 'timestamptz(3)',
-		fieldName: 'createdAt',
+		...timestampColumn('createdAt'),
 		defaultRaw: 'now()',
 		onCreate: () => new Date(),
 	})
 	createdAt: Date;
 
 	@Property({
-		type: 'datetime',
-		columnType: 'timestamptz(3)',
-		fieldName: 'updatedAt',
+		...timestampColumn('updatedAt'),
 		defaultRaw: 'now()',
 		onCreate: () => new Date(),
 		onUpdate: () => new Date(),

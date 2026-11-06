@@ -7,6 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
+import { millisecondsBetween } from '../../common/utils/time.util';
 import { MicroUsd } from '../../common/values/micro-usd.value';
 import { SESSION_RATE_WINDOW_MILLISECONDS } from '../constants/payment-channel.constants';
 import type { EscrowSessionKey } from '../entities/escrow-session-key.entity';
@@ -39,7 +40,7 @@ export function sessionRateAllowance(
 ): MicroUsd {
 	const elapsedMilliseconds = Math.max(
 		0,
-		now.getTime() - key.activatedAt.getTime()
+		millisecondsBetween(key.activatedAt, now)
 	);
 	const windows =
 		BigInt(Math.floor(elapsedMilliseconds / SESSION_RATE_WINDOW_MILLISECONDS)) +

@@ -11,6 +11,7 @@ import {
 	MILLISECONDS_PER_HOUR,
 	MILLISECONDS_PER_SECOND,
 } from '../../common/constants/time.constants';
+import { millisecondsBetween } from '../../common/utils/time.util';
 import type { SettingsSnapshot } from '../../settings/types/settings.types';
 
 type CoverageSettings = Pick<
@@ -33,7 +34,7 @@ export function voucherCoverageLapsed(
 		settings.voucherIntervalSeconds *
 		settings.voucherGraceIntervals *
 		MILLISECONDS_PER_SECOND;
-	return now.getTime() - coveredAt.getTime() > graceMilliseconds;
+	return millisecondsBetween(coveredAt, now) > graceMilliseconds;
 }
 
 // The expiry of a voucher issued now, in whole seconds as the escrow reads
@@ -59,7 +60,7 @@ export function voucherReissueDue(
 	lifetimeHours: number
 ): boolean {
 	return (
-		expiresAt.getTime() - now.getTime() <=
+		millisecondsBetween(now, expiresAt) <=
 		(lifetimeHours * MILLISECONDS_PER_HOUR) / REISSUE_LIFETIME_DIVISOR
 	);
 }

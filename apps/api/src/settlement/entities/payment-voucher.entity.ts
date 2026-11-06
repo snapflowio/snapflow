@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { DecimalType, OptionalProps } from '@mikro-orm/core';
+import { OptionalProps } from '@mikro-orm/core';
 import {
 	Check,
 	Entity,
@@ -18,18 +18,12 @@ import {
 	Unique,
 } from '@mikro-orm/decorators/legacy';
 import type { Address, Hex } from 'viem';
-import { EVM_ADDRESS_LENGTH } from '../constants/settlement.constants';
+import {
+	addressColumn,
+	amountColumn,
+	timestampColumn,
+} from '../utils/settlement-columns.util';
 import { PaymentChannel } from './payment-channel.entity';
-
-const amountColumn = (fieldName: string) =>
-	({
-		type: new DecimalType('string'),
-		columnType: 'numeric(40,0)',
-		fieldName,
-	}) as const;
-
-const timestampColumn = (fieldName: string) =>
-	({ type: 'datetime', columnType: 'timestamptz(3)', fieldName }) as const;
 
 // One voucher of a channel. Amounts are cumulative for the lease in USDC base
 // units (micro-USD) and never decrease from one sequence to the next. A
@@ -98,12 +92,7 @@ export class PaymentVoucher {
 	@Property(timestampColumn('expiresAt'))
 	expiresAt: Date;
 
-	@Property({
-		type: 'string',
-		columnType: `varchar(${EVM_ADDRESS_LENGTH})`,
-		fieldName: 'signerAddress',
-		nullable: true,
-	})
+	@Property({ ...addressColumn('signerAddress'), nullable: true })
 	signerAddress: Address | null;
 
 	@Property({

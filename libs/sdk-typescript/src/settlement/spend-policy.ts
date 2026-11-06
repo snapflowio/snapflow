@@ -16,12 +16,11 @@
 
 import { VoucherRejectionReason } from '../errors/settlement-error.js';
 import { SnapflowValidationError } from '../errors/snapflow-error.js';
-import { MILLISECONDS_PER_SECOND } from '../utils/timeout.js';
+import {
+	MILLISECONDS_PER_HOUR,
+	MILLISECONDS_PER_MINUTE,
+} from '../utils/timeout.js';
 
-const SECONDS_PER_MINUTE = 60;
-const MINUTES_PER_HOUR = 60;
-const MILLISECONDS_PER_MINUTE = SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
-const MILLISECONDS_PER_HOUR = MINUTES_PER_HOUR * MILLISECONDS_PER_MINUTE;
 const SPEND_RATE_TOLERANCE_MINUTES = 5;
 
 /**

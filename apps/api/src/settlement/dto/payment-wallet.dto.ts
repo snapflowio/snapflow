@@ -20,6 +20,7 @@ import {
 	PAYMENT_WALLET_LIMITS,
 	SIGNATURE_PATTERN,
 } from '../constants/payment-wallet.constants';
+import { EVM_ADDRESS_API_PROPERTY } from '../constants/settlement.constants';
 import type { PaymentWallet } from '../entities/payment-wallet.entity';
 import { PaymentWalletPurpose } from '../enums/payment-wallet-purpose.enum';
 import { SanctionsStatus } from '../enums/sanctions-status.enum';
@@ -94,11 +95,7 @@ export class PaymentWalletDto {
 	@ApiProperty(PURPOSE_PROPERTY)
 	purpose: PaymentWalletPurpose;
 
-	@ApiProperty({
-		type: String,
-		description: 'EIP-55 checksummed address',
-		example: ADDRESS_EXAMPLE,
-	})
+	@ApiProperty({ ...EVM_ADDRESS_API_PROPERTY, example: ADDRESS_EXAMPLE })
 	address: Address;
 
 	@ApiProperty({ type: String, format: 'date-time' })

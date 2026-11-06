@@ -17,6 +17,7 @@ import { databaseNow } from '../../infra/database/utils/database-time.util';
 import { SettingsService } from '../../settings/services/settings.service';
 import {
 	MachineSignedVoucherDto,
+	type MachineVoucherChannelDto,
 	type MachineVoucherRelayDto,
 } from '../dto/machine-voucher-relay.dto';
 import { EscrowDomainDto } from '../dto/payment-channel.dto';
@@ -56,7 +57,7 @@ export class MachineVoucherRelayService {
 			channels.map(({ id }) => id),
 			VoucherSelection.SIGNED
 		);
-		const document = {
+		const document: Omit<MachineVoucherRelayDto, 'digest'> = {
 			domain: EscrowDomainDto.from(
 				escrowDomain(escrow.chainId, escrow.contractAddress)
 			),
@@ -64,7 +65,7 @@ export class MachineVoucherRelayService {
 			voucherGraceIntervals: settings.voucherGraceIntervals,
 			// Channels of a machine are lease channels: a platform service
 			// channel has no machine.
-			channels: channels.flatMap((channel) => {
+			channels: channels.flatMap((channel): MachineVoucherChannelDto[] => {
 				const leased = channelLease(channel);
 				if (leased === null) return [];
 				const voucher = latest.get(channel.id);

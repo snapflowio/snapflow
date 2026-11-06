@@ -28,6 +28,7 @@ import {
 } from '../dto/payment-voucher.dto';
 import { PaymentChannel } from '../entities/payment-channel.entity';
 import { PaymentVoucher } from '../entities/payment-voucher.entity';
+import { PaymentChannelNotFoundException } from '../exceptions/payment-channel-not-found.exception';
 import { configuredEscrow } from '../utils/escrow-identity.util';
 import { parseChannelId } from '../utils/voucher-message.util';
 import { VoucherSigningService } from './voucher-signing.service';
@@ -110,12 +111,7 @@ export class VoucherSubmissionService {
 					{ lockMode: LockMode.PESSIMISTIC_WRITE }
 				)
 			: null;
-		if (!channel) {
-			throw new NotFoundException({
-				code: PaymentChannelErrorCode.CHANNEL_NOT_FOUND,
-				message: 'Payment channel not found',
-			});
-		}
+		if (!channel) throw new PaymentChannelNotFoundException();
 		return channel;
 	}
 

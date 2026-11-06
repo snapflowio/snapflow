@@ -7,7 +7,6 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import type { Hex } from 'viem';
 import { PROCESS_ROLE_TRAITS } from './constants/process-role.constants';
 import type { ProcessRole } from './enums/process-role.enum';
 import { ENVIRONMENT_NAMESPACES } from './environment/registry.environment';
@@ -15,6 +14,7 @@ import { readEnvironment } from './environment/utils/read-environment.util';
 import { createApplicationConfig } from './factories/application-config.factory';
 import { createInfrastructureConfig } from './factories/infrastructure-config.factory';
 import { createRuntimeConfig } from './factories/runtime-config.factory';
+import type { ConfigurationInput } from './types/configuration-input.types';
 
 export function requireProcessRole({
 	values,
@@ -34,7 +34,7 @@ export function requireProcessRole({
 // hold the gas wallet's key.
 function requireJobSecrets(
 	processRole: ProcessRole,
-	values: Readonly<{ SETTLEMENT_RELAYER_PRIVATE_KEY?: Hex }>
+	values: Pick<ConfigurationInput['values'], 'SETTLEMENT_RELAYER_PRIVATE_KEY'>
 ): void {
 	if (
 		PROCESS_ROLE_TRAITS[processRole].runsScheduledJobs &&

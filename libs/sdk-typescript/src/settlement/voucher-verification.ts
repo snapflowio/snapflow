@@ -79,6 +79,12 @@ export interface VoucherVerification {
 	now: number;
 }
 
+/** A voucher that passed verification, with the trusted domain to sign it under. */
+export interface VerifiedVoucher {
+	domain: EscrowDomain;
+	voucher: Voucher;
+}
+
 export function rejectVoucher(
 	entry: PendingVoucher,
 	reason: VoucherRejectionReason,
@@ -193,7 +199,7 @@ export function verifyChannel(
 }
 
 /** Verifies the voucher's EIP-712 domain is the escrow the signer trusts and returns that domain. */
-export function verifyDomain(
+function verifyDomain(
 	entry: PendingVoucher,
 	domain: ApiEscrowDomain,
 	escrow: TrustedEscrow
@@ -238,7 +244,7 @@ export function parseVoucher(entry: PendingVoucher): Voucher {
 	return voucher;
 }
 
-export function voucherTotal(voucher: Voucher): bigint {
+function voucherTotal(voucher: Voucher): bigint {
 	return voucher.hostAmount + voucher.feeAmount + voucher.serviceAmount;
 }
 
@@ -303,7 +309,7 @@ export function verifyPendingVoucher({
 	lastSigned,
 	policy,
 	now,
-}: VoucherVerification): { domain: EscrowDomain; voucher: Voucher } {
+}: VoucherVerification): VerifiedVoucher {
 	const typedDomain = verifyDomain(entry, domain, escrow);
 	const voucher = parseVoucher(entry);
 	assertBoundToChannel(entry, voucher, channel);

@@ -22,21 +22,15 @@ import {
 	PAYMENT_WALLET_LIMITS,
 	SIGNATURE_PATTERN,
 } from '../constants/payment-wallet.constants';
+import {
+	EVM_ADDRESS_API_PROPERTY,
+	UINT_STRING_API_PROPERTY,
+} from '../constants/settlement.constants';
 import type { PaymentVoucher } from '../entities/payment-voucher.entity';
 import {
 	type VoucherChannel,
 	voucherMessage,
 } from '../utils/voucher-message.util';
-
-const ADDRESS_PROPERTY = {
-	type: String,
-	description: 'EIP-55 checksummed address',
-} as const;
-
-const UINT_PROPERTY = {
-	type: String,
-	pattern: '^\\d+$',
-} as const;
 
 // The EIP-712 Voucher message, with every integer as a decimal string.
 @ApiSchema({ name: 'VoucherMessage' })
@@ -44,34 +38,34 @@ export class VoucherMessageDto {
 	@ApiProperty({ type: String, pattern: CHANNEL_ID_PATTERN.source })
 	channelId: Hex;
 
-	@ApiProperty(ADDRESS_PROPERTY)
+	@ApiProperty(EVM_ADDRESS_API_PROPERTY)
 	customer: Address;
 
-	@ApiProperty(ADDRESS_PROPERTY)
+	@ApiProperty(EVM_ADDRESS_API_PROPERTY)
 	host: Address;
 
 	@ApiProperty({
-		...UINT_PROPERTY,
+		...UINT_STRING_API_PROPERTY,
 		description: 'Cumulative host share, in USDC base units (micro-USD)',
 	})
 	hostAmount: string;
 
 	@ApiProperty({
-		...UINT_PROPERTY,
+		...UINT_STRING_API_PROPERTY,
 		description: 'Cumulative Snapflow fee, in USDC base units',
 	})
 	feeAmount: string;
 
 	@ApiProperty({
-		...UINT_PROPERTY,
+		...UINT_STRING_API_PROPERTY,
 		description: 'Cumulative platform service charges, in USDC base units',
 	})
 	serviceAmount: string;
 
-	@ApiProperty(UINT_PROPERTY)
+	@ApiProperty(UINT_STRING_API_PROPERTY)
 	sequence: string;
 
-	@ApiProperty({ ...UINT_PROPERTY, description: 'Unix seconds' })
+	@ApiProperty({ ...UINT_STRING_API_PROPERTY, description: 'Unix seconds' })
 	expiry: string;
 
 	static from(
@@ -106,7 +100,7 @@ export class PaymentVoucherDto {
 	@ApiProperty({ type: String, format: 'date-time' })
 	expiresAt: Date;
 
-	@ApiProperty({ ...ADDRESS_PROPERTY, nullable: true })
+	@ApiProperty({ ...EVM_ADDRESS_API_PROPERTY, nullable: true })
 	signerAddress: Address | null;
 
 	@ApiProperty({ type: String, nullable: true })
@@ -144,7 +138,7 @@ export class SubmitVoucherSignatureDto {
 	sequence: number;
 
 	@ApiProperty({
-		...ADDRESS_PROPERTY,
+		...EVM_ADDRESS_API_PROPERTY,
 		description:
 			'The funding wallet itself or one of its session keys that signed the voucher',
 	})

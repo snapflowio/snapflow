@@ -36,6 +36,16 @@ export const ESCROW_MAXIMUM_FEE_BASIS_POINTS = 3_000;
 export const EVM_ADDRESS_LENGTH = 42;
 export const EVM_HASH_LENGTH = 66;
 
+export const EVM_ADDRESS_API_PROPERTY = {
+	type: String,
+	description: 'EIP-55 checksummed address',
+} as const;
+
+export const UINT_STRING_API_PROPERTY = {
+	type: String,
+	pattern: '^\\d+$',
+} as const;
+
 // The customer side of the escrow is billing data and the host side payout
 // data.
 export const SETTLEMENT_PARTY_READ_PERMISSION: Readonly<

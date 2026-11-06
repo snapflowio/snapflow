@@ -34,7 +34,11 @@ import { Path } from '#lib/routing/paths.ts';
 import { formatHourlyPrice } from '#lib/utils/usd.ts';
 import { resolve } from '$app/paths';
 
-let { machineId }: { machineId: string } = $props();
+interface HostListingDetailViewProps {
+	machineId: string;
+}
+
+let { machineId }: HostListingDetailViewProps = $props();
 
 const detail = new HostListingDetail(() => machineId);
 const machine = $derived(detail.machine);

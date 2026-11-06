@@ -75,8 +75,6 @@ contract SnapflowEscrow is
         _;
     }
 
-    // ---------------------------------------------------------------- deposits
-
     function deposit(uint256 amount) external {
         _deposit(msg.sender, amount);
     }
@@ -112,8 +110,6 @@ contract SnapflowEscrow is
         token.safeTransferFrom(msg.sender, address(this), amount);
     }
 
-    // ---------------------------------------------------------------- session keys
-
     function setSessionKey(
         address key,
         uint128 spendCap,
@@ -129,8 +125,6 @@ contract SnapflowEscrow is
     function revokeSessionKey(address key) external {
         _revokeSessionKey(msg.sender, key);
     }
-
-    // ---------------------------------------------------------------- claims
 
     function claim(SignedVoucher calldata signed) external nonReentrant whenNotPaused {
         _claim(signed);
@@ -221,8 +215,6 @@ contract SnapflowEscrow is
         }
     }
 
-    // ---------------------------------------------------------------- withdrawals
-
     /// @notice Starts the dispute window; hosts can still claim the customer's latest vouchers until it ends.
     function requestWithdrawal(uint256 amount) external notBlocked(msg.sender) {
         if (amount == 0) revert ZeroAmount();
@@ -254,8 +246,6 @@ contract SnapflowEscrow is
         emit Withdrawn(msg.sender, amount);
         if (amount > 0) token.safeTransfer(msg.sender, amount);
     }
-
-    // ---------------------------------------------------------------- administration
 
     function scheduleFeeCap(uint16 bps) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _scheduleFeeCap(bps);
@@ -294,8 +284,6 @@ contract SnapflowEscrow is
     function unpause() external onlyRole(PAUSER_ROLE) {
         _unpause();
     }
-
-    // ---------------------------------------------------------------- views
 
     function balanceOf(address customer) external view returns (uint256) {
         return _balances[customer];

@@ -26,8 +26,6 @@ import {
 } from '../utils/price-hint.util';
 import { MachineMarketplaceService } from './machine-marketplace.service';
 
-// What similar machines list for and what the host's own price would earn,
-// for the host's pricing page.
 @Injectable()
 export class PriceHintService {
 	constructor(

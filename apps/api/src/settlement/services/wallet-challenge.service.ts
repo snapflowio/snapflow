@@ -22,6 +22,7 @@ import {
 	generateSiweNonce,
 	parseSiweMessage,
 } from 'viem/siwe';
+import { addMilliseconds } from '../../common/utils/time.util';
 import { TypedConfigService } from '../../config/services/typed-config.service';
 import {
 	PaymentWalletErrorCode,
@@ -68,8 +69,9 @@ export class WalletChallengeService {
 	): Promise<WalletChallengeDto> {
 		const origin = new URL(this.config.getOrThrow('dashboardUrl'));
 		const issuedAt = new Date();
-		const expiresAt = new Date(
-			issuedAt.getTime() + WALLET_CHALLENGE_TTL_MILLISECONDS
+		const expiresAt = addMilliseconds(
+			issuedAt,
+			WALLET_CHALLENGE_TTL_MILLISECONDS
 		);
 		const nonce = generateSiweNonce();
 		const message = createSiweMessage({

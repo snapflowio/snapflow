@@ -7,6 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
+import { millisecondsBetween } from '../../common/utils/time.util';
 import type { VoucherAmounts } from '../types/payment-channel.types';
 import { amountsExceed } from './voucher-amounts.util';
 
@@ -20,9 +21,14 @@ export interface ClaimCandidate {
 	lastAttemptAt: Date;
 }
 
+export interface RejectedClaim<Candidate> {
+	candidate: Candidate;
+	reason: string;
+}
+
 export interface IsolatedClaims<Candidate> {
 	accepted: Candidate[];
-	rejected: { candidate: Candidate; reason: string }[];
+	rejected: RejectedClaim<Candidate>[];
 }
 
 // A channel is claimed once per claim interval, and earlier when its voucher
@@ -36,9 +42,9 @@ export function selectClaims<Candidate extends ClaimCandidate>(
 ): Candidate[] {
 	return candidates
 		.filter((candidate) => {
-			const remaining = candidate.claimableUntil.getTime() - now.getTime();
+			const remaining = millisecondsBetween(now, candidate.claimableUntil);
 			const regular =
-				now.getTime() - candidate.lastAttemptAt.getTime() >=
+				millisecondsBetween(candidate.lastAttemptAt, now) >=
 				intervalMilliseconds;
 			return (
 				remaining > 0 &&
@@ -67,7 +73,7 @@ export async function isolateClaimable<Candidate>(
 		return { accepted: [...candidates], rejected: [] };
 	}
 	const accepted: Candidate[] = [];
-	const rejected: IsolatedClaims<Candidate>['rejected'] = [];
+	const rejected: RejectedClaim<Candidate>[] = [];
 	for (const candidate of candidates) {
 		const reason = await simulate([...accepted, candidate]);
 		if (reason === null) {

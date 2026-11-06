@@ -27,8 +27,12 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import {
+	type EscrowAccount,
+	type PaymentChannel,
 	PaymentChannelKind,
 	PaymentChannelState,
+	type PendingVoucher,
+	type PendingVouchers,
 	type SubmitVoucherSignature,
 	VoucherSigningMode,
 } from '@snapflow/api-client';
@@ -225,7 +229,7 @@ describe.runIf(foundryAvailable())('Escrow on a local anvil chain', () => {
 		const openedAt = new Date(
 			Number(block.timestamp - SECONDS_PER_HOUR) * MILLISECONDS_PER_SECOND
 		);
-		const entry = {
+		const entry: PendingVoucher = {
 			channelId,
 			kind: PaymentChannelKind.Lease,
 			sandboxId: SANDBOX_ID,
@@ -259,7 +263,7 @@ describe.runIf(foundryAvailable())('Escrow on a local anvil chain', () => {
 					verifyingContract: escrow.escrowAddress,
 				},
 				vouchers: [entry],
-			},
+			} satisfies PendingVouchers,
 			[`/settlement/channels/${channelId}`]: {
 				channelId,
 				kind: PaymentChannelKind.Lease,
@@ -277,7 +281,7 @@ describe.runIf(foundryAvailable())('Escrow on a local anvil chain', () => {
 				claimedSequence: 0,
 				claimError: null,
 				latestVoucher: null,
-			},
+			} satisfies PaymentChannel,
 			[`/sandbox/${SANDBOX_ID}`]: { id: SANDBOX_ID },
 			'/settlement/escrow': {
 				chainId: foundry.id,
@@ -289,7 +293,7 @@ describe.runIf(foundryAvailable())('Escrow on a local anvil chain', () => {
 				withdrawalReadyAt: null,
 				blocked: false,
 				indexedThroughBlock: null,
-			},
+			} satisfies EscrowAccount,
 		};
 		const submitted = Promise.withResolvers<SubmitVoucherSignature>();
 		const realFetch = globalThis.fetch;

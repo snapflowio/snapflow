@@ -13,18 +13,15 @@ import type { Address, Hex } from 'viem';
 import { PageLimit } from '../../common/decorators/page-limit.decorator';
 import { CursorPageDto } from '../../common/dto/cursor-page.dto';
 import { PAYMENT_CHANNEL_QUERY } from '../constants/payment-channel.constants';
+import { EVM_ADDRESS_API_PROPERTY } from '../constants/settlement.constants';
 import type { PaymentChannel } from '../entities/payment-channel.entity';
 import type { PaymentVoucher } from '../entities/payment-voucher.entity';
 import { PaymentChannelKind } from '../enums/payment-channel-kind.enum';
 import { PaymentChannelState } from '../enums/payment-channel-state.enum';
 import { VoucherSigningMode } from '../enums/voucher-signing-mode.enum';
+import type { ChannelVoucher } from '../types/payment-channel.types';
 import { PaymentVoucherDto } from './payment-voucher.dto';
 import { SettlementPartyPageQueryDto } from './settlement-party-query.dto';
-
-const ADDRESS_PROPERTY = {
-	type: String,
-	description: 'EIP-55 checksummed address',
-} as const;
 
 const LEASE_ID_PROPERTY = {
 	type: String,
@@ -58,7 +55,7 @@ export class EscrowDomainDto {
 	@ApiProperty({ type: 'integer', description: 'EIP-155 chain id' })
 	chainId: number;
 
-	@ApiProperty(ADDRESS_PROPERTY)
+	@ApiProperty(EVM_ADDRESS_API_PROPERTY)
 	verifyingContract: Address;
 
 	static from(domain: EscrowDomain): EscrowDomainDto {
@@ -89,11 +86,14 @@ export class PaymentChannelDto {
 	@ApiProperty({ enum: PaymentChannelState, enumName: 'PaymentChannelState' })
 	state: PaymentChannelState;
 
-	@ApiProperty({ ...ADDRESS_PROPERTY, description: 'Paying funding wallet' })
+	@ApiProperty({
+		...EVM_ADDRESS_API_PROPERTY,
+		description: 'Paying funding wallet',
+	})
 	customerAddress: Address;
 
 	@ApiProperty({
-		...ADDRESS_PROPERTY,
+		...EVM_ADDRESS_API_PROPERTY,
 		description:
 			"Paid payout wallet, or Snapflow's fee recipient for a platform service channel",
 	})
@@ -223,11 +223,11 @@ export class PendingVouchersDto {
 
 	static from(
 		domain: EscrowDomain,
-		pending: readonly [PaymentChannel, PaymentVoucher][]
+		pending: readonly ChannelVoucher[]
 	): PendingVouchersDto {
 		return {
 			domain: EscrowDomainDto.from(domain),
-			vouchers: pending.map(([channel, voucher]) =>
+			vouchers: pending.map(({ channel, voucher }) =>
 				PendingVoucherDto.from(channel, voucher)
 			),
 		};

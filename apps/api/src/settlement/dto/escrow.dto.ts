@@ -17,30 +17,26 @@ import {
 	ESCROW_EVENT_KINDS,
 	ESCROW_EVENT_QUERY,
 } from '../constants/escrow.constants';
+import { EVM_ADDRESS_API_PROPERTY } from '../constants/settlement.constants';
 import type { EscrowEvent } from '../entities/escrow-event.entity';
 import { SettlementParty } from '../enums/settlement-party.enum';
 import type { EscrowEventKind, StoredEscrowArgs } from '../types/escrow.types';
 import { partiesOf } from '../utils/settlement-party.util';
 import { SettlementPartyPageQueryDto } from './settlement-party-query.dto';
 
-const ADDRESS_PROPERTY = {
-	type: String,
-	description: 'EIP-55 checksummed address',
-} as const;
-
 @ApiSchema({ name: 'EscrowAccount' })
 export class EscrowAccountDto {
 	@ApiProperty({ type: 'integer', description: 'EIP-155 chain id' })
 	chainId: number;
 
-	@ApiProperty(ADDRESS_PROPERTY)
+	@ApiProperty(EVM_ADDRESS_API_PROPERTY)
 	escrowAddress: Address;
 
-	@ApiProperty(ADDRESS_PROPERTY)
+	@ApiProperty(EVM_ADDRESS_API_PROPERTY)
 	usdcAddress: Address;
 
 	@ApiProperty({
-		...ADDRESS_PROPERTY,
+		...EVM_ADDRESS_API_PROPERTY,
 		nullable: true,
 		description: 'Linked funding wallet, if any',
 	})

@@ -13,12 +13,12 @@ import { Injectable } from '@nestjs/common';
 import { findCursorPage } from '../../common/utils/pagination/cursor-page.util';
 import { MicroUsd } from '../../common/values/micro-usd.value';
 import { TypedConfigService } from '../../config/services/typed-config.service';
-import type {
-	EscrowAccountDto,
-	EscrowEventPageDto,
-	ListEscrowEventsQueryDto,
+import {
+	type EscrowAccountDto,
+	EscrowEventDto,
+	type EscrowEventPageDto,
+	type ListEscrowEventsQueryDto,
 } from '../dto/escrow.dto';
-import { EscrowEventDto } from '../dto/escrow.dto';
 import { EscrowAccount } from '../entities/escrow-account.entity';
 import { EscrowEvent } from '../entities/escrow-event.entity';
 import { PaymentWallet } from '../entities/payment-wallet.entity';

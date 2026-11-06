@@ -9,12 +9,11 @@
 
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import type { Address } from 'viem';
+import {
+	EVM_ADDRESS_API_PROPERTY,
+	UINT_STRING_API_PROPERTY,
+} from '../constants/settlement.constants';
 import type { EscrowSessionKey } from '../entities/escrow-session-key.entity';
-
-const ADDRESS_PROPERTY = {
-	type: String,
-	description: 'EIP-55 checksummed address',
-} as const;
 
 @ApiSchema({ name: 'DelegatedSessionKey' })
 export class DelegatedSessionKeyDto {
@@ -48,16 +47,16 @@ export class VoucherDelegationDto {
 	@ApiProperty({ type: 'integer', description: 'EIP-155 chain id' })
 	chainId: number;
 
-	@ApiProperty(ADDRESS_PROPERTY)
+	@ApiProperty(EVM_ADDRESS_API_PROPERTY)
 	escrowAddress: Address;
 
 	@ApiProperty({
-		...ADDRESS_PROPERTY,
+		...EVM_ADDRESS_API_PROPERTY,
 		description: "Snapflow's delegated voucher signer",
 	})
 	signerAddress: Address;
 
-	@ApiProperty({ ...ADDRESS_PROPERTY, nullable: true })
+	@ApiProperty({ ...EVM_ADDRESS_API_PROPERTY, nullable: true })
 	fundingWalletAddress: Address | null;
 
 	@ApiProperty({
@@ -80,8 +79,7 @@ export class VoucherDelegationDto {
 	suggestedSpendCapMicroUsd: string;
 
 	@ApiProperty({
-		type: String,
-		pattern: '^\\d+$',
+		...UINT_STRING_API_PROPERTY,
 		description: 'Suggested key expiry, in unix seconds (uint64)',
 	})
 	suggestedExpiry: string;

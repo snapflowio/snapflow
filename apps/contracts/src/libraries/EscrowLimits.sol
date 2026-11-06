@@ -8,7 +8,6 @@ pragma solidity 0.8.38;
 
 /// @notice Fixed limits of the escrow. None of these can be changed after deployment.
 library EscrowLimits {
-    /// @notice Basis points in one whole.
     uint16 internal constant BPS_DENOMINATOR = 10_000;
 
     /// @notice Highest platform fee a voucher may ever carry: a 30% markup on the host's price.

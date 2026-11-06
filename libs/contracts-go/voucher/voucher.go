@@ -35,6 +35,8 @@ const (
 	voucherType = "Voucher(bytes32 channelId,address customer,address host,uint256 hostAmount," +
 		"uint256 feeAmount,uint256 serviceAmount,uint64 sequence,uint64 expiry)"
 	domainType = "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
+	// typedDataPrefix is the EIP-191 version byte 0x01 prefix of an EIP-712 digest.
+	typedDataPrefix = "\x19\x01"
 
 	signatureLength = 65
 	recoveryIndex   = 64
@@ -88,7 +90,7 @@ func Digest(domain Domain, v Voucher) (common.Hash, error) {
 		return common.Hash{}, fmt.Errorf("encode voucher: %w", err)
 	}
 	structHash := crypto.Keccak256(encoded)
-	return crypto.Keccak256Hash([]byte{0x19, 0x01}, separator.Bytes(), structHash), nil
+	return crypto.Keccak256Hash([]byte(typedDataPrefix), separator.Bytes(), structHash), nil
 }
 
 // RecoverSigner returns the address that produced signature over the voucher.

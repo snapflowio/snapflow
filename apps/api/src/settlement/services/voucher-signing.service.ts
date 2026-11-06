@@ -24,6 +24,7 @@ import type { PaymentVoucher } from '../entities/payment-voucher.entity';
 import { VoucherRejection } from '../enums/voucher-rejection.enum';
 import { sessionExposures } from '../queries/session-exposures.query';
 import type { EscrowIdentity } from '../types/escrow.types';
+import type { SubmittedVoucherSignature } from '../types/payment-channel.types';
 import {
 	sessionCommitment,
 	sessionSpendRejection,
@@ -104,10 +105,14 @@ export class VoucherSigningService {
 		manager: EntityManager,
 		channel: PaymentChannel,
 		voucher: PaymentVoucher,
-		submitted: { signerAddress: Address; signature: Hex },
+		submitted: SubmittedVoucherSignature,
 		now: Date
 	): Promise<VoucherRejection | null> {
-		const recoveredAddress = await this.recover(channel, voucher, submitted);
+		const recoveredAddress = await this.recover(
+			channel,
+			voucher,
+			submitted.signature
+		);
 		if (recoveredAddress === null) return VoucherRejection.SIGNATURE_INVALID;
 		await this.lockCustomer(manager, channel);
 		const sessionKey = isAddressEqual(
@@ -192,13 +197,13 @@ export class VoucherSigningService {
 	private async recover(
 		channel: PaymentChannel,
 		voucher: PaymentVoucher,
-		submitted: { signature: Hex }
+		signature: Hex
 	): Promise<Address | null> {
 		try {
 			return await recoverVoucherSigner(
 				channelDomain(channel),
 				voucherMessage(channel, voucher),
-				submitted.signature
+				signature
 			);
 		} catch (error) {
 			if (error instanceof Error) return null;

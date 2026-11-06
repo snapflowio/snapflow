@@ -21,6 +21,13 @@ import (
 
 const vectorsPath = "../../../contracts/test/vectors/vouchers.json"
 
+type vectorChannel struct {
+	Customer  string `json:"customer"`
+	Host      string `json:"host"`
+	LeaseID   string `json:"leaseId"`
+	ChannelID string `json:"channelId"`
+}
+
 // vectorFile mirrors the shared cross-language vectors; their voucher fields
 // are the same decimal and hex strings the API serves.
 type vectorFile struct {
@@ -28,12 +35,7 @@ type vectorFile struct {
 	VerifyingContract string                           `json:"verifyingContract"`
 	Signer            string                           `json:"signer"`
 	Vouchers          []apiclient.MachineSignedVoucher `json:"vouchers"`
-	Channels          []struct {
-		Customer  string `json:"customer"`
-		Host      string `json:"host"`
-		LeaseID   string `json:"leaseId"`
-		ChannelID string `json:"channelId"`
-	} `json:"channels"`
+	Channels          []vectorChannel                  `json:"channels"`
 }
 
 func loadVectors(t *testing.T) vectorFile {
@@ -75,6 +77,7 @@ func TestSharedVectorsDeriveTheirChannelFromTheLease(t *testing.T) {
 	for _, channel := range loadVectors(t).Channels {
 		leaseID, err := uuid.Parse(channel.LeaseID)
 		if err != nil {
+			// The API types leases as UUIDs, so other lease vectors cannot reach the machine.
 			continue
 		}
 		listed := apiclient.MachineVoucherChannel{ChannelId: channel.ChannelID, LeaseId: leaseID}

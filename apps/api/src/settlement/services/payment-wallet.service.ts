@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { LockMode } from '@mikro-orm/core';
+import { LockMode, QueryOrder } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import {
 	ConflictException,
@@ -48,7 +48,11 @@ export class PaymentWalletService {
 	list(organizationId: string): Promise<PaymentWallet[]> {
 		return this.entityManager
 			.fork()
-			.find(PaymentWallet, { organizationId }, { orderBy: { purpose: 'ASC' } });
+			.find(
+				PaymentWallet,
+				{ organizationId },
+				{ orderBy: { purpose: QueryOrder.ASC } }
+			);
 	}
 
 	async link(

@@ -54,10 +54,12 @@ const ORDERED_SETTINGS: readonly (readonly [
 // noticed and a claim relayed within it, or vouchers would expire unclaimed.
 const VOUCHER_LIFETIME_SHARE_DIVISOR = 2;
 
-const VOUCHER_WINDOWS: readonly {
+interface VoucherWindow {
 	name: string;
 	seconds: (settings: ConsistencySettings) => number;
-}[] = [
+}
+
+const VOUCHER_WINDOWS: readonly VoucherWindow[] = [
 	{
 		name: 'voucherIntervalSeconds * voucherGraceIntervals',
 		seconds: (settings) =>

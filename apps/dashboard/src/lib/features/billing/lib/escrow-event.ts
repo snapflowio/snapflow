@@ -10,18 +10,15 @@
 import {
 	type EscrowEvent,
 	EscrowEventKind,
-	SettlementParty,
+	type SettlementParty,
 } from '@snapflow/api-client';
+import type { snapflowEscrowAbi } from '@snapflow/contracts';
+import { partyAmount } from './payment-channel.ts';
 
-const EVENT_ARGUMENT = {
-	amount: 'amount',
-	channelId: 'channelId',
-	feePaid: 'feePaid',
-	hostPaid: 'hostPaid',
-	key: 'key',
-	servicePaid: 'servicePaid',
-	spendCap: 'spendCap',
-} as const;
+type EscrowEventArgument = Extract<
+	(typeof snapflowEscrowAbi)[number],
+	{ type: 'event' }
+>['inputs'][number]['name'];
 
 const EVENT_LABELS: Partial<Record<EscrowEventKind, string>> = {
 	[EscrowEventKind.Deposited]: 'Deposit',
@@ -35,15 +32,23 @@ const EVENT_LABELS: Partial<Record<EscrowEventKind, string>> = {
 	[EscrowEventKind.AddressUnblocked]: 'Wallet unfrozen',
 };
 
-const AMOUNT_ARGUMENTS: Partial<Record<EscrowEventKind, string>> = {
-	[EscrowEventKind.Deposited]: EVENT_ARGUMENT.amount,
-	[EscrowEventKind.WithdrawalRequested]: EVENT_ARGUMENT.amount,
-	[EscrowEventKind.Withdrawn]: EVENT_ARGUMENT.amount,
-	[EscrowEventKind.SessionKeySet]: EVENT_ARGUMENT.spendCap,
-};
+const AMOUNT_ARGUMENTS: Partial<Record<EscrowEventKind, EscrowEventArgument>> =
+	{
+		[EscrowEventKind.Deposited]: 'amount',
+		[EscrowEventKind.WithdrawalRequested]: 'amount',
+		[EscrowEventKind.Withdrawn]: 'amount',
+		[EscrowEventKind.SessionKeySet]: 'spendCap',
+	};
 
-function argument(event: EscrowEvent, name: string): bigint {
-	return BigInt(event.args[name] ?? 0);
+function argument(
+	event: EscrowEvent,
+	name: EscrowEventArgument
+): string | undefined {
+	return event.args[name];
+}
+
+function amountArgument(event: EscrowEvent, name: EscrowEventArgument): bigint {
+	return BigInt(argument(event, name) ?? 0);
 }
 
 export function escrowEventLabel(event: EscrowEvent): string {
@@ -55,23 +60,21 @@ export function escrowEventAmountMicroUsd(
 	party: SettlementParty
 ): string | null {
 	if (event.kind === EscrowEventKind.Claimed) {
-		const hostPaid = argument(event, EVENT_ARGUMENT.hostPaid);
-		const amount =
-			party === SettlementParty.Host
-				? hostPaid
-				: hostPaid +
-					argument(event, EVENT_ARGUMENT.feePaid) +
-					argument(event, EVENT_ARGUMENT.servicePaid);
-		return amount.toString();
+		return partyAmount(
+			party,
+			amountArgument(event, 'hostPaid'),
+			amountArgument(event, 'feePaid'),
+			amountArgument(event, 'servicePaid')
+		).toString();
 	}
 	const name = AMOUNT_ARGUMENTS[event.kind];
-	return name ? argument(event, name).toString() : null;
+	return name ? amountArgument(event, name).toString() : null;
 }
 
 export function escrowEventChannelId(event: EscrowEvent): string | undefined {
-	return event.args[EVENT_ARGUMENT.channelId];
+	return argument(event, 'channelId');
 }
 
 export function escrowEventSessionKey(event: EscrowEvent): string | undefined {
-	return event.args[EVENT_ARGUMENT.key];
+	return argument(event, 'key');
 }

@@ -29,8 +29,4 @@ library VoucherHashing {
             )
         );
     }
-
-    function total(Voucher calldata voucher) internal pure returns (uint256) {
-        return voucher.hostAmount + voucher.feeAmount + voucher.serviceAmount;
-    }
 }

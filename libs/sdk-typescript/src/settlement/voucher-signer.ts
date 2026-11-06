@@ -38,7 +38,11 @@ import {
 	SnapflowValidationError,
 } from '../errors/snapflow-error.js';
 import { abortableDelay } from '../utils/async.js';
-import { MILLISECONDS_PER_SECOND } from '../utils/timeout.js';
+import {
+	MILLISECONDS_PER_HOUR,
+	MILLISECONDS_PER_MINUTE,
+	MILLISECONDS_PER_SECOND,
+} from '../utils/timeout.js';
 import { type SessionKeySource, toSessionKeyAccount } from './session-key.js';
 import {
 	assertValidSpendPolicy,
@@ -53,16 +57,14 @@ import {
 	verifyPendingVoucher,
 } from './voucher-verification.js';
 
-const SECONDS_PER_MINUTE = 60;
-const MINUTES_PER_HOUR = 60;
 const BACKOFF_MAXIMUM_MINUTES = 5;
 
 /** Snapflow issues vouchers every minute by default; polling at the same pace keeps every lease covered. */
 export const DEFAULT_VOUCHER_POLL_INTERVAL_MILLISECONDS =
-	SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
+	MILLISECONDS_PER_MINUTE;
 const BACKOFF_INITIAL_MILLISECONDS = MILLISECONDS_PER_SECOND;
 const BACKOFF_MAXIMUM_MILLISECONDS =
-	BACKOFF_MAXIMUM_MINUTES * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
+	BACKOFF_MAXIMUM_MINUTES * MILLISECONDS_PER_MINUTE;
 const BACKOFF_FACTOR = 2;
 const CHANNEL_RETENTION_HOURS = 24;
 /**
@@ -71,10 +73,7 @@ const CHANNEL_RETENTION_HOURS = 24;
  * 24-hour lifetime, so only closed channels stay away this long.
  */
 export const CHANNEL_RETENTION_MILLISECONDS =
-	CHANNEL_RETENTION_HOURS *
-	MINUTES_PER_HOUR *
-	SECONDS_PER_MINUTE *
-	MILLISECONDS_PER_SECOND;
+	CHANNEL_RETENTION_HOURS * MILLISECONDS_PER_HOUR;
 
 export interface VoucherSignerOptions {
 	/** The session key the funding wallet authorized with `Escrow.authorizeSessionKey`. */

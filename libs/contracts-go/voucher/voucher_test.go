@@ -28,7 +28,11 @@ import (
 	"github.com/snapflowio/contracts-go/voucher"
 )
 
-const vectorsPath = "../../../apps/contracts/test/vectors/vouchers.json"
+const (
+	vectorsPath = "../../../apps/contracts/test/vectors/vouchers.json"
+	decimalBase = 10
+	uint64Bits  = 64
+)
 
 type vectorEntry struct {
 	ChannelID     common.Hash    `json:"channelId"`
@@ -43,17 +47,19 @@ type vectorEntry struct {
 	Signature     hexutil.Bytes  `json:"signature"`
 }
 
+type vectorChannel struct {
+	Customer  common.Address `json:"customer"`
+	Host      common.Address `json:"host"`
+	LeaseID   string         `json:"leaseId"`
+	ChannelID common.Hash    `json:"channelId"`
+}
+
 type vectorFile struct {
-	ChainID           int64          `json:"chainId"`
-	VerifyingContract common.Address `json:"verifyingContract"`
-	Signer            common.Address `json:"signer"`
-	Vouchers          []vectorEntry  `json:"vouchers"`
-	Channels          []struct {
-		Customer  common.Address `json:"customer"`
-		Host      common.Address `json:"host"`
-		LeaseID   string         `json:"leaseId"`
-		ChannelID common.Hash    `json:"channelId"`
-	} `json:"channels"`
+	ChainID           int64           `json:"chainId"`
+	VerifyingContract common.Address  `json:"verifyingContract"`
+	Signer            common.Address  `json:"signer"`
+	Vouchers          []vectorEntry   `json:"vouchers"`
+	Channels          []vectorChannel `json:"channels"`
 }
 
 func loadVectors(t *testing.T) vectorFile {
@@ -71,7 +77,7 @@ func loadVectors(t *testing.T) vectorFile {
 
 func decimal(t *testing.T, value string) *big.Int {
 	t.Helper()
-	n, ok := new(big.Int).SetString(value, 10)
+	n, ok := new(big.Int).SetString(value, decimalBase)
 	if !ok {
 		t.Fatalf("invalid decimal %q", value)
 	}
@@ -80,7 +86,7 @@ func decimal(t *testing.T, value string) *big.Int {
 
 func unsigned(t *testing.T, value string) uint64 {
 	t.Helper()
-	n, err := strconv.ParseUint(value, 10, 64)
+	n, err := strconv.ParseUint(value, decimalBase, uint64Bits)
 	if err != nil {
 		t.Fatalf("invalid uint64 %q: %v", value, err)
 	}

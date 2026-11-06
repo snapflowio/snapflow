@@ -24,16 +24,16 @@ import {
 	parseAbi,
 	parseSignature,
 } from 'viem';
+import { SECONDS_PER_MINUTE } from '../utils/timeout.js';
 import type {
 	EscrowPublicClient,
 	EscrowWalletClient,
 } from './escrow-transaction.js';
 
-const SECONDS_PER_MINUTE = 60n;
 const PERMIT_LIFETIME_MINUTES = 30n;
 /** How long a signed permit stays usable, counted from the latest block. */
 export const PERMIT_LIFETIME_SECONDS =
-	PERMIT_LIFETIME_MINUTES * SECONDS_PER_MINUTE;
+	PERMIT_LIFETIME_MINUTES * BigInt(SECONDS_PER_MINUTE);
 /** ECDSA recovery ids 0 and 1 are encoded as v = 27 and 28. */
 const SIGNATURE_V_OFFSET = 27;
 const MISSING_EIP712_DOMAIN_ERROR = 'Eip712DomainNotFoundError';

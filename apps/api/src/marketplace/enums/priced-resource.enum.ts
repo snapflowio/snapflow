@@ -7,7 +7,6 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-// The resources a price card prices, each by its own rate.
 export const PricedResource = {
 	VCPU_HOUR: 'vcpu_hour',
 	MEMORY_GIB_HOUR: 'memory_gib_hour',

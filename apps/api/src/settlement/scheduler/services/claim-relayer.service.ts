@@ -35,7 +35,6 @@ import {
 	SETTLEMENT_RELAYER_WALLET,
 } from '../../constants/settlement.constants';
 import { PaymentChannel } from '../../entities/payment-channel.entity';
-import type { PaymentVoucher } from '../../entities/payment-voucher.entity';
 import type { RelayerWallet } from '../../providers/relayer-wallet.provider';
 import { claimableChannels } from '../../queries/claimable-channels.query';
 import { claimedAmounts } from '../../queries/claimed-amounts.query';
@@ -44,14 +43,15 @@ import {
 	VoucherSelection,
 } from '../../queries/latest-vouchers.query';
 import type { EscrowIdentity } from '../../types/escrow.types';
+import type { ChannelVoucher } from '../../types/payment-channel.types';
 import {
 	contractRevertReason,
 	isChainUnreachable,
 } from '../../utils/chain-error.util';
 import {
 	type ClaimCandidate,
-	type IsolatedClaims,
 	isolateClaimable,
+	type RejectedClaim,
 	selectClaims,
 } from '../../utils/claim-selection.util';
 import { configuredEscrow } from '../../utils/escrow-identity.util';
@@ -61,12 +61,11 @@ import {
 } from '../../utils/voucher-amounts.util';
 import { signedVoucher } from '../../utils/voucher-message.util';
 
-interface RelayCandidate extends ClaimCandidate {
-	channel: PaymentChannel;
-	voucher: PaymentVoucher;
-}
+type RelayCandidate = ClaimCandidate & ChannelVoucher;
 
 const TRANSACTION_PENDING = 'pending';
+
+type TransactionOutcome = ClaimFailure | null | typeof TRANSACTION_PENDING;
 
 // Claims the latest signed vouchers in batches with Snapflow's gas wallet.
 // One batch at a time: a run first settles the batch in flight and sends
@@ -245,9 +244,7 @@ export class ClaimRelayerService extends TrackedJobs {
 		return false;
 	}
 
-	private async transactionOutcome(
-		hash: Hash
-	): Promise<ClaimFailure | null | typeof TRANSACTION_PENDING> {
+	private async transactionOutcome(hash: Hash): Promise<TransactionOutcome> {
 		try {
 			const receipt = await this.client.getTransactionReceipt({ hash });
 			return receipt.status === 'success' ? null : ClaimFailure.BATCH_REVERTED;
@@ -288,7 +285,7 @@ export class ClaimRelayerService extends TrackedJobs {
 	}
 
 	private async recordRejections(
-		rejected: IsolatedClaims<RelayCandidate>['rejected'],
+		rejected: readonly RejectedClaim<RelayCandidate>[],
 		now: Date
 	): Promise<void> {
 		const reasons = new Map(

@@ -6,7 +6,6 @@
 // SPDX-License-Identifier: AGPL-3.0
 pragma solidity >=0.8.30;
 
-/// @notice Shared values for the test suite.
 abstract contract Constants {
     uint256 internal constant ONE_USDC = 1e6;
     uint256 internal constant INITIAL_FUNDS = 1_000_000 * ONE_USDC;

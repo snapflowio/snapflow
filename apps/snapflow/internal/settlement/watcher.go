@@ -20,7 +20,8 @@ import (
 )
 
 const (
-	voucherReadTimeout         = voucherWait + 10*time.Second
+	voucherReadMargin          = 10 * time.Second
+	voucherReadTimeout         = voucherWait + voucherReadMargin
 	minimumVoucherReadInterval = time.Second
 )
 

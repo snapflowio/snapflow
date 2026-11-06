@@ -12,6 +12,11 @@ import { PayoutReadiness } from '@snapflow/api-client';
 
 type UnreadyPayout = Exclude<PayoutReadiness, typeof PayoutReadiness.Ready>;
 
+interface BannerCopy {
+	message: string;
+	action: string;
+}
+
 const BANNER_COPY = {
 	[PayoutReadiness.NotSetUp]: {
 		message: 'Link a payout wallet to list machines publicly.',
@@ -22,7 +27,7 @@ const BANNER_COPY = {
 			'Your payout wallet failed sanctions screening, so public listings are paused. Link a different wallet.',
 		action: 'Replace wallet',
 	},
-} as const satisfies Record<UnreadyPayout, { message: string; action: string }>;
+} as const satisfies Record<UnreadyPayout, BannerCopy>;
 </script>
 
 <script lang="ts">
