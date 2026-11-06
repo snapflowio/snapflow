@@ -115,45 +115,6 @@ export type AdminOrganizationPage = {
     nextCursor: string | null;
 };
 
-export type AdminPaymentAccount = {
-    stripeAccountId: string;
-    country?: string | null;
-    customerConfigured: boolean;
-    recipientRequested: boolean;
-    transfersStatus: PaymentAccountTransfersStatus;
-    requirementsStatus: PaymentAccountRequirementsStatus;
-    taxInformationStatus: PaymentAccountTaxInformationStatus;
-    payoutsBlockedReason?: string | null;
-    /**
-     * Whether the weekly payout includes the account
-     */
-    payoutsEnabled: boolean;
-    createdAt: string;
-    organizationId: string;
-};
-
-export type AdminPaymentDispute = {
-    id: string;
-    stripeDisputeId: string;
-    organizationId: string;
-    topUpId?: string | null;
-    amountCents: number;
-    /**
-     * Customer credit frozen against the dispute
-     */
-    frozenMicroUsd: string;
-    state: DisputeState;
-    reason: string;
-    evidenceDueBy?: string | null;
-    createdAt: string;
-    closedAt?: string | null;
-};
-
-export type AdminPaymentDisputePage = {
-    items: Array<AdminPaymentDispute>;
-    nextCursor: string | null;
-};
-
 export type AdminUpdateDockerRegistry = {
     /**
      * Registry name
@@ -235,25 +196,6 @@ export type AuditLogPage = {
     nextCursor: string | null;
 };
 
-export type AutoTopUp = {
-    configured: boolean;
-    enabled: boolean;
-    thresholdCents: number;
-    amountCents: number;
-    paymentMethodId?: string | null;
-    /**
-     * Why automatic top-ups paused until the next update
-     */
-    suspendedReason?: string | null;
-    consecutiveFailures: number;
-    lastAttemptAt?: string | null;
-    consentedAt?: string | null;
-    /**
-     * Version to send as If-Match; 0 before the first update
-     */
-    resourceVersion: number;
-};
-
 /**
  * The state of the backup
  */
@@ -301,33 +243,17 @@ export type BillingBudgetDto = {
 
 export type BillingConfig = {
     /**
-     * Suggested top-ups, cents
+     * Markup added to the host price of machines below the Verified tier, in basis points of the host price
      */
-    topUpPresetsCents: Array<number>;
+    standardMarkupBasisPoints: number;
     /**
-     * Smallest top-up, cents
+     * Markup added to the host price of Verified and Datacenter machines, in basis points of the host price
      */
-    topUpMinimumCents: number;
+    verifiedMarkupBasisPoints: number;
     /**
-     * Largest top-up, cents
+     * Monthly fee per machine kept in the private pool, micro-USD, prorated by UTC day; the organization's own machines carry no markup
      */
-    topUpMaximumCents: number;
-    /**
-     * Smallest automatic top-up, cents
-     */
-    autoTopUpMinimumCents: number;
-    /**
-     * Minutes between automatic top-up attempts
-     */
-    autoTopUpMinimumIntervalMinutes: number;
-    /**
-     * ISO 3166-1 alpha-2 countries hosts may be paid in
-     */
-    payoutCountries: Array<string>;
-    /**
-     * Markup added to host prices, in basis points of the host price
-     */
-    platformMarkupBasisPoints: number;
+    privatePoolMachineMonthlyMicroUsd: string;
 };
 
 export type BillingDailyCostDto = {
@@ -484,20 +410,17 @@ export type BillingStatement = {
 export type BillingStatementCustomer = {
     openingCreditMicroUsd: string;
     closingCreditMicroUsd: string;
-    topUpsMicroUsd: string;
     adminGrantsMicroUsd: string;
     usageMicroUsd: string;
     usageBySandbox: Array<BillingStatementSandboxUsage>;
-    disputeFreezesMicroUsd: string;
-    disputeReinstatementsMicroUsd: string;
+    /**
+     * Monthly fees of the machines kept in the private pool
+     */
+    privatePoolMicroUsd: string;
     /**
      * Credit returned by forfeited host earnings
      */
     forfeitureCreditsMicroUsd: string;
-    /**
-     * Sales tax collected on the top-ups
-     */
-    taxMicroUsd: string;
 };
 
 export type BillingStatementHost = {
@@ -509,14 +432,6 @@ export type BillingStatementHost = {
      * Earnings forfeited after fraud reviews
      */
     forfeitedMicroUsd: string;
-    /**
-     * Earnings that became available for payout
-     */
-    maturedMicroUsd: string;
-    /**
-     * Earnings transferred to the Stripe account
-     */
-    paidOutMicroUsd: string;
 };
 
 export type BillingStatementSandboxUsage = {
@@ -747,17 +662,6 @@ export type CreateOrganizationQuota = {
     maxDiskPerGpuSandbox?: number | null;
 };
 
-export type CreatePayoutAccount = {
-    /**
-     * ISO 3166-1 alpha-2 country of the payout account
-     */
-    country: string;
-    /**
-     * Whether a person or a registered business receives the payouts
-     */
-    type: PayoutAccountType;
-};
-
 export type CreatePriceCard = {
     vcpuHourMicroUsd: string;
     memoryGibHourMicroUsd: string;
@@ -837,6 +741,10 @@ export type CreateSandbox = {
      * Where the sandbox runs: pinned to one machine, or any matching machine. Defaults to the best matching machine nearest to the caller.
      */
     placement?: SandboxPlacementRequest;
+    /**
+     * Who signs the escrow vouchers that pay for the sandbox: delegated lets Snapflow's signer sign them within the session key your funding wallet granted it; client leaves each voucher for your SDK or agent to sign
+     */
+    voucherSigning?: VoucherSigningMode;
     /**
      * CPU cores allocated to the sandbox
      */
@@ -942,19 +850,23 @@ export type CreateSnapshot = {
     sandboxClass?: SandboxClass;
 };
 
-export type CreateTopUp = {
-    /**
-     * Credit to buy in US cents, within the platform limits
-     */
-    amountCents: number;
-};
-
 export type CreateVolume = {
     name: string;
     /**
      * Persistent block volume size in GiB
      */
     sizeGiB: number;
+};
+
+export type CreateWalletChallenge = {
+    /**
+     * funding: the customer wallet that deposits into the escrow and signs vouchers; payout: the host wallet that receives claims
+     */
+    purpose: PaymentWalletPurpose;
+    /**
+     * Address of the wallet to link
+     */
+    address: string;
 };
 
 export type CreatedApiKeyDto = {
@@ -1017,14 +929,18 @@ export const CustomDomainState = {
 
 export type CustomDomainState = typeof CustomDomainState[keyof typeof CustomDomainState];
 
-export const DisputeState = {
-    NeedsResponse: 'needs_response',
-    UnderReview: 'under_review',
-    Won: 'won',
-    Lost: 'lost'
-} as const;
-
-export type DisputeState = typeof DisputeState[keyof typeof DisputeState];
+export type DelegatedSessionKey = {
+    /**
+     * Total cap, in micro-USD
+     */
+    spendCapMicroUsd: string;
+    /**
+     * Cap per started hour, in micro-USD
+     */
+    hourlyCapMicroUsd: string;
+    activatedAt: string;
+    expiresAt: string;
+};
 
 export type DockerRegistry = {
     /**
@@ -1069,6 +985,17 @@ export type DockerRegistryPage = {
 export const DrainingMode = { Migrate: 'migrate', Archive: 'archive' } as const;
 
 export type DrainingMode = typeof DrainingMode[keyof typeof DrainingMode];
+
+export type EarningsEstimate = {
+    /**
+     * Share of the month the whole machine is rented out
+     */
+    utilizationBasisPoints: number;
+    /**
+     * Host earnings for the month at the machine's current price
+     */
+    monthlyMicroUsd: string;
+};
 
 export type EdgeAccessSessionDto = {
     sessionId: string;
@@ -1408,6 +1335,117 @@ export const EgressCeilingSource = { Settings: 'settings', Market: 'market' } as
 
 export type EgressCeilingSource = typeof EgressCeilingSource[keyof typeof EgressCeilingSource];
 
+export type EscrowAccount = {
+    /**
+     * EIP-155 chain id
+     */
+    chainId: number;
+    /**
+     * EIP-55 checksummed address
+     */
+    escrowAddress: string;
+    /**
+     * EIP-55 checksummed address
+     */
+    usdcAddress: string;
+    /**
+     * Linked funding wallet, if any
+     */
+    fundingWalletAddress: string | null;
+    /**
+     * USDC the escrow holds for the funding wallet, in micro-USD, as of the indexed block
+     */
+    balanceMicroUsd: string;
+    /**
+     * Requested withdrawal still in its dispute window, in micro-USD
+     */
+    pendingWithdrawalMicroUsd: string;
+    withdrawalReadyAt: string | null;
+    /**
+     * The escrow froze the funding wallet
+     */
+    blocked: boolean;
+    /**
+     * Last chain block whose escrow events are indexed
+     */
+    indexedThroughBlock: number | null;
+};
+
+export type EscrowDomain = {
+    name: string;
+    version: string;
+    /**
+     * EIP-155 chain id
+     */
+    chainId: number;
+    /**
+     * EIP-55 checksummed address
+     */
+    verifyingContract: string;
+};
+
+export type EscrowEvent = {
+    id: string;
+    kind: EscrowEventKind;
+    /**
+     * The roles the organization played in the event
+     */
+    parties: Array<EscrowEventParty>;
+    blockNumber: number;
+    blockTimestamp: string;
+    transactionHash: string;
+    logIndex: number;
+    /**
+     * Decoded event arguments; integers (USDC amounts in micro-USD, unix seconds) are decimal strings
+     */
+    args: {
+        [key: string]: string;
+    };
+};
+
+export const EscrowEventKind = {
+    AddressBlocked: 'AddressBlocked',
+    AddressUnblocked: 'AddressUnblocked',
+    Claimed: 'Claimed',
+    DefaultAdminDelayChangeCanceled: 'DefaultAdminDelayChangeCanceled',
+    DefaultAdminDelayChangeScheduled: 'DefaultAdminDelayChangeScheduled',
+    DefaultAdminTransferCanceled: 'DefaultAdminTransferCanceled',
+    DefaultAdminTransferScheduled: 'DefaultAdminTransferScheduled',
+    Deposited: 'Deposited',
+    Eip712DomainChanged: 'EIP712DomainChanged',
+    FeeCapScheduleCancelled: 'FeeCapScheduleCancelled',
+    FeeCapScheduled: 'FeeCapScheduled',
+    FeeCapUpdated: 'FeeCapUpdated',
+    FeeRecipientUpdated: 'FeeRecipientUpdated',
+    Paused: 'Paused',
+    RoleAdminChanged: 'RoleAdminChanged',
+    RoleGranted: 'RoleGranted',
+    RoleRevoked: 'RoleRevoked',
+    SessionKeyRevoked: 'SessionKeyRevoked',
+    SessionKeySet: 'SessionKeySet',
+    Unpaused: 'Unpaused',
+    WithdrawalCancelled: 'WithdrawalCancelled',
+    WithdrawalRequested: 'WithdrawalRequested',
+    Withdrawn: 'Withdrawn'
+} as const;
+
+export type EscrowEventKind = typeof EscrowEventKind[keyof typeof EscrowEventKind];
+
+export type EscrowEventPage = {
+    items: Array<EscrowEvent>;
+    nextCursor: string | null;
+};
+
+/**
+ * The roles the organization played in the event
+ */
+export const EscrowEventParty = { Customer: 'customer', Host: 'host' } as const;
+
+/**
+ * The roles the organization played in the event
+ */
+export type EscrowEventParty = typeof EscrowEventParty[keyof typeof EscrowEventParty];
+
 export const ExposureBackendState = {
     Pending: 'pending',
     Active: 'active',
@@ -1501,32 +1539,6 @@ export type ForkSandbox = {
 export const GpuType = { H100: 'h100', RtxPro6000: 'rtx_pro_6000' } as const;
 
 export type GpuType = typeof GpuType[keyof typeof GpuType];
-
-export type HostEarnings = {
-    /**
-     * Earnings still inside their payout hold
-     */
-    pendingMicroUsd: string;
-    /**
-     * Earnings available for the next payout
-     */
-    availableMicroUsd: string;
-    /**
-     * Earnings committed to a transfer in flight
-     */
-    inTransferMicroUsd: string;
-    nextPayoutDate: string;
-    payoutMinimumCents: number;
-    maturing: Array<HostEarningsMaturity>;
-};
-
-export type HostEarningsMaturity = {
-    /**
-     * UTC day the earnings become available
-     */
-    maturesOn: string;
-    amountMicroUsd: string;
-};
 
 export type HostMachine = {
     machineId: string;
@@ -1753,6 +1765,21 @@ export const LeaseRenewalState = { None: 'none', RenewalRequired: 'renewal_requi
 
 export type LeaseRenewalState = typeof LeaseRenewalState[keyof typeof LeaseRenewalState];
 
+export type LinkPaymentWallet = {
+    /**
+     * funding: the customer wallet that deposits into the escrow and signs vouchers; payout: the host wallet that receives claims
+     */
+    purpose: PaymentWalletPurpose;
+    /**
+     * The challenge message exactly as issued
+     */
+    message: string;
+    /**
+     * Signature of the message; ERC-1271 and ERC-6492 smart wallet signatures are accepted
+     */
+    signature: string;
+};
+
 export type ListSandboxesResponse = {
     /**
      * List of results for the current page
@@ -1931,6 +1958,7 @@ export type MachineBenchmarkSummary = {
 };
 
 export const MachineBrowseSort = {
+    Value: 'value',
     Price: 'price',
     Reliability: 'reliability',
     Performance: 'performance',
@@ -2062,6 +2090,9 @@ export type MachineDetail = {
      * Platform fee share of the egress price per GiB
      */
     markupEgressMicroUsdPerGiB: string;
+    /**
+     * Markup added to the host price, in basis points: the verified rate on Verified and Datacenter machines, the standard rate on other tiers and none on the organization's own machines
+     */
     markupBasisPoints: number;
 };
 
@@ -2406,7 +2437,7 @@ export type MachineIdentityStatus = {
      */
     marketplace: MachineMarketplaceStatus | null;
     /**
-     * Whether the organization that owns the machine can receive payouts of its earnings
+     * Whether the organization that owns the machine has a payout wallet that can receive its earnings
      */
     payouts: PayoutReadiness;
 };
@@ -2515,6 +2546,25 @@ export type MachinePlatformArtifact = {
      * Guest control protocol implemented by this child
      */
     protocolVersion: number;
+};
+
+export type MachinePriceHint = {
+    /**
+     * Category and GPU model the listings share
+     */
+    priceClass: string;
+    /**
+     * Public listings of the price class, other than this machine, the ranges come from
+     */
+    similarListingCount: number;
+    /**
+     * Empty when no similar machine is listed
+     */
+    ranges: Array<PriceRange>;
+    /**
+     * Empty while the machine has no price card
+     */
+    earnings: Array<EarningsEstimate>;
 };
 
 export type MachineQualificationCheckDto = {
@@ -2707,6 +2757,37 @@ export type MachineSessionDto = {
     token: string;
     expiresAt: string;
     generation: number;
+};
+
+export type MachineSignedVoucher = {
+    channelId: string;
+    /**
+     * EIP-55 checksummed address
+     */
+    customer: string;
+    /**
+     * EIP-55 checksummed address
+     */
+    host: string;
+    /**
+     * Cumulative host share, in USDC base units (micro-USD)
+     */
+    hostAmount: string;
+    /**
+     * Cumulative Snapflow fee, in USDC base units
+     */
+    feeAmount: string;
+    /**
+     * Cumulative platform service charges, in USDC base units
+     */
+    serviceAmount: string;
+    sequence: string;
+    /**
+     * Unix seconds
+     */
+    expiry: string;
+    signer: string;
+    signature: string;
 };
 
 export type MachineSnapshotInventoryReportDto = {
@@ -3015,9 +3096,9 @@ export type MachineVerification = {
 
 export type MachineVerificationChecklist = {
     /**
-     * Payout account is active and onboarded
+     * A verified payout wallet that is not sanctioned is linked
      */
-    kyc: boolean;
+    payoutWallet: boolean;
     /**
      * The latest benchmark passed for the current inventory
      */
@@ -3028,6 +3109,25 @@ export type MachineVerificationChecklist = {
     listedDays: number;
     uptimeBasisPoints: number;
     spotChecksPassed30d: number;
+};
+
+export type MachineVoucherChannel = {
+    sandboxId: string;
+    leaseId: string;
+    channelId: string;
+    state: PaymentChannelState;
+    /**
+     * Latest signed voucher, none before the first one is signed
+     */
+    voucher: MachineSignedVoucher | null;
+};
+
+export type MachineVoucherRelay = {
+    digest: string;
+    domain: EscrowDomain;
+    voucherIntervalSeconds: number;
+    voucherGraceIntervals: number;
+    channels: Array<MachineVoucherChannel>;
 };
 
 export type MarketReferencePrice = {
@@ -3048,8 +3148,9 @@ export const MarketplaceErrorCode = {
     MarketReferenceMissing: 'market_reference_missing',
     PriceBelowFloor: 'price_below_floor',
     PriceAboveCeiling: 'price_above_ceiling',
+    PriceOutOfRange: 'price_out_of_range',
     PriceCardRequired: 'price_card_required',
-    PayoutAccountRequired: 'payout_account_required',
+    PayoutWalletRequired: 'payout_wallet_required',
     GpuRateRequired: 'gpu_rate_required',
     PriceClassInvalid: 'price_class_invalid',
     ListingTransitionInvalid: 'listing_transition_invalid',
@@ -3200,111 +3301,151 @@ export type OrganizationUsageOverview = {
     currentVolumeUsage: number;
 };
 
-export const PaymentAccountRequirementsStatus = {
-    None: 'none',
-    EventuallyDue: 'eventually_due',
-    CurrentlyDue: 'currently_due',
-    PastDue: 'past_due'
-} as const;
-
-export type PaymentAccountRequirementsStatus = typeof PaymentAccountRequirementsStatus[keyof typeof PaymentAccountRequirementsStatus];
-
-export const PaymentAccountTaxInformationStatus = { Missing: 'missing', Provided: 'provided' } as const;
-
-export type PaymentAccountTaxInformationStatus = typeof PaymentAccountTaxInformationStatus[keyof typeof PaymentAccountTaxInformationStatus];
-
-export const PaymentAccountTransfersStatus = {
-    Inactive: 'inactive',
-    Pending: 'pending',
-    Active: 'active',
-    Restricted: 'restricted'
-} as const;
-
-export type PaymentAccountTransfersStatus = typeof PaymentAccountTransfersStatus[keyof typeof PaymentAccountTransfersStatus];
-
-export type PaymentMethod = {
-    id: string;
-    brand: string;
-    last4: string;
-    expMonth: number;
-    expYear: number;
-    firstChargedAt?: string | null;
-    createdAt: string;
-};
-
-export type Payout = {
-    id: string;
-    organizationId: string;
-    batchId: string;
-    amountCents: number;
-    amountMicroUsd: string;
-    state: PayoutState;
-    stripeTransferId?: string | null;
-    failureReason?: string | null;
-    createdAt: string;
-    transferredAt?: string | null;
-};
-
-export type PayoutAccount = {
-    stripeAccountId: string;
-    country?: string | null;
-    customerConfigured: boolean;
-    recipientRequested: boolean;
-    transfersStatus: PaymentAccountTransfersStatus;
-    requirementsStatus: PaymentAccountRequirementsStatus;
-    taxInformationStatus: PaymentAccountTaxInformationStatus;
-    payoutsBlockedReason?: string | null;
+export type PaymentChannel = {
     /**
-     * Whether the weekly payout includes the account
+     * The escrow channel id
      */
-    payoutsEnabled: boolean;
-    createdAt: string;
-};
-
-export type PayoutAccountSession = {
+    channelId: string;
+    kind: PaymentChannelKind;
     /**
-     * Client secret of the Connect embedded components session
+     * The paid lease; null for a platform service channel
      */
-    clientSecret: string;
+    leaseId: string | null;
+    /**
+     * The paid lease's sandbox; null for a platform service channel
+     */
+    sandboxId: string | null;
+    /**
+     * Start of the UTC month a platform service channel bills; null for a lease channel
+     */
+    servicePeriodStart: string | null;
+    signingMode: VoucherSigningMode;
+    state: PaymentChannelState;
+    /**
+     * Paying funding wallet
+     */
+    customerAddress: string;
+    /**
+     * Paid payout wallet, or Snapflow's fee recipient for a platform service channel
+     */
+    hostAddress: string;
+    openedAt: string;
+    closedAt: string | null;
+    /**
+     * Until when a signed voucher covered everything the channel owed
+     */
+    coveredAt: string;
+    /**
+     * Why the latest voucher could not be signed
+     */
+    voucherError: string | null;
+    /**
+     * Highest voucher sequence Snapflow saw claimed
+     */
+    claimedSequence: number;
+    /**
+     * Why the escrow refused the last claim
+     */
+    claimError: string | null;
+    latestVoucher: PaymentVoucher | null;
 };
 
-/**
- * Whether a person or a registered business receives the payouts
- */
-export const PayoutAccountType = { Individual: 'individual', Company: 'company' } as const;
+export const PaymentChannelKind = { Lease: 'lease', PlatformService: 'platform_service' } as const;
 
-/**
- * Whether a person or a registered business receives the payouts
- */
-export type PayoutAccountType = typeof PayoutAccountType[keyof typeof PayoutAccountType];
+export type PaymentChannelKind = typeof PaymentChannelKind[keyof typeof PaymentChannelKind];
 
-export type PayoutPage = {
-    items: Array<Payout>;
+export type PaymentChannelPage = {
+    items: Array<PaymentChannel>;
     nextCursor: string | null;
 };
 
+export const PaymentChannelState = {
+    Open: 'open',
+    Closing: 'closing',
+    Closed: 'closed'
+} as const;
+
+export type PaymentChannelState = typeof PaymentChannelState[keyof typeof PaymentChannelState];
+
+export type PaymentVoucher = {
+    sequence: number;
+    message: VoucherMessage;
+    issuedAt: string;
+    expiresAt: string;
+    /**
+     * EIP-55 checksummed address
+     */
+    signerAddress: string | null;
+    signature: string | null;
+    signedAt: string | null;
+};
+
+export type PaymentWallet = {
+    id: string;
+    /**
+     * funding: the customer wallet that deposits into the escrow and signs vouchers; payout: the host wallet that receives claims
+     */
+    purpose: PaymentWalletPurpose;
+    /**
+     * EIP-55 checksummed address
+     */
+    address: string;
+    verifiedAt: string;
+    sanctionsStatus: SanctionsStatus;
+    sanctionsCheckedAt: string | null;
+    createdAt: string;
+    updatedAt: string;
+};
+
 /**
- * Whether the organization that owns the machine can receive payouts of its earnings
+ * funding: the customer wallet that deposits into the escrow and signs vouchers; payout: the host wallet that receives claims
+ */
+export const PaymentWalletPurpose = { Funding: 'funding', Payout: 'payout' } as const;
+
+/**
+ * funding: the customer wallet that deposits into the escrow and signs vouchers; payout: the host wallet that receives claims
+ */
+export type PaymentWalletPurpose = typeof PaymentWalletPurpose[keyof typeof PaymentWalletPurpose];
+
+/**
+ * Whether the organization that owns the machine has a payout wallet that can receive its earnings
  */
 export const PayoutReadiness = {
     NotSetUp: 'not_set_up',
-    Pending: 'pending',
-    ActionRequired: 'action_required',
+    Blocked: 'blocked',
     Ready: 'ready'
 } as const;
 
 /**
- * Whether the organization that owns the machine can receive payouts of its earnings
+ * Whether the organization that owns the machine has a payout wallet that can receive its earnings
  */
 export type PayoutReadiness = typeof PayoutReadiness[keyof typeof PayoutReadiness];
 
-export const PayoutState = {
-    Pending: 'pending',
-    Transferred: 'transferred',
-    Failed: 'failed'
-} as const;
+export type PendingVoucher = {
+    channelId: string;
+    kind: PaymentChannelKind;
+    /**
+     * The paid lease's sandbox; null for a platform service channel
+     */
+    sandboxId: string | null;
+    /**
+     * The paid lease; null for a platform service channel
+     */
+    leaseId: string | null;
+    /**
+     * Start of the UTC month a platform service channel bills; null for a lease channel
+     */
+    servicePeriodStart: string | null;
+    voucher: PaymentVoucher;
+};
 
-export type PayoutState = typeof PayoutState[keyof typeof PayoutState];
+export type PendingVouchers = {
+    /**
+     * EIP-712 domain every voucher is signed under
+     */
+    domain: EscrowDomain;
+    vouchers: Array<PendingVoucher>;
+};
 
 export const PlacementKind = { Pinned: 'pinned', Flexible: 'flexible' } as const;
 
@@ -3400,6 +3541,53 @@ export const PriceFloorSource = { Market: 'market', Bootstrap: 'bootstrap' } as 
 
 export type PriceFloorSource = typeof PriceFloorSource[keyof typeof PriceFloorSource];
 
+export type PriceOutOfRangeError = {
+    code: MarketplaceErrorCode;
+    message: string;
+    /**
+     * The resource whose price is out of range
+     */
+    resource: PricedResource;
+    priceMicroUsd: string;
+    /**
+     * Lowest allowed price, micro-USD
+     */
+    minimumMicroUsd: string;
+    /**
+     * Highest allowed price, micro-USD
+     */
+    maximumMicroUsd: string;
+};
+
+export type PriceRange = {
+    resource: PricedResource;
+    /**
+     * Host price at the 0.1 quantile of similar listings, micro-USD
+     */
+    lowMicroUsd: string;
+    /**
+     * Host price at the 0.9 quantile of similar listings, micro-USD
+     */
+    highMicroUsd: string;
+};
+
+/**
+ * The resource whose price is out of range
+ */
+export const PricedResource = {
+    VcpuHour: 'vcpu_hour',
+    MemoryGibHour: 'memory_gib_hour',
+    GpuHour: 'gpu_hour',
+    DiskGibMonth: 'disk_gib_month',
+    StoppedDiskGibMonth: 'stopped_disk_gib_month',
+    EgressGib: 'egress_gib'
+} as const;
+
+/**
+ * The resource whose price is out of range
+ */
+export type PricedResource = typeof PricedResource[keyof typeof PricedResource];
+
 export type ProtectedAccessGrantDto = {
     token: string;
     backendId: string;
@@ -3442,10 +3630,22 @@ export type PublicConfig = {
      * Social sign-in providers enabled on this deployment
      */
     socialProviders: Array<SocialProvider>;
+    settlement: PublicSettlementConfig;
+};
+
+export type PublicSettlementConfig = {
     /**
-     * Stripe publishable key for Stripe.js and Connect.js
+     * EIP-155 chain id of the settlement chain
      */
-    stripePublishableKey: string;
+    chainId: 8453 | 84532 | 31337;
+    /**
+     * Address of the USDC escrow contract
+     */
+    escrowAddress: string;
+    /**
+     * Address of the USDC token
+     */
+    usdcAddress: string;
 };
 
 export type QuotaUsageOverview = {
@@ -3604,6 +3804,14 @@ export type ResourceShape = {
     diskGiB: number;
     gpu: number;
 };
+
+export const SanctionsStatus = {
+    Clear: 'clear',
+    Blocked: 'blocked',
+    Unchecked: 'unchecked'
+} as const;
+
+export type SanctionsStatus = typeof SanctionsStatus[keyof typeof SanctionsStatus];
 
 export type Sandbox = {
     /**
@@ -4072,6 +4280,9 @@ export type SandboxQuote = {
     hourlyPriceMicroUsd: string;
     hostHourlyMicroUsd: string;
     markupHourlyMicroUsd: string;
+    /**
+     * Markup added to the host price, in basis points: the verified rate on Verified and Datacenter machines, the standard rate on other tiers and none on the organization's own machines
+     */
     markupBasisPoints: number;
     stoppedHourlyPriceMicroUsd: string;
     dailyPriceMicroUsd: string;
@@ -4241,9 +4452,49 @@ export type Settings = {
      */
     publicIngressEnabled: boolean;
     /**
-     * Markup added to host prices, in basis points of the host price
+     * Markup added to the host price of machines below the Verified tier, in basis points of the host price
      */
-    platformMarkupBasisPoints: number;
+    standardMarkupBasisPoints: number;
+    /**
+     * Markup added to the host price of Verified and Datacenter machines, in basis points of the host price
+     */
+    verifiedMarkupBasisPoints: number;
+    /**
+     * Monthly fee per machine an organization keeps in its private pool, micro-USD, prorated by UTC day
+     */
+    privatePoolMachineMonthlyMicroUsd: number;
+    /**
+     * Lowest vCPU-hour price a host may set, micro-USD
+     */
+    vcpuHourPriceMinimumMicroUsd: number;
+    /**
+     * Highest vCPU-hour price a host may set, micro-USD
+     */
+    vcpuHourPriceMaximumMicroUsd: number;
+    /**
+     * Lowest memory price a host may set, micro-USD per GiB-hour
+     */
+    memoryGibHourPriceMinimumMicroUsd: number;
+    /**
+     * Highest memory price a host may set, micro-USD per GiB-hour
+     */
+    memoryGibHourPriceMaximumMicroUsd: number;
+    /**
+     * Lowest GPU-hour price a host may set, micro-USD
+     */
+    gpuHourPriceMinimumMicroUsd: number;
+    /**
+     * Highest GPU-hour price a host may set, micro-USD
+     */
+    gpuHourPriceMaximumMicroUsd: number;
+    /**
+     * Lowest running or stopped disk price a host may set, micro-USD per GiB-month
+     */
+    diskGibMonthPriceMinimumMicroUsd: number;
+    /**
+     * Highest running or stopped disk price a host may set, micro-USD per GiB-month
+     */
+    diskGibMonthPriceMaximumMicroUsd: number;
     /**
      * Price floor, in basis points of the market reference price median
      */
@@ -4341,69 +4592,25 @@ export type Settings = {
      */
     spotCheckOrganizationId: string | null;
     /**
-     * Smallest top-up, cents
+     * Blocks the settlement chain must build on an escrow event before Snapflow indexes it
      */
-    topUpMinimumCents: number;
+    settlementConfirmations: number;
     /**
-     * Largest top-up, cents
+     * Seconds between the escrow vouchers issued for each lease
      */
-    topUpMaximumCents: number;
+    voucherIntervalSeconds: number;
     /**
-     * Suggested top-ups, cents
+     * Voucher intervals a lease may go without a signed voucher before its sandbox counts as unfunded
      */
-    topUpPresetsCents: Array<number>;
+    voucherGraceIntervals: number;
     /**
-     * Smallest automatic top-up, cents
+     * Hours an escrow voucher stays claimable
      */
-    autoTopUpMinimumCents: number;
+    voucherLifetimeHours: number;
     /**
-     * Minutes between automatic top-up attempts
+     * Minutes between the claims Snapflow relays for each lease
      */
-    autoTopUpMinimumIntervalMinutes: number;
-    /**
-     * Top-up attempts per organization per hour
-     */
-    topUpAttemptsPerHour: number;
-    /**
-     * Payment methods per organization per day
-     */
-    paymentMethodsPerDay: number;
-    /**
-     * Organizations that may share one card
-     */
-    organizationsPerCardFingerprint: number;
-    /**
-     * Smallest payout, cents
-     */
-    payoutMinimumCents: number;
-    /**
-     * ISO weekday payouts run on (1 is Monday)
-     */
-    payoutWeekday: number;
-    /**
-     * Earnings hold for Community machines, days
-     */
-    payoutHoldCommunityDays: number;
-    /**
-     * Earnings hold for Verified machines, days
-     */
-    payoutHoldVerifiedDays: number;
-    /**
-     * Earnings hold for Datacenter machines, days
-     */
-    payoutHoldDatacenterDays: number;
-    /**
-     * Days credit from a new card cannot fund payouts
-     */
-    newFundingHoldDays: number;
-    /**
-     * Calculate sales tax on top-ups with Stripe Tax
-     */
-    stripeTaxEnabled: boolean;
-    /**
-     * ISO 3166-1 alpha-2 countries hosts may be paid in
-     */
-    payoutCountries: Array<string>;
+    claimIntervalMinutes: number;
     /**
      * Proxy networks (address/prefix) in front of the edges whose forwarded client addresses the edges trust while Cloudflare's published networks are unavailable
      */
@@ -4576,6 +4783,19 @@ export type StorageAccessDto = {
     bucket: string;
 };
 
+export type SubmitVoucherSignature = {
+    channelId: string;
+    sequence: number;
+    /**
+     * The funding wallet itself or one of its session keys that signed the voucher
+     */
+    signer: string;
+    /**
+     * EIP-712 signature of the voucher message
+     */
+    signature: string;
+};
+
 export const SystemExposureService = {
     Toolbox: 'toolbox',
     BuildLogs: 'build_logs',
@@ -4597,54 +4817,6 @@ export type TcpExposurePolicyDto = {
     connectionLimit: number;
 };
 
-export type TopUp = {
-    id: string;
-    kind: TopUpKind;
-    state: TopUpState;
-    /**
-     * Credit bought in US cents
-     */
-    amountCents: number;
-    /**
-     * Sales tax charged on top in US cents
-     */
-    taxCents: number;
-    failureCode?: string | null;
-    /**
-     * Client secret to confirm the payment on-session; present only while the top-up requires action
-     */
-    paymentIntentClientSecret?: string;
-    createdAt: string;
-    succeededAt?: string | null;
-};
-
-export const TopUpKind = { Manual: 'manual', Auto: 'auto' } as const;
-
-export type TopUpKind = typeof TopUpKind[keyof typeof TopUpKind];
-
-export type TopUpPage = {
-    items: Array<TopUp>;
-    nextCursor: string | null;
-};
-
-export type TopUpSession = {
-    topUpId: string;
-    /**
-     * Client secret of the embedded Checkout session
-     */
-    checkoutClientSecret: string;
-};
-
-export const TopUpState = {
-    Created: 'created',
-    RequiresAction: 'requires_action',
-    Succeeded: 'succeeded',
-    Failed: 'failed',
-    Expired: 'expired'
-} as const;
-
-export type TopUpState = typeof TopUpState[keyof typeof TopUpState];
-
 export const TunnelCarrier = { Quic: 'quic', Http2: 'http2' } as const;
 
 export type TunnelCarrier = typeof TunnelCarrier[keyof typeof TunnelCarrier];
@@ -4664,25 +4836,6 @@ export type UpdateAdminMachineTier = {
     tierCap?: MachineTier | null;
     datacenterApproved?: boolean;
     reason: string;
-};
-
-export type UpdateAutoTopUp = {
-    /**
-     * Whether automatic top-ups run
-     */
-    enabled: boolean;
-    /**
-     * Top up when spendable credit falls below this, in US cents
-     */
-    thresholdCents: number;
-    /**
-     * Credit bought per automatic top-up in US cents
-     */
-    amountCents: number;
-    /**
-     * Saved card to charge
-     */
-    paymentMethodId: string;
 };
 
 export type UpdateBillingBudgetDto = {
@@ -4915,9 +5068,49 @@ export type UpdateSettings = {
      */
     publicIngressEnabled?: boolean;
     /**
-     * Markup added to host prices, in basis points of the host price
+     * Markup added to the host price of machines below the Verified tier, in basis points of the host price
      */
-    platformMarkupBasisPoints?: number;
+    standardMarkupBasisPoints?: number;
+    /**
+     * Markup added to the host price of Verified and Datacenter machines, in basis points of the host price
+     */
+    verifiedMarkupBasisPoints?: number;
+    /**
+     * Monthly fee per machine an organization keeps in its private pool, micro-USD, prorated by UTC day
+     */
+    privatePoolMachineMonthlyMicroUsd?: number;
+    /**
+     * Lowest vCPU-hour price a host may set, micro-USD
+     */
+    vcpuHourPriceMinimumMicroUsd?: number;
+    /**
+     * Highest vCPU-hour price a host may set, micro-USD
+     */
+    vcpuHourPriceMaximumMicroUsd?: number;
+    /**
+     * Lowest memory price a host may set, micro-USD per GiB-hour
+     */
+    memoryGibHourPriceMinimumMicroUsd?: number;
+    /**
+     * Highest memory price a host may set, micro-USD per GiB-hour
+     */
+    memoryGibHourPriceMaximumMicroUsd?: number;
+    /**
+     * Lowest GPU-hour price a host may set, micro-USD
+     */
+    gpuHourPriceMinimumMicroUsd?: number;
+    /**
+     * Highest GPU-hour price a host may set, micro-USD
+     */
+    gpuHourPriceMaximumMicroUsd?: number;
+    /**
+     * Lowest running or stopped disk price a host may set, micro-USD per GiB-month
+     */
+    diskGibMonthPriceMinimumMicroUsd?: number;
+    /**
+     * Highest running or stopped disk price a host may set, micro-USD per GiB-month
+     */
+    diskGibMonthPriceMaximumMicroUsd?: number;
     /**
      * Price floor, in basis points of the market reference price median
      */
@@ -5015,80 +5208,29 @@ export type UpdateSettings = {
      */
     spotCheckOrganizationId?: string | null;
     /**
-     * Smallest top-up, cents
+     * Blocks the settlement chain must build on an escrow event before Snapflow indexes it
      */
-    topUpMinimumCents?: number;
+    settlementConfirmations?: number;
     /**
-     * Largest top-up, cents
+     * Seconds between the escrow vouchers issued for each lease
      */
-    topUpMaximumCents?: number;
+    voucherIntervalSeconds?: number;
     /**
-     * Suggested top-ups, cents
+     * Voucher intervals a lease may go without a signed voucher before its sandbox counts as unfunded
      */
-    topUpPresetsCents?: Array<number>;
+    voucherGraceIntervals?: number;
     /**
-     * Smallest automatic top-up, cents
+     * Hours an escrow voucher stays claimable
      */
-    autoTopUpMinimumCents?: number;
+    voucherLifetimeHours?: number;
     /**
-     * Minutes between automatic top-up attempts
+     * Minutes between the claims Snapflow relays for each lease
      */
-    autoTopUpMinimumIntervalMinutes?: number;
-    /**
-     * Top-up attempts per organization per hour
-     */
-    topUpAttemptsPerHour?: number;
-    /**
-     * Payment methods per organization per day
-     */
-    paymentMethodsPerDay?: number;
-    /**
-     * Organizations that may share one card
-     */
-    organizationsPerCardFingerprint?: number;
-    /**
-     * Smallest payout, cents
-     */
-    payoutMinimumCents?: number;
-    /**
-     * ISO weekday payouts run on (1 is Monday)
-     */
-    payoutWeekday?: number;
-    /**
-     * Earnings hold for Community machines, days
-     */
-    payoutHoldCommunityDays?: number;
-    /**
-     * Earnings hold for Verified machines, days
-     */
-    payoutHoldVerifiedDays?: number;
-    /**
-     * Earnings hold for Datacenter machines, days
-     */
-    payoutHoldDatacenterDays?: number;
-    /**
-     * Days credit from a new card cannot fund payouts
-     */
-    newFundingHoldDays?: number;
-    /**
-     * Calculate sales tax on top-ups with Stripe Tax
-     */
-    stripeTaxEnabled?: boolean;
-    /**
-     * ISO 3166-1 alpha-2 countries hosts may be paid in
-     */
-    payoutCountries?: Array<string>;
+    claimIntervalMinutes?: number;
     /**
      * Proxy networks (address/prefix) in front of the edges whose forwarded client addresses the edges trust while Cloudflare's published networks are unavailable; an empty list trusts none
      */
     edgeTrustedHttpProxyCidrs?: Array<string>;
-};
-
-export type UpdateTopUpAmount = {
-    /**
-     * Credit to buy in US cents, within the platform limits
-     */
-    amountCents: number;
 };
 
 export type Url = {
@@ -5283,6 +5425,82 @@ export const VolumeState = {
  * Volume state
  */
 export type VolumeState = typeof VolumeState[keyof typeof VolumeState];
+
+export type VoucherDelegation = {
+    /**
+     * EIP-155 chain id
+     */
+    chainId: number;
+    /**
+     * EIP-55 checksummed address
+     */
+    escrowAddress: string;
+    /**
+     * Snapflow's delegated voucher signer
+     */
+    signerAddress: string;
+    /**
+     * EIP-55 checksummed address
+     */
+    fundingWalletAddress: string | null;
+    /**
+     * The active session key the funding wallet granted the signer
+     */
+    sessionKey: DelegatedSessionKey | null;
+    /**
+     * Hourly cap that covers the running sandboxes, in micro-USD (uint128)
+     */
+    suggestedHourlyCapMicroUsd: string;
+    /**
+     * Total cap that covers the running sandboxes for the suggested expiry, in micro-USD (uint128)
+     */
+    suggestedSpendCapMicroUsd: string;
+    /**
+     * Suggested key expiry, in unix seconds (uint64)
+     */
+    suggestedExpiry: string;
+};
+
+export type VoucherMessage = {
+    channelId: string;
+    /**
+     * EIP-55 checksummed address
+     */
+    customer: string;
+    /**
+     * EIP-55 checksummed address
+     */
+    host: string;
+    /**
+     * Cumulative host share, in USDC base units (micro-USD)
+     */
+    hostAmount: string;
+    /**
+     * Cumulative Snapflow fee, in USDC base units
+     */
+    feeAmount: string;
+    /**
+     * Cumulative platform service charges, in USDC base units
+     */
+    serviceAmount: string;
+    sequence: string;
+    /**
+     * Unix seconds
+     */
+    expiry: string;
+};
+
+export const VoucherSigningMode = { Delegated: 'delegated', Client: 'client' } as const;
+
+export type VoucherSigningMode = typeof VoucherSigningMode[keyof typeof VoucherSigningMode];
+
+export type WalletChallenge = {
+    /**
+     * Sign-In With Ethereum (EIP-4361) message the wallet must sign with personal_sign
+     */
+    message: string;
+    expiresAt: string;
+};
 
 /**
  * What a pinned sandbox does when its machine is full, offline, draining or unlisted
@@ -5859,21 +6077,6 @@ export type AdminUpdateOrganizationLimitsResponses = {
 
 export type AdminUpdateOrganizationLimitsResponse = AdminUpdateOrganizationLimitsResponses[keyof AdminUpdateOrganizationLimitsResponses];
 
-export type GetAdminPaymentAccountData = {
-    body?: never;
-    path: {
-        organizationId: string;
-    };
-    query?: never;
-    url: '/admin/organizations/{organizationId}/payment-account';
-};
-
-export type GetAdminPaymentAccountResponses = {
-    200: AdminPaymentAccount;
-};
-
-export type GetAdminPaymentAccountResponse = GetAdminPaymentAccountResponses[keyof GetAdminPaymentAccountResponses];
-
 export type AdminListOrganizationQuotasData = {
     body?: never;
     path: {
@@ -6001,67 +6204,6 @@ export type AdminUnsuspendOrganizationResponses = {
 };
 
 export type AdminUnsuspendOrganizationResponse = AdminUnsuspendOrganizationResponses[keyof AdminUnsuspendOrganizationResponses];
-
-export type ListAdminDisputesData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Opaque cursor returned by the previous page
-         */
-        cursor?: string;
-        /**
-         * Number of results per page
-         */
-        limit?: number;
-        state?: DisputeState;
-    };
-    url: '/admin/payments/disputes';
-};
-
-export type ListAdminDisputesResponses = {
-    200: AdminPaymentDisputePage;
-};
-
-export type ListAdminDisputesResponse = ListAdminDisputesResponses[keyof ListAdminDisputesResponses];
-
-export type ListAdminPayoutsData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Opaque cursor returned by the previous page
-         */
-        cursor?: string;
-        /**
-         * Number of results per page
-         */
-        limit?: number;
-        state?: PayoutState;
-    };
-    url: '/admin/payouts';
-};
-
-export type ListAdminPayoutsResponses = {
-    200: PayoutPage;
-};
-
-export type ListAdminPayoutsResponse = ListAdminPayoutsResponses[keyof ListAdminPayoutsResponses];
-
-export type RetryAdminPayoutData = {
-    body?: never;
-    path: {
-        payoutId: string;
-    };
-    query?: never;
-    url: '/admin/payouts/{payoutId}/retry';
-};
-
-export type RetryAdminPayoutResponses = {
-    200: Payout;
-};
-
-export type RetryAdminPayoutResponse = RetryAdminPayoutResponses[keyof RetryAdminPayoutResponses];
 
 export type AdminRecoverSandboxData = {
     body?: never;
@@ -6294,38 +6436,6 @@ export type GetAuditLogsResponses = {
 
 export type GetAuditLogsResponse = GetAuditLogsResponses[keyof GetAuditLogsResponses];
 
-export type GetAutoTopUpData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/billing/auto-top-up';
-};
-
-export type GetAutoTopUpResponses = {
-    200: AutoTopUp;
-};
-
-export type GetAutoTopUpResponse = GetAutoTopUpResponses[keyof GetAutoTopUpResponses];
-
-export type UpdateAutoTopUpData = {
-    body: UpdateAutoTopUp;
-    headers: {
-        /**
-         * The resourceVersion the change is based on; 0 creates it
-         */
-        'if-match': string;
-    };
-    path?: never;
-    query?: never;
-    url: '/billing/auto-top-up';
-};
-
-export type UpdateAutoTopUpResponses = {
-    200: AutoTopUp;
-};
-
-export type UpdateAutoTopUpResponse = UpdateAutoTopUpResponses[keyof UpdateAutoTopUpResponses];
-
 export type GetBillingBudgetData = {
     body?: never;
     path?: never;
@@ -6378,34 +6488,6 @@ export type GetBillingOverviewResponses = {
 
 export type GetBillingOverviewResponse = GetBillingOverviewResponses[keyof GetBillingOverviewResponses];
 
-export type ListPaymentMethodsData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/billing/payment-methods';
-};
-
-export type ListPaymentMethodsResponses = {
-    200: Array<PaymentMethod>;
-};
-
-export type ListPaymentMethodsResponse = ListPaymentMethodsResponses[keyof ListPaymentMethodsResponses];
-
-export type DeletePaymentMethodData = {
-    body?: never;
-    path: {
-        paymentMethodId: string;
-    };
-    query?: never;
-    url: '/billing/payment-methods/{paymentMethodId}';
-};
-
-export type DeletePaymentMethodResponses = {
-    204: void;
-};
-
-export type DeletePaymentMethodResponse = DeletePaymentMethodResponses[keyof DeletePaymentMethodResponses];
-
 export type GetSandboxBillingSummaryData = {
     body?: never;
     path: {
@@ -6451,77 +6533,6 @@ export type GetBillingStatementResponses = {
 };
 
 export type GetBillingStatementResponse = GetBillingStatementResponses[keyof GetBillingStatementResponses];
-
-export type ListTopUpsData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Opaque cursor returned by the previous page
-         */
-        cursor?: string;
-        /**
-         * Number of results per page
-         */
-        limit?: number;
-    };
-    url: '/billing/top-ups';
-};
-
-export type ListTopUpsResponses = {
-    200: TopUpPage;
-};
-
-export type ListTopUpsResponse = ListTopUpsResponses[keyof ListTopUpsResponses];
-
-export type CreateTopUpData = {
-    body: CreateTopUp;
-    headers: {
-        /**
-         * Uniquely identifies one logical non-idempotent mutation and is preserved across retries
-         */
-        'Idempotency-Key': string;
-    };
-    path?: never;
-    query?: never;
-    url: '/billing/top-ups';
-};
-
-export type CreateTopUpResponses = {
-    201: TopUpSession;
-};
-
-export type CreateTopUpResponse = CreateTopUpResponses[keyof CreateTopUpResponses];
-
-export type GetTopUpData = {
-    body?: never;
-    path: {
-        topUpId: string;
-    };
-    query?: never;
-    url: '/billing/top-ups/{topUpId}';
-};
-
-export type GetTopUpResponses = {
-    200: TopUp;
-};
-
-export type GetTopUpResponse = GetTopUpResponses[keyof GetTopUpResponses];
-
-export type UpdateTopUpAmountData = {
-    body: UpdateTopUpAmount;
-    path: {
-        topUpId: string;
-    };
-    query?: never;
-    url: '/billing/top-ups/{topUpId}/amount';
-};
-
-export type UpdateTopUpAmountResponses = {
-    200: TopUp;
-};
-
-export type UpdateTopUpAmountResponse = UpdateTopUpAmountResponses[keyof UpdateTopUpAmountResponses];
 
 export type ListBillingUsageData = {
     body?: never;
@@ -7155,9 +7166,9 @@ export type CreateMachinePriceCardData = {
 
 export type CreateMachinePriceCardErrors = {
     /**
-     * The price card is below the market floor or its egress price is above the ceiling
+     * A rate is outside its resource limits, the price card is below the market floor or its egress price is above the ceiling
      */
-    422: PriceBelowFloorError | PriceAboveCeilingError;
+    422: PriceBelowFloorError | PriceAboveCeilingError | PriceOutOfRangeError;
 };
 
 export type CreateMachinePriceCardError = CreateMachinePriceCardErrors[keyof CreateMachinePriceCardErrors];
@@ -7182,6 +7193,21 @@ export type GetMachinePriceFloorResponses = {
 };
 
 export type GetMachinePriceFloorResponse = GetMachinePriceFloorResponses[keyof GetMachinePriceFloorResponses];
+
+export type GetMachinePriceHintData = {
+    body?: never;
+    path: {
+        machineId: string;
+    };
+    query?: never;
+    url: '/host/machines/{machineId}/price-hint';
+};
+
+export type GetMachinePriceHintResponses = {
+    200: MachinePriceHint;
+};
+
+export type GetMachinePriceHintResponse = GetMachinePriceHintResponses[keyof GetMachinePriceHintResponses];
 
 export type GetMachineVerificationData = {
     body?: never;
@@ -7341,6 +7367,9 @@ export type ListListingsData = {
         minimumReliabilityBasisPoints?: number;
         persistentVolumes?: boolean;
         includeUnavailable?: boolean;
+        /**
+         * value ranks benchmarked performance per dollar, weighted by reliability
+         */
         sort?: MachineBrowseSort;
         /**
          * Opaque cursor returned by the previous page
@@ -7627,6 +7656,34 @@ export type RenewMachineSessionResponses = {
 };
 
 export type RenewMachineSessionResponse = RenewMachineSessionResponses[keyof RenewMachineSessionResponses];
+
+export type GetMachineVouchersData = {
+    body?: never;
+    headers?: {
+        /**
+         * Digest of the voucher document the machine holds
+         */
+        'If-None-Match'?: string;
+    };
+    path?: never;
+    query?: {
+        waitSeconds?: number;
+    };
+    url: '/machines/settlement/vouchers';
+};
+
+export type GetMachineVouchersErrors = {
+    /**
+     * The API is shutting down; retry after the advertised delay
+     */
+    503: unknown;
+};
+
+export type GetMachineVouchersResponses = {
+    200: MachineVoucherRelay;
+};
+
+export type GetMachineVouchersResponse = GetMachineVouchersResponses[keyof GetMachineVouchersResponses];
 
 export type ReportMachineSnapshotInventoryData = {
     body: MachineSnapshotInventoryReportDto;
@@ -8017,81 +8074,6 @@ export type GetOrganizationUsageOverviewResponses = {
 };
 
 export type GetOrganizationUsageOverviewResponse = GetOrganizationUsageOverviewResponses[keyof GetOrganizationUsageOverviewResponses];
-
-export type ListPayoutsData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Opaque cursor returned by the previous page
-         */
-        cursor?: string;
-        /**
-         * Number of results per page
-         */
-        limit?: number;
-        state?: PayoutState;
-    };
-    url: '/payouts';
-};
-
-export type ListPayoutsResponses = {
-    200: PayoutPage;
-};
-
-export type ListPayoutsResponse = ListPayoutsResponses[keyof ListPayoutsResponses];
-
-export type GetPayoutAccountData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/payouts/account';
-};
-
-export type GetPayoutAccountResponses = {
-    200: PayoutAccount;
-};
-
-export type GetPayoutAccountResponse = GetPayoutAccountResponses[keyof GetPayoutAccountResponses];
-
-export type CreatePayoutAccountData = {
-    body: CreatePayoutAccount;
-    path?: never;
-    query?: never;
-    url: '/payouts/account';
-};
-
-export type CreatePayoutAccountResponses = {
-    201: PayoutAccount;
-};
-
-export type CreatePayoutAccountResponse = CreatePayoutAccountResponses[keyof CreatePayoutAccountResponses];
-
-export type CreatePayoutAccountSessionData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/payouts/account/session';
-};
-
-export type CreatePayoutAccountSessionResponses = {
-    200: PayoutAccountSession;
-};
-
-export type CreatePayoutAccountSessionResponse = CreatePayoutAccountSessionResponses[keyof CreatePayoutAccountSessionResponses];
-
-export type GetHostEarningsData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/payouts/earnings';
-};
-
-export type GetHostEarningsResponses = {
-    200: HostEarnings;
-};
-
-export type GetHostEarningsResponse = GetHostEarningsResponses[keyof GetHostEarningsResponses];
 
 export type GetPublicConfigData = {
     body?: never;
@@ -9287,6 +9269,127 @@ export type RevokeSecretVersionResponses = {
     201: unknown;
 };
 
+export type ListPaymentChannelsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Opaque cursor returned by the previous page
+         */
+        cursor?: string;
+        /**
+         * Number of results per page
+         */
+        limit?: number;
+    };
+    url: '/settlement/channels';
+};
+
+export type ListPaymentChannelsResponses = {
+    200: PaymentChannelPage;
+};
+
+export type ListPaymentChannelsResponse = ListPaymentChannelsResponses[keyof ListPaymentChannelsResponses];
+
+export type GetPaymentChannelData = {
+    body?: never;
+    path: {
+        /**
+         * The escrow channel id
+         */
+        channelId: string;
+    };
+    query?: never;
+    url: '/settlement/channels/{channelId}';
+};
+
+export type GetPaymentChannelResponses = {
+    200: PaymentChannel;
+};
+
+export type GetPaymentChannelResponse = GetPaymentChannelResponses[keyof GetPaymentChannelResponses];
+
+export type GetVoucherDelegationData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/settlement/delegation';
+};
+
+export type GetVoucherDelegationResponses = {
+    200: VoucherDelegation;
+};
+
+export type GetVoucherDelegationResponse = GetVoucherDelegationResponses[keyof GetVoucherDelegationResponses];
+
+export type GetEscrowAccountData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/settlement/escrow';
+};
+
+export type GetEscrowAccountResponses = {
+    200: EscrowAccount;
+};
+
+export type GetEscrowAccountResponse = GetEscrowAccountResponses[keyof GetEscrowAccountResponses];
+
+export type ListEscrowEventsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Opaque cursor returned by the previous page
+         */
+        cursor?: string;
+        /**
+         * Number of results per page
+         */
+        limit?: number;
+    };
+    url: '/settlement/events';
+};
+
+export type ListEscrowEventsResponses = {
+    200: EscrowEventPage;
+};
+
+export type ListEscrowEventsResponse = ListEscrowEventsResponses[keyof ListEscrowEventsResponses];
+
+export type SubmitVoucherSignatureData = {
+    body: SubmitVoucherSignature;
+    path?: never;
+    query?: never;
+    url: '/settlement/vouchers';
+};
+
+export type SubmitVoucherSignatureErrors = {
+    /**
+     * The escrow would refuse the signature: wrong signer, inactive session key or a cap exceeded
+     */
+    422: unknown;
+};
+
+export type SubmitVoucherSignatureResponses = {
+    200: PaymentVoucher;
+};
+
+export type SubmitVoucherSignatureResponse = SubmitVoucherSignatureResponses[keyof SubmitVoucherSignatureResponses];
+
+export type ListPendingVouchersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/settlement/vouchers/pending';
+};
+
+export type ListPendingVouchersResponses = {
+    200: PendingVouchers;
+};
+
+export type ListPendingVouchersResponse = ListPendingVouchersResponses[keyof ListPendingVouchersResponses];
+
 export type GetAllSnapshotsData = {
     body?: never;
     path?: never;
@@ -9651,3 +9754,57 @@ export type RestoreVolumeResponses = {
 };
 
 export type RestoreVolumeResponse = RestoreVolumeResponses[keyof RestoreVolumeResponses];
+
+export type ListPaymentWalletsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/wallets';
+};
+
+export type ListPaymentWalletsResponses = {
+    200: Array<PaymentWallet>;
+};
+
+export type ListPaymentWalletsResponse = ListPaymentWalletsResponses[keyof ListPaymentWalletsResponses];
+
+export type LinkPaymentWalletData = {
+    body: LinkPaymentWallet;
+    path?: never;
+    query?: never;
+    url: '/wallets';
+};
+
+export type LinkPaymentWalletResponses = {
+    201: PaymentWallet;
+};
+
+export type LinkPaymentWalletResponse = LinkPaymentWalletResponses[keyof LinkPaymentWalletResponses];
+
+export type CreateWalletChallengeData = {
+    body: CreateWalletChallenge;
+    path?: never;
+    query?: never;
+    url: '/wallets/challenge';
+};
+
+export type CreateWalletChallengeResponses = {
+    200: WalletChallenge;
+};
+
+export type CreateWalletChallengeResponse = CreateWalletChallengeResponses[keyof CreateWalletChallengeResponses];
+
+export type UnlinkPaymentWalletData = {
+    body?: never;
+    path: {
+        purpose: PaymentWalletPurpose;
+    };
+    query?: never;
+    url: '/wallets/{purpose}';
+};
+
+export type UnlinkPaymentWalletResponses = {
+    204: void;
+};
+
+export type UnlinkPaymentWalletResponse = UnlinkPaymentWalletResponses[keyof UnlinkPaymentWalletResponses];

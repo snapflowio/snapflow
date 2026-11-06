@@ -35,6 +35,7 @@ import { SandboxClass } from '../../sandbox/enums/sandbox-class.enum';
 import { SandboxMode } from '../../sandbox/enums/sandbox-mode.enum';
 import { SandboxState } from '../../sandbox/enums/sandbox-state.enum';
 import { fakeSettings } from '../../settings/testing/settings.fake';
+import { PaymentChannel } from '../../settlement/entities/payment-channel.entity';
 import { USAGE_ACCOUNTING_POLICY_VERSION } from '../../usage/constants/usage-accounting.constants';
 import { SandboxBillableUsage } from '../../usage/entities/sandbox-billable-usage.entity';
 import { SandboxUsagePeriod } from '../../usage/entities/sandbox-usage-period.entity';
@@ -110,6 +111,7 @@ describe('billing lock order under concurrency', {
 				SandboxLease,
 				PlacementBillingAuthorization,
 				BillingLineItem,
+				PaymentChannel,
 			],
 		});
 		await seed(orm.em.fork());

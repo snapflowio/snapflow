@@ -41,9 +41,7 @@ export const voucherTypes = {
 	],
 } as const;
 
-export type Voucher = TypedDataToPrimitiveTypes<
-	typeof voucherTypes
->['Voucher'];
+export type Voucher = TypedDataToPrimitiveTypes<typeof voucherTypes>['Voucher'];
 
 const channelIdParameters = [
 	{ name: 'customer', type: 'address' },

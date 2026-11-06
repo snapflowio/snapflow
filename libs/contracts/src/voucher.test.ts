@@ -67,32 +67,44 @@ function toVoucher(entry: VectorEntry): Voucher {
 }
 
 describe('voucher hashing', () => {
-	it.each(vectors.vouchers)('matches the contract digest at sequence $sequence', (entry) => {
-		expect(hashVoucher(domain, toVoucher(entry))).toBe(entry.digest);
-	});
+	it.each(vectors.vouchers)(
+		'matches the contract digest at sequence $sequence',
+		(entry) => {
+			expect(hashVoucher(domain, toVoucher(entry))).toBe(entry.digest);
+		}
+	);
 
-	it.each(vectors.vouchers)('recovers the signer at sequence $sequence', async (entry) => {
-		await expect(
-			recoverVoucherSigner(domain, toVoucher(entry), entry.signature)
-		).resolves.toBe(getAddress(vectors.signer));
-	});
+	it.each(vectors.vouchers)(
+		'recovers the signer at sequence $sequence',
+		async (entry) => {
+			await expect(
+				recoverVoucherSigner(domain, toVoucher(entry), entry.signature)
+			).resolves.toBe(getAddress(vectors.signer));
+		}
+	);
 
-	it.each(vectors.vouchers)('signs exactly like the contract test signer at sequence $sequence', async (entry) => {
-		const account = privateKeyToAccount(vectors.signerKey);
-		await expect(
-			account.signTypedData(voucherTypedData(domain, toVoucher(entry)))
-		).resolves.toBe(entry.signature);
-	});
+	it.each(vectors.vouchers)(
+		'signs exactly like the contract test signer at sequence $sequence',
+		async (entry) => {
+			const account = privateKeyToAccount(vectors.signerKey);
+			await expect(
+				account.signTypedData(voucherTypedData(domain, toVoucher(entry)))
+			).resolves.toBe(entry.signature);
+		}
+	);
 });
 
 describe('channel ids', () => {
-	it.each(vectors.channels)('derives the contract channel for lease "$leaseId"', (channel) => {
-		expect(
-			channelIdFor(
-				getAddress(channel.customer),
-				getAddress(channel.host),
-				channel.leaseId
-			)
-		).toBe(channel.channelId);
-	});
+	it.each(vectors.channels)(
+		'derives the contract channel for lease "$leaseId"',
+		(channel) => {
+			expect(
+				channelIdFor(
+					getAddress(channel.customer),
+					getAddress(channel.host),
+					channel.leaseId
+				)
+			).toBe(channel.channelId);
+		}
+	);
 });

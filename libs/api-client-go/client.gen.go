@@ -313,30 +313,6 @@ func (e CustomDomainState) Valid() bool {
 	}
 }
 
-// Defines values for DisputeState.
-const (
-	DisputeStateLost          DisputeState = "lost"
-	DisputeStateNeedsResponse DisputeState = "needs_response"
-	DisputeStateUnderReview   DisputeState = "under_review"
-	DisputeStateWon           DisputeState = "won"
-)
-
-// Valid indicates whether the value is a known member of the DisputeState enum.
-func (e DisputeState) Valid() bool {
-	switch e {
-	case DisputeStateLost:
-		return true
-	case DisputeStateNeedsResponse:
-		return true
-	case DisputeStateUnderReview:
-		return true
-	case DisputeStateWon:
-		return true
-	default:
-		return false
-	}
-}
-
 // Defines values for DockerRegistryRegistryType.
 const (
 	DockerRegistryRegistryTypeBackup       DockerRegistryRegistryType = "backup"
@@ -460,6 +436,105 @@ func (e EgressCeilingSource) Valid() bool {
 	case EgressCeilingSourceMarket:
 		return true
 	case EgressCeilingSourceSettings:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for EscrowEventKind.
+const (
+	EscrowEventKindAddressBlocked                   EscrowEventKind = "AddressBlocked"
+	EscrowEventKindAddressUnblocked                 EscrowEventKind = "AddressUnblocked"
+	EscrowEventKindClaimed                          EscrowEventKind = "Claimed"
+	EscrowEventKindDefaultAdminDelayChangeCanceled  EscrowEventKind = "DefaultAdminDelayChangeCanceled"
+	EscrowEventKindDefaultAdminDelayChangeScheduled EscrowEventKind = "DefaultAdminDelayChangeScheduled"
+	EscrowEventKindDefaultAdminTransferCanceled     EscrowEventKind = "DefaultAdminTransferCanceled"
+	EscrowEventKindDefaultAdminTransferScheduled    EscrowEventKind = "DefaultAdminTransferScheduled"
+	EscrowEventKindDeposited                        EscrowEventKind = "Deposited"
+	EscrowEventKindEIP712DomainChanged              EscrowEventKind = "EIP712DomainChanged"
+	EscrowEventKindFeeCapScheduleCancelled          EscrowEventKind = "FeeCapScheduleCancelled"
+	EscrowEventKindFeeCapScheduled                  EscrowEventKind = "FeeCapScheduled"
+	EscrowEventKindFeeCapUpdated                    EscrowEventKind = "FeeCapUpdated"
+	EscrowEventKindFeeRecipientUpdated              EscrowEventKind = "FeeRecipientUpdated"
+	EscrowEventKindPaused                           EscrowEventKind = "Paused"
+	EscrowEventKindRoleAdminChanged                 EscrowEventKind = "RoleAdminChanged"
+	EscrowEventKindRoleGranted                      EscrowEventKind = "RoleGranted"
+	EscrowEventKindRoleRevoked                      EscrowEventKind = "RoleRevoked"
+	EscrowEventKindSessionKeyRevoked                EscrowEventKind = "SessionKeyRevoked"
+	EscrowEventKindSessionKeySet                    EscrowEventKind = "SessionKeySet"
+	EscrowEventKindUnpaused                         EscrowEventKind = "Unpaused"
+	EscrowEventKindWithdrawalCancelled              EscrowEventKind = "WithdrawalCancelled"
+	EscrowEventKindWithdrawalRequested              EscrowEventKind = "WithdrawalRequested"
+	EscrowEventKindWithdrawn                        EscrowEventKind = "Withdrawn"
+)
+
+// Valid indicates whether the value is a known member of the EscrowEventKind enum.
+func (e EscrowEventKind) Valid() bool {
+	switch e {
+	case EscrowEventKindAddressBlocked:
+		return true
+	case EscrowEventKindAddressUnblocked:
+		return true
+	case EscrowEventKindClaimed:
+		return true
+	case EscrowEventKindDefaultAdminDelayChangeCanceled:
+		return true
+	case EscrowEventKindDefaultAdminDelayChangeScheduled:
+		return true
+	case EscrowEventKindDefaultAdminTransferCanceled:
+		return true
+	case EscrowEventKindDefaultAdminTransferScheduled:
+		return true
+	case EscrowEventKindDeposited:
+		return true
+	case EscrowEventKindEIP712DomainChanged:
+		return true
+	case EscrowEventKindFeeCapScheduleCancelled:
+		return true
+	case EscrowEventKindFeeCapScheduled:
+		return true
+	case EscrowEventKindFeeCapUpdated:
+		return true
+	case EscrowEventKindFeeRecipientUpdated:
+		return true
+	case EscrowEventKindPaused:
+		return true
+	case EscrowEventKindRoleAdminChanged:
+		return true
+	case EscrowEventKindRoleGranted:
+		return true
+	case EscrowEventKindRoleRevoked:
+		return true
+	case EscrowEventKindSessionKeyRevoked:
+		return true
+	case EscrowEventKindSessionKeySet:
+		return true
+	case EscrowEventKindUnpaused:
+		return true
+	case EscrowEventKindWithdrawalCancelled:
+		return true
+	case EscrowEventKindWithdrawalRequested:
+		return true
+	case EscrowEventKindWithdrawn:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for EscrowEventParty.
+const (
+	EscrowEventPartyCustomer EscrowEventParty = "customer"
+	EscrowEventPartyHost     EscrowEventParty = "host"
+)
+
+// Valid indicates whether the value is a known member of the EscrowEventParty enum.
+func (e EscrowEventParty) Valid() bool {
+	switch e {
+	case EscrowEventPartyCustomer:
+		return true
+	case EscrowEventPartyHost:
 		return true
 	default:
 		return false
@@ -935,6 +1010,7 @@ const (
 	MachineBrowseSortPerformance MachineBrowseSort = "performance"
 	MachineBrowseSortPrice       MachineBrowseSort = "price"
 	MachineBrowseSortReliability MachineBrowseSort = "reliability"
+	MachineBrowseSortValue       MachineBrowseSort = "value"
 )
 
 // Valid indicates whether the value is a known member of the MachineBrowseSort enum.
@@ -949,6 +1025,8 @@ func (e MachineBrowseSort) Valid() bool {
 	case MachineBrowseSortPrice:
 		return true
 	case MachineBrowseSortReliability:
+		return true
+	case MachineBrowseSortValue:
 		return true
 	default:
 		return false
@@ -1464,11 +1542,12 @@ const (
 	MarketplaceErrorCodeMachineNotFound          MarketplaceErrorCode = "machine_not_found"
 	MarketplaceErrorCodeMachineRestricted        MarketplaceErrorCode = "machine_restricted"
 	MarketplaceErrorCodeMarketReferenceMissing   MarketplaceErrorCode = "market_reference_missing"
-	MarketplaceErrorCodePayoutAccountRequired    MarketplaceErrorCode = "payout_account_required"
+	MarketplaceErrorCodePayoutWalletRequired     MarketplaceErrorCode = "payout_wallet_required"
 	MarketplaceErrorCodePriceAboveCeiling        MarketplaceErrorCode = "price_above_ceiling"
 	MarketplaceErrorCodePriceBelowFloor          MarketplaceErrorCode = "price_below_floor"
 	MarketplaceErrorCodePriceCardRequired        MarketplaceErrorCode = "price_card_required"
 	MarketplaceErrorCodePriceClassInvalid        MarketplaceErrorCode = "price_class_invalid"
+	MarketplaceErrorCodePriceOutOfRange          MarketplaceErrorCode = "price_out_of_range"
 	MarketplaceErrorCodeVersionConflict          MarketplaceErrorCode = "version_conflict"
 )
 
@@ -1493,7 +1572,7 @@ func (e MarketplaceErrorCode) Valid() bool {
 		return true
 	case MarketplaceErrorCodeMarketReferenceMissing:
 		return true
-	case MarketplaceErrorCodePayoutAccountRequired:
+	case MarketplaceErrorCodePayoutWalletRequired:
 		return true
 	case MarketplaceErrorCodePriceAboveCeiling:
 		return true
@@ -1502,6 +1581,8 @@ func (e MarketplaceErrorCode) Valid() bool {
 	case MarketplaceErrorCodePriceCardRequired:
 		return true
 	case MarketplaceErrorCodePriceClassInvalid:
+		return true
+	case MarketplaceErrorCodePriceOutOfRange:
 		return true
 	case MarketplaceErrorCodeVersionConflict:
 		return true
@@ -1531,84 +1612,57 @@ func (e NetworkProtocol) Valid() bool {
 	}
 }
 
-// Defines values for PaymentAccountRequirementsStatus.
+// Defines values for PaymentChannelKind.
 const (
-	PaymentAccountRequirementsStatusCurrentlyDue  PaymentAccountRequirementsStatus = "currently_due"
-	PaymentAccountRequirementsStatusEventuallyDue PaymentAccountRequirementsStatus = "eventually_due"
-	PaymentAccountRequirementsStatusNone          PaymentAccountRequirementsStatus = "none"
-	PaymentAccountRequirementsStatusPastDue       PaymentAccountRequirementsStatus = "past_due"
+	PaymentChannelKindLease           PaymentChannelKind = "lease"
+	PaymentChannelKindPlatformService PaymentChannelKind = "platform_service"
 )
 
-// Valid indicates whether the value is a known member of the PaymentAccountRequirementsStatus enum.
-func (e PaymentAccountRequirementsStatus) Valid() bool {
+// Valid indicates whether the value is a known member of the PaymentChannelKind enum.
+func (e PaymentChannelKind) Valid() bool {
 	switch e {
-	case PaymentAccountRequirementsStatusCurrentlyDue:
+	case PaymentChannelKindLease:
 		return true
-	case PaymentAccountRequirementsStatusEventuallyDue:
-		return true
-	case PaymentAccountRequirementsStatusNone:
-		return true
-	case PaymentAccountRequirementsStatusPastDue:
+	case PaymentChannelKindPlatformService:
 		return true
 	default:
 		return false
 	}
 }
 
-// Defines values for PaymentAccountTaxInformationStatus.
+// Defines values for PaymentChannelState.
 const (
-	PaymentAccountTaxInformationStatusMissing  PaymentAccountTaxInformationStatus = "missing"
-	PaymentAccountTaxInformationStatusProvided PaymentAccountTaxInformationStatus = "provided"
+	PaymentChannelStateClosed  PaymentChannelState = "closed"
+	PaymentChannelStateClosing PaymentChannelState = "closing"
+	PaymentChannelStateOpen    PaymentChannelState = "open"
 )
 
-// Valid indicates whether the value is a known member of the PaymentAccountTaxInformationStatus enum.
-func (e PaymentAccountTaxInformationStatus) Valid() bool {
+// Valid indicates whether the value is a known member of the PaymentChannelState enum.
+func (e PaymentChannelState) Valid() bool {
 	switch e {
-	case PaymentAccountTaxInformationStatusMissing:
+	case PaymentChannelStateClosed:
 		return true
-	case PaymentAccountTaxInformationStatusProvided:
+	case PaymentChannelStateClosing:
+		return true
+	case PaymentChannelStateOpen:
 		return true
 	default:
 		return false
 	}
 }
 
-// Defines values for PaymentAccountTransfersStatus.
+// Defines values for PaymentWalletPurpose.
 const (
-	PaymentAccountTransfersStatusActive     PaymentAccountTransfersStatus = "active"
-	PaymentAccountTransfersStatusInactive   PaymentAccountTransfersStatus = "inactive"
-	PaymentAccountTransfersStatusPending    PaymentAccountTransfersStatus = "pending"
-	PaymentAccountTransfersStatusRestricted PaymentAccountTransfersStatus = "restricted"
+	PaymentWalletPurposeFunding PaymentWalletPurpose = "funding"
+	PaymentWalletPurposePayout  PaymentWalletPurpose = "payout"
 )
 
-// Valid indicates whether the value is a known member of the PaymentAccountTransfersStatus enum.
-func (e PaymentAccountTransfersStatus) Valid() bool {
+// Valid indicates whether the value is a known member of the PaymentWalletPurpose enum.
+func (e PaymentWalletPurpose) Valid() bool {
 	switch e {
-	case PaymentAccountTransfersStatusActive:
+	case PaymentWalletPurposeFunding:
 		return true
-	case PaymentAccountTransfersStatusInactive:
-		return true
-	case PaymentAccountTransfersStatusPending:
-		return true
-	case PaymentAccountTransfersStatusRestricted:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for PayoutAccountType.
-const (
-	PayoutAccountTypeCompany    PayoutAccountType = "company"
-	PayoutAccountTypeIndividual PayoutAccountType = "individual"
-)
-
-// Valid indicates whether the value is a known member of the PayoutAccountType enum.
-func (e PayoutAccountType) Valid() bool {
-	switch e {
-	case PayoutAccountTypeCompany:
-		return true
-	case PayoutAccountTypeIndividual:
+	case PaymentWalletPurposePayout:
 		return true
 	default:
 		return false
@@ -1617,43 +1671,19 @@ func (e PayoutAccountType) Valid() bool {
 
 // Defines values for PayoutReadiness.
 const (
-	PayoutReadinessActionRequired PayoutReadiness = "action_required"
-	PayoutReadinessNotSetUp       PayoutReadiness = "not_set_up"
-	PayoutReadinessPending        PayoutReadiness = "pending"
-	PayoutReadinessReady          PayoutReadiness = "ready"
+	PayoutReadinessBlocked  PayoutReadiness = "blocked"
+	PayoutReadinessNotSetUp PayoutReadiness = "not_set_up"
+	PayoutReadinessReady    PayoutReadiness = "ready"
 )
 
 // Valid indicates whether the value is a known member of the PayoutReadiness enum.
 func (e PayoutReadiness) Valid() bool {
 	switch e {
-	case PayoutReadinessActionRequired:
+	case PayoutReadinessBlocked:
 		return true
 	case PayoutReadinessNotSetUp:
 		return true
-	case PayoutReadinessPending:
-		return true
 	case PayoutReadinessReady:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for PayoutState.
-const (
-	PayoutStateFailed      PayoutState = "failed"
-	PayoutStatePending     PayoutState = "pending"
-	PayoutStateTransferred PayoutState = "transferred"
-)
-
-// Valid indicates whether the value is a known member of the PayoutState enum.
-func (e PayoutState) Valid() bool {
-	switch e {
-	case PayoutStateFailed:
-		return true
-	case PayoutStatePending:
-		return true
-	case PayoutStateTransferred:
 		return true
 	default:
 		return false
@@ -1696,6 +1726,36 @@ func (e PriceFloorSource) Valid() bool {
 	}
 }
 
+// Defines values for PricedResource.
+const (
+	PricedResourceDiskGibMonth        PricedResource = "disk_gib_month"
+	PricedResourceEgressGib           PricedResource = "egress_gib"
+	PricedResourceGpuHour             PricedResource = "gpu_hour"
+	PricedResourceMemoryGibHour       PricedResource = "memory_gib_hour"
+	PricedResourceStoppedDiskGibMonth PricedResource = "stopped_disk_gib_month"
+	PricedResourceVcpuHour            PricedResource = "vcpu_hour"
+)
+
+// Valid indicates whether the value is a known member of the PricedResource enum.
+func (e PricedResource) Valid() bool {
+	switch e {
+	case PricedResourceDiskGibMonth:
+		return true
+	case PricedResourceEgressGib:
+		return true
+	case PricedResourceGpuHour:
+		return true
+	case PricedResourceMemoryGibHour:
+		return true
+	case PricedResourceStoppedDiskGibMonth:
+		return true
+	case PricedResourceVcpuHour:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ProxyProtocol.
 const (
 	ProxyProtocolDisabled ProxyProtocol = "disabled"
@@ -1708,6 +1768,27 @@ func (e ProxyProtocol) Valid() bool {
 	case ProxyProtocolDisabled:
 		return true
 	case ProxyProtocolV2:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PublicSettlementConfigChainId.
+const (
+	PublicSettlementConfigChainIdN31337 PublicSettlementConfigChainId = 31337
+	PublicSettlementConfigChainIdN8453  PublicSettlementConfigChainId = 8453
+	PublicSettlementConfigChainIdN84532 PublicSettlementConfigChainId = 84532
+)
+
+// Valid indicates whether the value is a known member of the PublicSettlementConfigChainId enum.
+func (e PublicSettlementConfigChainId) Valid() bool {
+	switch e {
+	case PublicSettlementConfigChainIdN31337:
+		return true
+	case PublicSettlementConfigChainIdN8453:
+		return true
+	case PublicSettlementConfigChainIdN84532:
 		return true
 	default:
 		return false
@@ -1768,6 +1849,27 @@ const (
 func (e RegistryJsonWebKeyUse) Valid() bool {
 	switch e {
 	case RegistryJsonWebKeyUseSig:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SanctionsStatus.
+const (
+	SanctionsStatusBlocked   SanctionsStatus = "blocked"
+	SanctionsStatusClear     SanctionsStatus = "clear"
+	SanctionsStatusUnchecked SanctionsStatus = "unchecked"
+)
+
+// Valid indicates whether the value is a known member of the SanctionsStatus enum.
+func (e SanctionsStatus) Valid() bool {
+	switch e {
+	case SanctionsStatusBlocked:
+		return true
+	case SanctionsStatusClear:
+		return true
+	case SanctionsStatusUnchecked:
 		return true
 	default:
 		return false
@@ -2155,51 +2257,6 @@ func (e TcpExposurePolicyDtoProtocol) Valid() bool {
 	}
 }
 
-// Defines values for TopUpKind.
-const (
-	TopUpKindAuto   TopUpKind = "auto"
-	TopUpKindManual TopUpKind = "manual"
-)
-
-// Valid indicates whether the value is a known member of the TopUpKind enum.
-func (e TopUpKind) Valid() bool {
-	switch e {
-	case TopUpKindAuto:
-		return true
-	case TopUpKindManual:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for TopUpState.
-const (
-	TopUpStateCreated        TopUpState = "created"
-	TopUpStateExpired        TopUpState = "expired"
-	TopUpStateFailed         TopUpState = "failed"
-	TopUpStateRequiresAction TopUpState = "requires_action"
-	TopUpStateSucceeded      TopUpState = "succeeded"
-)
-
-// Valid indicates whether the value is a known member of the TopUpState enum.
-func (e TopUpState) Valid() bool {
-	switch e {
-	case TopUpStateCreated:
-		return true
-	case TopUpStateExpired:
-		return true
-	case TopUpStateFailed:
-		return true
-	case TopUpStateRequiresAction:
-		return true
-	case TopUpStateSucceeded:
-		return true
-	default:
-		return false
-	}
-}
-
 // Defines values for TunnelCarrier.
 const (
 	TunnelCarrierHttp2 TunnelCarrier = "http2"
@@ -2377,6 +2434,24 @@ func (e VolumeState) Valid() bool {
 	case VolumeStateResizing:
 		return true
 	case VolumeStateRestoring:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for VoucherSigningMode.
+const (
+	VoucherSigningModeClient    VoucherSigningMode = "client"
+	VoucherSigningModeDelegated VoucherSigningMode = "delegated"
+)
+
+// Valid indicates whether the value is a known member of the VoucherSigningMode enum.
+func (e VoucherSigningMode) Valid() bool {
+	switch e {
+	case VoucherSigningModeClient:
+		return true
+	case VoucherSigningModeDelegated:
 		return true
 	default:
 		return false
@@ -2624,46 +2699,6 @@ type AdminOrganizationPage struct {
 	NextCursor *string             `json:"nextCursor"`
 }
 
-// AdminPaymentAccount defines model for AdminPaymentAccount.
-type AdminPaymentAccount struct {
-	Country              *string            `json:"country,omitempty"`
-	CreatedAt            time.Time          `json:"createdAt"`
-	CustomerConfigured   bool               `json:"customerConfigured"`
-	OrganizationId       openapi_types.UUID `json:"organizationId"`
-	PayoutsBlockedReason *string            `json:"payoutsBlockedReason,omitempty"`
-
-	// PayoutsEnabled Whether the weekly payout includes the account
-	PayoutsEnabled       bool                               `json:"payoutsEnabled"`
-	RecipientRequested   bool                               `json:"recipientRequested"`
-	RequirementsStatus   PaymentAccountRequirementsStatus   `json:"requirementsStatus"`
-	StripeAccountId      string                             `json:"stripeAccountId"`
-	TaxInformationStatus PaymentAccountTaxInformationStatus `json:"taxInformationStatus"`
-	TransfersStatus      PaymentAccountTransfersStatus      `json:"transfersStatus"`
-}
-
-// AdminPaymentDispute defines model for AdminPaymentDispute.
-type AdminPaymentDispute struct {
-	AmountCents   float32    `json:"amountCents"`
-	ClosedAt      *time.Time `json:"closedAt,omitempty"`
-	CreatedAt     time.Time  `json:"createdAt"`
-	EvidenceDueBy *time.Time `json:"evidenceDueBy,omitempty"`
-
-	// FrozenMicroUsd Customer credit frozen against the dispute
-	FrozenMicroUsd  string              `json:"frozenMicroUsd"`
-	Id              openapi_types.UUID  `json:"id"`
-	OrganizationId  openapi_types.UUID  `json:"organizationId"`
-	Reason          string              `json:"reason"`
-	State           DisputeState        `json:"state"`
-	StripeDisputeId string              `json:"stripeDisputeId"`
-	TopUpId         *openapi_types.UUID `json:"topUpId,omitempty"`
-}
-
-// AdminPaymentDisputePage defines model for AdminPaymentDisputePage.
-type AdminPaymentDisputePage struct {
-	Items      []AdminPaymentDispute `json:"items"`
-	NextCursor *string               `json:"nextCursor"`
-}
-
 // AdminUpdateDockerRegistry defines model for AdminUpdateDockerRegistry.
 type AdminUpdateDockerRegistry struct {
 	// Name Registry name
@@ -2736,24 +2771,6 @@ type AuditLogPage struct {
 	NextCursor *string    `json:"nextCursor"`
 }
 
-// AutoTopUp defines model for AutoTopUp.
-type AutoTopUp struct {
-	AmountCents         float32             `json:"amountCents"`
-	Configured          bool                `json:"configured"`
-	ConsecutiveFailures float32             `json:"consecutiveFailures"`
-	ConsentedAt         *time.Time          `json:"consentedAt,omitempty"`
-	Enabled             bool                `json:"enabled"`
-	LastAttemptAt       *time.Time          `json:"lastAttemptAt,omitempty"`
-	PaymentMethodId     *openapi_types.UUID `json:"paymentMethodId,omitempty"`
-
-	// ResourceVersion Version to send as If-Match; 0 before the first update
-	ResourceVersion float32 `json:"resourceVersion"`
-
-	// SuspendedReason Why automatic top-ups paused until the next update
-	SuspendedReason *string `json:"suspendedReason,omitempty"`
-	ThresholdCents  float32 `json:"thresholdCents"`
-}
-
 // BackupState The state of the backup
 type BackupState string
 
@@ -2779,26 +2796,14 @@ type BillingBudgetDtoMode string
 
 // BillingConfig defines model for BillingConfig.
 type BillingConfig struct {
-	// AutoTopUpMinimumCents Smallest automatic top-up, cents
-	AutoTopUpMinimumCents float32 `json:"autoTopUpMinimumCents"`
+	// PrivatePoolMachineMonthlyMicroUsd Monthly fee per machine kept in the private pool, micro-USD, prorated by UTC day; the organization's own machines carry no markup
+	PrivatePoolMachineMonthlyMicroUsd string `json:"privatePoolMachineMonthlyMicroUsd"`
 
-	// AutoTopUpMinimumIntervalMinutes Minutes between automatic top-up attempts
-	AutoTopUpMinimumIntervalMinutes float32 `json:"autoTopUpMinimumIntervalMinutes"`
+	// StandardMarkupBasisPoints Markup added to the host price of machines below the Verified tier, in basis points of the host price
+	StandardMarkupBasisPoints float32 `json:"standardMarkupBasisPoints"`
 
-	// PayoutCountries ISO 3166-1 alpha-2 countries hosts may be paid in
-	PayoutCountries []string `json:"payoutCountries"`
-
-	// PlatformMarkupBasisPoints Markup added to host prices, in basis points of the host price
-	PlatformMarkupBasisPoints float32 `json:"platformMarkupBasisPoints"`
-
-	// TopUpMaximumCents Largest top-up, cents
-	TopUpMaximumCents float32 `json:"topUpMaximumCents"`
-
-	// TopUpMinimumCents Smallest top-up, cents
-	TopUpMinimumCents float32 `json:"topUpMinimumCents"`
-
-	// TopUpPresetsCents Suggested top-ups, cents
-	TopUpPresetsCents []float32 `json:"topUpPresetsCents"`
+	// VerifiedMarkupBasisPoints Markup added to the host price of Verified and Datacenter machines, in basis points of the host price
+	VerifiedMarkupBasisPoints float32 `json:"verifiedMarkupBasisPoints"`
 }
 
 // BillingDailyCostDto defines model for BillingDailyCostDto.
@@ -2968,20 +2973,17 @@ type BillingStatement struct {
 
 // BillingStatementCustomer defines model for BillingStatementCustomer.
 type BillingStatementCustomer struct {
-	AdminGrantsMicroUsd           string `json:"adminGrantsMicroUsd"`
-	ClosingCreditMicroUsd         string `json:"closingCreditMicroUsd"`
-	DisputeFreezesMicroUsd        string `json:"disputeFreezesMicroUsd"`
-	DisputeReinstatementsMicroUsd string `json:"disputeReinstatementsMicroUsd"`
+	AdminGrantsMicroUsd   string `json:"adminGrantsMicroUsd"`
+	ClosingCreditMicroUsd string `json:"closingCreditMicroUsd"`
 
 	// ForfeitureCreditsMicroUsd Credit returned by forfeited host earnings
 	ForfeitureCreditsMicroUsd string `json:"forfeitureCreditsMicroUsd"`
 	OpeningCreditMicroUsd     string `json:"openingCreditMicroUsd"`
 
-	// TaxMicroUsd Sales tax collected on the top-ups
-	TaxMicroUsd    string                         `json:"taxMicroUsd"`
-	TopUpsMicroUsd string                         `json:"topUpsMicroUsd"`
-	UsageBySandbox []BillingStatementSandboxUsage `json:"usageBySandbox"`
-	UsageMicroUsd  string                         `json:"usageMicroUsd"`
+	// PrivatePoolMicroUsd Monthly fees of the machines kept in the private pool
+	PrivatePoolMicroUsd string                         `json:"privatePoolMicroUsd"`
+	UsageBySandbox      []BillingStatementSandboxUsage `json:"usageBySandbox"`
+	UsageMicroUsd       string                         `json:"usageMicroUsd"`
 }
 
 // BillingStatementHost defines model for BillingStatementHost.
@@ -2991,12 +2993,6 @@ type BillingStatementHost struct {
 
 	// ForfeitedMicroUsd Earnings forfeited after fraud reviews
 	ForfeitedMicroUsd string `json:"forfeitedMicroUsd"`
-
-	// MaturedMicroUsd Earnings that became available for payout
-	MaturedMicroUsd string `json:"maturedMicroUsd"`
-
-	// PaidOutMicroUsd Earnings transferred to the Stripe account
-	PaidOutMicroUsd string `json:"paidOutMicroUsd"`
 }
 
 // BillingStatementSandboxUsage defines model for BillingStatementSandboxUsage.
@@ -3233,17 +3229,6 @@ type CreateOrganizationQuota struct {
 	TotalMemoryQuota              float32      `json:"totalMemoryQuota"`
 }
 
-// CreatePayoutAccount defines model for CreatePayoutAccount.
-type CreatePayoutAccount struct {
-	// Country ISO 3166-1 alpha-2 country of the payout account
-	//
-	// Example: US
-	Country string `json:"country"`
-
-	// Type Whether a person or a registered business receives the payouts
-	Type PayoutAccountType `json:"type"`
-}
-
 // CreatePriceCard defines model for CreatePriceCard.
 type CreatePriceCard struct {
 	DiskGibMonthMicroUsd string `json:"diskGibMonthMicroUsd"`
@@ -3377,6 +3362,9 @@ type CreateSandbox struct {
 
 	// Volumes Array of volumes to attach to the sandbox
 	Volumes *[]SandboxVolume `json:"volumes,omitempty"`
+
+	// VoucherSigning Who signs the escrow vouchers that pay for the sandbox: delegated lets Snapflow's signer sign them within the session key your funding wallet granted it; client leaves each voucher for your SDK or agent to sign
+	VoucherSigning *VoucherSigningMode `json:"voucherSigning,omitempty"`
 }
 
 // CreateSandboxSnapshot defines model for CreateSandboxSnapshot.
@@ -3450,12 +3438,6 @@ type CreateSnapshot struct {
 	SandboxClass *SandboxClass `json:"sandboxClass,omitempty"`
 }
 
-// CreateTopUp defines model for CreateTopUp.
-type CreateTopUp struct {
-	// AmountCents Credit to buy in US cents, within the platform limits
-	AmountCents float32 `json:"amountCents"`
-}
-
 // CreateVolume defines model for CreateVolume.
 type CreateVolume struct {
 	Name string `json:"name"`
@@ -3464,6 +3446,17 @@ type CreateVolume struct {
 	//
 	// Example: 10
 	SizeGiB float32 `json:"sizeGiB"`
+}
+
+// CreateWalletChallenge defines model for CreateWalletChallenge.
+type CreateWalletChallenge struct {
+	// Address Address of the wallet to link
+	//
+	// Example: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8
+	Address string `json:"address"`
+
+	// Purpose funding: the customer wallet that deposits into the escrow and signs vouchers; payout: the host wallet that receives claims
+	Purpose PaymentWalletPurpose `json:"purpose"`
 }
 
 // CreatedApiKeyDto defines model for CreatedApiKeyDto.
@@ -3516,8 +3509,17 @@ type CustomDomainPageDto struct {
 // CustomDomainState defines model for CustomDomainState.
 type CustomDomainState string
 
-// DisputeState defines model for DisputeState.
-type DisputeState string
+// DelegatedSessionKey defines model for DelegatedSessionKey.
+type DelegatedSessionKey struct {
+	ActivatedAt time.Time `json:"activatedAt"`
+	ExpiresAt   time.Time `json:"expiresAt"`
+
+	// HourlyCapMicroUsd Cap per started hour, in micro-USD
+	HourlyCapMicroUsd string `json:"hourlyCapMicroUsd"`
+
+	// SpendCapMicroUsd Total cap, in micro-USD
+	SpendCapMicroUsd string `json:"spendCapMicroUsd"`
+}
 
 // DockerRegistry defines model for DockerRegistry.
 type DockerRegistry struct {
@@ -3575,6 +3577,15 @@ type DockerRegistryPage struct {
 
 // DrainingMode defines model for DrainingMode.
 type DrainingMode string
+
+// EarningsEstimate defines model for EarningsEstimate.
+type EarningsEstimate struct {
+	// MonthlyMicroUsd Host earnings for the month at the machine's current price
+	MonthlyMicroUsd string `json:"monthlyMicroUsd"`
+
+	// UtilizationBasisPoints Share of the month the whole machine is rented out
+	UtilizationBasisPoints float32 `json:"utilizationBasisPoints"`
+}
 
 // EdgeAccessSessionDto defines model for EdgeAccessSessionDto.
 type EdgeAccessSessionDto struct {
@@ -3936,6 +3947,72 @@ type EdgeUsageSampleDto struct {
 // EgressCeilingSource defines model for EgressCeilingSource.
 type EgressCeilingSource string
 
+// EscrowAccount defines model for EscrowAccount.
+type EscrowAccount struct {
+	// BalanceMicroUsd USDC the escrow holds for the funding wallet, in micro-USD, as of the indexed block
+	BalanceMicroUsd string `json:"balanceMicroUsd"`
+
+	// Blocked The escrow froze the funding wallet
+	Blocked bool `json:"blocked"`
+
+	// ChainId EIP-155 chain id
+	ChainId int `json:"chainId"`
+
+	// EscrowAddress EIP-55 checksummed address
+	EscrowAddress string `json:"escrowAddress"`
+
+	// FundingWalletAddress Linked funding wallet, if any
+	FundingWalletAddress *string `json:"fundingWalletAddress"`
+
+	// IndexedThroughBlock Last chain block whose escrow events are indexed
+	IndexedThroughBlock *int `json:"indexedThroughBlock"`
+
+	// PendingWithdrawalMicroUsd Requested withdrawal still in its dispute window, in micro-USD
+	PendingWithdrawalMicroUsd string `json:"pendingWithdrawalMicroUsd"`
+
+	// UsdcAddress EIP-55 checksummed address
+	UsdcAddress       string     `json:"usdcAddress"`
+	WithdrawalReadyAt *time.Time `json:"withdrawalReadyAt"`
+}
+
+// EscrowDomain defines model for EscrowDomain.
+type EscrowDomain struct {
+	// ChainId EIP-155 chain id
+	ChainId int    `json:"chainId"`
+	Name    string `json:"name"`
+
+	// VerifyingContract EIP-55 checksummed address
+	VerifyingContract string `json:"verifyingContract"`
+	Version           string `json:"version"`
+}
+
+// EscrowEvent defines model for EscrowEvent.
+type EscrowEvent struct {
+	// Args Decoded event arguments; integers (USDC amounts in micro-USD, unix seconds) are decimal strings
+	Args           map[string]string  `json:"args"`
+	BlockNumber    int                `json:"blockNumber"`
+	BlockTimestamp time.Time          `json:"blockTimestamp"`
+	Id             openapi_types.UUID `json:"id"`
+	Kind           EscrowEventKind    `json:"kind"`
+	LogIndex       int                `json:"logIndex"`
+
+	// Parties The roles the organization played in the event
+	Parties         []EscrowEventParty `json:"parties"`
+	TransactionHash string             `json:"transactionHash"`
+}
+
+// EscrowEventKind defines model for EscrowEventKind.
+type EscrowEventKind string
+
+// EscrowEventPage defines model for EscrowEventPage.
+type EscrowEventPage struct {
+	Items      []EscrowEvent `json:"items"`
+	NextCursor *string       `json:"nextCursor"`
+}
+
+// EscrowEventParty The roles the organization played in the event
+type EscrowEventParty string
+
 // ExposureBackendState defines model for ExposureBackendState.
 type ExposureBackendState string
 
@@ -4002,29 +4079,6 @@ type ForkSandbox struct {
 
 // GpuType defines model for GpuType.
 type GpuType string
-
-// HostEarnings defines model for HostEarnings.
-type HostEarnings struct {
-	// AvailableMicroUsd Earnings available for the next payout
-	AvailableMicroUsd string `json:"availableMicroUsd"`
-
-	// InTransferMicroUsd Earnings committed to a transfer in flight
-	InTransferMicroUsd string                 `json:"inTransferMicroUsd"`
-	Maturing           []HostEarningsMaturity `json:"maturing"`
-	NextPayoutDate     time.Time              `json:"nextPayoutDate"`
-	PayoutMinimumCents float32                `json:"payoutMinimumCents"`
-
-	// PendingMicroUsd Earnings still inside their payout hold
-	PendingMicroUsd string `json:"pendingMicroUsd"`
-}
-
-// HostEarningsMaturity defines model for HostEarningsMaturity.
-type HostEarningsMaturity struct {
-	AmountMicroUsd string `json:"amountMicroUsd"`
-
-	// MaturesOn UTC day the earnings become available
-	MaturesOn openapi_types.Date `json:"maturesOn"`
-}
 
 // HostMachine defines model for HostMachine.
 type HostMachine struct {
@@ -4221,6 +4275,18 @@ type LeaseRenewalRequiredError struct {
 
 // LeaseRenewalState defines model for LeaseRenewalState.
 type LeaseRenewalState string
+
+// LinkPaymentWallet defines model for LinkPaymentWallet.
+type LinkPaymentWallet struct {
+	// Message The challenge message exactly as issued
+	Message string `json:"message"`
+
+	// Purpose funding: the customer wallet that deposits into the escrow and signs vouchers; payout: the host wallet that receives claims
+	Purpose PaymentWalletPurpose `json:"purpose"`
+
+	// Signature Signature of the message; ERC-1271 and ERC-6492 smart wallet signatures are accepted
+	Signature string `json:"signature"`
+}
 
 // ListSandboxesResponse defines model for ListSandboxesResponse.
 type ListSandboxesResponse struct {
@@ -4481,7 +4547,9 @@ type MachineDetail struct {
 	LatestBenchmark     *MachineBenchmarkSummary `json:"latestBenchmark"`
 	Location            *Location                `json:"location"`
 	MachineId           openapi_types.UUID       `json:"machineId"`
-	MarkupBasisPoints   float32                  `json:"markupBasisPoints"`
+
+	// MarkupBasisPoints Markup added to the host price, in basis points: the verified rate on Verified and Datacenter machines, the standard rate on other tiers and none on the organization's own machines
+	MarkupBasisPoints float32 `json:"markupBasisPoints"`
 
 	// MarkupEgressMicroUsdPerGiB Platform fee share of the egress price per GiB
 	MarkupEgressMicroUsdPerGiB string `json:"markupEgressMicroUsdPerGiB"`
@@ -4857,7 +4925,7 @@ type MachineIdentityStatus struct {
 	// OrganizationId Organization that owns this machine
 	OrganizationId *openapi_types.UUID `json:"organizationId,omitempty"`
 
-	// Payouts Whether the organization that owns the machine can receive payouts of its earnings
+	// Payouts Whether the organization that owns the machine has a payout wallet that can receive its earnings
 	//
 	// Example: ready
 	Payouts PayoutReadiness `json:"payouts"`
@@ -4990,6 +5058,21 @@ type MachinePlatformArtifact struct {
 
 	// ProtocolVersion Guest control protocol implemented by this child
 	ProtocolVersion float32 `json:"protocolVersion"`
+}
+
+// MachinePriceHint defines model for MachinePriceHint.
+type MachinePriceHint struct {
+	// Earnings Empty while the machine has no price card
+	Earnings []EarningsEstimate `json:"earnings"`
+
+	// PriceClass Category and GPU model the listings share
+	PriceClass string `json:"priceClass"`
+
+	// Ranges Empty when no similar machine is listed
+	Ranges []PriceRange `json:"ranges"`
+
+	// SimilarListingCount Public listings of the price class, other than this machine, the ranges come from
+	SimilarListingCount float32 `json:"similarListingCount"`
 }
 
 // MachineQualificationCheckDto defines model for MachineQualificationCheckDto.
@@ -5168,6 +5251,32 @@ type MachineSessionDto struct {
 
 // MachineSessionDtoTokenType defines model for MachineSessionDto.TokenType.
 type MachineSessionDtoTokenType string
+
+// MachineSignedVoucher defines model for MachineSignedVoucher.
+type MachineSignedVoucher struct {
+	ChannelId string `json:"channelId"`
+
+	// Customer EIP-55 checksummed address
+	Customer string `json:"customer"`
+
+	// Expiry Unix seconds
+	Expiry string `json:"expiry"`
+
+	// FeeAmount Cumulative Snapflow fee, in USDC base units
+	FeeAmount string `json:"feeAmount"`
+
+	// Host EIP-55 checksummed address
+	Host string `json:"host"`
+
+	// HostAmount Cumulative host share, in USDC base units (micro-USD)
+	HostAmount string `json:"hostAmount"`
+	Sequence   string `json:"sequence"`
+
+	// ServiceAmount Cumulative platform service charges, in USDC base units
+	ServiceAmount string `json:"serviceAmount"`
+	Signature     string `json:"signature"`
+	Signer        string `json:"signer"`
+}
 
 // MachineSnapshotInventoryReportDto defines model for MachineSnapshotInventoryReportDto.
 type MachineSnapshotInventoryReportDto struct {
@@ -5417,16 +5526,36 @@ type MachineVerification struct {
 // MachineVerificationChecklist defines model for MachineVerificationChecklist.
 type MachineVerificationChecklist struct {
 	// Benchmark The latest benchmark passed for the current inventory
-	Benchmark         bool `json:"benchmark"`
-	DiskMinimum       bool `json:"diskMinimum"`
-	FingerprintUnique bool `json:"fingerprintUnique"`
+	Benchmark         bool    `json:"benchmark"`
+	DiskMinimum       bool    `json:"diskMinimum"`
+	FingerprintUnique bool    `json:"fingerprintUnique"`
+	ListedDays        float32 `json:"listedDays"`
+	NetworkMinimum    bool    `json:"networkMinimum"`
 
-	// Kyc Payout account is active and onboarded
-	Kyc                 bool    `json:"kyc"`
-	ListedDays          float32 `json:"listedDays"`
-	NetworkMinimum      bool    `json:"networkMinimum"`
+	// PayoutWallet A verified payout wallet that is not sanctioned is linked
+	PayoutWallet        bool    `json:"payoutWallet"`
 	SpotChecksPassed30d float32 `json:"spotChecksPassed30d"`
 	UptimeBasisPoints   float32 `json:"uptimeBasisPoints"`
+}
+
+// MachineVoucherChannel defines model for MachineVoucherChannel.
+type MachineVoucherChannel struct {
+	ChannelId string              `json:"channelId"`
+	LeaseId   openapi_types.UUID  `json:"leaseId"`
+	SandboxId string              `json:"sandboxId"`
+	State     PaymentChannelState `json:"state"`
+
+	// Voucher Latest signed voucher, none before the first one is signed
+	Voucher *MachineSignedVoucher `json:"voucher"`
+}
+
+// MachineVoucherRelay defines model for MachineVoucherRelay.
+type MachineVoucherRelay struct {
+	Channels               []MachineVoucherChannel `json:"channels"`
+	Digest                 string                  `json:"digest"`
+	Domain                 EscrowDomain            `json:"domain"`
+	VoucherGraceIntervals  int                     `json:"voucherGraceIntervals"`
+	VoucherIntervalSeconds int                     `json:"voucherIntervalSeconds"`
 }
 
 // MarketReferencePrice defines model for MarketReferencePrice.
@@ -5569,79 +5698,115 @@ type OrganizationUsageOverview struct {
 	TotalVolumeQuota     float32              `json:"totalVolumeQuota"`
 }
 
-// PaymentAccountRequirementsStatus defines model for PaymentAccountRequirementsStatus.
-type PaymentAccountRequirementsStatus string
+// PaymentChannel defines model for PaymentChannel.
+type PaymentChannel struct {
+	// ChannelId The escrow channel id
+	ChannelId string `json:"channelId"`
 
-// PaymentAccountTaxInformationStatus defines model for PaymentAccountTaxInformationStatus.
-type PaymentAccountTaxInformationStatus string
+	// ClaimError Why the escrow refused the last claim
+	ClaimError *string `json:"claimError"`
 
-// PaymentAccountTransfersStatus defines model for PaymentAccountTransfersStatus.
-type PaymentAccountTransfersStatus string
+	// ClaimedSequence Highest voucher sequence Snapflow saw claimed
+	ClaimedSequence int        `json:"claimedSequence"`
+	ClosedAt        *time.Time `json:"closedAt"`
 
-// PaymentMethod defines model for PaymentMethod.
-type PaymentMethod struct {
-	// Brand Example: visa
-	Brand          string             `json:"brand"`
-	CreatedAt      time.Time          `json:"createdAt"`
-	ExpMonth       float32            `json:"expMonth"`
-	ExpYear        float32            `json:"expYear"`
-	FirstChargedAt *time.Time         `json:"firstChargedAt,omitempty"`
-	Id             openapi_types.UUID `json:"id"`
+	// CoveredAt Until when a signed voucher covered everything the channel owed
+	CoveredAt time.Time `json:"coveredAt"`
 
-	// Last4 Example: 4242
-	Last4 string `json:"last4"`
+	// CustomerAddress Paying funding wallet
+	CustomerAddress string `json:"customerAddress"`
+
+	// HostAddress Paid payout wallet, or Snapflow's fee recipient for a platform service channel
+	HostAddress   string             `json:"hostAddress"`
+	Kind          PaymentChannelKind `json:"kind"`
+	LatestVoucher *PaymentVoucher    `json:"latestVoucher"`
+
+	// LeaseId The paid lease; null for a platform service channel
+	LeaseId  *openapi_types.UUID `json:"leaseId"`
+	OpenedAt time.Time           `json:"openedAt"`
+
+	// SandboxId The paid lease's sandbox; null for a platform service channel
+	SandboxId *string `json:"sandboxId"`
+
+	// ServicePeriodStart Start of the UTC month a platform service channel bills; null for a lease channel
+	ServicePeriodStart *time.Time          `json:"servicePeriodStart"`
+	SigningMode        VoucherSigningMode  `json:"signingMode"`
+	State              PaymentChannelState `json:"state"`
+
+	// VoucherError Why the latest voucher could not be signed
+	VoucherError *string `json:"voucherError"`
 }
 
-// Payout defines model for Payout.
-type Payout struct {
-	AmountCents      float32            `json:"amountCents"`
-	AmountMicroUsd   string             `json:"amountMicroUsd"`
-	BatchId          openapi_types.UUID `json:"batchId"`
-	CreatedAt        time.Time          `json:"createdAt"`
-	FailureReason    *string            `json:"failureReason,omitempty"`
-	Id               openapi_types.UUID `json:"id"`
-	OrganizationId   openapi_types.UUID `json:"organizationId"`
-	State            PayoutState        `json:"state"`
-	StripeTransferId *string            `json:"stripeTransferId,omitempty"`
-	TransferredAt    *time.Time         `json:"transferredAt,omitempty"`
+// PaymentChannelKind defines model for PaymentChannelKind.
+type PaymentChannelKind string
+
+// PaymentChannelPage defines model for PaymentChannelPage.
+type PaymentChannelPage struct {
+	Items      []PaymentChannel `json:"items"`
+	NextCursor *string          `json:"nextCursor"`
 }
 
-// PayoutAccount defines model for PayoutAccount.
-type PayoutAccount struct {
-	Country              *string   `json:"country,omitempty"`
-	CreatedAt            time.Time `json:"createdAt"`
-	CustomerConfigured   bool      `json:"customerConfigured"`
-	PayoutsBlockedReason *string   `json:"payoutsBlockedReason,omitempty"`
+// PaymentChannelState defines model for PaymentChannelState.
+type PaymentChannelState string
 
-	// PayoutsEnabled Whether the weekly payout includes the account
-	PayoutsEnabled       bool                               `json:"payoutsEnabled"`
-	RecipientRequested   bool                               `json:"recipientRequested"`
-	RequirementsStatus   PaymentAccountRequirementsStatus   `json:"requirementsStatus"`
-	StripeAccountId      string                             `json:"stripeAccountId"`
-	TaxInformationStatus PaymentAccountTaxInformationStatus `json:"taxInformationStatus"`
-	TransfersStatus      PaymentAccountTransfersStatus      `json:"transfersStatus"`
+// PaymentVoucher defines model for PaymentVoucher.
+type PaymentVoucher struct {
+	ExpiresAt time.Time      `json:"expiresAt"`
+	IssuedAt  time.Time      `json:"issuedAt"`
+	Message   VoucherMessage `json:"message"`
+	Sequence  int            `json:"sequence"`
+	Signature *string        `json:"signature"`
+	SignedAt  *time.Time     `json:"signedAt"`
+
+	// SignerAddress EIP-55 checksummed address
+	SignerAddress *string `json:"signerAddress"`
 }
 
-// PayoutAccountSession defines model for PayoutAccountSession.
-type PayoutAccountSession struct {
-	// ClientSecret Client secret of the Connect embedded components session
-	ClientSecret string `json:"clientSecret"`
+// PaymentWallet defines model for PaymentWallet.
+type PaymentWallet struct {
+	// Address EIP-55 checksummed address
+	//
+	// Example: 0x70997970C51812dc3A010C7d01b50e0d17dc79C8
+	Address   string             `json:"address"`
+	CreatedAt time.Time          `json:"createdAt"`
+	Id        openapi_types.UUID `json:"id"`
+
+	// Purpose funding: the customer wallet that deposits into the escrow and signs vouchers; payout: the host wallet that receives claims
+	Purpose            PaymentWalletPurpose `json:"purpose"`
+	SanctionsCheckedAt *time.Time           `json:"sanctionsCheckedAt"`
+	SanctionsStatus    SanctionsStatus      `json:"sanctionsStatus"`
+	UpdatedAt          time.Time            `json:"updatedAt"`
+	VerifiedAt         time.Time            `json:"verifiedAt"`
 }
 
-// PayoutAccountType Whether a person or a registered business receives the payouts
-type PayoutAccountType string
+// PaymentWalletPurpose funding: the customer wallet that deposits into the escrow and signs vouchers; payout: the host wallet that receives claims
+type PaymentWalletPurpose string
 
-// PayoutPage defines model for PayoutPage.
-type PayoutPage struct {
-	Items      []Payout `json:"items"`
-	NextCursor *string  `json:"nextCursor"`
-}
-
-// PayoutReadiness Whether the organization that owns the machine can receive payouts of its earnings
+// PayoutReadiness Whether the organization that owns the machine has a payout wallet that can receive its earnings
 type PayoutReadiness string
 
-// PayoutState defines model for PayoutState.
-type PayoutState string
+// PendingVoucher defines model for PendingVoucher.
+type PendingVoucher struct {
+	ChannelId string             `json:"channelId"`
+	Kind      PaymentChannelKind `json:"kind"`
+
+	// LeaseId The paid lease; null for a platform service channel
+	LeaseId *openapi_types.UUID `json:"leaseId"`
+
+	// SandboxId The paid lease's sandbox; null for a platform service channel
+	SandboxId *string `json:"sandboxId"`
+
+	// ServicePeriodStart Start of the UTC month a platform service channel bills; null for a lease channel
+	ServicePeriodStart *time.Time     `json:"servicePeriodStart"`
+	Voucher            PaymentVoucher `json:"voucher"`
+}
+
+// PendingVouchers defines model for PendingVouchers.
+type PendingVouchers struct {
+	// Domain EIP-712 domain every voucher is signed under
+	Domain   EscrowDomain     `json:"domain"`
+	Vouchers []PendingVoucher `json:"vouchers"`
+}
 
 // PlacementKind defines model for PlacementKind.
 type PlacementKind string
@@ -5736,6 +5901,36 @@ type PriceFloor struct {
 // PriceFloorSource defines model for PriceFloorSource.
 type PriceFloorSource string
 
+// PriceOutOfRangeError defines model for PriceOutOfRangeError.
+type PriceOutOfRangeError struct {
+	// Code Example: price_out_of_range
+	Code MarketplaceErrorCode `json:"code"`
+
+	// MaximumMicroUsd Highest allowed price, micro-USD
+	MaximumMicroUsd string `json:"maximumMicroUsd"`
+	Message         string `json:"message"`
+
+	// MinimumMicroUsd Lowest allowed price, micro-USD
+	MinimumMicroUsd string `json:"minimumMicroUsd"`
+	PriceMicroUsd   string `json:"priceMicroUsd"`
+
+	// Resource The resource whose price is out of range
+	Resource PricedResource `json:"resource"`
+}
+
+// PriceRange defines model for PriceRange.
+type PriceRange struct {
+	// HighMicroUsd Host price at the 0.9 quantile of similar listings, micro-USD
+	HighMicroUsd string `json:"highMicroUsd"`
+
+	// LowMicroUsd Host price at the 0.1 quantile of similar listings, micro-USD
+	LowMicroUsd string         `json:"lowMicroUsd"`
+	Resource    PricedResource `json:"resource"`
+}
+
+// PricedResource The resource whose price is out of range
+type PricedResource string
+
 // ProtectedAccessGrantDto defines model for ProtectedAccessGrantDto.
 type ProtectedAccessGrantDto struct {
 	BackendId        openapi_types.UUID `json:"backendId"`
@@ -5768,15 +5963,29 @@ type ProxyProtocol string
 
 // PublicConfig defines model for PublicConfig.
 type PublicConfig struct {
+	Settlement PublicSettlementConfig `json:"settlement"`
+
 	// SocialProviders Social sign-in providers enabled on this deployment
 	SocialProviders []SocialProvider `json:"socialProviders"`
-
-	// StripePublishableKey Stripe publishable key for Stripe.js and Connect.js
-	StripePublishableKey string `json:"stripePublishableKey"`
 
 	// WebsiteUrl Public origin of the marketing website
 	WebsiteUrl string `json:"websiteUrl"`
 }
+
+// PublicSettlementConfig defines model for PublicSettlementConfig.
+type PublicSettlementConfig struct {
+	// ChainId EIP-155 chain id of the settlement chain
+	ChainId PublicSettlementConfigChainId `json:"chainId"`
+
+	// EscrowAddress Address of the USDC escrow contract
+	EscrowAddress string `json:"escrowAddress"`
+
+	// UsdcAddress Address of the USDC token
+	UsdcAddress string `json:"usdcAddress"`
+}
+
+// PublicSettlementConfigChainId EIP-155 chain id of the settlement chain
+type PublicSettlementConfigChainId float32
 
 // QuotaUsageOverview defines model for QuotaUsageOverview.
 type QuotaUsageOverview struct {
@@ -5960,6 +6169,9 @@ type ResourceShape struct {
 	Gpu       float32 `json:"gpu"`
 	MemoryGiB float32 `json:"memoryGiB"`
 }
+
+// SanctionsStatus defines model for SanctionsStatus.
+type SanctionsStatus string
 
 // Sandbox defines model for Sandbox.
 type Sandbox struct {
@@ -6423,18 +6635,20 @@ type SandboxPlacementRequest struct {
 
 // SandboxQuote defines model for SandboxQuote.
 type SandboxQuote struct {
-	Available              bool                `json:"available"`
-	BillingRestriction     *BillingRestriction `json:"billingRestriction,omitempty"`
-	DailyPriceMicroUsd     string              `json:"dailyPriceMicroUsd"`
-	EligibleMachineCount   float32             `json:"eligibleMachineCount"`
-	HostHourlyMicroUsd     string              `json:"hostHourlyMicroUsd"`
-	HourlyPriceMicroUsd    string              `json:"hourlyPriceMicroUsd"`
-	MachineId              *openapi_types.UUID `json:"machineId,omitempty"`
-	MarkupBasisPoints      float32             `json:"markupBasisPoints"`
-	MarkupHourlyMicroUsd   string              `json:"markupHourlyMicroUsd"`
-	MinimumFundingMicroUsd string              `json:"minimumFundingMicroUsd"`
-	MonthlyPriceMicroUsd   string              `json:"monthlyPriceMicroUsd"`
-	PlacementKind          PlacementKind       `json:"placementKind"`
+	Available            bool                `json:"available"`
+	BillingRestriction   *BillingRestriction `json:"billingRestriction,omitempty"`
+	DailyPriceMicroUsd   string              `json:"dailyPriceMicroUsd"`
+	EligibleMachineCount float32             `json:"eligibleMachineCount"`
+	HostHourlyMicroUsd   string              `json:"hostHourlyMicroUsd"`
+	HourlyPriceMicroUsd  string              `json:"hourlyPriceMicroUsd"`
+	MachineId            *openapi_types.UUID `json:"machineId,omitempty"`
+
+	// MarkupBasisPoints Markup added to the host price, in basis points: the verified rate on Verified and Datacenter machines, the standard rate on other tiers and none on the organization's own machines
+	MarkupBasisPoints      float32       `json:"markupBasisPoints"`
+	MarkupHourlyMicroUsd   string        `json:"markupHourlyMicroUsd"`
+	MinimumFundingMicroUsd string        `json:"minimumFundingMicroUsd"`
+	MonthlyPriceMicroUsd   string        `json:"monthlyPriceMicroUsd"`
+	PlacementKind          PlacementKind `json:"placementKind"`
 
 	// PriceCardId Absent when the sandbox would run unpriced on a machine of its organization
 	PriceCardId                *openapi_types.UUID       `json:"priceCardId,omitempty"`
@@ -6526,15 +6740,18 @@ type SetSnapshotGeneralStatusDto struct {
 
 // Settings defines model for Settings.
 type Settings struct {
-	// AutoTopUpMinimumCents Smallest automatic top-up, cents
-	AutoTopUpMinimumCents float32 `json:"autoTopUpMinimumCents"`
-
-	// AutoTopUpMinimumIntervalMinutes Minutes between automatic top-up attempts
-	AutoTopUpMinimumIntervalMinutes float32      `json:"autoTopUpMinimumIntervalMinutes"`
-	DefaultSandboxClass             SandboxClass `json:"defaultSandboxClass"`
+	// ClaimIntervalMinutes Minutes between the claims Snapflow relays for each lease
+	ClaimIntervalMinutes float32      `json:"claimIntervalMinutes"`
+	DefaultSandboxClass  SandboxClass `json:"defaultSandboxClass"`
 
 	// DefaultSnapshot Image every installation imports as its default snapshot
 	DefaultSnapshot *string `json:"defaultSnapshot"`
+
+	// DiskGibMonthPriceMaximumMicroUsd Highest running or stopped disk price a host may set, micro-USD per GiB-month
+	DiskGibMonthPriceMaximumMicroUsd float32 `json:"diskGibMonthPriceMaximumMicroUsd"`
+
+	// DiskGibMonthPriceMinimumMicroUsd Lowest running or stopped disk price a host may set, micro-USD per GiB-month
+	DiskGibMonthPriceMinimumMicroUsd float32 `json:"diskGibMonthPriceMinimumMicroUsd"`
 
 	// DrainingForce Drain machines even when sandboxes cannot move
 	DrainingForce bool         `json:"drainingForce"`
@@ -6557,6 +6774,12 @@ type Settings struct {
 
 	// ExposureCeilingProbationaryCents Exposure ceiling of a probationary machine, cents
 	ExposureCeilingProbationaryCents float32 `json:"exposureCeilingProbationaryCents"`
+
+	// GpuHourPriceMaximumMicroUsd Highest GPU-hour price a host may set, micro-USD
+	GpuHourPriceMaximumMicroUsd float32 `json:"gpuHourPriceMaximumMicroUsd"`
+
+	// GpuHourPriceMinimumMicroUsd Lowest GPU-hour price a host may set, micro-USD
+	GpuHourPriceMinimumMicroUsd float32 `json:"gpuHourPriceMinimumMicroUsd"`
 
 	// LeaseRenewalGraceDays Days a customer has to accept a lease renewal
 	LeaseRenewalGraceDays float32 `json:"leaseRenewalGraceDays"`
@@ -6597,41 +6820,17 @@ type Settings struct {
 	// MaxSnapshotSize GiB per snapshot
 	MaxSnapshotSize float32 `json:"maxSnapshotSize"`
 
+	// MemoryGibHourPriceMaximumMicroUsd Highest memory price a host may set, micro-USD per GiB-hour
+	MemoryGibHourPriceMaximumMicroUsd float32 `json:"memoryGibHourPriceMaximumMicroUsd"`
+
+	// MemoryGibHourPriceMinimumMicroUsd Lowest memory price a host may set, micro-USD per GiB-hour
+	MemoryGibHourPriceMinimumMicroUsd float32 `json:"memoryGibHourPriceMinimumMicroUsd"`
+
 	// NetworkBudgetThrottleBandwidthBps Bandwidth of every sandbox of an organization over its network budget, bits per second
 	NetworkBudgetThrottleBandwidthBps float32 `json:"networkBudgetThrottleBandwidthBps"`
 
-	// NewFundingHoldDays Days credit from a new card cannot fund payouts
-	NewFundingHoldDays float32 `json:"newFundingHoldDays"`
-
-	// OrganizationsPerCardFingerprint Organizations that may share one card
-	OrganizationsPerCardFingerprint float32 `json:"organizationsPerCardFingerprint"`
-
-	// PaymentMethodsPerDay Payment methods per organization per day
-	PaymentMethodsPerDay float32 `json:"paymentMethodsPerDay"`
-
-	// PayoutCountries ISO 3166-1 alpha-2 countries hosts may be paid in
-	PayoutCountries []string `json:"payoutCountries"`
-
-	// PayoutHoldCommunityDays Earnings hold for Community machines, days
-	PayoutHoldCommunityDays float32 `json:"payoutHoldCommunityDays"`
-
-	// PayoutHoldDatacenterDays Earnings hold for Datacenter machines, days
-	PayoutHoldDatacenterDays float32 `json:"payoutHoldDatacenterDays"`
-
-	// PayoutHoldVerifiedDays Earnings hold for Verified machines, days
-	PayoutHoldVerifiedDays float32 `json:"payoutHoldVerifiedDays"`
-
-	// PayoutMinimumCents Smallest payout, cents
-	PayoutMinimumCents float32 `json:"payoutMinimumCents"`
-
-	// PayoutWeekday ISO weekday payouts run on (1 is Monday)
-	PayoutWeekday float32 `json:"payoutWeekday"`
-
 	// PinnedStartWaitMinutes Minutes a pinned start waits for its machine
 	PinnedStartWaitMinutes float32 `json:"pinnedStartWaitMinutes"`
-
-	// PlatformMarkupBasisPoints Markup added to host prices, in basis points of the host price
-	PlatformMarkupBasisPoints float32 `json:"platformMarkupBasisPoints"`
 
 	// PriceFloorBasisPoints Price floor, in basis points of the market reference price median
 	PriceFloorBasisPoints float32 `json:"priceFloorBasisPoints"`
@@ -6642,6 +6841,9 @@ type Settings struct {
 	// PriceLockDays Days a lease keeps its price
 	PriceLockDays float32 `json:"priceLockDays"`
 
+	// PrivatePoolMachineMonthlyMicroUsd Monthly fee per machine an organization keeps in its private pool, micro-USD, prorated by UTC day
+	PrivatePoolMachineMonthlyMicroUsd float32 `json:"privatePoolMachineMonthlyMicroUsd"`
+
 	// PublicIngressEnabled Allow public (unauthenticated) exposures
 	PublicIngressEnabled bool `json:"publicIngressEnabled"`
 
@@ -6650,6 +6852,9 @@ type Settings struct {
 
 	// SandboxDefaultLimitedNetworkEgress Limit network egress of new organizations
 	SandboxDefaultLimitedNetworkEgress bool `json:"sandboxDefaultLimitedNetworkEgress"`
+
+	// SettlementConfirmations Blocks the settlement chain must build on an escrow event before Snapflow indexes it
+	SettlementConfirmations float32 `json:"settlementConfirmations"`
 
 	// SnapshotQuota Snapshots per organization
 	SnapshotQuota float32 `json:"snapshotQuota"`
@@ -6669,23 +6874,11 @@ type Settings struct {
 	// SpotCheckToleranceBasisPoints Allowed spot-check deviation from the benchmark, in basis points
 	SpotCheckToleranceBasisPoints float32 `json:"spotCheckToleranceBasisPoints"`
 
+	// StandardMarkupBasisPoints Markup added to the host price of machines below the Verified tier, in basis points of the host price
+	StandardMarkupBasisPoints float32 `json:"standardMarkupBasisPoints"`
+
 	// StoppedSandboxRetentionDays Days a stopped sandbox keeps its disk on the machine
 	StoppedSandboxRetentionDays float32 `json:"stoppedSandboxRetentionDays"`
-
-	// StripeTaxEnabled Calculate sales tax on top-ups with Stripe Tax
-	StripeTaxEnabled bool `json:"stripeTaxEnabled"`
-
-	// TopUpAttemptsPerHour Top-up attempts per organization per hour
-	TopUpAttemptsPerHour float32 `json:"topUpAttemptsPerHour"`
-
-	// TopUpMaximumCents Largest top-up, cents
-	TopUpMaximumCents float32 `json:"topUpMaximumCents"`
-
-	// TopUpMinimumCents Smallest top-up, cents
-	TopUpMinimumCents float32 `json:"topUpMinimumCents"`
-
-	// TopUpPresetsCents Suggested top-ups, cents
-	TopUpPresetsCents []float32 `json:"topUpPresetsCents"`
 
 	// TotalCpuQuota vCPUs per organization
 	TotalCpuQuota float32 `json:"totalCpuQuota"`
@@ -6698,6 +6891,15 @@ type Settings struct {
 	UpdatedAt        time.Time           `json:"updatedAt"`
 	UpdatedBy        *openapi_types.UUID `json:"updatedBy"`
 
+	// VcpuHourPriceMaximumMicroUsd Highest vCPU-hour price a host may set, micro-USD
+	VcpuHourPriceMaximumMicroUsd float32 `json:"vcpuHourPriceMaximumMicroUsd"`
+
+	// VcpuHourPriceMinimumMicroUsd Lowest vCPU-hour price a host may set, micro-USD
+	VcpuHourPriceMinimumMicroUsd float32 `json:"vcpuHourPriceMinimumMicroUsd"`
+
+	// VerifiedMarkupBasisPoints Markup added to the host price of Verified and Datacenter machines, in basis points of the host price
+	VerifiedMarkupBasisPoints float32 `json:"verifiedMarkupBasisPoints"`
+
 	// VerifiedMinimumListedDays Days listed before a machine can be Verified
 	VerifiedMinimumListedDays float32 `json:"verifiedMinimumListedDays"`
 
@@ -6709,6 +6911,15 @@ type Settings struct {
 
 	// VolumeQuota Volumes per organization
 	VolumeQuota float32 `json:"volumeQuota"`
+
+	// VoucherGraceIntervals Voucher intervals a lease may go without a signed voucher before its sandbox counts as unfunded
+	VoucherGraceIntervals float32 `json:"voucherGraceIntervals"`
+
+	// VoucherIntervalSeconds Seconds between the escrow vouchers issued for each lease
+	VoucherIntervalSeconds float32 `json:"voucherIntervalSeconds"`
+
+	// VoucherLifetimeHours Hours an escrow voucher stays claimable
+	VoucherLifetimeHours float32 `json:"voucherLifetimeHours"`
 }
 
 // SnapshotDto defines model for SnapshotDto.
@@ -6857,6 +7068,18 @@ type StorageAccessDto struct {
 	StorageUrl string `json:"storageUrl"`
 }
 
+// SubmitVoucherSignature defines model for SubmitVoucherSignature.
+type SubmitVoucherSignature struct {
+	ChannelId string `json:"channelId"`
+	Sequence  int    `json:"sequence"`
+
+	// Signature EIP-712 signature of the voucher message
+	Signature string `json:"signature"`
+
+	// Signer The funding wallet itself or one of its session keys that signed the voucher
+	Signer string `json:"signer"`
+}
+
 // SystemExposureService defines model for SystemExposureService.
 type SystemExposureService string
 
@@ -6873,43 +7096,6 @@ type TcpExposurePolicyDto struct {
 
 // TcpExposurePolicyDtoProtocol defines model for TcpExposurePolicyDto.Protocol.
 type TcpExposurePolicyDtoProtocol string
-
-// TopUp defines model for TopUp.
-type TopUp struct {
-	// AmountCents Credit bought in US cents
-	AmountCents float32            `json:"amountCents"`
-	CreatedAt   time.Time          `json:"createdAt"`
-	FailureCode *string            `json:"failureCode,omitempty"`
-	Id          openapi_types.UUID `json:"id"`
-	Kind        TopUpKind          `json:"kind"`
-
-	// PaymentIntentClientSecret Client secret to confirm the payment on-session; present only while the top-up requires action
-	PaymentIntentClientSecret *string    `json:"paymentIntentClientSecret,omitempty"`
-	State                     TopUpState `json:"state"`
-	SucceededAt               *time.Time `json:"succeededAt,omitempty"`
-
-	// TaxCents Sales tax charged on top in US cents
-	TaxCents float32 `json:"taxCents"`
-}
-
-// TopUpKind defines model for TopUpKind.
-type TopUpKind string
-
-// TopUpPage defines model for TopUpPage.
-type TopUpPage struct {
-	Items      []TopUp `json:"items"`
-	NextCursor *string `json:"nextCursor"`
-}
-
-// TopUpSession defines model for TopUpSession.
-type TopUpSession struct {
-	// CheckoutClientSecret Client secret of the embedded Checkout session
-	CheckoutClientSecret string             `json:"checkoutClientSecret"`
-	TopUpId              openapi_types.UUID `json:"topUpId"`
-}
-
-// TopUpState defines model for TopUpState.
-type TopUpState string
 
 // TunnelCarrier defines model for TunnelCarrier.
 type TunnelCarrier string
@@ -6933,21 +7119,6 @@ type UpdateAdminMachineTier struct {
 
 	// TierCap Highest tier the machine may hold; null removes the cap
 	TierCap *MachineTier `json:"tierCap,omitempty"`
-}
-
-// UpdateAutoTopUp defines model for UpdateAutoTopUp.
-type UpdateAutoTopUp struct {
-	// AmountCents Credit bought per automatic top-up in US cents
-	AmountCents float32 `json:"amountCents"`
-
-	// Enabled Whether automatic top-ups run
-	Enabled bool `json:"enabled"`
-
-	// PaymentMethodId Saved card to charge
-	PaymentMethodId openapi_types.UUID `json:"paymentMethodId"`
-
-	// ThresholdCents Top up when spendable credit falls below this, in US cents
-	ThresholdCents float32 `json:"thresholdCents"`
 }
 
 // UpdateBillingBudgetDto defines model for UpdateBillingBudgetDto.
@@ -7120,15 +7291,18 @@ type UpdateSecretDto struct {
 
 // UpdateSettings defines model for UpdateSettings.
 type UpdateSettings struct {
-	// AutoTopUpMinimumCents Smallest automatic top-up, cents
-	AutoTopUpMinimumCents *float32 `json:"autoTopUpMinimumCents,omitempty"`
-
-	// AutoTopUpMinimumIntervalMinutes Minutes between automatic top-up attempts
-	AutoTopUpMinimumIntervalMinutes *float32      `json:"autoTopUpMinimumIntervalMinutes,omitempty"`
-	DefaultSandboxClass             *SandboxClass `json:"defaultSandboxClass,omitempty"`
+	// ClaimIntervalMinutes Minutes between the claims Snapflow relays for each lease
+	ClaimIntervalMinutes *float32      `json:"claimIntervalMinutes,omitempty"`
+	DefaultSandboxClass  *SandboxClass `json:"defaultSandboxClass,omitempty"`
 
 	// DefaultSnapshot Image imported as the default snapshot
 	DefaultSnapshot *string `json:"defaultSnapshot,omitempty"`
+
+	// DiskGibMonthPriceMaximumMicroUsd Highest running or stopped disk price a host may set, micro-USD per GiB-month
+	DiskGibMonthPriceMaximumMicroUsd *float32 `json:"diskGibMonthPriceMaximumMicroUsd,omitempty"`
+
+	// DiskGibMonthPriceMinimumMicroUsd Lowest running or stopped disk price a host may set, micro-USD per GiB-month
+	DiskGibMonthPriceMinimumMicroUsd *float32 `json:"diskGibMonthPriceMinimumMicroUsd,omitempty"`
 
 	// EdgeTrustedHttpProxyCidrs Proxy networks (address/prefix) in front of the edges whose forwarded client addresses the edges trust while Cloudflare's published networks are unavailable; an empty list trusts none
 	EdgeTrustedHttpProxyCidrs *[]string `json:"edgeTrustedHttpProxyCidrs,omitempty"`
@@ -7147,6 +7321,12 @@ type UpdateSettings struct {
 
 	// ExposureCeilingProbationaryCents Exposure ceiling of a probationary machine, cents
 	ExposureCeilingProbationaryCents *float32 `json:"exposureCeilingProbationaryCents,omitempty"`
+
+	// GpuHourPriceMaximumMicroUsd Highest GPU-hour price a host may set, micro-USD
+	GpuHourPriceMaximumMicroUsd *float32 `json:"gpuHourPriceMaximumMicroUsd,omitempty"`
+
+	// GpuHourPriceMinimumMicroUsd Lowest GPU-hour price a host may set, micro-USD
+	GpuHourPriceMinimumMicroUsd *float32 `json:"gpuHourPriceMinimumMicroUsd,omitempty"`
 
 	// LeaseRenewalGraceDays Days a customer has to accept a lease renewal
 	LeaseRenewalGraceDays *float32 `json:"leaseRenewalGraceDays,omitempty"`
@@ -7184,41 +7364,17 @@ type UpdateSettings struct {
 	// MaxSnapshotSize GiB per snapshot
 	MaxSnapshotSize *float32 `json:"maxSnapshotSize,omitempty"`
 
+	// MemoryGibHourPriceMaximumMicroUsd Highest memory price a host may set, micro-USD per GiB-hour
+	MemoryGibHourPriceMaximumMicroUsd *float32 `json:"memoryGibHourPriceMaximumMicroUsd,omitempty"`
+
+	// MemoryGibHourPriceMinimumMicroUsd Lowest memory price a host may set, micro-USD per GiB-hour
+	MemoryGibHourPriceMinimumMicroUsd *float32 `json:"memoryGibHourPriceMinimumMicroUsd,omitempty"`
+
 	// NetworkBudgetThrottleBandwidthBps Bandwidth of every sandbox of an organization over its network budget, bits per second
 	NetworkBudgetThrottleBandwidthBps *float32 `json:"networkBudgetThrottleBandwidthBps,omitempty"`
 
-	// NewFundingHoldDays Days credit from a new card cannot fund payouts
-	NewFundingHoldDays *float32 `json:"newFundingHoldDays,omitempty"`
-
-	// OrganizationsPerCardFingerprint Organizations that may share one card
-	OrganizationsPerCardFingerprint *float32 `json:"organizationsPerCardFingerprint,omitempty"`
-
-	// PaymentMethodsPerDay Payment methods per organization per day
-	PaymentMethodsPerDay *float32 `json:"paymentMethodsPerDay,omitempty"`
-
-	// PayoutCountries ISO 3166-1 alpha-2 countries hosts may be paid in
-	PayoutCountries *[]string `json:"payoutCountries,omitempty"`
-
-	// PayoutHoldCommunityDays Earnings hold for Community machines, days
-	PayoutHoldCommunityDays *float32 `json:"payoutHoldCommunityDays,omitempty"`
-
-	// PayoutHoldDatacenterDays Earnings hold for Datacenter machines, days
-	PayoutHoldDatacenterDays *float32 `json:"payoutHoldDatacenterDays,omitempty"`
-
-	// PayoutHoldVerifiedDays Earnings hold for Verified machines, days
-	PayoutHoldVerifiedDays *float32 `json:"payoutHoldVerifiedDays,omitempty"`
-
-	// PayoutMinimumCents Smallest payout, cents
-	PayoutMinimumCents *float32 `json:"payoutMinimumCents,omitempty"`
-
-	// PayoutWeekday ISO weekday payouts run on (1 is Monday)
-	PayoutWeekday *float32 `json:"payoutWeekday,omitempty"`
-
 	// PinnedStartWaitMinutes Minutes a pinned start waits for its machine
 	PinnedStartWaitMinutes *float32 `json:"pinnedStartWaitMinutes,omitempty"`
-
-	// PlatformMarkupBasisPoints Markup added to host prices, in basis points of the host price
-	PlatformMarkupBasisPoints *float32 `json:"platformMarkupBasisPoints,omitempty"`
 
 	// PriceFloorBasisPoints Price floor, in basis points of the market reference price median
 	PriceFloorBasisPoints *float32 `json:"priceFloorBasisPoints,omitempty"`
@@ -7229,11 +7385,17 @@ type UpdateSettings struct {
 	// PriceLockDays Days a lease keeps its price
 	PriceLockDays *float32 `json:"priceLockDays,omitempty"`
 
+	// PrivatePoolMachineMonthlyMicroUsd Monthly fee per machine an organization keeps in its private pool, micro-USD, prorated by UTC day
+	PrivatePoolMachineMonthlyMicroUsd *float32 `json:"privatePoolMachineMonthlyMicroUsd,omitempty"`
+
 	// PublicIngressEnabled Allow public (unauthenticated) exposures
 	PublicIngressEnabled *bool `json:"publicIngressEnabled,omitempty"`
 
 	// SandboxDefaultLimitedNetworkEgress Limit network egress of new organizations
 	SandboxDefaultLimitedNetworkEgress *bool `json:"sandboxDefaultLimitedNetworkEgress,omitempty"`
+
+	// SettlementConfirmations Blocks the settlement chain must build on an escrow event before Snapflow indexes it
+	SettlementConfirmations *float32 `json:"settlementConfirmations,omitempty"`
 
 	// SnapshotQuota Snapshots per organization
 	SnapshotQuota *float32 `json:"snapshotQuota,omitempty"`
@@ -7253,23 +7415,11 @@ type UpdateSettings struct {
 	// SpotCheckToleranceBasisPoints Allowed spot-check deviation from the benchmark, in basis points
 	SpotCheckToleranceBasisPoints *float32 `json:"spotCheckToleranceBasisPoints,omitempty"`
 
+	// StandardMarkupBasisPoints Markup added to the host price of machines below the Verified tier, in basis points of the host price
+	StandardMarkupBasisPoints *float32 `json:"standardMarkupBasisPoints,omitempty"`
+
 	// StoppedSandboxRetentionDays Days a stopped sandbox keeps its disk on the machine
 	StoppedSandboxRetentionDays *float32 `json:"stoppedSandboxRetentionDays,omitempty"`
-
-	// StripeTaxEnabled Calculate sales tax on top-ups with Stripe Tax
-	StripeTaxEnabled *bool `json:"stripeTaxEnabled,omitempty"`
-
-	// TopUpAttemptsPerHour Top-up attempts per organization per hour
-	TopUpAttemptsPerHour *float32 `json:"topUpAttemptsPerHour,omitempty"`
-
-	// TopUpMaximumCents Largest top-up, cents
-	TopUpMaximumCents *float32 `json:"topUpMaximumCents,omitempty"`
-
-	// TopUpMinimumCents Smallest top-up, cents
-	TopUpMinimumCents *float32 `json:"topUpMinimumCents,omitempty"`
-
-	// TopUpPresetsCents Suggested top-ups, cents
-	TopUpPresetsCents *[]float32 `json:"topUpPresetsCents,omitempty"`
 
 	// TotalCpuQuota vCPUs per organization
 	TotalCpuQuota *float32 `json:"totalCpuQuota,omitempty"`
@@ -7279,6 +7429,15 @@ type UpdateSettings struct {
 
 	// TotalMemoryQuota GiB of memory per organization
 	TotalMemoryQuota *float32 `json:"totalMemoryQuota,omitempty"`
+
+	// VcpuHourPriceMaximumMicroUsd Highest vCPU-hour price a host may set, micro-USD
+	VcpuHourPriceMaximumMicroUsd *float32 `json:"vcpuHourPriceMaximumMicroUsd,omitempty"`
+
+	// VcpuHourPriceMinimumMicroUsd Lowest vCPU-hour price a host may set, micro-USD
+	VcpuHourPriceMinimumMicroUsd *float32 `json:"vcpuHourPriceMinimumMicroUsd,omitempty"`
+
+	// VerifiedMarkupBasisPoints Markup added to the host price of Verified and Datacenter machines, in basis points of the host price
+	VerifiedMarkupBasisPoints *float32 `json:"verifiedMarkupBasisPoints,omitempty"`
 
 	// VerifiedMinimumListedDays Days listed before a machine can be Verified
 	VerifiedMinimumListedDays *float32 `json:"verifiedMinimumListedDays,omitempty"`
@@ -7291,12 +7450,15 @@ type UpdateSettings struct {
 
 	// VolumeQuota Volumes per organization
 	VolumeQuota *float32 `json:"volumeQuota,omitempty"`
-}
 
-// UpdateTopUpAmount defines model for UpdateTopUpAmount.
-type UpdateTopUpAmount struct {
-	// AmountCents Credit to buy in US cents, within the platform limits
-	AmountCents float32 `json:"amountCents"`
+	// VoucherGraceIntervals Voucher intervals a lease may go without a signed voucher before its sandbox counts as unfunded
+	VoucherGraceIntervals *float32 `json:"voucherGraceIntervals,omitempty"`
+
+	// VoucherIntervalSeconds Seconds between the escrow vouchers issued for each lease
+	VoucherIntervalSeconds *float32 `json:"voucherIntervalSeconds,omitempty"`
+
+	// VoucherLifetimeHours Hours an escrow voucher stays claimable
+	VoucherLifetimeHours *float32 `json:"voucherLifetimeHours,omitempty"`
 }
 
 // Url defines model for Url.
@@ -7441,6 +7603,68 @@ type VolumePageDto struct {
 // VolumeState Volume state
 type VolumeState string
 
+// VoucherDelegation defines model for VoucherDelegation.
+type VoucherDelegation struct {
+	// ChainId EIP-155 chain id
+	ChainId int `json:"chainId"`
+
+	// EscrowAddress EIP-55 checksummed address
+	EscrowAddress string `json:"escrowAddress"`
+
+	// FundingWalletAddress EIP-55 checksummed address
+	FundingWalletAddress *string `json:"fundingWalletAddress"`
+
+	// SessionKey The active session key the funding wallet granted the signer
+	SessionKey *DelegatedSessionKey `json:"sessionKey"`
+
+	// SignerAddress Snapflow's delegated voucher signer
+	SignerAddress string `json:"signerAddress"`
+
+	// SuggestedExpiry Suggested key expiry, in unix seconds (uint64)
+	SuggestedExpiry string `json:"suggestedExpiry"`
+
+	// SuggestedHourlyCapMicroUsd Hourly cap that covers the running sandboxes, in micro-USD (uint128)
+	SuggestedHourlyCapMicroUsd string `json:"suggestedHourlyCapMicroUsd"`
+
+	// SuggestedSpendCapMicroUsd Total cap that covers the running sandboxes for the suggested expiry, in micro-USD (uint128)
+	SuggestedSpendCapMicroUsd string `json:"suggestedSpendCapMicroUsd"`
+}
+
+// VoucherMessage defines model for VoucherMessage.
+type VoucherMessage struct {
+	ChannelId string `json:"channelId"`
+
+	// Customer EIP-55 checksummed address
+	Customer string `json:"customer"`
+
+	// Expiry Unix seconds
+	Expiry string `json:"expiry"`
+
+	// FeeAmount Cumulative Snapflow fee, in USDC base units
+	FeeAmount string `json:"feeAmount"`
+
+	// Host EIP-55 checksummed address
+	Host string `json:"host"`
+
+	// HostAmount Cumulative host share, in USDC base units (micro-USD)
+	HostAmount string `json:"hostAmount"`
+	Sequence   string `json:"sequence"`
+
+	// ServiceAmount Cumulative platform service charges, in USDC base units
+	ServiceAmount string `json:"serviceAmount"`
+}
+
+// VoucherSigningMode defines model for VoucherSigningMode.
+type VoucherSigningMode string
+
+// WalletChallenge defines model for WalletChallenge.
+type WalletChallenge struct {
+	ExpiresAt time.Time `json:"expiresAt"`
+
+	// Message Sign-In With Ethereum (EIP-4361) message the wallet must sign with personal_sign
+	Message string `json:"message"`
+}
+
 // WhenMachineUnavailable What a pinned sandbox does when its machine is full, offline, draining or unlisted
 type WhenMachineUnavailable string
 
@@ -7523,26 +7747,6 @@ type AdminGrantOrganizationCreditParams struct {
 	IdempotencyKey string `json:"Idempotency-Key"`
 }
 
-// ListAdminDisputesParams defines parameters for ListAdminDisputes.
-type ListAdminDisputesParams struct {
-	// Cursor Opaque cursor returned by the previous page
-	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
-
-	// Limit Number of results per page
-	Limit *float32      `form:"limit,omitempty" json:"limit,omitempty"`
-	State *DisputeState `form:"state,omitempty" json:"state,omitempty"`
-}
-
-// ListAdminPayoutsParams defines parameters for ListAdminPayouts.
-type ListAdminPayoutsParams struct {
-	// Cursor Opaque cursor returned by the previous page
-	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
-
-	// Limit Number of results per page
-	Limit *float32     `form:"limit,omitempty" json:"limit,omitempty"`
-	State *PayoutState `form:"state,omitempty" json:"state,omitempty"`
-}
-
 // AdminUpdateSettingsParams defines parameters for AdminUpdateSettings.
 type AdminUpdateSettingsParams struct {
 	// IfMatch The resourceVersion the change is based on
@@ -7590,27 +7794,6 @@ type GetAuditLogsParams struct {
 
 	// To To date (ISO 8601 format)
 	To *time.Time `form:"to,omitempty" json:"to,omitempty"`
-}
-
-// UpdateAutoTopUpParams defines parameters for UpdateAutoTopUp.
-type UpdateAutoTopUpParams struct {
-	// IfMatch The resourceVersion the change is based on; 0 creates it
-	IfMatch string `json:"if-match"`
-}
-
-// ListTopUpsParams defines parameters for ListTopUps.
-type ListTopUpsParams struct {
-	// Cursor Opaque cursor returned by the previous page
-	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
-
-	// Limit Number of results per page
-	Limit *float32 `form:"limit,omitempty" json:"limit,omitempty"`
-}
-
-// CreateTopUpParams defines parameters for CreateTopUp.
-type CreateTopUpParams struct {
-	// IdempotencyKey Uniquely identifies one logical non-idempotent mutation and is preserved across retries
-	IdempotencyKey string `json:"Idempotency-Key"`
 }
 
 // ListBillingUsageParams defines parameters for ListBillingUsage.
@@ -7859,11 +8042,13 @@ type ListListingsParams struct {
 	MaxHourlyPriceMicroUsd *string `form:"maxHourlyPriceMicroUsd,omitempty" json:"maxHourlyPriceMicroUsd,omitempty"`
 
 	// MaxEgressMicroUsdPerGiB Highest all-in egress price, micro-USD per GiB
-	MaxEgressMicroUsdPerGiB       *string            `form:"maxEgressMicroUsdPerGiB,omitempty" json:"maxEgressMicroUsdPerGiB,omitempty"`
-	MinimumReliabilityBasisPoints *float32           `form:"minimumReliabilityBasisPoints,omitempty" json:"minimumReliabilityBasisPoints,omitempty"`
-	PersistentVolumes             *bool              `form:"persistentVolumes,omitempty" json:"persistentVolumes,omitempty"`
-	IncludeUnavailable            *bool              `form:"includeUnavailable,omitempty" json:"includeUnavailable,omitempty"`
-	Sort                          *MachineBrowseSort `form:"sort,omitempty" json:"sort,omitempty"`
+	MaxEgressMicroUsdPerGiB       *string  `form:"maxEgressMicroUsdPerGiB,omitempty" json:"maxEgressMicroUsdPerGiB,omitempty"`
+	MinimumReliabilityBasisPoints *float32 `form:"minimumReliabilityBasisPoints,omitempty" json:"minimumReliabilityBasisPoints,omitempty"`
+	PersistentVolumes             *bool    `form:"persistentVolumes,omitempty" json:"persistentVolumes,omitempty"`
+	IncludeUnavailable            *bool    `form:"includeUnavailable,omitempty" json:"includeUnavailable,omitempty"`
+
+	// Sort value ranks benchmarked performance per dollar, weighted by reliability
+	Sort *MachineBrowseSort `form:"sort,omitempty" json:"sort,omitempty"`
 
 	// Cursor Opaque cursor returned by the previous page
 	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
@@ -7909,6 +8094,14 @@ type GetMachineSandboxSecretsParams struct {
 	SpecGeneration int `form:"specGeneration" json:"specGeneration"`
 }
 
+// GetMachineVouchersParams defines parameters for GetMachineVouchers.
+type GetMachineVouchersParams struct {
+	WaitSeconds *int `form:"waitSeconds,omitempty" json:"waitSeconds,omitempty"`
+
+	// IfNoneMatch Digest of the voucher document the machine holds
+	IfNoneMatch *string `json:"If-None-Match,omitempty"`
+}
+
 // GetMachineTunnelPlanParams defines parameters for GetMachineTunnelPlan.
 type GetMachineTunnelPlanParams struct {
 	WaitSeconds *int `form:"waitSeconds,omitempty" json:"waitSeconds,omitempty"`
@@ -7946,16 +8139,6 @@ type ListHostNetworkUsageParams struct {
 	Limit *float32   `form:"limit,omitempty" json:"limit,omitempty"`
 	From  *time.Time `form:"from,omitempty" json:"from,omitempty"`
 	To    *time.Time `form:"to,omitempty" json:"to,omitempty"`
-}
-
-// ListPayoutsParams defines parameters for ListPayouts.
-type ListPayoutsParams struct {
-	// Cursor Opaque cursor returned by the previous page
-	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
-
-	// Limit Number of results per page
-	Limit *float32     `form:"limit,omitempty" json:"limit,omitempty"`
-	State *PayoutState `form:"state,omitempty" json:"state,omitempty"`
 }
 
 // ListSandboxesParams defines parameters for ListSandboxes.
@@ -8194,6 +8377,24 @@ type CreateSecretVersionParams struct {
 	IdempotencyKey string `json:"Idempotency-Key"`
 }
 
+// ListPaymentChannelsParams defines parameters for ListPaymentChannels.
+type ListPaymentChannelsParams struct {
+	// Cursor Opaque cursor returned by the previous page
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Number of results per page
+	Limit *float32 `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// ListEscrowEventsParams defines parameters for ListEscrowEvents.
+type ListEscrowEventsParams struct {
+	// Cursor Opaque cursor returned by the previous page
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit Number of results per page
+	Limit *float32 `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
 // GetAllSnapshotsParams defines parameters for GetAllSnapshots.
 type GetAllSnapshotsParams struct {
 	// Cursor Opaque cursor returned by the previous page
@@ -8305,17 +8506,8 @@ type ResolveVerificationReviewJSONRequestBody = ResolveVerificationReview
 // CreateApiKeyJSONRequestBody defines body for CreateApiKey for application/json ContentType.
 type CreateApiKeyJSONRequestBody = CreateApiKeyDto
 
-// UpdateAutoTopUpJSONRequestBody defines body for UpdateAutoTopUp for application/json ContentType.
-type UpdateAutoTopUpJSONRequestBody = UpdateAutoTopUp
-
 // UpdateBillingBudgetJSONRequestBody defines body for UpdateBillingBudget for application/json ContentType.
 type UpdateBillingBudgetJSONRequestBody = UpdateBillingBudgetDto
-
-// CreateTopUpJSONRequestBody defines body for CreateTopUp for application/json ContentType.
-type CreateTopUpJSONRequestBody = CreateTopUp
-
-// UpdateTopUpAmountJSONRequestBody defines body for UpdateTopUpAmount for application/json ContentType.
-type UpdateTopUpAmountJSONRequestBody = UpdateTopUpAmount
 
 // EnrollDevelopmentMachineJSONRequestBody defines body for EnrollDevelopmentMachine for application/json ContentType.
 type EnrollDevelopmentMachineJSONRequestBody = RegisterMachineDto
@@ -8395,9 +8587,6 @@ type UpdateMachineSchedulingJSONRequestBody = UpdateMachineSchedulingDto
 // UpdateOrganizationSettingsJSONRequestBody defines body for UpdateOrganizationSettings for application/json ContentType.
 type UpdateOrganizationSettingsJSONRequestBody = UpdateOrganizationSettings
 
-// CreatePayoutAccountJSONRequestBody defines body for CreatePayoutAccount for application/json ContentType.
-type CreatePayoutAccountJSONRequestBody = CreatePayoutAccount
-
 // CreateSandboxJSONRequestBody defines body for CreateSandbox for application/json ContentType.
 type CreateSandboxJSONRequestBody = CreateSandbox
 
@@ -8458,6 +8647,9 @@ type UpdateSecretJSONRequestBody = UpdateSecretDto
 // CreateSecretVersionJSONRequestBody defines body for CreateSecretVersion for application/json ContentType.
 type CreateSecretVersionJSONRequestBody = CreateSecretVersionDto
 
+// SubmitVoucherSignatureJSONRequestBody defines body for SubmitVoucherSignature for application/json ContentType.
+type SubmitVoucherSignatureJSONRequestBody = SubmitVoucherSignature
+
 // CreateSnapshotJSONRequestBody defines body for CreateSnapshot for application/json ContentType.
 type CreateSnapshotJSONRequestBody = CreateSnapshot
 
@@ -8466,6 +8658,12 @@ type CreateVolumeJSONRequestBody = CreateVolume
 
 // ResizeVolumeJSONRequestBody defines body for ResizeVolume for application/json ContentType.
 type ResizeVolumeJSONRequestBody = ResizeVolumeDto
+
+// LinkPaymentWalletJSONRequestBody defines body for LinkPaymentWallet for application/json ContentType.
+type LinkPaymentWalletJSONRequestBody = LinkPaymentWallet
+
+// CreateWalletChallengeJSONRequestBody defines body for CreateWalletChallenge for application/json ContentType.
+type CreateWalletChallengeJSONRequestBody = CreateWalletChallenge
 
 // Getter for additional properties for HealthControllerCheck200JSONResponseBody_Details_AdditionalProperties. Returns the specified
 // element and whether it was found
@@ -9326,6 +9524,32 @@ func (t *CreateMachinePriceCard422JSONResponseBody) MergePriceAboveCeilingError(
 	return err
 }
 
+// AsPriceOutOfRangeError returns the union data inside the CreateMachinePriceCard422JSONResponseBody as a PriceOutOfRangeError
+func (t CreateMachinePriceCard422JSONResponseBody) AsPriceOutOfRangeError() (PriceOutOfRangeError, error) {
+	var body PriceOutOfRangeError
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromPriceOutOfRangeError overwrites any union data inside the CreateMachinePriceCard422JSONResponseBody as the provided PriceOutOfRangeError
+func (t *CreateMachinePriceCard422JSONResponseBody) FromPriceOutOfRangeError(v PriceOutOfRangeError) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergePriceOutOfRangeError performs a merge with any union data inside the CreateMachinePriceCard422JSONResponseBody, using the provided PriceOutOfRangeError
+func (t *CreateMachinePriceCard422JSONResponseBody) MergePriceOutOfRangeError(v PriceOutOfRangeError) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
 func (t CreateMachinePriceCard422JSONResponseBody) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
@@ -9981,11 +10205,6 @@ type ClientInterface interface {
 	// Corresponds with PATCH /admin/organizations/{organizationId}/limits (the `AdminUpdateOrganizationLimits` operationId).
 	AdminUpdateOrganizationLimits(ctx context.Context, organizationId string, body AdminUpdateOrganizationLimitsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetAdminPaymentAccount Get the Stripe payment account of an organization
-	//
-	// Corresponds with GET /admin/organizations/{organizationId}/payment-account (the `GetAdminPaymentAccount` operationId).
-	GetAdminPaymentAccount(ctx context.Context, organizationId string, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// AdminListOrganizationQuotas List the quotas of an organization
 	//
 	// Corresponds with GET /admin/organizations/{organizationId}/quota (the `AdminListOrganizationQuotas` operationId).
@@ -10047,21 +10266,6 @@ type ClientInterface interface {
 	//
 	// Corresponds with POST /admin/organizations/{organizationId}/unsuspend (the `AdminUnsuspendOrganization` operationId).
 	AdminUnsuspendOrganization(ctx context.Context, organizationId string, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ListAdminDisputes List payment disputes
-	//
-	// Corresponds with GET /admin/payments/disputes (the `ListAdminDisputes` operationId).
-	ListAdminDisputes(ctx context.Context, params *ListAdminDisputesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ListAdminPayouts List host payouts
-	//
-	// Corresponds with GET /admin/payouts (the `ListAdminPayouts` operationId).
-	ListAdminPayouts(ctx context.Context, params *ListAdminPayoutsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// RetryAdminPayout Retry the Stripe transfer of a pending payout
-	//
-	// Corresponds with POST /admin/payouts/{payoutId}/retry (the `RetryAdminPayout` operationId).
-	RetryAdminPayout(ctx context.Context, payoutId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// AdminRecoverSandbox Recover sandbox from error state as an admin
 	//
@@ -10177,25 +10381,6 @@ type ClientInterface interface {
 	// Corresponds with GET /audit (the `GetAuditLogs` operationId).
 	GetAuditLogs(ctx context.Context, params *GetAuditLogsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetAutoTopUp Get the automatic top-up of the active organization
-	//
-	// Corresponds with GET /billing/auto-top-up (the `GetAutoTopUp` operationId).
-	GetAutoTopUp(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateAutoTopUpWithBody Consent to and configure the automatic top-up
-	//
-	// Takes any type of body and a specified content type.
-	//
-	// Corresponds with PUT /billing/auto-top-up (the `UpdateAutoTopUp` operationId).
-	UpdateAutoTopUpWithBody(ctx context.Context, params *UpdateAutoTopUpParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateAutoTopUp Consent to and configure the automatic top-up
-	//
-	// Takes a body of the `application/json` content type.
-	//
-	// Corresponds with PUT /billing/auto-top-up (the `UpdateAutoTopUp` operationId).
-	UpdateAutoTopUp(ctx context.Context, params *UpdateAutoTopUpParams, body UpdateAutoTopUpJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// GetBillingBudget Get the billing budget of the active organization
 	//
 	// Corresponds with GET /billing/budget (the `GetBillingBudget` operationId).
@@ -10225,16 +10410,6 @@ type ClientInterface interface {
 	// Corresponds with GET /billing/overview (the `GetBillingOverview` operationId).
 	GetBillingOverview(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// ListPaymentMethods List the saved cards of the active organization
-	//
-	// Corresponds with GET /billing/payment-methods (the `ListPaymentMethods` operationId).
-	ListPaymentMethods(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeletePaymentMethod Detach a saved card; automatic top-ups using it stop
-	//
-	// Corresponds with DELETE /billing/payment-methods/{paymentMethodId} (the `DeletePaymentMethod` operationId).
-	DeletePaymentMethod(ctx context.Context, paymentMethodId string, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// GetSandboxBillingSummary Get immutable placement pricing and live sandbox accrual
 	//
 	// Corresponds with GET /billing/sandboxes/{sandboxId} (the `GetSandboxBillingSummary` operationId).
@@ -10249,44 +10424,6 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /billing/statements/{month} (the `GetBillingStatement` operationId).
 	GetBillingStatement(ctx context.Context, month string, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ListTopUps List the top-ups of the active organization
-	//
-	// Corresponds with GET /billing/top-ups (the `ListTopUps` operationId).
-	ListTopUps(ctx context.Context, params *ListTopUpsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreateTopUpWithBody Start an embedded Checkout session that buys credit
-	//
-	// Takes any type of body and a specified content type.
-	//
-	// Corresponds with POST /billing/top-ups (the `CreateTopUp` operationId).
-	CreateTopUpWithBody(ctx context.Context, params *CreateTopUpParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreateTopUp Start an embedded Checkout session that buys credit
-	//
-	// Takes a body of the `application/json` content type.
-	//
-	// Corresponds with POST /billing/top-ups (the `CreateTopUp` operationId).
-	CreateTopUp(ctx context.Context, params *CreateTopUpParams, body CreateTopUpJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetTopUp Get a top-up, with the client secret while it requires action
-	//
-	// Corresponds with GET /billing/top-ups/{topUpId} (the `GetTopUp` operationId).
-	GetTopUp(ctx context.Context, topUpId string, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateTopUpAmountWithBody Change the amount of a top-up whose Checkout session is still open
-	//
-	// Takes any type of body and a specified content type.
-	//
-	// Corresponds with PUT /billing/top-ups/{topUpId}/amount (the `UpdateTopUpAmount` operationId).
-	UpdateTopUpAmountWithBody(ctx context.Context, topUpId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// UpdateTopUpAmount Change the amount of a top-up whose Checkout session is still open
-	//
-	// Takes a body of the `application/json` content type.
-	//
-	// Corresponds with PUT /billing/top-ups/{topUpId}/amount (the `UpdateTopUpAmount` operationId).
-	UpdateTopUpAmount(ctx context.Context, topUpId string, body UpdateTopUpAmountJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListBillingUsage List canonical billing line items
 	//
@@ -10480,6 +10617,11 @@ type ClientInterface interface {
 	// Corresponds with GET /host/machines/{machineId}/price-floor (the `GetMachinePriceFloor` operationId).
 	GetMachinePriceFloor(ctx context.Context, machineId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetMachinePriceHint Get what similar machines list for and what the current price would earn
+	//
+	// Corresponds with GET /host/machines/{machineId}/price-hint (the `GetMachinePriceHint` operationId).
+	GetMachinePriceHint(ctx context.Context, machineId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetMachineVerification Get the verification status of a hosted machine
 	//
 	// Corresponds with GET /host/machines/{machineId}/verification (the `GetMachineVerification` operationId).
@@ -10608,6 +10750,9 @@ type ClientInterface interface {
 
 	// RenewMachineSession performs a POST /machines/session/renew (the `RenewMachineSession` operationId) request.
 	RenewMachineSession(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetMachineVouchers performs a GET /machines/settlement/vouchers (the `GetMachineVouchers` operationId) request.
+	GetMachineVouchers(ctx context.Context, params *GetMachineVouchersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ReportMachineSnapshotInventoryWithBody performs a POST /machines/snapshots/observed-inventory (the `ReportMachineSnapshotInventory` operationId) request,
 	// with any type of body and a specified content type.
@@ -10759,40 +10904,6 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /organizations/active/usage (the `GetOrganizationUsageOverview` operationId).
 	GetOrganizationUsageOverview(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ListPayouts List the payouts of the active organization
-	//
-	// Corresponds with GET /payouts (the `ListPayouts` operationId).
-	ListPayouts(ctx context.Context, params *ListPayoutsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetPayoutAccount Get the payout account of the active organization
-	//
-	// Corresponds with GET /payouts/account (the `GetPayoutAccount` operationId).
-	GetPayoutAccount(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreatePayoutAccountWithBody Create the Stripe payout account of the active organization
-	//
-	// Takes any type of body and a specified content type.
-	//
-	// Corresponds with POST /payouts/account (the `CreatePayoutAccount` operationId).
-	CreatePayoutAccountWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreatePayoutAccount Create the Stripe payout account of the active organization
-	//
-	// Takes a body of the `application/json` content type.
-	//
-	// Corresponds with POST /payouts/account (the `CreatePayoutAccount` operationId).
-	CreatePayoutAccount(ctx context.Context, body CreatePayoutAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// CreatePayoutAccountSession Create a session for the Connect onboarding and payout components
-	//
-	// Corresponds with POST /payouts/account/session (the `CreatePayoutAccountSession` operationId).
-	CreatePayoutAccountSession(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetHostEarnings Get the pending, available and maturing host earnings
-	//
-	// Corresponds with GET /payouts/earnings (the `GetHostEarnings` operationId).
-	GetHostEarnings(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetPublicConfig performs a GET /public-config (the `GetPublicConfig` operationId) request.
 	GetPublicConfig(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -11260,6 +11371,50 @@ type ClientInterface interface {
 	// Corresponds with POST /secrets/{secretId}/versions/{version}/revoke (the `RevokeSecretVersion` operationId).
 	RevokeSecretVersion(ctx context.Context, secretId string, version float32, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListPaymentChannels List the payment channels of the active organization, newest first, with their latest voucher
+	//
+	// Corresponds with GET /settlement/channels (the `ListPaymentChannels` operationId).
+	ListPaymentChannels(ctx context.Context, params *ListPaymentChannelsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetPaymentChannel Get a payment channel with its latest voucher
+	//
+	// Corresponds with GET /settlement/channels/{channelId} (the `GetPaymentChannel` operationId).
+	GetPaymentChannel(ctx context.Context, channelId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetVoucherDelegation Get Snapflow's delegated voucher signer and session key caps that cover the running sandboxes
+	//
+	// Corresponds with GET /settlement/delegation (the `GetVoucherDelegation` operationId).
+	GetVoucherDelegation(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetEscrowAccount Get the escrow account of the active organization's funding wallet
+	//
+	// Corresponds with GET /settlement/escrow (the `GetEscrowAccount` operationId).
+	GetEscrowAccount(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListEscrowEvents List the escrow events the active organization took part in, newest first
+	//
+	// Corresponds with GET /settlement/events (the `ListEscrowEvents` operationId).
+	ListEscrowEvents(ctx context.Context, params *ListEscrowEventsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SubmitVoucherSignatureWithBody Submit the signature of a pending voucher
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /settlement/vouchers (the `SubmitVoucherSignature` operationId).
+	SubmitVoucherSignatureWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SubmitVoucherSignature Submit the signature of a pending voucher
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /settlement/vouchers (the `SubmitVoucherSignature` operationId).
+	SubmitVoucherSignature(ctx context.Context, body SubmitVoucherSignatureJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListPendingVouchers List the vouchers waiting for a signature from the funding wallet or one of its session keys
+	//
+	// Corresponds with GET /settlement/vouchers/pending (the `ListPendingVouchers` operationId).
+	ListPendingVouchers(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetAllSnapshots List all snapshots
 	//
 	// Corresponds with GET /snapshots (the `GetAllSnapshots` operationId).
@@ -11361,6 +11516,44 @@ type ClientInterface interface {
 	//
 	// Corresponds with POST /volumes/{volumeId}/restore (the `RestoreVolume` operationId).
 	RestoreVolume(ctx context.Context, volumeId string, params *RestoreVolumeParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListPaymentWallets List the payment wallets of the active organization
+	//
+	// Corresponds with GET /wallets (the `ListPaymentWallets` operationId).
+	ListPaymentWallets(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// LinkPaymentWalletWithBody Link the wallet that signed a challenge
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /wallets (the `LinkPaymentWallet` operationId).
+	LinkPaymentWalletWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// LinkPaymentWallet Link the wallet that signed a challenge
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /wallets (the `LinkPaymentWallet` operationId).
+	LinkPaymentWallet(ctx context.Context, body LinkPaymentWalletJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateWalletChallengeWithBody Issue the Sign-In With Ethereum message that links a wallet
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /wallets/challenge (the `CreateWalletChallenge` operationId).
+	CreateWalletChallengeWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateWalletChallenge Issue the Sign-In With Ethereum message that links a wallet
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /wallets/challenge (the `CreateWalletChallenge` operationId).
+	CreateWalletChallenge(ctx context.Context, body CreateWalletChallengeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UnlinkPaymentWallet Unlink the wallet of a purpose
+	//
+	// Corresponds with DELETE /wallets/{purpose} (the `UnlinkPaymentWallet` operationId).
+	UnlinkPaymentWallet(ctx context.Context, purpose PaymentWalletPurpose, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 // AdminGetAllAuditLogs Get all audit logs
@@ -12018,21 +12211,6 @@ func (c *Client) AdminUpdateOrganizationLimits(ctx context.Context, organization
 	return c.Client.Do(req)
 }
 
-// GetAdminPaymentAccount Get the Stripe payment account of an organization
-//
-// Corresponds with GET /admin/organizations/{organizationId}/payment-account (the `GetAdminPaymentAccount` operationId).
-func (c *Client) GetAdminPaymentAccount(ctx context.Context, organizationId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetAdminPaymentAccountRequest(c.Server, organizationId)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 // AdminListOrganizationQuotas List the quotas of an organization
 //
 // Corresponds with GET /admin/organizations/{organizationId}/quota (the `AdminListOrganizationQuotas` operationId).
@@ -12185,51 +12363,6 @@ func (c *Client) AdminSuspendOrganization(ctx context.Context, organizationId st
 // Corresponds with POST /admin/organizations/{organizationId}/unsuspend (the `AdminUnsuspendOrganization` operationId).
 func (c *Client) AdminUnsuspendOrganization(ctx context.Context, organizationId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewAdminUnsuspendOrganizationRequest(c.Server, organizationId)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// ListAdminDisputes List payment disputes
-//
-// Corresponds with GET /admin/payments/disputes (the `ListAdminDisputes` operationId).
-func (c *Client) ListAdminDisputes(ctx context.Context, params *ListAdminDisputesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListAdminDisputesRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// ListAdminPayouts List host payouts
-//
-// Corresponds with GET /admin/payouts (the `ListAdminPayouts` operationId).
-func (c *Client) ListAdminPayouts(ctx context.Context, params *ListAdminPayoutsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListAdminPayoutsRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// RetryAdminPayout Retry the Stripe transfer of a pending payout
-//
-// Corresponds with POST /admin/payouts/{payoutId}/retry (the `RetryAdminPayout` operationId).
-func (c *Client) RetryAdminPayout(ctx context.Context, payoutId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewRetryAdminPayoutRequest(c.Server, payoutId)
 	if err != nil {
 		return nil, err
 	}
@@ -12534,55 +12667,6 @@ func (c *Client) GetAuditLogs(ctx context.Context, params *GetAuditLogsParams, r
 	return c.Client.Do(req)
 }
 
-// GetAutoTopUp Get the automatic top-up of the active organization
-//
-// Corresponds with GET /billing/auto-top-up (the `GetAutoTopUp` operationId).
-func (c *Client) GetAutoTopUp(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetAutoTopUpRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// UpdateAutoTopUpWithBody Consent to and configure the automatic top-up
-//
-// Takes any type of body and a specified content type.
-//
-// Corresponds with PUT /billing/auto-top-up (the `UpdateAutoTopUp` operationId).
-func (c *Client) UpdateAutoTopUpWithBody(ctx context.Context, params *UpdateAutoTopUpParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateAutoTopUpRequestWithBody(c.Server, params, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// UpdateAutoTopUp Consent to and configure the automatic top-up
-//
-// Takes a body of the `application/json` content type.
-//
-// Corresponds with PUT /billing/auto-top-up (the `UpdateAutoTopUp` operationId).
-func (c *Client) UpdateAutoTopUp(ctx context.Context, params *UpdateAutoTopUpParams, body UpdateAutoTopUpJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateAutoTopUpRequest(c.Server, params, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 // GetBillingBudget Get the billing budget of the active organization
 //
 // Corresponds with GET /billing/budget (the `GetBillingBudget` operationId).
@@ -12662,36 +12746,6 @@ func (c *Client) GetBillingOverview(ctx context.Context, reqEditors ...RequestEd
 	return c.Client.Do(req)
 }
 
-// ListPaymentMethods List the saved cards of the active organization
-//
-// Corresponds with GET /billing/payment-methods (the `ListPaymentMethods` operationId).
-func (c *Client) ListPaymentMethods(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListPaymentMethodsRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// DeletePaymentMethod Detach a saved card; automatic top-ups using it stop
-//
-// Corresponds with DELETE /billing/payment-methods/{paymentMethodId} (the `DeletePaymentMethod` operationId).
-func (c *Client) DeletePaymentMethod(ctx context.Context, paymentMethodId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeletePaymentMethodRequest(c.Server, paymentMethodId)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 // GetSandboxBillingSummary Get immutable placement pricing and live sandbox accrual
 //
 // Corresponds with GET /billing/sandboxes/{sandboxId} (the `GetSandboxBillingSummary` operationId).
@@ -12727,104 +12781,6 @@ func (c *Client) ListBillingStatements(ctx context.Context, reqEditors ...Reques
 // Corresponds with GET /billing/statements/{month} (the `GetBillingStatement` operationId).
 func (c *Client) GetBillingStatement(ctx context.Context, month string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetBillingStatementRequest(c.Server, month)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// ListTopUps List the top-ups of the active organization
-//
-// Corresponds with GET /billing/top-ups (the `ListTopUps` operationId).
-func (c *Client) ListTopUps(ctx context.Context, params *ListTopUpsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListTopUpsRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// CreateTopUpWithBody Start an embedded Checkout session that buys credit
-//
-// Takes any type of body and a specified content type.
-//
-// Corresponds with POST /billing/top-ups (the `CreateTopUp` operationId).
-func (c *Client) CreateTopUpWithBody(ctx context.Context, params *CreateTopUpParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateTopUpRequestWithBody(c.Server, params, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// CreateTopUp Start an embedded Checkout session that buys credit
-//
-// Takes a body of the `application/json` content type.
-//
-// Corresponds with POST /billing/top-ups (the `CreateTopUp` operationId).
-func (c *Client) CreateTopUp(ctx context.Context, params *CreateTopUpParams, body CreateTopUpJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateTopUpRequest(c.Server, params, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// GetTopUp Get a top-up, with the client secret while it requires action
-//
-// Corresponds with GET /billing/top-ups/{topUpId} (the `GetTopUp` operationId).
-func (c *Client) GetTopUp(ctx context.Context, topUpId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetTopUpRequest(c.Server, topUpId)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// UpdateTopUpAmountWithBody Change the amount of a top-up whose Checkout session is still open
-//
-// Takes any type of body and a specified content type.
-//
-// Corresponds with PUT /billing/top-ups/{topUpId}/amount (the `UpdateTopUpAmount` operationId).
-func (c *Client) UpdateTopUpAmountWithBody(ctx context.Context, topUpId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateTopUpAmountRequestWithBody(c.Server, topUpId, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// UpdateTopUpAmount Change the amount of a top-up whose Checkout session is still open
-//
-// Takes a body of the `application/json` content type.
-//
-// Corresponds with PUT /billing/top-ups/{topUpId}/amount (the `UpdateTopUpAmount` operationId).
-func (c *Client) UpdateTopUpAmount(ctx context.Context, topUpId string, body UpdateTopUpAmountJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateTopUpAmountRequest(c.Server, topUpId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -13427,6 +13383,21 @@ func (c *Client) GetMachinePriceFloor(ctx context.Context, machineId string, req
 	return c.Client.Do(req)
 }
 
+// GetMachinePriceHint Get what similar machines list for and what the current price would earn
+//
+// Corresponds with GET /host/machines/{machineId}/price-hint (the `GetMachinePriceHint` operationId).
+func (c *Client) GetMachinePriceHint(ctx context.Context, machineId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetMachinePriceHintRequest(c.Server, machineId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // GetMachineVerification Get the verification status of a hosted machine
 //
 // Corresponds with GET /host/machines/{machineId}/verification (the `GetMachineVerification` operationId).
@@ -13856,6 +13827,19 @@ func (c *Client) CreateMachineSession(ctx context.Context, body CreateMachineSes
 // RenewMachineSession performs a POST /machines/session/renew (the `RenewMachineSession` operationId) request.
 func (c *Client) RenewMachineSession(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewRenewMachineSessionRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetMachineVouchers performs a GET /machines/settlement/vouchers (the `GetMachineVouchers` operationId) request.
+func (c *Client) GetMachineVouchers(ctx context.Context, params *GetMachineVouchersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetMachineVouchersRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -14317,100 +14301,6 @@ func (c *Client) UpdateOrganizationSettings(ctx context.Context, body UpdateOrga
 // Corresponds with GET /organizations/active/usage (the `GetOrganizationUsageOverview` operationId).
 func (c *Client) GetOrganizationUsageOverview(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetOrganizationUsageOverviewRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// ListPayouts List the payouts of the active organization
-//
-// Corresponds with GET /payouts (the `ListPayouts` operationId).
-func (c *Client) ListPayouts(ctx context.Context, params *ListPayoutsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListPayoutsRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// GetPayoutAccount Get the payout account of the active organization
-//
-// Corresponds with GET /payouts/account (the `GetPayoutAccount` operationId).
-func (c *Client) GetPayoutAccount(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetPayoutAccountRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// CreatePayoutAccountWithBody Create the Stripe payout account of the active organization
-//
-// Takes any type of body and a specified content type.
-//
-// Corresponds with POST /payouts/account (the `CreatePayoutAccount` operationId).
-func (c *Client) CreatePayoutAccountWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreatePayoutAccountRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// CreatePayoutAccount Create the Stripe payout account of the active organization
-//
-// Takes a body of the `application/json` content type.
-//
-// Corresponds with POST /payouts/account (the `CreatePayoutAccount` operationId).
-func (c *Client) CreatePayoutAccount(ctx context.Context, body CreatePayoutAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreatePayoutAccountRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// CreatePayoutAccountSession Create a session for the Connect onboarding and payout components
-//
-// Corresponds with POST /payouts/account/session (the `CreatePayoutAccountSession` operationId).
-func (c *Client) CreatePayoutAccountSession(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreatePayoutAccountSessionRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// GetHostEarnings Get the pending, available and maturing host earnings
-//
-// Corresponds with GET /payouts/earnings (the `GetHostEarnings` operationId).
-func (c *Client) GetHostEarnings(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetHostEarningsRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -15627,6 +15517,130 @@ func (c *Client) RevokeSecretVersion(ctx context.Context, secretId string, versi
 	return c.Client.Do(req)
 }
 
+// ListPaymentChannels List the payment channels of the active organization, newest first, with their latest voucher
+//
+// Corresponds with GET /settlement/channels (the `ListPaymentChannels` operationId).
+func (c *Client) ListPaymentChannels(ctx context.Context, params *ListPaymentChannelsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListPaymentChannelsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetPaymentChannel Get a payment channel with its latest voucher
+//
+// Corresponds with GET /settlement/channels/{channelId} (the `GetPaymentChannel` operationId).
+func (c *Client) GetPaymentChannel(ctx context.Context, channelId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetPaymentChannelRequest(c.Server, channelId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetVoucherDelegation Get Snapflow's delegated voucher signer and session key caps that cover the running sandboxes
+//
+// Corresponds with GET /settlement/delegation (the `GetVoucherDelegation` operationId).
+func (c *Client) GetVoucherDelegation(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetVoucherDelegationRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetEscrowAccount Get the escrow account of the active organization's funding wallet
+//
+// Corresponds with GET /settlement/escrow (the `GetEscrowAccount` operationId).
+func (c *Client) GetEscrowAccount(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetEscrowAccountRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListEscrowEvents List the escrow events the active organization took part in, newest first
+//
+// Corresponds with GET /settlement/events (the `ListEscrowEvents` operationId).
+func (c *Client) ListEscrowEvents(ctx context.Context, params *ListEscrowEventsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListEscrowEventsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// SubmitVoucherSignatureWithBody Submit the signature of a pending voucher
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /settlement/vouchers (the `SubmitVoucherSignature` operationId).
+func (c *Client) SubmitVoucherSignatureWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSubmitVoucherSignatureRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// SubmitVoucherSignature Submit the signature of a pending voucher
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /settlement/vouchers (the `SubmitVoucherSignature` operationId).
+func (c *Client) SubmitVoucherSignature(ctx context.Context, body SubmitVoucherSignatureJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSubmitVoucherSignatureRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListPendingVouchers List the vouchers waiting for a signature from the funding wallet or one of its session keys
+//
+// Corresponds with GET /settlement/vouchers/pending (the `ListPendingVouchers` operationId).
+func (c *Client) ListPendingVouchers(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListPendingVouchersRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // GetAllSnapshots List all snapshots
 //
 // Corresponds with GET /snapshots (the `GetAllSnapshots` operationId).
@@ -15899,6 +15913,104 @@ func (c *Client) ResizeVolume(ctx context.Context, volumeId string, body ResizeV
 // Corresponds with POST /volumes/{volumeId}/restore (the `RestoreVolume` operationId).
 func (c *Client) RestoreVolume(ctx context.Context, volumeId string, params *RestoreVolumeParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewRestoreVolumeRequest(c.Server, volumeId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListPaymentWallets List the payment wallets of the active organization
+//
+// Corresponds with GET /wallets (the `ListPaymentWallets` operationId).
+func (c *Client) ListPaymentWallets(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListPaymentWalletsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// LinkPaymentWalletWithBody Link the wallet that signed a challenge
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /wallets (the `LinkPaymentWallet` operationId).
+func (c *Client) LinkPaymentWalletWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewLinkPaymentWalletRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// LinkPaymentWallet Link the wallet that signed a challenge
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /wallets (the `LinkPaymentWallet` operationId).
+func (c *Client) LinkPaymentWallet(ctx context.Context, body LinkPaymentWalletJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewLinkPaymentWalletRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateWalletChallengeWithBody Issue the Sign-In With Ethereum message that links a wallet
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /wallets/challenge (the `CreateWalletChallenge` operationId).
+func (c *Client) CreateWalletChallengeWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateWalletChallengeRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateWalletChallenge Issue the Sign-In With Ethereum message that links a wallet
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /wallets/challenge (the `CreateWalletChallenge` operationId).
+func (c *Client) CreateWalletChallenge(ctx context.Context, body CreateWalletChallengeJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateWalletChallengeRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UnlinkPaymentWallet Unlink the wallet of a purpose
+//
+// Corresponds with DELETE /wallets/{purpose} (the `UnlinkPaymentWallet` operationId).
+func (c *Client) UnlinkPaymentWallet(ctx context.Context, purpose PaymentWalletPurpose, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUnlinkPaymentWalletRequest(c.Server, purpose)
 	if err != nil {
 		return nil, err
 	}
@@ -17343,40 +17455,6 @@ func NewAdminUpdateOrganizationLimitsRequestWithBody(server string, organization
 	return req, nil
 }
 
-// NewGetAdminPaymentAccountRequest constructs an http.Request for the GetAdminPaymentAccount method
-func NewGetAdminPaymentAccountRequest(server string, organizationId string) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "organizationId", organizationId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/admin/organizations/%s/payment-account", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
 // NewAdminListOrganizationQuotasRequest constructs an http.Request for the AdminListOrganizationQuotas method
 func NewAdminListOrganizationQuotasRequest(server string, organizationId string) (*http.Request, error) {
 	var err error
@@ -17651,196 +17729,6 @@ func NewAdminUnsuspendOrganizationRequest(server string, organizationId string) 
 	}
 
 	operationPath := fmt.Sprintf("/admin/organizations/%s/unsuspend", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewListAdminDisputesRequest constructs an http.Request for the ListAdminDisputes method
-func NewListAdminDisputesRequest(server string, params *ListAdminDisputesParams) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/admin/payments/disputes")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		// queryValues collects non-styled parameters (passthrough, JSON)
-		// that are safe to round-trip through url.Values.Encode().
-		queryValues := queryURL.Query()
-		// rawQueryFragments collects pre-encoded query fragments from
-		// styled parameters, preserving literal commas as delimiters
-		// per the OpenAPI spec (e.g. "color=blue,black,brown").
-		var rawQueryFragments []string
-
-		if params.Cursor != nil {
-
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "cursor", *params.Cursor, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
-				return nil, err
-			} else {
-				for _, qp := range strings.Split(queryFrag, "&") {
-					rawQueryFragments = append(rawQueryFragments, qp)
-				}
-			}
-
-		}
-
-		if params.Limit != nil {
-
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "number", Format: ""}); err != nil {
-				return nil, err
-			} else {
-				for _, qp := range strings.Split(queryFrag, "&") {
-					rawQueryFragments = append(rawQueryFragments, qp)
-				}
-			}
-
-		}
-
-		if params.State != nil {
-
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "state", *params.State, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
-				return nil, err
-			} else {
-				for _, qp := range strings.Split(queryFrag, "&") {
-					rawQueryFragments = append(rawQueryFragments, qp)
-				}
-			}
-
-		}
-
-		if encoded := queryValues.Encode(); encoded != "" {
-			rawQueryFragments = append(rawQueryFragments, encoded)
-		}
-		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewListAdminPayoutsRequest constructs an http.Request for the ListAdminPayouts method
-func NewListAdminPayoutsRequest(server string, params *ListAdminPayoutsParams) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/admin/payouts")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		// queryValues collects non-styled parameters (passthrough, JSON)
-		// that are safe to round-trip through url.Values.Encode().
-		queryValues := queryURL.Query()
-		// rawQueryFragments collects pre-encoded query fragments from
-		// styled parameters, preserving literal commas as delimiters
-		// per the OpenAPI spec (e.g. "color=blue,black,brown").
-		var rawQueryFragments []string
-
-		if params.Cursor != nil {
-
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "cursor", *params.Cursor, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
-				return nil, err
-			} else {
-				for _, qp := range strings.Split(queryFrag, "&") {
-					rawQueryFragments = append(rawQueryFragments, qp)
-				}
-			}
-
-		}
-
-		if params.Limit != nil {
-
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "number", Format: ""}); err != nil {
-				return nil, err
-			} else {
-				for _, qp := range strings.Split(queryFrag, "&") {
-					rawQueryFragments = append(rawQueryFragments, qp)
-				}
-			}
-
-		}
-
-		if params.State != nil {
-
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "state", *params.State, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
-				return nil, err
-			} else {
-				for _, qp := range strings.Split(queryFrag, "&") {
-					rawQueryFragments = append(rawQueryFragments, qp)
-				}
-			}
-
-		}
-
-		if encoded := queryValues.Encode(); encoded != "" {
-			rawQueryFragments = append(rawQueryFragments, encoded)
-		}
-		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewRetryAdminPayoutRequest constructs an http.Request for the RetryAdminPayout method
-func NewRetryAdminPayoutRequest(server string, payoutId string) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "payoutId", payoutId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/admin/payouts/%s/retry", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -18482,86 +18370,6 @@ func NewGetAuditLogsRequest(server string, params *GetAuditLogsParams) (*http.Re
 	return req, nil
 }
 
-// NewGetAutoTopUpRequest constructs an http.Request for the GetAutoTopUp method
-func NewGetAutoTopUpRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/billing/auto-top-up")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewUpdateAutoTopUpRequest calls the generic UpdateAutoTopUp builder with application/json body
-func NewUpdateAutoTopUpRequest(server string, params *UpdateAutoTopUpParams, body UpdateAutoTopUpJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewUpdateAutoTopUpRequestWithBody(server, params, "application/json", bodyReader)
-}
-
-// NewUpdateAutoTopUpRequestWithBody constructs an http.Request for the UpdateAutoTopUp method, with any body, and a specified content type
-func NewUpdateAutoTopUpRequestWithBody(server string, params *UpdateAutoTopUpParams, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/billing/auto-top-up")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	if params != nil {
-
-		var headerParam0 string
-
-		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "if-match", params.IfMatch, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: ""})
-		if err != nil {
-			return nil, err
-		}
-
-		req.Header.Set("if-match", headerParam0)
-
-	}
-
-	return req, nil
-}
-
 // NewGetBillingBudgetRequest constructs an http.Request for the GetBillingBudget method
 func NewGetBillingBudgetRequest(server string) (*http.Request, error) {
 	var err error
@@ -18683,67 +18491,6 @@ func NewGetBillingOverviewRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
-// NewListPaymentMethodsRequest constructs an http.Request for the ListPaymentMethods method
-func NewListPaymentMethodsRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/billing/payment-methods")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewDeletePaymentMethodRequest constructs an http.Request for the DeletePaymentMethod method
-func NewDeletePaymentMethodRequest(server string, paymentMethodId string) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "paymentMethodId", paymentMethodId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/billing/payment-methods/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
 // NewGetSandboxBillingSummaryRequest constructs an http.Request for the GetSandboxBillingSummary method
 func NewGetSandboxBillingSummaryRequest(server string, sandboxId string) (*http.Request, error) {
 	var err error
@@ -18835,206 +18582,6 @@ func NewGetBillingStatementRequest(server string, month string) (*http.Request, 
 	if err != nil {
 		return nil, err
 	}
-
-	return req, nil
-}
-
-// NewListTopUpsRequest constructs an http.Request for the ListTopUps method
-func NewListTopUpsRequest(server string, params *ListTopUpsParams) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/billing/top-ups")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		// queryValues collects non-styled parameters (passthrough, JSON)
-		// that are safe to round-trip through url.Values.Encode().
-		queryValues := queryURL.Query()
-		// rawQueryFragments collects pre-encoded query fragments from
-		// styled parameters, preserving literal commas as delimiters
-		// per the OpenAPI spec (e.g. "color=blue,black,brown").
-		var rawQueryFragments []string
-
-		if params.Cursor != nil {
-
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "cursor", *params.Cursor, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
-				return nil, err
-			} else {
-				for _, qp := range strings.Split(queryFrag, "&") {
-					rawQueryFragments = append(rawQueryFragments, qp)
-				}
-			}
-
-		}
-
-		if params.Limit != nil {
-
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "number", Format: ""}); err != nil {
-				return nil, err
-			} else {
-				for _, qp := range strings.Split(queryFrag, "&") {
-					rawQueryFragments = append(rawQueryFragments, qp)
-				}
-			}
-
-		}
-
-		if encoded := queryValues.Encode(); encoded != "" {
-			rawQueryFragments = append(rawQueryFragments, encoded)
-		}
-		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewCreateTopUpRequest calls the generic CreateTopUp builder with application/json body
-func NewCreateTopUpRequest(server string, params *CreateTopUpParams, body CreateTopUpJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewCreateTopUpRequestWithBody(server, params, "application/json", bodyReader)
-}
-
-// NewCreateTopUpRequestWithBody constructs an http.Request for the CreateTopUp method, with any body, and a specified content type
-func NewCreateTopUpRequestWithBody(server string, params *CreateTopUpParams, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/billing/top-ups")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	if params != nil {
-
-		var headerParam0 string
-
-		headerParam0, err = runtime.StyleParamWithOptions("simple", false, "Idempotency-Key", params.IdempotencyKey, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: ""})
-		if err != nil {
-			return nil, err
-		}
-
-		req.Header.Set("Idempotency-Key", headerParam0)
-
-	}
-
-	return req, nil
-}
-
-// NewGetTopUpRequest constructs an http.Request for the GetTopUp method
-func NewGetTopUpRequest(server string, topUpId string) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "topUpId", topUpId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/billing/top-ups/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewUpdateTopUpAmountRequest calls the generic UpdateTopUpAmount builder with application/json body
-func NewUpdateTopUpAmountRequest(server string, topUpId string, body UpdateTopUpAmountJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewUpdateTopUpAmountRequestWithBody(server, topUpId, "application/json", bodyReader)
-}
-
-// NewUpdateTopUpAmountRequestWithBody constructs an http.Request for the UpdateTopUpAmount method, with any body, and a specified content type
-func NewUpdateTopUpAmountRequestWithBody(server string, topUpId string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "topUpId", topUpId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/billing/top-ups/%s/amount", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -20654,6 +20201,40 @@ func NewGetMachinePriceFloorRequest(server string, machineId string) (*http.Requ
 	return req, nil
 }
 
+// NewGetMachinePriceHintRequest constructs an http.Request for the GetMachinePriceHint method
+func NewGetMachinePriceHintRequest(server string, machineId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "machineId", machineId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/host/machines/%s/price-hint", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetMachineVerificationRequest constructs an http.Request for the GetMachineVerification method
 func NewGetMachineVerificationRequest(server string, machineId string) (*http.Request, error) {
 	var err error
@@ -21905,6 +21486,75 @@ func NewRenewMachineSessionRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
+// NewGetMachineVouchersRequest constructs an http.Request for the GetMachineVouchers method
+func NewGetMachineVouchersRequest(server string, params *GetMachineVouchersParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/machines/settlement/vouchers")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.WaitSeconds != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "waitSeconds", *params.WaitSeconds, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+
+		if params.IfNoneMatch != nil {
+			var headerParam0 string
+
+			headerParam0, err = runtime.StyleParamWithOptions("simple", false, "If-None-Match", *params.IfNoneMatch, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "string", Format: ""})
+			if err != nil {
+				return nil, err
+			}
+
+			req.Header.Set("If-None-Match", headerParam0)
+		}
+
+	}
+
+	return req, nil
+}
+
 // NewReportMachineSnapshotInventoryRequest calls the generic ReportMachineSnapshotInventory builder with application/json body
 func NewReportMachineSnapshotInventoryRequest(server string, body ReportMachineSnapshotInventoryJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -22869,205 +22519,6 @@ func NewGetOrganizationUsageOverviewRequest(server string) (*http.Request, error
 	}
 
 	operationPath := fmt.Sprintf("/organizations/active/usage")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewListPayoutsRequest constructs an http.Request for the ListPayouts method
-func NewListPayoutsRequest(server string, params *ListPayoutsParams) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/payouts")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		// queryValues collects non-styled parameters (passthrough, JSON)
-		// that are safe to round-trip through url.Values.Encode().
-		queryValues := queryURL.Query()
-		// rawQueryFragments collects pre-encoded query fragments from
-		// styled parameters, preserving literal commas as delimiters
-		// per the OpenAPI spec (e.g. "color=blue,black,brown").
-		var rawQueryFragments []string
-
-		if params.Cursor != nil {
-
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "cursor", *params.Cursor, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
-				return nil, err
-			} else {
-				for _, qp := range strings.Split(queryFrag, "&") {
-					rawQueryFragments = append(rawQueryFragments, qp)
-				}
-			}
-
-		}
-
-		if params.Limit != nil {
-
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "number", Format: ""}); err != nil {
-				return nil, err
-			} else {
-				for _, qp := range strings.Split(queryFrag, "&") {
-					rawQueryFragments = append(rawQueryFragments, qp)
-				}
-			}
-
-		}
-
-		if params.State != nil {
-
-			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "state", *params.State, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
-				return nil, err
-			} else {
-				for _, qp := range strings.Split(queryFrag, "&") {
-					rawQueryFragments = append(rawQueryFragments, qp)
-				}
-			}
-
-		}
-
-		if encoded := queryValues.Encode(); encoded != "" {
-			rawQueryFragments = append(rawQueryFragments, encoded)
-		}
-		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewGetPayoutAccountRequest constructs an http.Request for the GetPayoutAccount method
-func NewGetPayoutAccountRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/payouts/account")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewCreatePayoutAccountRequest calls the generic CreatePayoutAccount builder with application/json body
-func NewCreatePayoutAccountRequest(server string, body CreatePayoutAccountJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewCreatePayoutAccountRequestWithBody(server, "application/json", bodyReader)
-}
-
-// NewCreatePayoutAccountRequestWithBody constructs an http.Request for the CreatePayoutAccount method, with any body, and a specified content type
-func NewCreatePayoutAccountRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/payouts/account")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewCreatePayoutAccountSessionRequest constructs an http.Request for the CreatePayoutAccountSession method
-func NewCreatePayoutAccountSessionRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/payouts/account/session")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewGetHostEarningsRequest constructs an http.Request for the GetHostEarnings method
-func NewGetHostEarningsRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/payouts/earnings")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -26018,6 +25469,293 @@ func NewRevokeSecretVersionRequest(server string, secretId string, version float
 	return req, nil
 }
 
+// NewListPaymentChannelsRequest constructs an http.Request for the ListPaymentChannels method
+func NewListPaymentChannelsRequest(server string, params *ListPaymentChannelsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/settlement/channels")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Cursor != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "cursor", *params.Cursor, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "number", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetPaymentChannelRequest constructs an http.Request for the GetPaymentChannel method
+func NewGetPaymentChannelRequest(server string, channelId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "channelId", channelId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/settlement/channels/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetVoucherDelegationRequest constructs an http.Request for the GetVoucherDelegation method
+func NewGetVoucherDelegationRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/settlement/delegation")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetEscrowAccountRequest constructs an http.Request for the GetEscrowAccount method
+func NewGetEscrowAccountRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/settlement/escrow")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewListEscrowEventsRequest constructs an http.Request for the ListEscrowEvents method
+func NewListEscrowEventsRequest(server string, params *ListEscrowEventsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/settlement/events")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Cursor != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "cursor", *params.Cursor, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "number", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewSubmitVoucherSignatureRequest calls the generic SubmitVoucherSignature builder with application/json body
+func NewSubmitVoucherSignatureRequest(server string, body SubmitVoucherSignatureJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSubmitVoucherSignatureRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewSubmitVoucherSignatureRequestWithBody constructs an http.Request for the SubmitVoucherSignature method, with any body, and a specified content type
+func NewSubmitVoucherSignatureRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/settlement/vouchers")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListPendingVouchersRequest constructs an http.Request for the ListPendingVouchers method
+func NewListPendingVouchersRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/settlement/vouchers/pending")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetAllSnapshotsRequest constructs an http.Request for the GetAllSnapshots method
 func NewGetAllSnapshotsRequest(server string, params *GetAllSnapshotsParams) (*http.Request, error) {
 	var err error
@@ -26693,6 +26431,147 @@ func NewRestoreVolumeRequest(server string, volumeId string, params *RestoreVolu
 	return req, nil
 }
 
+// NewListPaymentWalletsRequest constructs an http.Request for the ListPaymentWallets method
+func NewListPaymentWalletsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/wallets")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewLinkPaymentWalletRequest calls the generic LinkPaymentWallet builder with application/json body
+func NewLinkPaymentWalletRequest(server string, body LinkPaymentWalletJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewLinkPaymentWalletRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewLinkPaymentWalletRequestWithBody constructs an http.Request for the LinkPaymentWallet method, with any body, and a specified content type
+func NewLinkPaymentWalletRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/wallets")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCreateWalletChallengeRequest calls the generic CreateWalletChallenge builder with application/json body
+func NewCreateWalletChallengeRequest(server string, body CreateWalletChallengeJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateWalletChallengeRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateWalletChallengeRequestWithBody constructs an http.Request for the CreateWalletChallenge method, with any body, and a specified content type
+func NewCreateWalletChallengeRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/wallets/challenge")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewUnlinkPaymentWalletRequest constructs an http.Request for the UnlinkPaymentWallet method
+func NewUnlinkPaymentWalletRequest(server string, purpose PaymentWalletPurpose) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "purpose", purpose, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/wallets/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -27024,13 +26903,6 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with PATCH /admin/organizations/{organizationId}/limits (the `AdminUpdateOrganizationLimits` operationId).
 	AdminUpdateOrganizationLimitsWithResponse(ctx context.Context, organizationId string, body AdminUpdateOrganizationLimitsJSONRequestBody, reqEditors ...RequestEditorFn) (*AdminUpdateOrganizationLimitsResult, error)
 
-	// GetAdminPaymentAccountWithResponse Get the Stripe payment account of an organization
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with GET /admin/organizations/{organizationId}/payment-account (the `GetAdminPaymentAccount` operationId).
-	GetAdminPaymentAccountWithResponse(ctx context.Context, organizationId string, reqEditors ...RequestEditorFn) (*GetAdminPaymentAccountResult, error)
-
 	// AdminListOrganizationQuotasWithResponse List the quotas of an organization
 	//
 	// Returns a wrapper object for the known response body format(s).
@@ -27100,27 +26972,6 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with POST /admin/organizations/{organizationId}/unsuspend (the `AdminUnsuspendOrganization` operationId).
 	AdminUnsuspendOrganizationWithResponse(ctx context.Context, organizationId string, reqEditors ...RequestEditorFn) (*AdminUnsuspendOrganizationResult, error)
-
-	// ListAdminDisputesWithResponse List payment disputes
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with GET /admin/payments/disputes (the `ListAdminDisputes` operationId).
-	ListAdminDisputesWithResponse(ctx context.Context, params *ListAdminDisputesParams, reqEditors ...RequestEditorFn) (*ListAdminDisputesResult, error)
-
-	// ListAdminPayoutsWithResponse List host payouts
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with GET /admin/payouts (the `ListAdminPayouts` operationId).
-	ListAdminPayoutsWithResponse(ctx context.Context, params *ListAdminPayoutsParams, reqEditors ...RequestEditorFn) (*ListAdminPayoutsResult, error)
-
-	// RetryAdminPayoutWithResponse Retry the Stripe transfer of a pending payout
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /admin/payouts/{payoutId}/retry (the `RetryAdminPayout` operationId).
-	RetryAdminPayoutWithResponse(ctx context.Context, payoutId string, reqEditors ...RequestEditorFn) (*RetryAdminPayoutResult, error)
 
 	// AdminRecoverSandboxWithResponse Recover sandbox from error state as an admin
 	//
@@ -27248,27 +27099,6 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with GET /audit (the `GetAuditLogs` operationId).
 	GetAuditLogsWithResponse(ctx context.Context, params *GetAuditLogsParams, reqEditors ...RequestEditorFn) (*GetAuditLogsResult, error)
 
-	// GetAutoTopUpWithResponse Get the automatic top-up of the active organization
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with GET /billing/auto-top-up (the `GetAutoTopUp` operationId).
-	GetAutoTopUpWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetAutoTopUpResult, error)
-
-	// UpdateAutoTopUpWithBodyWithResponse Consent to and configure the automatic top-up
-	//
-	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with PUT /billing/auto-top-up (the `UpdateAutoTopUp` operationId).
-	UpdateAutoTopUpWithBodyWithResponse(ctx context.Context, params *UpdateAutoTopUpParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAutoTopUpResult, error)
-
-	// UpdateAutoTopUpWithResponse Consent to and configure the automatic top-up
-	//
-	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with PUT /billing/auto-top-up (the `UpdateAutoTopUp` operationId).
-	UpdateAutoTopUpWithResponse(ctx context.Context, params *UpdateAutoTopUpParams, body UpdateAutoTopUpJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAutoTopUpResult, error)
-
 	// GetBillingBudgetWithResponse Get the billing budget of the active organization
 	//
 	// Returns a wrapper object for the known response body format(s).
@@ -27304,20 +27134,6 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with GET /billing/overview (the `GetBillingOverview` operationId).
 	GetBillingOverviewWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetBillingOverviewResult, error)
 
-	// ListPaymentMethodsWithResponse List the saved cards of the active organization
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with GET /billing/payment-methods (the `ListPaymentMethods` operationId).
-	ListPaymentMethodsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListPaymentMethodsResult, error)
-
-	// DeletePaymentMethodWithResponse Detach a saved card; automatic top-ups using it stop
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with DELETE /billing/payment-methods/{paymentMethodId} (the `DeletePaymentMethod` operationId).
-	DeletePaymentMethodWithResponse(ctx context.Context, paymentMethodId string, reqEditors ...RequestEditorFn) (*DeletePaymentMethodResult, error)
-
 	// GetSandboxBillingSummaryWithResponse Get immutable placement pricing and live sandbox accrual
 	//
 	// Returns a wrapper object for the known response body format(s).
@@ -27338,48 +27154,6 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /billing/statements/{month} (the `GetBillingStatement` operationId).
 	GetBillingStatementWithResponse(ctx context.Context, month string, reqEditors ...RequestEditorFn) (*GetBillingStatementResult, error)
-
-	// ListTopUpsWithResponse List the top-ups of the active organization
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with GET /billing/top-ups (the `ListTopUps` operationId).
-	ListTopUpsWithResponse(ctx context.Context, params *ListTopUpsParams, reqEditors ...RequestEditorFn) (*ListTopUpsResult, error)
-
-	// CreateTopUpWithBodyWithResponse Start an embedded Checkout session that buys credit
-	//
-	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /billing/top-ups (the `CreateTopUp` operationId).
-	CreateTopUpWithBodyWithResponse(ctx context.Context, params *CreateTopUpParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateTopUpResult, error)
-
-	// CreateTopUpWithResponse Start an embedded Checkout session that buys credit
-	//
-	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /billing/top-ups (the `CreateTopUp` operationId).
-	CreateTopUpWithResponse(ctx context.Context, params *CreateTopUpParams, body CreateTopUpJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateTopUpResult, error)
-
-	// GetTopUpWithResponse Get a top-up, with the client secret while it requires action
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with GET /billing/top-ups/{topUpId} (the `GetTopUp` operationId).
-	GetTopUpWithResponse(ctx context.Context, topUpId string, reqEditors ...RequestEditorFn) (*GetTopUpResult, error)
-
-	// UpdateTopUpAmountWithBodyWithResponse Change the amount of a top-up whose Checkout session is still open
-	//
-	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with PUT /billing/top-ups/{topUpId}/amount (the `UpdateTopUpAmount` operationId).
-	UpdateTopUpAmountWithBodyWithResponse(ctx context.Context, topUpId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateTopUpAmountResult, error)
-
-	// UpdateTopUpAmountWithResponse Change the amount of a top-up whose Checkout session is still open
-	//
-	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with PUT /billing/top-ups/{topUpId}/amount (the `UpdateTopUpAmount` operationId).
-	UpdateTopUpAmountWithResponse(ctx context.Context, topUpId string, body UpdateTopUpAmountJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateTopUpAmountResult, error)
 
 	// ListBillingUsageWithResponse List canonical billing line items
 	//
@@ -27625,6 +27399,13 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with GET /host/machines/{machineId}/price-floor (the `GetMachinePriceFloor` operationId).
 	GetMachinePriceFloorWithResponse(ctx context.Context, machineId string, reqEditors ...RequestEditorFn) (*GetMachinePriceFloorResult, error)
 
+	// GetMachinePriceHintWithResponse Get what similar machines list for and what the current price would earn
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /host/machines/{machineId}/price-hint (the `GetMachinePriceHint` operationId).
+	GetMachinePriceHintWithResponse(ctx context.Context, machineId string, reqEditors ...RequestEditorFn) (*GetMachinePriceHintResult, error)
+
 	// GetMachineVerificationWithResponse Get the verification status of a hosted machine
 	//
 	// Returns a wrapper object for the known response body format(s).
@@ -27797,6 +27578,11 @@ type ClientWithResponsesInterface interface {
 	//
 	// Returns a wrapper object for the known response body format(s).
 	RenewMachineSessionWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*RenewMachineSessionResult, error)
+
+	// GetMachineVouchersWithResponse performs a GET /machines/settlement/vouchers (the `GetMachineVouchers` operationId) request.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	GetMachineVouchersWithResponse(ctx context.Context, params *GetMachineVouchersParams, reqEditors ...RequestEditorFn) (*GetMachineVouchersResult, error)
 
 	// ReportMachineSnapshotInventoryWithBodyWithResponse performs a POST /machines/snapshots/observed-inventory (the `ReportMachineSnapshotInventory` operationId) request,
 	// with any type of body and a specified content type.
@@ -27988,48 +27774,6 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /organizations/active/usage (the `GetOrganizationUsageOverview` operationId).
 	GetOrganizationUsageOverviewWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetOrganizationUsageOverviewResult, error)
-
-	// ListPayoutsWithResponse List the payouts of the active organization
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with GET /payouts (the `ListPayouts` operationId).
-	ListPayoutsWithResponse(ctx context.Context, params *ListPayoutsParams, reqEditors ...RequestEditorFn) (*ListPayoutsResult, error)
-
-	// GetPayoutAccountWithResponse Get the payout account of the active organization
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with GET /payouts/account (the `GetPayoutAccount` operationId).
-	GetPayoutAccountWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetPayoutAccountResult, error)
-
-	// CreatePayoutAccountWithBodyWithResponse Create the Stripe payout account of the active organization
-	//
-	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /payouts/account (the `CreatePayoutAccount` operationId).
-	CreatePayoutAccountWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreatePayoutAccountResult, error)
-
-	// CreatePayoutAccountWithResponse Create the Stripe payout account of the active organization
-	//
-	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /payouts/account (the `CreatePayoutAccount` operationId).
-	CreatePayoutAccountWithResponse(ctx context.Context, body CreatePayoutAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*CreatePayoutAccountResult, error)
-
-	// CreatePayoutAccountSessionWithResponse Create a session for the Connect onboarding and payout components
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /payouts/account/session (the `CreatePayoutAccountSession` operationId).
-	CreatePayoutAccountSessionWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CreatePayoutAccountSessionResult, error)
-
-	// GetHostEarningsWithResponse Get the pending, available and maturing host earnings
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with GET /payouts/earnings (the `GetHostEarnings` operationId).
-	GetHostEarningsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetHostEarningsResult, error)
 
 	// GetPublicConfigWithResponse performs a GET /public-config (the `GetPublicConfig` operationId) request.
 	//
@@ -28567,6 +28311,62 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with POST /secrets/{secretId}/versions/{version}/revoke (the `RevokeSecretVersion` operationId).
 	RevokeSecretVersionWithResponse(ctx context.Context, secretId string, version float32, reqEditors ...RequestEditorFn) (*RevokeSecretVersionResult, error)
 
+	// ListPaymentChannelsWithResponse List the payment channels of the active organization, newest first, with their latest voucher
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /settlement/channels (the `ListPaymentChannels` operationId).
+	ListPaymentChannelsWithResponse(ctx context.Context, params *ListPaymentChannelsParams, reqEditors ...RequestEditorFn) (*ListPaymentChannelsResult, error)
+
+	// GetPaymentChannelWithResponse Get a payment channel with its latest voucher
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /settlement/channels/{channelId} (the `GetPaymentChannel` operationId).
+	GetPaymentChannelWithResponse(ctx context.Context, channelId string, reqEditors ...RequestEditorFn) (*GetPaymentChannelResult, error)
+
+	// GetVoucherDelegationWithResponse Get Snapflow's delegated voucher signer and session key caps that cover the running sandboxes
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /settlement/delegation (the `GetVoucherDelegation` operationId).
+	GetVoucherDelegationWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetVoucherDelegationResult, error)
+
+	// GetEscrowAccountWithResponse Get the escrow account of the active organization's funding wallet
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /settlement/escrow (the `GetEscrowAccount` operationId).
+	GetEscrowAccountWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetEscrowAccountResult, error)
+
+	// ListEscrowEventsWithResponse List the escrow events the active organization took part in, newest first
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /settlement/events (the `ListEscrowEvents` operationId).
+	ListEscrowEventsWithResponse(ctx context.Context, params *ListEscrowEventsParams, reqEditors ...RequestEditorFn) (*ListEscrowEventsResult, error)
+
+	// SubmitVoucherSignatureWithBodyWithResponse Submit the signature of a pending voucher
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /settlement/vouchers (the `SubmitVoucherSignature` operationId).
+	SubmitVoucherSignatureWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SubmitVoucherSignatureResult, error)
+
+	// SubmitVoucherSignatureWithResponse Submit the signature of a pending voucher
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /settlement/vouchers (the `SubmitVoucherSignature` operationId).
+	SubmitVoucherSignatureWithResponse(ctx context.Context, body SubmitVoucherSignatureJSONRequestBody, reqEditors ...RequestEditorFn) (*SubmitVoucherSignatureResult, error)
+
+	// ListPendingVouchersWithResponse List the vouchers waiting for a signature from the funding wallet or one of its session keys
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /settlement/vouchers/pending (the `ListPendingVouchers` operationId).
+	ListPendingVouchersWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListPendingVouchersResult, error)
+
 	// GetAllSnapshotsWithResponse List all snapshots
 	//
 	// Returns a wrapper object for the known response body format(s).
@@ -28692,6 +28492,48 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with POST /volumes/{volumeId}/restore (the `RestoreVolume` operationId).
 	RestoreVolumeWithResponse(ctx context.Context, volumeId string, params *RestoreVolumeParams, reqEditors ...RequestEditorFn) (*RestoreVolumeResult, error)
+
+	// ListPaymentWalletsWithResponse List the payment wallets of the active organization
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /wallets (the `ListPaymentWallets` operationId).
+	ListPaymentWalletsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListPaymentWalletsResult, error)
+
+	// LinkPaymentWalletWithBodyWithResponse Link the wallet that signed a challenge
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /wallets (the `LinkPaymentWallet` operationId).
+	LinkPaymentWalletWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*LinkPaymentWalletResult, error)
+
+	// LinkPaymentWalletWithResponse Link the wallet that signed a challenge
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /wallets (the `LinkPaymentWallet` operationId).
+	LinkPaymentWalletWithResponse(ctx context.Context, body LinkPaymentWalletJSONRequestBody, reqEditors ...RequestEditorFn) (*LinkPaymentWalletResult, error)
+
+	// CreateWalletChallengeWithBodyWithResponse Issue the Sign-In With Ethereum message that links a wallet
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /wallets/challenge (the `CreateWalletChallenge` operationId).
+	CreateWalletChallengeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateWalletChallengeResult, error)
+
+	// CreateWalletChallengeWithResponse Issue the Sign-In With Ethereum message that links a wallet
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /wallets/challenge (the `CreateWalletChallenge` operationId).
+	CreateWalletChallengeWithResponse(ctx context.Context, body CreateWalletChallengeJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateWalletChallengeResult, error)
+
+	// UnlinkPaymentWalletWithResponse Unlink the wallet of a purpose
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /wallets/{purpose} (the `UnlinkPaymentWallet` operationId).
+	UnlinkPaymentWalletWithResponse(ctx context.Context, purpose PaymentWalletPurpose, reqEditors ...RequestEditorFn) (*UnlinkPaymentWalletResult, error)
 }
 
 type AdminGetAllAuditLogsResult struct {
@@ -29930,47 +29772,6 @@ func (r AdminUpdateOrganizationLimitsResult) ContentType() string {
 	return ""
 }
 
-type GetAdminPaymentAccountResult struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *AdminPaymentAccount
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetAdminPaymentAccountResult) GetJSON200() *AdminPaymentAccount {
-	return r.JSON200
-}
-
-// GetBody returns the raw response body bytes
-func (r GetAdminPaymentAccountResult) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r GetAdminPaymentAccountResult) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetAdminPaymentAccountResult) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetAdminPaymentAccountResult) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
 type AdminListOrganizationQuotasResult struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -30224,129 +30025,6 @@ func (r AdminUnsuspendOrganizationResult) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r AdminUnsuspendOrganizationResult) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type ListAdminDisputesResult struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *AdminPaymentDisputePage
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r ListAdminDisputesResult) GetJSON200() *AdminPaymentDisputePage {
-	return r.JSON200
-}
-
-// GetBody returns the raw response body bytes
-func (r ListAdminDisputesResult) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r ListAdminDisputesResult) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r ListAdminDisputesResult) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r ListAdminDisputesResult) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type ListAdminPayoutsResult struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *PayoutPage
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r ListAdminPayoutsResult) GetJSON200() *PayoutPage {
-	return r.JSON200
-}
-
-// GetBody returns the raw response body bytes
-func (r ListAdminPayoutsResult) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r ListAdminPayoutsResult) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r ListAdminPayoutsResult) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r ListAdminPayoutsResult) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type RetryAdminPayoutResult struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *Payout
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r RetryAdminPayoutResult) GetJSON200() *Payout {
-	return r.JSON200
-}
-
-// GetBody returns the raw response body bytes
-func (r RetryAdminPayoutResult) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r RetryAdminPayoutResult) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r RetryAdminPayoutResult) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r RetryAdminPayoutResult) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -30845,88 +30523,6 @@ func (r GetAuditLogsResult) ContentType() string {
 	return ""
 }
 
-type GetAutoTopUpResult struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *AutoTopUp
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetAutoTopUpResult) GetJSON200() *AutoTopUp {
-	return r.JSON200
-}
-
-// GetBody returns the raw response body bytes
-func (r GetAutoTopUpResult) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r GetAutoTopUpResult) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetAutoTopUpResult) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetAutoTopUpResult) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type UpdateAutoTopUpResult struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *AutoTopUp
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r UpdateAutoTopUpResult) GetJSON200() *AutoTopUp {
-	return r.JSON200
-}
-
-// GetBody returns the raw response body bytes
-func (r UpdateAutoTopUpResult) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r UpdateAutoTopUpResult) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r UpdateAutoTopUpResult) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r UpdateAutoTopUpResult) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
 type GetBillingBudgetResult struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -31091,81 +30687,6 @@ func (r GetBillingOverviewResult) ContentType() string {
 	return ""
 }
 
-type ListPaymentMethodsResult struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *[]PaymentMethod
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r ListPaymentMethodsResult) GetJSON200() *[]PaymentMethod {
-	return r.JSON200
-}
-
-// GetBody returns the raw response body bytes
-func (r ListPaymentMethodsResult) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r ListPaymentMethodsResult) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r ListPaymentMethodsResult) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r ListPaymentMethodsResult) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type DeletePaymentMethodResult struct {
-	Body         []byte
-	HTTPResponse *http.Response
-}
-
-// GetBody returns the raw response body bytes
-func (r DeletePaymentMethodResult) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r DeletePaymentMethodResult) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r DeletePaymentMethodResult) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r DeletePaymentMethodResult) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
 type GetSandboxBillingSummaryResult struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -31283,170 +30804,6 @@ func (r GetBillingStatementResult) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetBillingStatementResult) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type ListTopUpsResult struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *TopUpPage
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r ListTopUpsResult) GetJSON200() *TopUpPage {
-	return r.JSON200
-}
-
-// GetBody returns the raw response body bytes
-func (r ListTopUpsResult) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r ListTopUpsResult) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r ListTopUpsResult) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r ListTopUpsResult) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type CreateTopUpResult struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON201 the response for an HTTP 201 `application/json` response
-	JSON201 *TopUpSession
-}
-
-// GetJSON201 returns the response for an HTTP 201 `application/json` response
-func (r CreateTopUpResult) GetJSON201() *TopUpSession {
-	return r.JSON201
-}
-
-// GetBody returns the raw response body bytes
-func (r CreateTopUpResult) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r CreateTopUpResult) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r CreateTopUpResult) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r CreateTopUpResult) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type GetTopUpResult struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *TopUp
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetTopUpResult) GetJSON200() *TopUp {
-	return r.JSON200
-}
-
-// GetBody returns the raw response body bytes
-func (r GetTopUpResult) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r GetTopUpResult) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetTopUpResult) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetTopUpResult) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type UpdateTopUpAmountResult struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *TopUp
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r UpdateTopUpAmountResult) GetJSON200() *TopUp {
-	return r.JSON200
-}
-
-// GetBody returns the raw response body bytes
-func (r UpdateTopUpAmountResult) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r UpdateTopUpAmountResult) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r UpdateTopUpAmountResult) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r UpdateTopUpAmountResult) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -32731,6 +32088,47 @@ func (r GetMachinePriceFloorResult) ContentType() string {
 	return ""
 }
 
+type GetMachinePriceHintResult struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *MachinePriceHint
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetMachinePriceHintResult) GetJSON200() *MachinePriceHint {
+	return r.JSON200
+}
+
+// GetBody returns the raw response body bytes
+func (r GetMachinePriceHintResult) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetMachinePriceHintResult) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetMachinePriceHintResult) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetMachinePriceHintResult) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 type GetMachineVerificationResult struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -33660,6 +33058,47 @@ func (r RenewMachineSessionResult) ContentType() string {
 	return ""
 }
 
+type GetMachineVouchersResult struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *MachineVoucherRelay
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetMachineVouchersResult) GetJSON200() *MachineVoucherRelay {
+	return r.JSON200
+}
+
+// GetBody returns the raw response body bytes
+func (r GetMachineVouchersResult) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetMachineVouchersResult) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetMachineVouchersResult) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetMachineVouchersResult) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 type ReportMachineSnapshotInventoryResult struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -34569,211 +34008,6 @@ func (r GetOrganizationUsageOverviewResult) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetOrganizationUsageOverviewResult) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type ListPayoutsResult struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *PayoutPage
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r ListPayoutsResult) GetJSON200() *PayoutPage {
-	return r.JSON200
-}
-
-// GetBody returns the raw response body bytes
-func (r ListPayoutsResult) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r ListPayoutsResult) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r ListPayoutsResult) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r ListPayoutsResult) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type GetPayoutAccountResult struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *PayoutAccount
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetPayoutAccountResult) GetJSON200() *PayoutAccount {
-	return r.JSON200
-}
-
-// GetBody returns the raw response body bytes
-func (r GetPayoutAccountResult) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r GetPayoutAccountResult) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetPayoutAccountResult) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetPayoutAccountResult) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type CreatePayoutAccountResult struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON201 the response for an HTTP 201 `application/json` response
-	JSON201 *PayoutAccount
-}
-
-// GetJSON201 returns the response for an HTTP 201 `application/json` response
-func (r CreatePayoutAccountResult) GetJSON201() *PayoutAccount {
-	return r.JSON201
-}
-
-// GetBody returns the raw response body bytes
-func (r CreatePayoutAccountResult) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r CreatePayoutAccountResult) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r CreatePayoutAccountResult) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r CreatePayoutAccountResult) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type CreatePayoutAccountSessionResult struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *PayoutAccountSession
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r CreatePayoutAccountSessionResult) GetJSON200() *PayoutAccountSession {
-	return r.JSON200
-}
-
-// GetBody returns the raw response body bytes
-func (r CreatePayoutAccountSessionResult) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r CreatePayoutAccountSessionResult) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r CreatePayoutAccountSessionResult) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r CreatePayoutAccountSessionResult) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type GetHostEarningsResult struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *HostEarnings
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetHostEarningsResult) GetJSON200() *HostEarnings {
-	return r.JSON200
-}
-
-// GetBody returns the raw response body bytes
-func (r GetHostEarningsResult) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r GetHostEarningsResult) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetHostEarningsResult) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetHostEarningsResult) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -36945,6 +36179,293 @@ func (r RevokeSecretVersionResult) ContentType() string {
 	return ""
 }
 
+type ListPaymentChannelsResult struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PaymentChannelPage
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListPaymentChannelsResult) GetJSON200() *PaymentChannelPage {
+	return r.JSON200
+}
+
+// GetBody returns the raw response body bytes
+func (r ListPaymentChannelsResult) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListPaymentChannelsResult) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListPaymentChannelsResult) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListPaymentChannelsResult) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetPaymentChannelResult struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PaymentChannel
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetPaymentChannelResult) GetJSON200() *PaymentChannel {
+	return r.JSON200
+}
+
+// GetBody returns the raw response body bytes
+func (r GetPaymentChannelResult) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetPaymentChannelResult) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetPaymentChannelResult) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetPaymentChannelResult) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetVoucherDelegationResult struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *VoucherDelegation
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetVoucherDelegationResult) GetJSON200() *VoucherDelegation {
+	return r.JSON200
+}
+
+// GetBody returns the raw response body bytes
+func (r GetVoucherDelegationResult) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetVoucherDelegationResult) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetVoucherDelegationResult) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetVoucherDelegationResult) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetEscrowAccountResult struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *EscrowAccount
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetEscrowAccountResult) GetJSON200() *EscrowAccount {
+	return r.JSON200
+}
+
+// GetBody returns the raw response body bytes
+func (r GetEscrowAccountResult) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetEscrowAccountResult) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetEscrowAccountResult) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetEscrowAccountResult) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type ListEscrowEventsResult struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *EscrowEventPage
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListEscrowEventsResult) GetJSON200() *EscrowEventPage {
+	return r.JSON200
+}
+
+// GetBody returns the raw response body bytes
+func (r ListEscrowEventsResult) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListEscrowEventsResult) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListEscrowEventsResult) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListEscrowEventsResult) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type SubmitVoucherSignatureResult struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PaymentVoucher
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r SubmitVoucherSignatureResult) GetJSON200() *PaymentVoucher {
+	return r.JSON200
+}
+
+// GetBody returns the raw response body bytes
+func (r SubmitVoucherSignatureResult) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r SubmitVoucherSignatureResult) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SubmitVoucherSignatureResult) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r SubmitVoucherSignatureResult) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type ListPendingVouchersResult struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PendingVouchers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListPendingVouchersResult) GetJSON200() *PendingVouchers {
+	return r.JSON200
+}
+
+// GetBody returns the raw response body bytes
+func (r ListPendingVouchersResult) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListPendingVouchersResult) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListPendingVouchersResult) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListPendingVouchersResult) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 type GetAllSnapshotsResult struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -37539,6 +37060,163 @@ func (r RestoreVolumeResult) ContentType() string {
 	return ""
 }
 
+type ListPaymentWalletsResult struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]PaymentWallet
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListPaymentWalletsResult) GetJSON200() *[]PaymentWallet {
+	return r.JSON200
+}
+
+// GetBody returns the raw response body bytes
+func (r ListPaymentWalletsResult) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListPaymentWalletsResult) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListPaymentWalletsResult) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListPaymentWalletsResult) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type LinkPaymentWalletResult struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *PaymentWallet
+}
+
+// GetJSON201 returns the response for an HTTP 201 `application/json` response
+func (r LinkPaymentWalletResult) GetJSON201() *PaymentWallet {
+	return r.JSON201
+}
+
+// GetBody returns the raw response body bytes
+func (r LinkPaymentWalletResult) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r LinkPaymentWalletResult) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r LinkPaymentWalletResult) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r LinkPaymentWalletResult) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type CreateWalletChallengeResult struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *WalletChallenge
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r CreateWalletChallengeResult) GetJSON200() *WalletChallenge {
+	return r.JSON200
+}
+
+// GetBody returns the raw response body bytes
+func (r CreateWalletChallengeResult) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateWalletChallengeResult) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateWalletChallengeResult) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r CreateWalletChallengeResult) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type UnlinkPaymentWalletResult struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// GetBody returns the raw response body bytes
+func (r UnlinkPaymentWalletResult) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r UnlinkPaymentWalletResult) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UnlinkPaymentWalletResult) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r UnlinkPaymentWalletResult) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 // AdminGetAllAuditLogsWithResponse Get all audit logs
 //
 // Returns a wrapper object for the known response body format(s).
@@ -38072,19 +37750,6 @@ func (c *ClientWithResponses) AdminUpdateOrganizationLimitsWithResponse(ctx cont
 	return ParseAdminUpdateOrganizationLimitsResult(rsp)
 }
 
-// GetAdminPaymentAccountWithResponse Get the Stripe payment account of an organization
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with GET /admin/organizations/{organizationId}/payment-account (the `GetAdminPaymentAccount` operationId).
-func (c *ClientWithResponses) GetAdminPaymentAccountWithResponse(ctx context.Context, organizationId string, reqEditors ...RequestEditorFn) (*GetAdminPaymentAccountResult, error) {
-	rsp, err := c.GetAdminPaymentAccount(ctx, organizationId, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetAdminPaymentAccountResult(rsp)
-}
-
 // AdminListOrganizationQuotasWithResponse List the quotas of an organization
 //
 // Returns a wrapper object for the known response body format(s).
@@ -38213,45 +37878,6 @@ func (c *ClientWithResponses) AdminUnsuspendOrganizationWithResponse(ctx context
 		return nil, err
 	}
 	return ParseAdminUnsuspendOrganizationResult(rsp)
-}
-
-// ListAdminDisputesWithResponse List payment disputes
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with GET /admin/payments/disputes (the `ListAdminDisputes` operationId).
-func (c *ClientWithResponses) ListAdminDisputesWithResponse(ctx context.Context, params *ListAdminDisputesParams, reqEditors ...RequestEditorFn) (*ListAdminDisputesResult, error) {
-	rsp, err := c.ListAdminDisputes(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListAdminDisputesResult(rsp)
-}
-
-// ListAdminPayoutsWithResponse List host payouts
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with GET /admin/payouts (the `ListAdminPayouts` operationId).
-func (c *ClientWithResponses) ListAdminPayoutsWithResponse(ctx context.Context, params *ListAdminPayoutsParams, reqEditors ...RequestEditorFn) (*ListAdminPayoutsResult, error) {
-	rsp, err := c.ListAdminPayouts(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListAdminPayoutsResult(rsp)
-}
-
-// RetryAdminPayoutWithResponse Retry the Stripe transfer of a pending payout
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /admin/payouts/{payoutId}/retry (the `RetryAdminPayout` operationId).
-func (c *ClientWithResponses) RetryAdminPayoutWithResponse(ctx context.Context, payoutId string, reqEditors ...RequestEditorFn) (*RetryAdminPayoutResult, error) {
-	rsp, err := c.RetryAdminPayout(ctx, payoutId, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseRetryAdminPayoutResult(rsp)
 }
 
 // AdminRecoverSandboxWithResponse Recover sandbox from error state as an admin
@@ -38488,45 +38114,6 @@ func (c *ClientWithResponses) GetAuditLogsWithResponse(ctx context.Context, para
 	return ParseGetAuditLogsResult(rsp)
 }
 
-// GetAutoTopUpWithResponse Get the automatic top-up of the active organization
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with GET /billing/auto-top-up (the `GetAutoTopUp` operationId).
-func (c *ClientWithResponses) GetAutoTopUpWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetAutoTopUpResult, error) {
-	rsp, err := c.GetAutoTopUp(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetAutoTopUpResult(rsp)
-}
-
-// UpdateAutoTopUpWithBodyWithResponse Consent to and configure the automatic top-up
-//
-// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with PUT /billing/auto-top-up (the `UpdateAutoTopUp` operationId).
-func (c *ClientWithResponses) UpdateAutoTopUpWithBodyWithResponse(ctx context.Context, params *UpdateAutoTopUpParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAutoTopUpResult, error) {
-	rsp, err := c.UpdateAutoTopUpWithBody(ctx, params, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateAutoTopUpResult(rsp)
-}
-
-// UpdateAutoTopUpWithResponse Consent to and configure the automatic top-up
-//
-// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with PUT /billing/auto-top-up (the `UpdateAutoTopUp` operationId).
-func (c *ClientWithResponses) UpdateAutoTopUpWithResponse(ctx context.Context, params *UpdateAutoTopUpParams, body UpdateAutoTopUpJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAutoTopUpResult, error) {
-	rsp, err := c.UpdateAutoTopUp(ctx, params, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateAutoTopUpResult(rsp)
-}
-
 // GetBillingBudgetWithResponse Get the billing budget of the active organization
 //
 // Returns a wrapper object for the known response body format(s).
@@ -38592,32 +38179,6 @@ func (c *ClientWithResponses) GetBillingOverviewWithResponse(ctx context.Context
 	return ParseGetBillingOverviewResult(rsp)
 }
 
-// ListPaymentMethodsWithResponse List the saved cards of the active organization
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with GET /billing/payment-methods (the `ListPaymentMethods` operationId).
-func (c *ClientWithResponses) ListPaymentMethodsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListPaymentMethodsResult, error) {
-	rsp, err := c.ListPaymentMethods(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListPaymentMethodsResult(rsp)
-}
-
-// DeletePaymentMethodWithResponse Detach a saved card; automatic top-ups using it stop
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with DELETE /billing/payment-methods/{paymentMethodId} (the `DeletePaymentMethod` operationId).
-func (c *ClientWithResponses) DeletePaymentMethodWithResponse(ctx context.Context, paymentMethodId string, reqEditors ...RequestEditorFn) (*DeletePaymentMethodResult, error) {
-	rsp, err := c.DeletePaymentMethod(ctx, paymentMethodId, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeletePaymentMethodResult(rsp)
-}
-
 // GetSandboxBillingSummaryWithResponse Get immutable placement pricing and live sandbox accrual
 //
 // Returns a wrapper object for the known response body format(s).
@@ -38655,84 +38216,6 @@ func (c *ClientWithResponses) GetBillingStatementWithResponse(ctx context.Contex
 		return nil, err
 	}
 	return ParseGetBillingStatementResult(rsp)
-}
-
-// ListTopUpsWithResponse List the top-ups of the active organization
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with GET /billing/top-ups (the `ListTopUps` operationId).
-func (c *ClientWithResponses) ListTopUpsWithResponse(ctx context.Context, params *ListTopUpsParams, reqEditors ...RequestEditorFn) (*ListTopUpsResult, error) {
-	rsp, err := c.ListTopUps(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListTopUpsResult(rsp)
-}
-
-// CreateTopUpWithBodyWithResponse Start an embedded Checkout session that buys credit
-//
-// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /billing/top-ups (the `CreateTopUp` operationId).
-func (c *ClientWithResponses) CreateTopUpWithBodyWithResponse(ctx context.Context, params *CreateTopUpParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateTopUpResult, error) {
-	rsp, err := c.CreateTopUpWithBody(ctx, params, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateTopUpResult(rsp)
-}
-
-// CreateTopUpWithResponse Start an embedded Checkout session that buys credit
-//
-// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /billing/top-ups (the `CreateTopUp` operationId).
-func (c *ClientWithResponses) CreateTopUpWithResponse(ctx context.Context, params *CreateTopUpParams, body CreateTopUpJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateTopUpResult, error) {
-	rsp, err := c.CreateTopUp(ctx, params, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateTopUpResult(rsp)
-}
-
-// GetTopUpWithResponse Get a top-up, with the client secret while it requires action
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with GET /billing/top-ups/{topUpId} (the `GetTopUp` operationId).
-func (c *ClientWithResponses) GetTopUpWithResponse(ctx context.Context, topUpId string, reqEditors ...RequestEditorFn) (*GetTopUpResult, error) {
-	rsp, err := c.GetTopUp(ctx, topUpId, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetTopUpResult(rsp)
-}
-
-// UpdateTopUpAmountWithBodyWithResponse Change the amount of a top-up whose Checkout session is still open
-//
-// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with PUT /billing/top-ups/{topUpId}/amount (the `UpdateTopUpAmount` operationId).
-func (c *ClientWithResponses) UpdateTopUpAmountWithBodyWithResponse(ctx context.Context, topUpId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateTopUpAmountResult, error) {
-	rsp, err := c.UpdateTopUpAmountWithBody(ctx, topUpId, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateTopUpAmountResult(rsp)
-}
-
-// UpdateTopUpAmountWithResponse Change the amount of a top-up whose Checkout session is still open
-//
-// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with PUT /billing/top-ups/{topUpId}/amount (the `UpdateTopUpAmount` operationId).
-func (c *ClientWithResponses) UpdateTopUpAmountWithResponse(ctx context.Context, topUpId string, body UpdateTopUpAmountJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateTopUpAmountResult, error) {
-	rsp, err := c.UpdateTopUpAmount(ctx, topUpId, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateTopUpAmountResult(rsp)
 }
 
 // ListBillingUsageWithResponse List canonical billing line items
@@ -39219,6 +38702,19 @@ func (c *ClientWithResponses) GetMachinePriceFloorWithResponse(ctx context.Conte
 	return ParseGetMachinePriceFloorResult(rsp)
 }
 
+// GetMachinePriceHintWithResponse Get what similar machines list for and what the current price would earn
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /host/machines/{machineId}/price-hint (the `GetMachinePriceHint` operationId).
+func (c *ClientWithResponses) GetMachinePriceHintWithResponse(ctx context.Context, machineId string, reqEditors ...RequestEditorFn) (*GetMachinePriceHintResult, error) {
+	rsp, err := c.GetMachinePriceHint(ctx, machineId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetMachinePriceHintResult(rsp)
+}
+
 // GetMachineVerificationWithResponse Get the verification status of a hosted machine
 //
 // Returns a wrapper object for the known response body format(s).
@@ -39576,6 +39072,17 @@ func (c *ClientWithResponses) RenewMachineSessionWithResponse(ctx context.Contex
 		return nil, err
 	}
 	return ParseRenewMachineSessionResult(rsp)
+}
+
+// GetMachineVouchersWithResponse performs a GET /machines/settlement/vouchers (the `GetMachineVouchers` operationId) request.
+//
+// Returns a wrapper object for the known response body format(s).
+func (c *ClientWithResponses) GetMachineVouchersWithResponse(ctx context.Context, params *GetMachineVouchersParams, reqEditors ...RequestEditorFn) (*GetMachineVouchersResult, error) {
+	rsp, err := c.GetMachineVouchers(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetMachineVouchersResult(rsp)
 }
 
 // ReportMachineSnapshotInventoryWithBodyWithResponse performs a POST /machines/snapshots/observed-inventory (the `ReportMachineSnapshotInventory` operationId) request,
@@ -39953,84 +39460,6 @@ func (c *ClientWithResponses) GetOrganizationUsageOverviewWithResponse(ctx conte
 		return nil, err
 	}
 	return ParseGetOrganizationUsageOverviewResult(rsp)
-}
-
-// ListPayoutsWithResponse List the payouts of the active organization
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with GET /payouts (the `ListPayouts` operationId).
-func (c *ClientWithResponses) ListPayoutsWithResponse(ctx context.Context, params *ListPayoutsParams, reqEditors ...RequestEditorFn) (*ListPayoutsResult, error) {
-	rsp, err := c.ListPayouts(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListPayoutsResult(rsp)
-}
-
-// GetPayoutAccountWithResponse Get the payout account of the active organization
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with GET /payouts/account (the `GetPayoutAccount` operationId).
-func (c *ClientWithResponses) GetPayoutAccountWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetPayoutAccountResult, error) {
-	rsp, err := c.GetPayoutAccount(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetPayoutAccountResult(rsp)
-}
-
-// CreatePayoutAccountWithBodyWithResponse Create the Stripe payout account of the active organization
-//
-// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /payouts/account (the `CreatePayoutAccount` operationId).
-func (c *ClientWithResponses) CreatePayoutAccountWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreatePayoutAccountResult, error) {
-	rsp, err := c.CreatePayoutAccountWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreatePayoutAccountResult(rsp)
-}
-
-// CreatePayoutAccountWithResponse Create the Stripe payout account of the active organization
-//
-// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /payouts/account (the `CreatePayoutAccount` operationId).
-func (c *ClientWithResponses) CreatePayoutAccountWithResponse(ctx context.Context, body CreatePayoutAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*CreatePayoutAccountResult, error) {
-	rsp, err := c.CreatePayoutAccount(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreatePayoutAccountResult(rsp)
-}
-
-// CreatePayoutAccountSessionWithResponse Create a session for the Connect onboarding and payout components
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /payouts/account/session (the `CreatePayoutAccountSession` operationId).
-func (c *ClientWithResponses) CreatePayoutAccountSessionWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*CreatePayoutAccountSessionResult, error) {
-	rsp, err := c.CreatePayoutAccountSession(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreatePayoutAccountSessionResult(rsp)
-}
-
-// GetHostEarningsWithResponse Get the pending, available and maturing host earnings
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with GET /payouts/earnings (the `GetHostEarnings` operationId).
-func (c *ClientWithResponses) GetHostEarningsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetHostEarningsResult, error) {
-	rsp, err := c.GetHostEarnings(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetHostEarningsResult(rsp)
 }
 
 // GetPublicConfigWithResponse performs a GET /public-config (the `GetPublicConfig` operationId) request.
@@ -41013,6 +40442,110 @@ func (c *ClientWithResponses) RevokeSecretVersionWithResponse(ctx context.Contex
 	return ParseRevokeSecretVersionResult(rsp)
 }
 
+// ListPaymentChannelsWithResponse List the payment channels of the active organization, newest first, with their latest voucher
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /settlement/channels (the `ListPaymentChannels` operationId).
+func (c *ClientWithResponses) ListPaymentChannelsWithResponse(ctx context.Context, params *ListPaymentChannelsParams, reqEditors ...RequestEditorFn) (*ListPaymentChannelsResult, error) {
+	rsp, err := c.ListPaymentChannels(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListPaymentChannelsResult(rsp)
+}
+
+// GetPaymentChannelWithResponse Get a payment channel with its latest voucher
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /settlement/channels/{channelId} (the `GetPaymentChannel` operationId).
+func (c *ClientWithResponses) GetPaymentChannelWithResponse(ctx context.Context, channelId string, reqEditors ...RequestEditorFn) (*GetPaymentChannelResult, error) {
+	rsp, err := c.GetPaymentChannel(ctx, channelId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetPaymentChannelResult(rsp)
+}
+
+// GetVoucherDelegationWithResponse Get Snapflow's delegated voucher signer and session key caps that cover the running sandboxes
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /settlement/delegation (the `GetVoucherDelegation` operationId).
+func (c *ClientWithResponses) GetVoucherDelegationWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetVoucherDelegationResult, error) {
+	rsp, err := c.GetVoucherDelegation(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetVoucherDelegationResult(rsp)
+}
+
+// GetEscrowAccountWithResponse Get the escrow account of the active organization's funding wallet
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /settlement/escrow (the `GetEscrowAccount` operationId).
+func (c *ClientWithResponses) GetEscrowAccountWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetEscrowAccountResult, error) {
+	rsp, err := c.GetEscrowAccount(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetEscrowAccountResult(rsp)
+}
+
+// ListEscrowEventsWithResponse List the escrow events the active organization took part in, newest first
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /settlement/events (the `ListEscrowEvents` operationId).
+func (c *ClientWithResponses) ListEscrowEventsWithResponse(ctx context.Context, params *ListEscrowEventsParams, reqEditors ...RequestEditorFn) (*ListEscrowEventsResult, error) {
+	rsp, err := c.ListEscrowEvents(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListEscrowEventsResult(rsp)
+}
+
+// SubmitVoucherSignatureWithBodyWithResponse Submit the signature of a pending voucher
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /settlement/vouchers (the `SubmitVoucherSignature` operationId).
+func (c *ClientWithResponses) SubmitVoucherSignatureWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SubmitVoucherSignatureResult, error) {
+	rsp, err := c.SubmitVoucherSignatureWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSubmitVoucherSignatureResult(rsp)
+}
+
+// SubmitVoucherSignatureWithResponse Submit the signature of a pending voucher
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /settlement/vouchers (the `SubmitVoucherSignature` operationId).
+func (c *ClientWithResponses) SubmitVoucherSignatureWithResponse(ctx context.Context, body SubmitVoucherSignatureJSONRequestBody, reqEditors ...RequestEditorFn) (*SubmitVoucherSignatureResult, error) {
+	rsp, err := c.SubmitVoucherSignature(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSubmitVoucherSignatureResult(rsp)
+}
+
+// ListPendingVouchersWithResponse List the vouchers waiting for a signature from the funding wallet or one of its session keys
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /settlement/vouchers/pending (the `ListPendingVouchers` operationId).
+func (c *ClientWithResponses) ListPendingVouchersWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListPendingVouchersResult, error) {
+	rsp, err := c.ListPendingVouchers(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListPendingVouchersResult(rsp)
+}
+
 // GetAllSnapshotsWithResponse List all snapshots
 //
 // Returns a wrapper object for the known response body format(s).
@@ -41245,6 +40778,84 @@ func (c *ClientWithResponses) RestoreVolumeWithResponse(ctx context.Context, vol
 		return nil, err
 	}
 	return ParseRestoreVolumeResult(rsp)
+}
+
+// ListPaymentWalletsWithResponse List the payment wallets of the active organization
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /wallets (the `ListPaymentWallets` operationId).
+func (c *ClientWithResponses) ListPaymentWalletsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListPaymentWalletsResult, error) {
+	rsp, err := c.ListPaymentWallets(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListPaymentWalletsResult(rsp)
+}
+
+// LinkPaymentWalletWithBodyWithResponse Link the wallet that signed a challenge
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /wallets (the `LinkPaymentWallet` operationId).
+func (c *ClientWithResponses) LinkPaymentWalletWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*LinkPaymentWalletResult, error) {
+	rsp, err := c.LinkPaymentWalletWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseLinkPaymentWalletResult(rsp)
+}
+
+// LinkPaymentWalletWithResponse Link the wallet that signed a challenge
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /wallets (the `LinkPaymentWallet` operationId).
+func (c *ClientWithResponses) LinkPaymentWalletWithResponse(ctx context.Context, body LinkPaymentWalletJSONRequestBody, reqEditors ...RequestEditorFn) (*LinkPaymentWalletResult, error) {
+	rsp, err := c.LinkPaymentWallet(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseLinkPaymentWalletResult(rsp)
+}
+
+// CreateWalletChallengeWithBodyWithResponse Issue the Sign-In With Ethereum message that links a wallet
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /wallets/challenge (the `CreateWalletChallenge` operationId).
+func (c *ClientWithResponses) CreateWalletChallengeWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateWalletChallengeResult, error) {
+	rsp, err := c.CreateWalletChallengeWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateWalletChallengeResult(rsp)
+}
+
+// CreateWalletChallengeWithResponse Issue the Sign-In With Ethereum message that links a wallet
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /wallets/challenge (the `CreateWalletChallenge` operationId).
+func (c *ClientWithResponses) CreateWalletChallengeWithResponse(ctx context.Context, body CreateWalletChallengeJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateWalletChallengeResult, error) {
+	rsp, err := c.CreateWalletChallenge(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateWalletChallengeResult(rsp)
+}
+
+// UnlinkPaymentWalletWithResponse Unlink the wallet of a purpose
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /wallets/{purpose} (the `UnlinkPaymentWallet` operationId).
+func (c *ClientWithResponses) UnlinkPaymentWalletWithResponse(ctx context.Context, purpose PaymentWalletPurpose, reqEditors ...RequestEditorFn) (*UnlinkPaymentWalletResult, error) {
+	rsp, err := c.UnlinkPaymentWallet(ctx, purpose, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUnlinkPaymentWalletResult(rsp)
 }
 
 // ParseAdminGetAllAuditLogsResult parses an HTTP response from a AdminGetAllAuditLogsWithResponse call
@@ -42003,32 +41614,6 @@ func ParseAdminUpdateOrganizationLimitsResult(rsp *http.Response) (*AdminUpdateO
 	return response, nil
 }
 
-// ParseGetAdminPaymentAccountResult parses an HTTP response from a GetAdminPaymentAccountWithResponse call
-func ParseGetAdminPaymentAccountResult(rsp *http.Response) (*GetAdminPaymentAccountResult, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetAdminPaymentAccountResult{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AdminPaymentAccount
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
 // ParseAdminListOrganizationQuotasResult parses an HTTP response from a AdminListOrganizationQuotasWithResponse call
 func ParseAdminListOrganizationQuotasResult(rsp *http.Response) (*AdminListOrganizationQuotasResult, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -42166,84 +41751,6 @@ func ParseAdminUnsuspendOrganizationResult(rsp *http.Response) (*AdminUnsuspendO
 	response := &AdminUnsuspendOrganizationResult{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
-	}
-
-	return response, nil
-}
-
-// ParseListAdminDisputesResult parses an HTTP response from a ListAdminDisputesWithResponse call
-func ParseListAdminDisputesResult(rsp *http.Response) (*ListAdminDisputesResult, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &ListAdminDisputesResult{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AdminPaymentDisputePage
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseListAdminPayoutsResult parses an HTTP response from a ListAdminPayoutsWithResponse call
-func ParseListAdminPayoutsResult(rsp *http.Response) (*ListAdminPayoutsResult, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &ListAdminPayoutsResult{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest PayoutPage
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseRetryAdminPayoutResult parses an HTTP response from a RetryAdminPayoutWithResponse call
-func ParseRetryAdminPayoutResult(rsp *http.Response) (*RetryAdminPayoutResult, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &RetryAdminPayoutResult{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest Payout
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
 	}
 
 	return response, nil
@@ -42561,58 +42068,6 @@ func ParseGetAuditLogsResult(rsp *http.Response) (*GetAuditLogsResult, error) {
 	return response, nil
 }
 
-// ParseGetAutoTopUpResult parses an HTTP response from a GetAutoTopUpWithResponse call
-func ParseGetAutoTopUpResult(rsp *http.Response) (*GetAutoTopUpResult, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetAutoTopUpResult{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AutoTopUp
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseUpdateAutoTopUpResult parses an HTTP response from a UpdateAutoTopUpWithResponse call
-func ParseUpdateAutoTopUpResult(rsp *http.Response) (*UpdateAutoTopUpResult, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &UpdateAutoTopUpResult{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AutoTopUp
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
 // ParseGetBillingBudgetResult parses an HTTP response from a GetBillingBudgetWithResponse call
 func ParseGetBillingBudgetResult(rsp *http.Response) (*GetBillingBudgetResult, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -42717,48 +42172,6 @@ func ParseGetBillingOverviewResult(rsp *http.Response) (*GetBillingOverviewResul
 	return response, nil
 }
 
-// ParseListPaymentMethodsResult parses an HTTP response from a ListPaymentMethodsWithResponse call
-func ParseListPaymentMethodsResult(rsp *http.Response) (*ListPaymentMethodsResult, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &ListPaymentMethodsResult{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []PaymentMethod
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseDeletePaymentMethodResult parses an HTTP response from a DeletePaymentMethodWithResponse call
-func ParseDeletePaymentMethodResult(rsp *http.Response) (*DeletePaymentMethodResult, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &DeletePaymentMethodResult{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	return response, nil
-}
-
 // ParseGetSandboxBillingSummaryResult parses an HTTP response from a GetSandboxBillingSummaryWithResponse call
 func ParseGetSandboxBillingSummaryResult(rsp *http.Response) (*GetSandboxBillingSummaryResult, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -42827,110 +42240,6 @@ func ParseGetBillingStatementResult(rsp *http.Response) (*GetBillingStatementRes
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest BillingStatement
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseListTopUpsResult parses an HTTP response from a ListTopUpsWithResponse call
-func ParseListTopUpsResult(rsp *http.Response) (*ListTopUpsResult, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &ListTopUpsResult{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest TopUpPage
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseCreateTopUpResult parses an HTTP response from a CreateTopUpWithResponse call
-func ParseCreateTopUpResult(rsp *http.Response) (*CreateTopUpResult, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &CreateTopUpResult{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest TopUpSession
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON201 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetTopUpResult parses an HTTP response from a GetTopUpWithResponse call
-func ParseGetTopUpResult(rsp *http.Response) (*GetTopUpResult, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetTopUpResult{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest TopUp
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseUpdateTopUpAmountResult parses an HTTP response from a UpdateTopUpAmountWithResponse call
-func ParseUpdateTopUpAmountResult(rsp *http.Response) (*UpdateTopUpAmountResult, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &UpdateTopUpAmountResult{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest TopUp
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -43748,6 +43057,32 @@ func ParseGetMachinePriceFloorResult(rsp *http.Response) (*GetMachinePriceFloorR
 	return response, nil
 }
 
+// ParseGetMachinePriceHintResult parses an HTTP response from a GetMachinePriceHintWithResponse call
+func ParseGetMachinePriceHintResult(rsp *http.Response) (*GetMachinePriceHintResult, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetMachinePriceHintResult{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest MachinePriceHint
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetMachineVerificationResult parses an HTTP response from a GetMachineVerificationWithResponse call
 func ParseGetMachineVerificationResult(rsp *http.Response) (*GetMachineVerificationResult, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -44335,6 +43670,38 @@ func ParseRenewMachineSessionResult(rsp *http.Response) (*RenewMachineSessionRes
 	return response, nil
 }
 
+// ParseGetMachineVouchersResult parses an HTTP response from a GetMachineVouchersWithResponse call
+func ParseGetMachineVouchersResult(rsp *http.Response) (*GetMachineVouchersResult, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetMachineVouchersResult{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest MachineVoucherRelay
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case rsp.StatusCode == 304:
+		break // No content-type
+
+	case rsp.StatusCode == 503:
+		break // No content-type
+
+	}
+
+	return response, nil
+}
+
 // ParseReportMachineSnapshotInventoryResult parses an HTTP response from a ReportMachineSnapshotInventoryWithResponse call
 func ParseReportMachineSnapshotInventoryResult(rsp *http.Response) (*ReportMachineSnapshotInventoryResult, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -44892,136 +44259,6 @@ func ParseGetOrganizationUsageOverviewResult(rsp *http.Response) (*GetOrganizati
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest OrganizationUsageOverview
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseListPayoutsResult parses an HTTP response from a ListPayoutsWithResponse call
-func ParseListPayoutsResult(rsp *http.Response) (*ListPayoutsResult, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &ListPayoutsResult{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest PayoutPage
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetPayoutAccountResult parses an HTTP response from a GetPayoutAccountWithResponse call
-func ParseGetPayoutAccountResult(rsp *http.Response) (*GetPayoutAccountResult, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetPayoutAccountResult{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest PayoutAccount
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseCreatePayoutAccountResult parses an HTTP response from a CreatePayoutAccountWithResponse call
-func ParseCreatePayoutAccountResult(rsp *http.Response) (*CreatePayoutAccountResult, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &CreatePayoutAccountResult{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		var dest PayoutAccount
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON201 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseCreatePayoutAccountSessionResult parses an HTTP response from a CreatePayoutAccountSessionWithResponse call
-func ParseCreatePayoutAccountSessionResult(rsp *http.Response) (*CreatePayoutAccountSessionResult, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &CreatePayoutAccountSessionResult{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest PayoutAccountSession
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetHostEarningsResult parses an HTTP response from a GetHostEarningsWithResponse call
-func ParseGetHostEarningsResult(rsp *http.Response) (*GetHostEarningsResult, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetHostEarningsResult{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest HostEarnings
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -46357,6 +45594,191 @@ func ParseRevokeSecretVersionResult(rsp *http.Response) (*RevokeSecretVersionRes
 	return response, nil
 }
 
+// ParseListPaymentChannelsResult parses an HTTP response from a ListPaymentChannelsWithResponse call
+func ParseListPaymentChannelsResult(rsp *http.Response) (*ListPaymentChannelsResult, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListPaymentChannelsResult{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PaymentChannelPage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetPaymentChannelResult parses an HTTP response from a GetPaymentChannelWithResponse call
+func ParseGetPaymentChannelResult(rsp *http.Response) (*GetPaymentChannelResult, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetPaymentChannelResult{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PaymentChannel
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetVoucherDelegationResult parses an HTTP response from a GetVoucherDelegationWithResponse call
+func ParseGetVoucherDelegationResult(rsp *http.Response) (*GetVoucherDelegationResult, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetVoucherDelegationResult{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest VoucherDelegation
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetEscrowAccountResult parses an HTTP response from a GetEscrowAccountWithResponse call
+func ParseGetEscrowAccountResult(rsp *http.Response) (*GetEscrowAccountResult, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetEscrowAccountResult{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest EscrowAccount
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListEscrowEventsResult parses an HTTP response from a ListEscrowEventsWithResponse call
+func ParseListEscrowEventsResult(rsp *http.Response) (*ListEscrowEventsResult, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListEscrowEventsResult{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest EscrowEventPage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseSubmitVoucherSignatureResult parses an HTTP response from a SubmitVoucherSignatureWithResponse call
+func ParseSubmitVoucherSignatureResult(rsp *http.Response) (*SubmitVoucherSignatureResult, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SubmitVoucherSignatureResult{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PaymentVoucher
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case rsp.StatusCode == 422:
+		break // No content-type
+
+	}
+
+	return response, nil
+}
+
+// ParseListPendingVouchersResult parses an HTTP response from a ListPendingVouchersWithResponse call
+func ParseListPendingVouchersResult(rsp *http.Response) (*ListPendingVouchersResult, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListPendingVouchersResult{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PendingVouchers
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetAllSnapshotsResult parses an HTTP response from a GetAllSnapshotsWithResponse call
 func ParseGetAllSnapshotsResult(rsp *http.Response) (*GetAllSnapshotsResult, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -46727,6 +46149,100 @@ func ParseRestoreVolumeResult(rsp *http.Response) (*RestoreVolumeResult, error) 
 	case rsp.StatusCode == 409:
 		break // No content-type
 
+	}
+
+	return response, nil
+}
+
+// ParseListPaymentWalletsResult parses an HTTP response from a ListPaymentWalletsWithResponse call
+func ParseListPaymentWalletsResult(rsp *http.Response) (*ListPaymentWalletsResult, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListPaymentWalletsResult{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []PaymentWallet
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseLinkPaymentWalletResult parses an HTTP response from a LinkPaymentWalletWithResponse call
+func ParseLinkPaymentWalletResult(rsp *http.Response) (*LinkPaymentWalletResult, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &LinkPaymentWalletResult{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest PaymentWallet
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateWalletChallengeResult parses an HTTP response from a CreateWalletChallengeWithResponse call
+func ParseCreateWalletChallengeResult(rsp *http.Response) (*CreateWalletChallengeResult, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateWalletChallengeResult{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest WalletChallenge
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUnlinkPaymentWalletResult parses an HTTP response from a UnlinkPaymentWalletWithResponse call
+func ParseUnlinkPaymentWalletResult(rsp *http.Response) (*UnlinkPaymentWalletResult, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UnlinkPaymentWalletResult{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
 	}
 
 	return response, nil

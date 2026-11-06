@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client/index.js';
-import type { AcceptSandboxLeaseRenewalData, AcceptSandboxLeaseRenewalErrors, AcceptSandboxLeaseRenewalResponses, AcknowledgeMachineTunnelBindingData, AcknowledgeMachineTunnelBindingResponses, AcknowledgeMachineTunnelTargetPlanData, AcknowledgeMachineTunnelTargetPlanResponses, ActivateSnapshotData, ActivateSnapshotErrors, ActivateSnapshotResponses, AdminBeginExposureCutoverData, AdminBeginExposureCutoverResponses, AdminCanCleanupImageData, AdminCanCleanupImageResponses, AdminCreateEdgeData, AdminCreateEdgeResponses, AdminCreateOrganizationQuotaData, AdminCreateOrganizationQuotaResponses, AdminCreatePlatformRegistryData, AdminCreatePlatformRegistryResponses, AdminDeleteEdgeData, AdminDeleteEdgeResponses, AdminDeleteMachineData, AdminDeleteMachineResponses, AdminDeleteOrganizationQuotaData, AdminDeleteOrganizationQuotaResponses, AdminDeletePlatformRegistryData, AdminDeletePlatformRegistryResponses, AdminGetAllAuditLogsData, AdminGetAllAuditLogsResponses, AdminGetEdgeData, AdminGetEdgeResponses, AdminGetMachineByIdData, AdminGetMachineByIdResponses, AdminGetMachineTrustData, AdminGetMachineTrustResponses, AdminGetOrganizationData, AdminGetOrganizationLimitsData, AdminGetOrganizationLimitsResponses, AdminGetOrganizationQuotaData, AdminGetOrganizationQuotaResponses, AdminGetOrganizationResponses, AdminGetSettingsData, AdminGetSettingsResponses, AdminGrantOrganizationCreditData, AdminGrantOrganizationCreditResponses, AdminListEdgesData, AdminListEdgesResponses, AdminListExposureCutoversData, AdminListExposureCutoversResponses, AdminListMachineReliabilityEventsData, AdminListMachineReliabilityEventsResponses, AdminListMachinesData, AdminListMachinesResponses, AdminListOrganizationQuotasData, AdminListOrganizationQuotasResponses, AdminListOrganizationsData, AdminListOrganizationsResponses, AdminListPlatformRegistriesData, AdminListPlatformRegistriesResponses, AdminListUsersData, AdminListUsersResponses, AdminRecoverSandboxData, AdminRecoverSandboxResponses, AdminReissueEdgeEnrollmentSecretData, AdminReissueEdgeEnrollmentSecretResponses, AdminRollbackExposureCutoverData, AdminRollbackExposureCutoverResponses, AdminSetDrainingPolicyData, AdminSetDrainingPolicyResponses, AdminSetMaintenanceModeData, AdminSetMaintenanceModeResponses, AdminSetSnapshotGeneralStatusData, AdminSetSnapshotGeneralStatusResponses, AdminSuspendOrganizationData, AdminSuspendOrganizationResponses, AdminUnsuspendOrganizationData, AdminUnsuspendOrganizationResponses, AdminUpdateEdgeStatusData, AdminUpdateEdgeStatusResponses, AdminUpdateMachineDrainingData, AdminUpdateMachineDrainingResponses, AdminUpdateMachineSchedulingData, AdminUpdateMachineSchedulingResponses, AdminUpdateOrganizationLimitsData, AdminUpdateOrganizationLimitsResponses, AdminUpdateOrganizationQuotaData, AdminUpdateOrganizationQuotaResponses, AdminUpdatePlatformRegistryData, AdminUpdatePlatformRegistryResponses, AdminUpdateSettingsData, AdminUpdateSettingsResponses, AdminVerifyExposureCutoverData, AdminVerifyExposureCutoverResponses, ArchiveSandboxData, ArchiveSandboxResponses, AwaitSandboxStateChangeData, AwaitSandboxStateChangeResponses, CloseMachineSessionData, CloseMachineSessionResponses, CompleteEdgeEnrollmentData, CompleteEdgeEnrollmentResponses, CreateApiKeyData, CreateApiKeyResponses, CreateBackupData, CreateBackupResponses, CreateCustomDomainData, CreateCustomDomainResponses, CreateEdgeSessionData, CreateEdgeSessionResponses, CreateMachinePriceCardData, CreateMachinePriceCardErrors, CreateMachinePriceCardResponses, CreateMachineSessionData, CreateMachineSessionResponses, CreatePayoutAccountData, CreatePayoutAccountResponses, CreatePayoutAccountSessionData, CreatePayoutAccountSessionResponses, CreateProtectedAccessGrantData, CreateProtectedAccessGrantResponses, CreateRegistryData, CreateRegistryResponses, CreateSandboxData, CreateSandboxErrors, CreateSandboxExposureData, CreateSandboxExposureResponses, CreateSandboxResponses, CreateSandboxSnapshotData, CreateSandboxSnapshotResponses, CreateSecretData, CreateSecretResponses, CreateSecretVersionData, CreateSecretVersionResponses, CreateSnapshotData, CreateSnapshotErrors, CreateSnapshotResponses, CreateSshAccessData, CreateSshAccessResponses, CreateTopUpData, CreateTopUpResponses, CreateVolumeData, CreateVolumeResponses, DeactivateSnapshotData, DeactivateSnapshotResponses, DeleteActiveOrganizationData, DeleteActiveOrganizationResponses, DeleteCustomDomainData, DeleteCustomDomainResponses, DeleteMachineData, DeleteMachineResponses, DeletePaymentMethodData, DeletePaymentMethodResponses, DeleteRegistryData, DeleteRegistryResponses, DeleteSandboxData, DeleteSandboxExposureData, DeleteSandboxExposureResponses, DeleteSandboxResponses, DeleteSecretData, DeleteSecretResponses, DeleteVolumeData, DeleteVolumeErrors, DeleteVolumeResponses, EnrollDevelopmentMachineData, EnrollDevelopmentMachineResponses, EnsurePreviewExposureData, EnsurePreviewExposureResponses, ExportBillingUsageData, ExportBillingUsageResponses, ForkSandboxData, ForkSandboxResponses, GetAdminPaymentAccountData, GetAdminPaymentAccountResponses, GetAllSnapshotsData, GetAllSnapshotsResponses, GetAuditLogsData, GetAuditLogsResponses, GetAuthenticatedUserData, GetAuthenticatedUserResponses, GetAutoTopUpData, GetAutoTopUpResponses, GetBillingBudgetData, GetBillingBudgetResponses, GetBillingConfigData, GetBillingConfigResponses, GetBillingLineItemData, GetBillingLineItemResponses, GetBillingOverviewData, GetBillingOverviewResponses, GetBillingSandboxUsageData, GetBillingSandboxUsageResponses, GetBillingStatementData, GetBillingStatementResponses, GetEdgeRouteSnapshotData, GetEdgeRouteSnapshotErrors, GetEdgeRouteSnapshotResponses, GetHostEarningsData, GetHostEarningsResponses, GetHostMachineData, GetHostMachineResponses, GetInfoForAuthenticatedMachineData, GetInfoForAuthenticatedMachineResponses, GetJobData, GetJobResponses, GetListingData, GetListingResponses, GetMachineByIdData, GetMachineByIdResponses, GetMachineControlPolicyData, GetMachineControlPolicyResponses, GetMachineDesiredStateData, GetMachineDesiredStateErrors, GetMachineDesiredStateResponses, GetMachineIdentityStatusData, GetMachineIdentityStatusResponses, GetMachinePriceFloorData, GetMachinePriceFloorResponses, GetMachineSandboxSecretsData, GetMachineSandboxSecretsErrors, GetMachineSandboxSecretsResponses, GetMachineSnapshotRegistryCredentialsData, GetMachineSnapshotRegistryCredentialsErrors, GetMachineSnapshotRegistryCredentialsResponses, GetMachineTrustData, GetMachineTrustResponses, GetMachineTunnelPlanData, GetMachineTunnelPlanErrors, GetMachineTunnelPlanResponses, GetMachineVerificationData, GetMachineVerificationResponses, GetOrganizationLimitsData, GetOrganizationLimitsResponses, GetOrganizationSettingsData, GetOrganizationSettingsResponses, GetOrganizationUsageOverviewData, GetOrganizationUsageOverviewResponses, GetPayoutAccountData, GetPayoutAccountResponses, GetPublicConfigData, GetPublicConfigResponses, GetPushAccessData, GetPushAccessResponses, GetRegistryData, GetRegistryResponses, GetRegistryTokenKeysData, GetRegistryTokenKeysResponses, GetSandboxAncestorsData, GetSandboxAncestorsResponses, GetSandboxBillingSummaryData, GetSandboxBillingSummaryResponses, GetSandboxData, GetSandboxExposureData, GetSandboxExposureResponses, GetSandboxForksData, GetSandboxForksResponses, GetSandboxLeaseData, GetSandboxLeaseResponses, GetSandboxParentData, GetSandboxParentResponses, GetSandboxResponses, GetSandboxSecretBindingsData, GetSandboxSecretBindingsResponses, GetSecretData, GetSecretResponses, GetSnapshotBuildLogsUrlData, GetSnapshotBuildLogsUrlResponses, GetSnapshotData, GetSnapshotErrors, GetSnapshotResponses, GetTopUpData, GetTopUpResponses, GetTransientPushAccessData, GetTransientPushAccessResponses, GetVolumeByNameData, GetVolumeByNameResponses, GetVolumeData, GetVolumeResponses, HealthControllerCheckData, HealthControllerCheckErrors, HealthControllerCheckResponses, HealthControllerLiveData, HealthControllerLiveResponses, IngestEdgeUsageCheckpointData, IngestEdgeUsageCheckpointResponses, IssueMachineTunnelCertificateData, IssueMachineTunnelCertificateResponses, ListAdminDisputesData, ListAdminDisputesResponses, ListAdminListingsData, ListAdminListingsResponses, ListAdminPayoutsData, ListAdminPayoutsResponses, ListBillingSandboxUsageData, ListBillingSandboxUsageResponses, ListBillingStatementsData, ListBillingStatementsResponses, ListBillingUsageData, ListBillingUsageResponses, ListCustomDomainsData, ListCustomDomainsResponses, ListCustomerNetworkUsageData, ListCustomerNetworkUsageResponses, ListEdgeSpeedtestTokenKeysData, ListEdgeSpeedtestTokenKeysResponses, ListHostMachinesData, ListHostMachinesResponses, ListHostNetworkUsageData, ListHostNetworkUsageResponses, ListJobsData, ListJobsResponses, ListListingsData, ListListingsResponses, ListMachineLocationsData, ListMachineLocationsResponses, ListMachinePriceCardsData, ListMachinePriceCardsResponses, ListMachinesData, ListMachinesResponses, ListMachineUsagePlacementsData, ListMachineUsagePlacementsResponses, ListMarketReferencePricesData, ListMarketReferencePricesResponses, ListOrganizationQuotasData, ListOrganizationQuotasResponses, ListPaymentMethodsData, ListPaymentMethodsResponses, ListPayoutsData, ListPayoutsResponses, ListRegistriesData, ListRegistriesResponses, ListSandboxesData, ListSandboxesResponses, ListSandboxExposuresData, ListSandboxExposuresResponses, ListSecretsData, ListSecretsResponses, ListSecretVersionsData, ListSecretVersionsResponses, ListTopUpsData, ListTopUpsResponses, ListVerificationReviewsData, ListVerificationReviewsResponses, ListVolumesData, ListVolumesResponses, MachineHealthcheckData, MachineHealthcheckResponses, MoveSandboxData, MoveSandboxErrors, MoveSandboxResponses, OpenEdgeUsageEpochData, OpenEdgeUsageEpochResponses, PauseSandboxData, PauseSandboxErrors, PauseSandboxResponses, PollJobsData, PollJobsResponses, QuoteSandboxData, QuoteSandboxResponses, RecoverSandboxData, RecoverSandboxResponses, RedeemProtectedAccessGrantData, RedeemProtectedAccessGrantResponses, RegisterMachineData, RegisterMachineResponses, RemoveSnapshotData, RemoveSnapshotResponses, RenewEdgeSessionData, RenewEdgeSessionResponses, RenewJobLeaseData, RenewJobLeaseResponses, RenewMachineSessionData, RenewMachineSessionResponses, ReplaceLabelsData, ReplaceLabelsResponses, ReplaceSandboxSecretBindingsData, ReplaceSandboxSecretBindingsResponses, ReportAuthenticatedMachineUpdateStatusData, ReportAuthenticatedMachineUpdateStatusResponses, ReportEdgeHeartbeatData, ReportEdgeHeartbeatResponses, ReportMachineObservedStatusData, ReportMachineObservedStatusResponses, ReportMachineSnapshotInventoryData, ReportMachineSnapshotInventoryResponses, RequestAuthenticatedMachineUpdateDrainData, RequestAuthenticatedMachineUpdateDrainResponses, RequestMachineBenchmarkData, RequestMachineBenchmarkResponses, RequestSystemExposureData, RequestSystemExposureResponses, ResizeSandboxData, ResizeSandboxResponses, ResizeVolumeData, ResizeVolumeResponses, ResolveSshAccessRelayData, ResolveSshAccessRelayResponses, ResolveVerificationReviewData, ResolveVerificationReviewResponses, RestoreVolumeData, RestoreVolumeErrors, RestoreVolumeResponses, RetryAdminPayoutData, RetryAdminPayoutResponses, RevokeMachineIdentityData, RevokeMachineIdentityResponses, RevokeProtectedAccessGrantData, RevokeProtectedAccessGrantResponses, RevokeSecretVersionData, RevokeSecretVersionResponses, RevokeSshAccessData, RevokeSshAccessResponses, SetAutoArchiveIntervalData, SetAutoArchiveIntervalResponses, SetAutoDeleteIntervalData, SetAutoDeleteIntervalResponses, SetAutostopIntervalData, SetAutostopIntervalResponses, StartSandboxData, StartSandboxErrors, StartSandboxResponses, StopSandboxData, StopSandboxResponses, SubmitMachineUsageReceiptData, SubmitMachineUsageReceiptResponses, UpdateAdminMachineTierData, UpdateAdminMachineTierResponses, UpdateAutoTopUpData, UpdateAutoTopUpResponses, UpdateBillingBudgetData, UpdateBillingBudgetResponses, UpdateJobStatusData, UpdateJobStatusResponses, UpdateLastActivityData, UpdateLastActivityResponses, UpdateMachineDrainingData, UpdateMachineDrainingResponses, UpdateMachineListingData, UpdateMachineListingResponses, UpdateMachineSchedulingData, UpdateMachineSchedulingResponses, UpdateMarketReferencePriceData, UpdateMarketReferencePriceResponses, UpdateNetworkSettingsData, UpdateNetworkSettingsResponses, UpdateOrganizationSettingsData, UpdateOrganizationSettingsResponses, UpdateRegistryData, UpdateRegistryResponses, UpdateSandboxExposureData, UpdateSandboxExposureResponses, UpdateSecretData, UpdateSecretResponses, UpdateTopUpAmountData, UpdateTopUpAmountResponses } from './types.gen.js';
+import type { AcceptSandboxLeaseRenewalData, AcceptSandboxLeaseRenewalErrors, AcceptSandboxLeaseRenewalResponses, AcknowledgeMachineTunnelBindingData, AcknowledgeMachineTunnelBindingResponses, AcknowledgeMachineTunnelTargetPlanData, AcknowledgeMachineTunnelTargetPlanResponses, ActivateSnapshotData, ActivateSnapshotErrors, ActivateSnapshotResponses, AdminBeginExposureCutoverData, AdminBeginExposureCutoverResponses, AdminCanCleanupImageData, AdminCanCleanupImageResponses, AdminCreateEdgeData, AdminCreateEdgeResponses, AdminCreateOrganizationQuotaData, AdminCreateOrganizationQuotaResponses, AdminCreatePlatformRegistryData, AdminCreatePlatformRegistryResponses, AdminDeleteEdgeData, AdminDeleteEdgeResponses, AdminDeleteMachineData, AdminDeleteMachineResponses, AdminDeleteOrganizationQuotaData, AdminDeleteOrganizationQuotaResponses, AdminDeletePlatformRegistryData, AdminDeletePlatformRegistryResponses, AdminGetAllAuditLogsData, AdminGetAllAuditLogsResponses, AdminGetEdgeData, AdminGetEdgeResponses, AdminGetMachineByIdData, AdminGetMachineByIdResponses, AdminGetMachineTrustData, AdminGetMachineTrustResponses, AdminGetOrganizationData, AdminGetOrganizationLimitsData, AdminGetOrganizationLimitsResponses, AdminGetOrganizationQuotaData, AdminGetOrganizationQuotaResponses, AdminGetOrganizationResponses, AdminGetSettingsData, AdminGetSettingsResponses, AdminGrantOrganizationCreditData, AdminGrantOrganizationCreditResponses, AdminListEdgesData, AdminListEdgesResponses, AdminListExposureCutoversData, AdminListExposureCutoversResponses, AdminListMachineReliabilityEventsData, AdminListMachineReliabilityEventsResponses, AdminListMachinesData, AdminListMachinesResponses, AdminListOrganizationQuotasData, AdminListOrganizationQuotasResponses, AdminListOrganizationsData, AdminListOrganizationsResponses, AdminListPlatformRegistriesData, AdminListPlatformRegistriesResponses, AdminListUsersData, AdminListUsersResponses, AdminRecoverSandboxData, AdminRecoverSandboxResponses, AdminReissueEdgeEnrollmentSecretData, AdminReissueEdgeEnrollmentSecretResponses, AdminRollbackExposureCutoverData, AdminRollbackExposureCutoverResponses, AdminSetDrainingPolicyData, AdminSetDrainingPolicyResponses, AdminSetMaintenanceModeData, AdminSetMaintenanceModeResponses, AdminSetSnapshotGeneralStatusData, AdminSetSnapshotGeneralStatusResponses, AdminSuspendOrganizationData, AdminSuspendOrganizationResponses, AdminUnsuspendOrganizationData, AdminUnsuspendOrganizationResponses, AdminUpdateEdgeStatusData, AdminUpdateEdgeStatusResponses, AdminUpdateMachineDrainingData, AdminUpdateMachineDrainingResponses, AdminUpdateMachineSchedulingData, AdminUpdateMachineSchedulingResponses, AdminUpdateOrganizationLimitsData, AdminUpdateOrganizationLimitsResponses, AdminUpdateOrganizationQuotaData, AdminUpdateOrganizationQuotaResponses, AdminUpdatePlatformRegistryData, AdminUpdatePlatformRegistryResponses, AdminUpdateSettingsData, AdminUpdateSettingsResponses, AdminVerifyExposureCutoverData, AdminVerifyExposureCutoverResponses, ArchiveSandboxData, ArchiveSandboxResponses, AwaitSandboxStateChangeData, AwaitSandboxStateChangeResponses, CloseMachineSessionData, CloseMachineSessionResponses, CompleteEdgeEnrollmentData, CompleteEdgeEnrollmentResponses, CreateApiKeyData, CreateApiKeyResponses, CreateBackupData, CreateBackupResponses, CreateCustomDomainData, CreateCustomDomainResponses, CreateEdgeSessionData, CreateEdgeSessionResponses, CreateMachinePriceCardData, CreateMachinePriceCardErrors, CreateMachinePriceCardResponses, CreateMachineSessionData, CreateMachineSessionResponses, CreateProtectedAccessGrantData, CreateProtectedAccessGrantResponses, CreateRegistryData, CreateRegistryResponses, CreateSandboxData, CreateSandboxErrors, CreateSandboxExposureData, CreateSandboxExposureResponses, CreateSandboxResponses, CreateSandboxSnapshotData, CreateSandboxSnapshotResponses, CreateSecretData, CreateSecretResponses, CreateSecretVersionData, CreateSecretVersionResponses, CreateSnapshotData, CreateSnapshotErrors, CreateSnapshotResponses, CreateSshAccessData, CreateSshAccessResponses, CreateVolumeData, CreateVolumeResponses, CreateWalletChallengeData, CreateWalletChallengeResponses, DeactivateSnapshotData, DeactivateSnapshotResponses, DeleteActiveOrganizationData, DeleteActiveOrganizationResponses, DeleteCustomDomainData, DeleteCustomDomainResponses, DeleteMachineData, DeleteMachineResponses, DeleteRegistryData, DeleteRegistryResponses, DeleteSandboxData, DeleteSandboxExposureData, DeleteSandboxExposureResponses, DeleteSandboxResponses, DeleteSecretData, DeleteSecretResponses, DeleteVolumeData, DeleteVolumeErrors, DeleteVolumeResponses, EnrollDevelopmentMachineData, EnrollDevelopmentMachineResponses, EnsurePreviewExposureData, EnsurePreviewExposureResponses, ExportBillingUsageData, ExportBillingUsageResponses, ForkSandboxData, ForkSandboxResponses, GetAllSnapshotsData, GetAllSnapshotsResponses, GetAuditLogsData, GetAuditLogsResponses, GetAuthenticatedUserData, GetAuthenticatedUserResponses, GetBillingBudgetData, GetBillingBudgetResponses, GetBillingConfigData, GetBillingConfigResponses, GetBillingLineItemData, GetBillingLineItemResponses, GetBillingOverviewData, GetBillingOverviewResponses, GetBillingSandboxUsageData, GetBillingSandboxUsageResponses, GetBillingStatementData, GetBillingStatementResponses, GetEdgeRouteSnapshotData, GetEdgeRouteSnapshotErrors, GetEdgeRouteSnapshotResponses, GetEscrowAccountData, GetEscrowAccountResponses, GetHostMachineData, GetHostMachineResponses, GetInfoForAuthenticatedMachineData, GetInfoForAuthenticatedMachineResponses, GetJobData, GetJobResponses, GetListingData, GetListingResponses, GetMachineByIdData, GetMachineByIdResponses, GetMachineControlPolicyData, GetMachineControlPolicyResponses, GetMachineDesiredStateData, GetMachineDesiredStateErrors, GetMachineDesiredStateResponses, GetMachineIdentityStatusData, GetMachineIdentityStatusResponses, GetMachinePriceFloorData, GetMachinePriceFloorResponses, GetMachinePriceHintData, GetMachinePriceHintResponses, GetMachineSandboxSecretsData, GetMachineSandboxSecretsErrors, GetMachineSandboxSecretsResponses, GetMachineSnapshotRegistryCredentialsData, GetMachineSnapshotRegistryCredentialsErrors, GetMachineSnapshotRegistryCredentialsResponses, GetMachineTrustData, GetMachineTrustResponses, GetMachineTunnelPlanData, GetMachineTunnelPlanErrors, GetMachineTunnelPlanResponses, GetMachineVerificationData, GetMachineVerificationResponses, GetMachineVouchersData, GetMachineVouchersErrors, GetMachineVouchersResponses, GetOrganizationLimitsData, GetOrganizationLimitsResponses, GetOrganizationSettingsData, GetOrganizationSettingsResponses, GetOrganizationUsageOverviewData, GetOrganizationUsageOverviewResponses, GetPaymentChannelData, GetPaymentChannelResponses, GetPublicConfigData, GetPublicConfigResponses, GetPushAccessData, GetPushAccessResponses, GetRegistryData, GetRegistryResponses, GetRegistryTokenKeysData, GetRegistryTokenKeysResponses, GetSandboxAncestorsData, GetSandboxAncestorsResponses, GetSandboxBillingSummaryData, GetSandboxBillingSummaryResponses, GetSandboxData, GetSandboxExposureData, GetSandboxExposureResponses, GetSandboxForksData, GetSandboxForksResponses, GetSandboxLeaseData, GetSandboxLeaseResponses, GetSandboxParentData, GetSandboxParentResponses, GetSandboxResponses, GetSandboxSecretBindingsData, GetSandboxSecretBindingsResponses, GetSecretData, GetSecretResponses, GetSnapshotBuildLogsUrlData, GetSnapshotBuildLogsUrlResponses, GetSnapshotData, GetSnapshotErrors, GetSnapshotResponses, GetTransientPushAccessData, GetTransientPushAccessResponses, GetVolumeByNameData, GetVolumeByNameResponses, GetVolumeData, GetVolumeResponses, GetVoucherDelegationData, GetVoucherDelegationResponses, HealthControllerCheckData, HealthControllerCheckErrors, HealthControllerCheckResponses, HealthControllerLiveData, HealthControllerLiveResponses, IngestEdgeUsageCheckpointData, IngestEdgeUsageCheckpointResponses, IssueMachineTunnelCertificateData, IssueMachineTunnelCertificateResponses, LinkPaymentWalletData, LinkPaymentWalletResponses, ListAdminListingsData, ListAdminListingsResponses, ListBillingSandboxUsageData, ListBillingSandboxUsageResponses, ListBillingStatementsData, ListBillingStatementsResponses, ListBillingUsageData, ListBillingUsageResponses, ListCustomDomainsData, ListCustomDomainsResponses, ListCustomerNetworkUsageData, ListCustomerNetworkUsageResponses, ListEdgeSpeedtestTokenKeysData, ListEdgeSpeedtestTokenKeysResponses, ListEscrowEventsData, ListEscrowEventsResponses, ListHostMachinesData, ListHostMachinesResponses, ListHostNetworkUsageData, ListHostNetworkUsageResponses, ListJobsData, ListJobsResponses, ListListingsData, ListListingsResponses, ListMachineLocationsData, ListMachineLocationsResponses, ListMachinePriceCardsData, ListMachinePriceCardsResponses, ListMachinesData, ListMachinesResponses, ListMachineUsagePlacementsData, ListMachineUsagePlacementsResponses, ListMarketReferencePricesData, ListMarketReferencePricesResponses, ListOrganizationQuotasData, ListOrganizationQuotasResponses, ListPaymentChannelsData, ListPaymentChannelsResponses, ListPaymentWalletsData, ListPaymentWalletsResponses, ListPendingVouchersData, ListPendingVouchersResponses, ListRegistriesData, ListRegistriesResponses, ListSandboxesData, ListSandboxesResponses, ListSandboxExposuresData, ListSandboxExposuresResponses, ListSecretsData, ListSecretsResponses, ListSecretVersionsData, ListSecretVersionsResponses, ListVerificationReviewsData, ListVerificationReviewsResponses, ListVolumesData, ListVolumesResponses, MachineHealthcheckData, MachineHealthcheckResponses, MoveSandboxData, MoveSandboxErrors, MoveSandboxResponses, OpenEdgeUsageEpochData, OpenEdgeUsageEpochResponses, PauseSandboxData, PauseSandboxErrors, PauseSandboxResponses, PollJobsData, PollJobsResponses, QuoteSandboxData, QuoteSandboxResponses, RecoverSandboxData, RecoverSandboxResponses, RedeemProtectedAccessGrantData, RedeemProtectedAccessGrantResponses, RegisterMachineData, RegisterMachineResponses, RemoveSnapshotData, RemoveSnapshotResponses, RenewEdgeSessionData, RenewEdgeSessionResponses, RenewJobLeaseData, RenewJobLeaseResponses, RenewMachineSessionData, RenewMachineSessionResponses, ReplaceLabelsData, ReplaceLabelsResponses, ReplaceSandboxSecretBindingsData, ReplaceSandboxSecretBindingsResponses, ReportAuthenticatedMachineUpdateStatusData, ReportAuthenticatedMachineUpdateStatusResponses, ReportEdgeHeartbeatData, ReportEdgeHeartbeatResponses, ReportMachineObservedStatusData, ReportMachineObservedStatusResponses, ReportMachineSnapshotInventoryData, ReportMachineSnapshotInventoryResponses, RequestAuthenticatedMachineUpdateDrainData, RequestAuthenticatedMachineUpdateDrainResponses, RequestMachineBenchmarkData, RequestMachineBenchmarkResponses, RequestSystemExposureData, RequestSystemExposureResponses, ResizeSandboxData, ResizeSandboxResponses, ResizeVolumeData, ResizeVolumeResponses, ResolveSshAccessRelayData, ResolveSshAccessRelayResponses, ResolveVerificationReviewData, ResolveVerificationReviewResponses, RestoreVolumeData, RestoreVolumeErrors, RestoreVolumeResponses, RevokeMachineIdentityData, RevokeMachineIdentityResponses, RevokeProtectedAccessGrantData, RevokeProtectedAccessGrantResponses, RevokeSecretVersionData, RevokeSecretVersionResponses, RevokeSshAccessData, RevokeSshAccessResponses, SetAutoArchiveIntervalData, SetAutoArchiveIntervalResponses, SetAutoDeleteIntervalData, SetAutoDeleteIntervalResponses, SetAutostopIntervalData, SetAutostopIntervalResponses, StartSandboxData, StartSandboxErrors, StartSandboxResponses, StopSandboxData, StopSandboxResponses, SubmitMachineUsageReceiptData, SubmitMachineUsageReceiptResponses, SubmitVoucherSignatureData, SubmitVoucherSignatureErrors, SubmitVoucherSignatureResponses, UnlinkPaymentWalletData, UnlinkPaymentWalletResponses, UpdateAdminMachineTierData, UpdateAdminMachineTierResponses, UpdateBillingBudgetData, UpdateBillingBudgetResponses, UpdateJobStatusData, UpdateJobStatusResponses, UpdateLastActivityData, UpdateLastActivityResponses, UpdateMachineDrainingData, UpdateMachineDrainingResponses, UpdateMachineListingData, UpdateMachineListingResponses, UpdateMachineSchedulingData, UpdateMachineSchedulingResponses, UpdateMarketReferencePriceData, UpdateMarketReferencePriceResponses, UpdateNetworkSettingsData, UpdateNetworkSettingsResponses, UpdateOrganizationSettingsData, UpdateOrganizationSettingsResponses, UpdateRegistryData, UpdateRegistryResponses, UpdateSandboxExposureData, UpdateSandboxExposureResponses, UpdateSecretData, UpdateSecretResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -338,15 +338,6 @@ export const adminUpdateOrganizationLimits = <ThrowOnError extends boolean = tru
 });
 
 /**
- * Get the Stripe payment account of an organization
- */
-export const getAdminPaymentAccount = <ThrowOnError extends boolean = true>(options: Options<GetAdminPaymentAccountData, ThrowOnError>): RequestResult<GetAdminPaymentAccountResponses, unknown, ThrowOnError> => (options.client ?? client).get<GetAdminPaymentAccountResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/admin/organizations/{organizationId}/payment-account',
-    ...options
-});
-
-/**
  * List the quotas of an organization
  */
 export const adminListOrganizationQuotas = <ThrowOnError extends boolean = true>(options: Options<AdminListOrganizationQuotasData, ThrowOnError>): RequestResult<AdminListOrganizationQuotasResponses, unknown, ThrowOnError> => (options.client ?? client).get<AdminListOrganizationQuotasResponses, unknown, ThrowOnError>({
@@ -418,33 +409,6 @@ export const adminSuspendOrganization = <ThrowOnError extends boolean = true>(op
 export const adminUnsuspendOrganization = <ThrowOnError extends boolean = true>(options: Options<AdminUnsuspendOrganizationData, ThrowOnError>): RequestResult<AdminUnsuspendOrganizationResponses, unknown, ThrowOnError> => (options.client ?? client).post<AdminUnsuspendOrganizationResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/admin/organizations/{organizationId}/unsuspend',
-    ...options
-});
-
-/**
- * List payment disputes
- */
-export const listAdminDisputes = <ThrowOnError extends boolean = true>(options?: Options<ListAdminDisputesData, ThrowOnError>): RequestResult<ListAdminDisputesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListAdminDisputesResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/admin/payments/disputes',
-    ...options
-});
-
-/**
- * List host payouts
- */
-export const listAdminPayouts = <ThrowOnError extends boolean = true>(options?: Options<ListAdminPayoutsData, ThrowOnError>): RequestResult<ListAdminPayoutsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListAdminPayoutsResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/admin/payouts',
-    ...options
-});
-
-/**
- * Retry the Stripe transfer of a pending payout
- */
-export const retryAdminPayout = <ThrowOnError extends boolean = true>(options: Options<RetryAdminPayoutData, ThrowOnError>): RequestResult<RetryAdminPayoutResponses, unknown, ThrowOnError> => (options.client ?? client).post<RetryAdminPayoutResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/admin/payouts/{payoutId}/retry',
     ...options
 });
 
@@ -580,28 +544,6 @@ export const getAuditLogs = <ThrowOnError extends boolean = true>(options?: Opti
 });
 
 /**
- * Get the automatic top-up of the active organization
- */
-export const getAutoTopUp = <ThrowOnError extends boolean = true>(options?: Options<GetAutoTopUpData, ThrowOnError>): RequestResult<GetAutoTopUpResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetAutoTopUpResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/billing/auto-top-up',
-    ...options
-});
-
-/**
- * Consent to and configure the automatic top-up
- */
-export const updateAutoTopUp = <ThrowOnError extends boolean = true>(options: Options<UpdateAutoTopUpData, ThrowOnError>): RequestResult<UpdateAutoTopUpResponses, unknown, ThrowOnError> => (options.client ?? client).put<UpdateAutoTopUpResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/billing/auto-top-up',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
  * Get the billing budget of the active organization
  */
 export const getBillingBudget = <ThrowOnError extends boolean = true>(options?: Options<GetBillingBudgetData, ThrowOnError>): RequestResult<GetBillingBudgetResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetBillingBudgetResponses, unknown, ThrowOnError>({
@@ -642,24 +584,6 @@ export const getBillingOverview = <ThrowOnError extends boolean = true>(options?
 });
 
 /**
- * List the saved cards of the active organization
- */
-export const listPaymentMethods = <ThrowOnError extends boolean = true>(options?: Options<ListPaymentMethodsData, ThrowOnError>): RequestResult<ListPaymentMethodsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListPaymentMethodsResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/billing/payment-methods',
-    ...options
-});
-
-/**
- * Detach a saved card; automatic top-ups using it stop
- */
-export const deletePaymentMethod = <ThrowOnError extends boolean = true>(options: Options<DeletePaymentMethodData, ThrowOnError>): RequestResult<DeletePaymentMethodResponses, unknown, ThrowOnError> => (options.client ?? client).delete<DeletePaymentMethodResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/billing/payment-methods/{paymentMethodId}',
-    ...options
-});
-
-/**
  * Get immutable placement pricing and live sandbox accrual
  */
 export const getSandboxBillingSummary = <ThrowOnError extends boolean = true>(options: Options<GetSandboxBillingSummaryData, ThrowOnError>): RequestResult<GetSandboxBillingSummaryResponses, unknown, ThrowOnError> => (options.client ?? client).get<GetSandboxBillingSummaryResponses, unknown, ThrowOnError>({
@@ -684,50 +608,6 @@ export const getBillingStatement = <ThrowOnError extends boolean = true>(options
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/billing/statements/{month}',
     ...options
-});
-
-/**
- * List the top-ups of the active organization
- */
-export const listTopUps = <ThrowOnError extends boolean = true>(options?: Options<ListTopUpsData, ThrowOnError>): RequestResult<ListTopUpsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListTopUpsResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/billing/top-ups',
-    ...options
-});
-
-/**
- * Start an embedded Checkout session that buys credit
- */
-export const createTopUp = <ThrowOnError extends boolean = true>(options: Options<CreateTopUpData, ThrowOnError>): RequestResult<CreateTopUpResponses, unknown, ThrowOnError> => (options.client ?? client).post<CreateTopUpResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/billing/top-ups',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Get a top-up, with the client secret while it requires action
- */
-export const getTopUp = <ThrowOnError extends boolean = true>(options: Options<GetTopUpData, ThrowOnError>): RequestResult<GetTopUpResponses, unknown, ThrowOnError> => (options.client ?? client).get<GetTopUpResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/billing/top-ups/{topUpId}',
-    ...options
-});
-
-/**
- * Change the amount of a top-up whose Checkout session is still open
- */
-export const updateTopUpAmount = <ThrowOnError extends boolean = true>(options: Options<UpdateTopUpAmountData, ThrowOnError>): RequestResult<UpdateTopUpAmountResponses, unknown, ThrowOnError> => (options.client ?? client).put<UpdateTopUpAmountResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/billing/top-ups/{topUpId}/amount',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
 });
 
 /**
@@ -979,6 +859,15 @@ export const getMachinePriceFloor = <ThrowOnError extends boolean = true>(option
 });
 
 /**
+ * Get what similar machines list for and what the current price would earn
+ */
+export const getMachinePriceHint = <ThrowOnError extends boolean = true>(options: Options<GetMachinePriceHintData, ThrowOnError>): RequestResult<GetMachinePriceHintResponses, unknown, ThrowOnError> => (options.client ?? client).get<GetMachinePriceHintResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/host/machines/{machineId}/price-hint',
+    ...options
+});
+
+/**
  * Get the verification status of a hosted machine
  */
 export const getMachineVerification = <ThrowOnError extends boolean = true>(options: Options<GetMachineVerificationData, ThrowOnError>): RequestResult<GetMachineVerificationResponses, unknown, ThrowOnError> => (options.client ?? client).get<GetMachineVerificationResponses, unknown, ThrowOnError>({
@@ -1124,6 +1013,8 @@ export const createMachineSession = <ThrowOnError extends boolean = true>(option
 });
 
 export const renewMachineSession = <ThrowOnError extends boolean = true>(options?: Options<RenewMachineSessionData, ThrowOnError>): RequestResult<RenewMachineSessionResponses, unknown, ThrowOnError> => (options?.client ?? client).post<RenewMachineSessionResponses, unknown, ThrowOnError>({ url: '/machines/session/renew', ...options });
+
+export const getMachineVouchers = <ThrowOnError extends boolean = true>(options?: Options<GetMachineVouchersData, ThrowOnError>): RequestResult<GetMachineVouchersResponses, GetMachineVouchersErrors, ThrowOnError> => (options?.client ?? client).get<GetMachineVouchersResponses, GetMachineVouchersErrors, ThrowOnError>({ url: '/machines/settlement/vouchers', ...options });
 
 export const reportMachineSnapshotInventory = <ThrowOnError extends boolean = true>(options: Options<ReportMachineSnapshotInventoryData, ThrowOnError>): RequestResult<ReportMachineSnapshotInventoryResponses, unknown, ThrowOnError> => (options.client ?? client).post<ReportMachineSnapshotInventoryResponses, unknown, ThrowOnError>({
     url: '/machines/snapshots/observed-inventory',
@@ -1311,55 +1202,6 @@ export const updateOrganizationSettings = <ThrowOnError extends boolean = true>(
 export const getOrganizationUsageOverview = <ThrowOnError extends boolean = true>(options?: Options<GetOrganizationUsageOverviewData, ThrowOnError>): RequestResult<GetOrganizationUsageOverviewResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetOrganizationUsageOverviewResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/organizations/active/usage',
-    ...options
-});
-
-/**
- * List the payouts of the active organization
- */
-export const listPayouts = <ThrowOnError extends boolean = true>(options?: Options<ListPayoutsData, ThrowOnError>): RequestResult<ListPayoutsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListPayoutsResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/payouts',
-    ...options
-});
-
-/**
- * Get the payout account of the active organization
- */
-export const getPayoutAccount = <ThrowOnError extends boolean = true>(options?: Options<GetPayoutAccountData, ThrowOnError>): RequestResult<GetPayoutAccountResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetPayoutAccountResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/payouts/account',
-    ...options
-});
-
-/**
- * Create the Stripe payout account of the active organization
- */
-export const createPayoutAccount = <ThrowOnError extends boolean = true>(options: Options<CreatePayoutAccountData, ThrowOnError>): RequestResult<CreatePayoutAccountResponses, unknown, ThrowOnError> => (options.client ?? client).post<CreatePayoutAccountResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/payouts/account',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Create a session for the Connect onboarding and payout components
- */
-export const createPayoutAccountSession = <ThrowOnError extends boolean = true>(options?: Options<CreatePayoutAccountSessionData, ThrowOnError>): RequestResult<CreatePayoutAccountSessionResponses, unknown, ThrowOnError> => (options?.client ?? client).post<CreatePayoutAccountSessionResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/payouts/account/session',
-    ...options
-});
-
-/**
- * Get the pending, available and maturing host earnings
- */
-export const getHostEarnings = <ThrowOnError extends boolean = true>(options?: Options<GetHostEarningsData, ThrowOnError>): RequestResult<GetHostEarningsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetHostEarningsResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/payouts/earnings',
     ...options
 });
 
@@ -1928,6 +1770,73 @@ export const revokeSecretVersion = <ThrowOnError extends boolean = true>(options
 });
 
 /**
+ * List the payment channels of the active organization, newest first, with their latest voucher
+ */
+export const listPaymentChannels = <ThrowOnError extends boolean = true>(options?: Options<ListPaymentChannelsData, ThrowOnError>): RequestResult<ListPaymentChannelsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListPaymentChannelsResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/settlement/channels',
+    ...options
+});
+
+/**
+ * Get a payment channel with its latest voucher
+ */
+export const getPaymentChannel = <ThrowOnError extends boolean = true>(options: Options<GetPaymentChannelData, ThrowOnError>): RequestResult<GetPaymentChannelResponses, unknown, ThrowOnError> => (options.client ?? client).get<GetPaymentChannelResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/settlement/channels/{channelId}',
+    ...options
+});
+
+/**
+ * Get Snapflow's delegated voucher signer and session key caps that cover the running sandboxes
+ */
+export const getVoucherDelegation = <ThrowOnError extends boolean = true>(options?: Options<GetVoucherDelegationData, ThrowOnError>): RequestResult<GetVoucherDelegationResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetVoucherDelegationResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/settlement/delegation',
+    ...options
+});
+
+/**
+ * Get the escrow account of the active organization's funding wallet
+ */
+export const getEscrowAccount = <ThrowOnError extends boolean = true>(options?: Options<GetEscrowAccountData, ThrowOnError>): RequestResult<GetEscrowAccountResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetEscrowAccountResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/settlement/escrow',
+    ...options
+});
+
+/**
+ * List the escrow events the active organization took part in, newest first
+ */
+export const listEscrowEvents = <ThrowOnError extends boolean = true>(options?: Options<ListEscrowEventsData, ThrowOnError>): RequestResult<ListEscrowEventsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListEscrowEventsResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/settlement/events',
+    ...options
+});
+
+/**
+ * Submit the signature of a pending voucher
+ */
+export const submitVoucherSignature = <ThrowOnError extends boolean = true>(options: Options<SubmitVoucherSignatureData, ThrowOnError>): RequestResult<SubmitVoucherSignatureResponses, SubmitVoucherSignatureErrors, ThrowOnError> => (options.client ?? client).post<SubmitVoucherSignatureResponses, SubmitVoucherSignatureErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/settlement/vouchers',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List the vouchers waiting for a signature from the funding wallet or one of its session keys
+ */
+export const listPendingVouchers = <ThrowOnError extends boolean = true>(options?: Options<ListPendingVouchersData, ThrowOnError>): RequestResult<ListPendingVouchersResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListPendingVouchersResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/settlement/vouchers/pending',
+    ...options
+});
+
+/**
  * List all snapshots
  */
 export const getAllSnapshots = <ThrowOnError extends boolean = true>(options?: Options<GetAllSnapshotsData, ThrowOnError>): RequestResult<GetAllSnapshotsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetAllSnapshotsResponses, unknown, ThrowOnError>({
@@ -2073,3 +1982,37 @@ export const restoreVolume = <ThrowOnError extends boolean = true>(options: Opti
     url: '/volumes/{volumeId}/restore',
     ...options
 });
+
+/**
+ * List the payment wallets of the active organization
+ */
+export const listPaymentWallets = <ThrowOnError extends boolean = true>(options?: Options<ListPaymentWalletsData, ThrowOnError>): RequestResult<ListPaymentWalletsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListPaymentWalletsResponses, unknown, ThrowOnError>({ url: '/wallets', ...options });
+
+/**
+ * Link the wallet that signed a challenge
+ */
+export const linkPaymentWallet = <ThrowOnError extends boolean = true>(options: Options<LinkPaymentWalletData, ThrowOnError>): RequestResult<LinkPaymentWalletResponses, unknown, ThrowOnError> => (options.client ?? client).post<LinkPaymentWalletResponses, unknown, ThrowOnError>({
+    url: '/wallets',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Issue the Sign-In With Ethereum message that links a wallet
+ */
+export const createWalletChallenge = <ThrowOnError extends boolean = true>(options: Options<CreateWalletChallengeData, ThrowOnError>): RequestResult<CreateWalletChallengeResponses, unknown, ThrowOnError> => (options.client ?? client).post<CreateWalletChallengeResponses, unknown, ThrowOnError>({
+    url: '/wallets/challenge',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Unlink the wallet of a purpose
+ */
+export const unlinkPaymentWallet = <ThrowOnError extends boolean = true>(options: Options<UnlinkPaymentWalletData, ThrowOnError>): RequestResult<UnlinkPaymentWalletResponses, unknown, ThrowOnError> => (options.client ?? client).delete<UnlinkPaymentWalletResponses, unknown, ThrowOnError>({ url: '/wallets/{purpose}', ...options });

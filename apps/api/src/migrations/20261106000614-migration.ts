@@ -1,8 +1,8 @@
 import { Migration } from '@mikro-orm/migrations';
 
-export class Migration20261028214334 extends Migration {
+export class Migration20261106000614 extends Migration {
 
-  override name = 'Migration20261028214334';
+  override name = 'Migration20261106000614';
 
   override up(): void | Promise<void> {
     this.addSql(`create type "job_status_enum" as enum ('pending', 'in_progress', 'completed', 'failed');`);
@@ -59,6 +59,12 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`alter table "edge_usage_checkpoint" add constraint "UQ_edge_usage_checkpoint_digest" unique ("edgeId", "digest");`);
     this.addSql(`alter table "edge_usage_checkpoint" add constraint "UQ_edge_usage_checkpoint_epoch_sequence" unique ("edgeId", "usageEpoch", "sequence");`);
 
+    this.addSql(`create table "escrow_account" ("id" uuid not null default gen_random_uuid(), "chainId" integer not null, "contractAddress" varchar(42) not null, "address" varchar(42) not null, "balanceMicroUsd" numeric(40,0) not null, "pendingWithdrawalMicroUsd" numeric(40,0) not null, "withdrawalReadyAt" timestamptz(3) null, "blocked" boolean not null, "createdAt" timestamptz(3) not null default now(), "updatedAt" timestamptz(3) not null default now(), constraint "escrow_account_id_pk" primary key ("id"));`);
+    this.addSql(`alter table "escrow_account" add constraint "UQ_escrow_account_address" unique ("chainId", "contractAddress", "address");`);
+
+    this.addSql(`create table "escrow_session_key" ("id" uuid not null default gen_random_uuid(), "chainId" integer not null, "contractAddress" varchar(42) not null, "customerAddress" varchar(42) not null, "keyAddress" varchar(42) not null, "spendCapMicroUsd" numeric(40,0) not null, "hourlyCapMicroUsd" numeric(40,0) not null, "expiresAt" timestamptz(3) not null, "activatedAt" timestamptz(3) not null, "revokedAt" timestamptz(3) null, "createdAt" timestamptz(3) not null default now(), "updatedAt" timestamptz(3) not null default now(), constraint "escrow_session_key_id_pk" primary key ("id"));`);
+    this.addSql(`alter table "escrow_session_key" add constraint "UQ_escrow_session_key" unique ("chainId", "contractAddress", "customerAddress", "keyAddress");`);
+
     this.addSql(`create table "job" ("id" uuid not null default gen_random_uuid(), "version" integer not null default 1, "type" varchar not null, "status" "job_status_enum" not null default 'pending', "machineId" uuid not null, "resourceType" "job_resourcetype_enum" not null, "resourceId" varchar not null, "assignmentGeneration" integer null, "payload" varchar null, "resultMetadata" varchar null, "executionResult" jsonb null, "availableAt" timestamptz(3) not null default CURRENT_TIMESTAMP, "attempt" integer not null default 0, "maxAttempts" integer not null default 3, "leaseToken" uuid null, "leaseExpiresAt" timestamptz(3) null, "leasedBySessionId" uuid null, "acceptedAttempt" integer null, "acceptedLeaseToken" uuid null, "acceptedSessionId" uuid null, "resultDigest" varchar(64) null, "projectionStatus" "job_projection_status_enum" not null default 'not_required', "projectedAt" timestamptz(3) null, "projectionClaimedAt" timestamptz(3) null, "projectionRetryAt" timestamptz(3) null, "projectionAttempts" integer not null default 0, "projectionError" text null, "traceContext" jsonb null, "errorMessage" text null, "startedAt" timestamptz(3) null, "completedAt" timestamptz(3) null, "createdAt" timestamptz(3) not null default now(), "updatedAt" timestamptz(3) not null default now(), constraint "job_id_pk" primary key ("id"));`);
     this.addSql(`create index "job_resourceType_resourceId_index" on "job" ("resourceType", "resourceId");`);
     this.addSql(`create index "job_status_createdAt_index" on "job" ("status", "createdAt");`);
@@ -79,19 +85,15 @@ export class Migration20261028214334 extends Migration {
 
     this.addSql(`create table "market_reference_price" ("priceClass" varchar not null, "bootstrapMedianMicroUsd" numeric(40,0) null, "marketMedianMicroUsd" numeric(40,0) null, "sampleCount" integer not null default 0, "computedAt" timestamptz(3) null, "updatedAt" timestamptz(3) not null default now(), "updatedBy" uuid null, constraint "market_reference_price_priceClass_pk" primary key ("priceClass"));`);
 
-    this.addSql(`create table "payout_batch" ("id" uuid not null default gen_random_uuid(), "isoWeek" varchar not null, "startedAt" timestamptz(3) not null, "completedAt" timestamptz(3) null, constraint "payout_batch_id_pk" primary key ("id"));`);
-    this.addSql(`alter table "payout_batch" add constraint "UQ_payout_batch_iso_week" unique ("isoWeek");`);
-
     this.addSql(`create table "realtime_outbox_event" ("id" uuid not null, "topic" varchar not null, "aggregateId" uuid not null, "payload" jsonb not null, "deduplicationKey" varchar not null, "status" varchar not null default 'pending', "attempts" integer not null default 0, "availableAt" timestamptz(3) not null, "lockId" uuid null, "lockedUntil" timestamptz(3) null, "publishedAt" timestamptz(3) null, "lastError" text null, "createdAt" timestamptz(3) not null, "updatedAt" timestamptz(3) not null, constraint "realtime_outbox_event_id_pk" primary key ("id"));`);
     this.addSql(`create index "realtime_outbox_event_dispatch_index" on "realtime_outbox_event" ("status", "availableAt", "createdAt");`);
     this.addSql(`alter table "realtime_outbox_event" add constraint "realtime_outbox_event_deduplication_key_unique" unique ("deduplicationKey");`);
 
+    this.addSql(`create table "settlement_chain_cursor" ("chainId" integer not null, "contractAddress" varchar(42) not null, "lastIndexedBlock" bigint not null, "updatedAt" timestamptz(3) not null default now(), constraint "settlement_chain_cursor_chainId_contractAddress_pk" primary key ("chainId", "contractAddress"));`);
+
     this.addSql(`create table "snapshot_machine" ("id" uuid not null default gen_random_uuid(), "machineId" uuid not null, "snapshotRef" varchar not null, "state" "snapshot_machine_state_enum" not null, "digest" varchar null, "sizeBytes" bigint not null default '0', "errorReason" varchar null, "preparedTemplate" jsonb null, "observedAt" timestamptz(3) not null, constraint "snapshot_machine_id_pk" primary key ("id"));`);
     this.addSql(`create index "IDX_snapshot_machine_snapshot_state" on "snapshot_machine" ("snapshotRef", "state");`);
     this.addSql(`alter table "snapshot_machine" add constraint "snapshot_machine_machineid_snapshotref_unique" unique ("machineId", "snapshotRef");`);
-
-    this.addSql(`create table "stripe_event" ("id" varchar not null, "scope" varchar not null, "type" varchar not null, "relatedObjectId" varchar null, "context" varchar null, "livemode" boolean not null, "receivedAt" timestamptz(3) not null default now(), "processedAt" timestamptz(3) null, "deadLetteredAt" timestamptz(3) null, "attempts" integer not null default 0, "nextAttemptAt" timestamptz(3) not null default now(), "lastError" text null, constraint "stripe_event_id_pk" primary key ("id"));`);
-    this.addSql(`create index "IDX_stripe_event_pending" on "stripe_event" ("nextAttemptAt") where "processedAt" is null and "deadLetteredAt" is null;`);
 
     this.addSql(`create table "user" ("id" uuid not null, "name" varchar not null, "email" varchar not null default '', "emailVerified" boolean not null default false, "keyPair" text null, "publicKeys" text not null default '[]', "twoFactorEnabled" boolean not null default false, "image" text null, "role" "user_role_enum" not null default 'user', "banned" boolean not null default false, "banReason" text null, "banExpires" timestamptz(3) null, "bannedAt" timestamptz(3) null, "lastActiveOrganizationId" uuid null, "createdAt" timestamptz(3) not null default now(), "updatedAt" timestamptz(3) not null default now(), constraint "user_id_pk" primary key ("id"));`);
     this.addSql(`alter table "user" add constraint "user_email_unique" unique ("email");`);
@@ -122,7 +124,7 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`create index "snapshot_name_idx" on "snapshot" ("name");`);
     this.addSql(`alter table "snapshot" add constraint "UQ_snapshot_organization_name" unique ("organizationId", "name");`);
 
-    this.addSql(`create table "settings" ("id" smallint not null default 1, "defaultSnapshot" varchar null, "defaultSandboxClass" varchar not null, "sandboxDefaultLimitedNetworkEgress" boolean not null, "totalCpuQuota" integer not null, "totalMemoryQuota" integer not null, "totalDiskQuota" integer not null, "maxCpuPerSandbox" integer not null, "maxMemoryPerSandbox" integer not null, "maxDiskPerSandbox" integer not null, "snapshotQuota" integer not null, "maxSnapshotSize" integer not null, "volumeQuota" integer not null, "machineGuestRegistryUrl" varchar null, "machineDesktopEnabled" boolean not null, "machineSerialConsoleEnabled" boolean not null, "publicIngressEnabled" boolean not null, "platformMarkupBasisPoints" integer not null, "priceFloorBasisPoints" integer not null, "priceFloorMinimumSamples" integer not null, "priceLockDays" integer not null, "leaseRenewalGraceDays" integer not null, "stoppedSandboxRetentionDays" integer not null, "pinnedStartWaitMinutes" integer not null, "egressPriceCeilingMicroUsdPerGiB" integer not null, "egressCeilingMedianBasisPoints" integer not null, "networkBudgetThrottleBandwidthBps" integer not null, "exposureCeilingProbationaryCents" integer not null, "exposureCeilingEstablishedCents" integer not null, "exposureCeilingHostCents" integer not null, "listingMinimumDownlinkMbps" integer not null, "listingMinimumUplinkMbps" integer not null, "listingMinimumDiskRandomReadIops" integer not null, "listingMinimumDiskSequentialMibps" integer not null, "verifiedMinimumListedDays" integer not null, "verifiedMinimumUptimeBasisPoints" integer not null, "verifiedMinimumSpotChecks" integer not null, "spotCheckIntervalHoursCommunity" integer not null, "spotCheckIntervalHoursVerified" integer not null, "spotCheckMonthlyBudgetCents" integer not null, "spotCheckToleranceBasisPoints" integer not null, "spotCheckOrganizationId" uuid null, "topUpMinimumCents" integer not null, "topUpMaximumCents" integer not null, "topUpPresetsCents" integer[] not null, "autoTopUpMinimumCents" integer not null, "autoTopUpMinimumIntervalMinutes" integer not null, "topUpAttemptsPerHour" integer not null, "paymentMethodsPerDay" integer not null, "organizationsPerCardFingerprint" integer not null, "payoutMinimumCents" integer not null, "payoutWeekday" integer not null, "payoutHoldCommunityDays" integer not null, "payoutHoldVerifiedDays" integer not null, "payoutHoldDatacenterDays" integer not null, "newFundingHoldDays" integer not null, "stripeTaxEnabled" boolean not null, "payoutCountries" text[] not null, "edgeTrustedHttpProxyCidrs" text[] not null default '{}', "maintenanceMode" boolean not null, "drainingMode" varchar not null, "drainingForce" boolean not null, "resourceVersion" integer not null default 1, "updatedBy" uuid null, "updatedAt" timestamptz(3) not null default now(), constraint "settings_id_pk" primary key ("id"));`);
+    this.addSql(`create table "settings" ("id" smallint not null default 1, "defaultSnapshot" varchar null, "defaultSandboxClass" varchar not null, "sandboxDefaultLimitedNetworkEgress" boolean not null, "totalCpuQuota" integer not null, "totalMemoryQuota" integer not null, "totalDiskQuota" integer not null, "maxCpuPerSandbox" integer not null, "maxMemoryPerSandbox" integer not null, "maxDiskPerSandbox" integer not null, "snapshotQuota" integer not null, "maxSnapshotSize" integer not null, "volumeQuota" integer not null, "machineGuestRegistryUrl" varchar null, "machineDesktopEnabled" boolean not null, "machineSerialConsoleEnabled" boolean not null, "publicIngressEnabled" boolean not null, "standardMarkupBasisPoints" integer not null, "verifiedMarkupBasisPoints" integer not null, "privatePoolMachineMonthlyMicroUsd" integer not null, "vcpuHourPriceMinimumMicroUsd" integer not null, "vcpuHourPriceMaximumMicroUsd" integer not null, "memoryGibHourPriceMinimumMicroUsd" integer not null, "memoryGibHourPriceMaximumMicroUsd" integer not null, "gpuHourPriceMinimumMicroUsd" integer not null, "gpuHourPriceMaximumMicroUsd" integer not null, "diskGibMonthPriceMinimumMicroUsd" integer not null, "diskGibMonthPriceMaximumMicroUsd" integer not null, "priceFloorBasisPoints" integer not null, "priceFloorMinimumSamples" integer not null, "priceLockDays" integer not null, "leaseRenewalGraceDays" integer not null, "stoppedSandboxRetentionDays" integer not null, "pinnedStartWaitMinutes" integer not null, "egressPriceCeilingMicroUsdPerGiB" integer not null, "egressCeilingMedianBasisPoints" integer not null, "networkBudgetThrottleBandwidthBps" integer not null, "exposureCeilingProbationaryCents" integer not null, "exposureCeilingEstablishedCents" integer not null, "exposureCeilingHostCents" integer not null, "listingMinimumDownlinkMbps" integer not null, "listingMinimumUplinkMbps" integer not null, "listingMinimumDiskRandomReadIops" integer not null, "listingMinimumDiskSequentialMibps" integer not null, "verifiedMinimumListedDays" integer not null, "verifiedMinimumUptimeBasisPoints" integer not null, "verifiedMinimumSpotChecks" integer not null, "spotCheckIntervalHoursCommunity" integer not null, "spotCheckIntervalHoursVerified" integer not null, "spotCheckMonthlyBudgetCents" integer not null, "spotCheckToleranceBasisPoints" integer not null, "spotCheckOrganizationId" uuid null, "settlementConfirmations" integer not null, "voucherIntervalSeconds" integer not null, "voucherGraceIntervals" integer not null, "voucherLifetimeHours" integer not null, "claimIntervalMinutes" integer not null, "edgeTrustedHttpProxyCidrs" text[] not null default '{}', "maintenanceMode" boolean not null, "drainingMode" varchar not null, "drainingForce" boolean not null, "resourceVersion" integer not null default 1, "updatedBy" uuid null, "updatedAt" timestamptz(3) not null default now(), constraint "settings_id_pk" primary key ("id"));`);
 
     this.addSql(`create table "secret" ("id" uuid not null default gen_random_uuid(), "organizationId" uuid not null, "name" varchar(128) not null, "normalizedName" varchar(128) not null, "description" text null, "currentVersion" integer not null default 1, "resourceVersion" integer not null default 1, "createdByPrincipalType" varchar not null, "createdByPrincipalId" varchar not null, "createdAt" timestamptz(3) not null default now(), "updatedAt" timestamptz(3) not null default now(), constraint "PK_secret" primary key ("id"));`);
     this.addSql(`create unique index "UQ_secret_id_organization" on "secret" ("id", "organizationId");`);
@@ -132,25 +134,13 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`create unique index "UQ_secret_version_identity" on "secret_version" ("id", "organizationId", "secretId");`);
     this.addSql(`create unique index "UQ_secret_version_number" on "secret_version" ("secretId", "version");`);
 
-    this.addSql(`create table "payout" ("id" uuid not null default gen_random_uuid(), "organizationId" uuid not null, "batchId" uuid not null, "amountCents" integer not null, "amountMicroUsd" numeric(40,0) not null, "state" varchar not null default 'pending', "stripeTransferId" varchar null, "failureReason" varchar null, "createdAt" timestamptz(3) not null default now(), "transferredAt" timestamptz(3) null, constraint "payout_id_pk" primary key ("id"));`);
-    this.addSql(`create index "IDX_payout_organization" on "payout" ("organizationId", "createdAt");`);
-    this.addSql(`alter table "payout" add constraint "UQ_payout_stripe_transfer" unique ("stripeTransferId");`);
-    this.addSql(`create unique index "UQ_payout_pending" on "payout" ("organizationId") where "state" = 'pending';`);
+    this.addSql(`create table "private_pool_charge" ("id" uuid not null default gen_random_uuid(), "organizationId" uuid not null, "machineId" uuid not null, "serviceDay" timestamptz(3) not null, "amountMicroUsd" numeric(40,0) not null, "createdAt" timestamptz(3) not null default now(), constraint "private_pool_charge_id_pk" primary key ("id"));`);
+    this.addSql(`create index "IDX_private_pool_charge_organization" on "private_pool_charge" ("organizationId", "serviceDay");`);
+    this.addSql(`alter table "private_pool_charge" add constraint "UQ_private_pool_charge_machine_day" unique ("machineId", "serviceDay");`);
 
-    this.addSql(`create table "payment_method" ("id" uuid not null default gen_random_uuid(), "organizationId" uuid not null, "stripePaymentMethodId" varchar not null, "cardFingerprint" varchar not null, "brand" varchar not null, "last4" varchar(4) not null, "expMonth" integer not null, "expYear" integer not null, "firstChargedAt" timestamptz(3) null, "detachedAt" timestamptz(3) null, "createdAt" timestamptz(3) not null default now(), constraint "payment_method_id_pk" primary key ("id"));`);
-    this.addSql(`create index "IDX_payment_method_card_fingerprint" on "payment_method" ("cardFingerprint");`);
-    this.addSql(`alter table "payment_method" add constraint "UQ_payment_method_stripe_payment_method" unique ("stripePaymentMethodId");`);
-
-    this.addSql(`create table "top_up" ("id" uuid not null default gen_random_uuid(), "organizationId" uuid not null, "kind" varchar not null, "amountCents" integer not null, "taxCents" integer not null default 0, "state" varchar not null default 'created', "stripeCheckoutSessionId" varchar null, "stripePaymentIntentId" varchar null, "paymentMethodId" uuid null, "failureCode" varchar null, "createdAt" timestamptz(3) not null default now(), "succeededAt" timestamptz(3) null, constraint "top_up_id_pk" primary key ("id"));`);
-    this.addSql(`create index "IDX_top_up_organization" on "top_up" ("organizationId", "createdAt");`);
-    this.addSql(`alter table "top_up" add constraint "UQ_top_up_stripe_payment_intent" unique ("stripePaymentIntentId");`);
-    this.addSql(`alter table "top_up" add constraint "UQ_top_up_stripe_checkout_session" unique ("stripeCheckoutSessionId");`);
-
-    this.addSql(`create table "payment_dispute" ("id" uuid not null default gen_random_uuid(), "stripeDisputeId" varchar not null, "organizationId" uuid not null, "topUpId" uuid null, "amountCents" integer not null, "frozenMicroUsd" numeric(40,0) not null default 0, "state" varchar not null, "reason" varchar not null, "evidenceDueBy" timestamptz(3) null, "createdAt" timestamptz(3) not null default now(), "closedAt" timestamptz(3) null, constraint "payment_dispute_id_pk" primary key ("id"));`);
-    this.addSql(`alter table "payment_dispute" add constraint "UQ_payment_dispute_stripe_dispute" unique ("stripeDisputeId");`);
-
-    this.addSql(`create table "payment_account" ("organizationId" uuid not null, "stripeAccountId" varchar not null, "country" varchar(2) null, "customerConfigured" boolean not null default false, "recipientRequested" boolean not null default false, "transfersStatus" varchar not null default 'inactive', "requirementsStatus" varchar not null default 'none', "taxInformationStatus" varchar not null default 'missing', "payoutsBlockedReason" varchar null, "createdAt" timestamptz(3) not null default now(), "updatedAt" timestamptz(3) not null default now(), constraint "payment_account_organizationId_pk" primary key ("organizationId"));`);
-    this.addSql(`alter table "payment_account" add constraint "UQ_payment_account_stripe_account" unique ("stripeAccountId");`);
+    this.addSql(`create table "payment_wallet" ("id" uuid not null default gen_random_uuid(), "organizationId" uuid not null, "purpose" varchar not null, "address" varchar(42) not null, "verifiedAt" timestamptz(3) not null, "sanctionsStatus" varchar not null, "sanctionsCheckedAt" timestamptz(3) null, "createdAt" timestamptz(3) not null default now(), "updatedAt" timestamptz(3) not null default now(), constraint "payment_wallet_id_pk" primary key ("id"));`);
+    this.addSql(`alter table "payment_wallet" add constraint "UQ_payment_wallet_purpose_address" unique ("purpose", "address");`);
+    this.addSql(`alter table "payment_wallet" add constraint "UQ_payment_wallet_organization_purpose" unique ("organizationId", "purpose");`);
 
     this.addSql(`create table "organizationRole" ("id" uuid not null, "organizationId" uuid not null, "role" varchar not null, "permission" text not null, "description" varchar null, "createdAt" timestamptz(3) not null default now(), "updatedAt" timestamptz(3) null, constraint "organizationRole_id_pk" primary key ("id"));`);
     this.addSql(`create index "organizationRole_role_index" on "organizationRole" ("role");`);
@@ -177,7 +167,7 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`create unique index "IDX_machine_identity_key" on "machine" ("identityKeyId") where "identityKeyId" IS NOT NULL;`);
     this.addSql(`alter table "machine" add constraint "UQ_machine_organization_name" unique ("organizationId", "name");`);
 
-    this.addSql(`create table "sandbox" ("id" varchar not null default gen_random_uuid(), "organizationId" uuid not null, "name" varchar not null, "country" varchar(2) null, "continent" "continent_enum" null, "city" varchar null, "machineId" uuid null, "prevMachineId" uuid null, "placementKind" varchar not null default 'flexible', "pinnedMachineId" uuid null, "placementCategory" varchar null, "placementLocations" text[] not null default '{}', "placementOwnMachinesOnly" boolean not null default false, "originLatitude" double precision null, "originLongitude" double precision null, "placementMinimumTier" varchar null, "maxHourlyPriceMicroUsd" numeric(40,0) null, "maxEgressMicroUsdPerGiB" numeric(40,0) null, "startWaitUntil" timestamptz(3) null, "sandboxClass" varchar not null default 'linux_vm', "mode" "sandbox_mode_enum" not null, "capabilities" jsonb not null default '[]', "state" "sandbox_state_enum" not null default 'unknown', "desiredState" "sandbox_desiredstate_enum" not null default 'started', "snapshot" varchar null, "osUser" varchar not null, "errorReason" varchar null, "recoverable" boolean not null default false, "env" jsonb not null default '{}', "networkBlockAll" boolean not null default false, "networkAllowList" varchar null, "domainAllowList" varchar null, "egressBandwidthBps" double precision null, "networkThrottleBandwidthBps" double precision null, "labels" jsonb null, "backupRegistryId" varchar null, "backupSnapshot" varchar null, "lastBackupAt" timestamptz(3) null, "backupState" "sandbox_backupstate_enum" not null default 'none', "backupErrorReason" text null, "existingBackupSnapshots" jsonb not null default '[]', "cpu" integer not null default 2, "gpu" integer not null default 0, "gpu_type" varchar null, "mem" integer not null default 4, "disk" integer not null default 10, "volumes" jsonb not null default '[]', "createdAt" timestamptz(3) not null default now(), "updatedAt" timestamptz(3) not null default now(), "autoStopInterval" integer not null default 15, "autoArchiveInterval" integer not null default 0, "autoDeleteInterval" integer not null default -1, "pending" boolean not null default false, "buildInfoSnapshotRef" varchar null, "daemonVersion" varchar null, "linkedSandboxId" varchar null, "specGeneration" integer not null default 0, "runtimeLifecycle" smallint null, "runtimeSpec" jsonb null, "runtimeSpecDigest" varchar(64) null, "runtimeDirectives" jsonb null, "runtimeRegistryId" varchar null, constraint "sandbox_id_pk" primary key ("id"));`);
+    this.addSql(`create table "sandbox" ("id" varchar not null default gen_random_uuid(), "organizationId" uuid not null, "name" varchar not null, "country" varchar(2) null, "continent" "continent_enum" null, "city" varchar null, "machineId" uuid null, "prevMachineId" uuid null, "placementKind" varchar not null default 'flexible', "pinnedMachineId" uuid null, "placementCategory" varchar null, "placementLocations" text[] not null default '{}', "placementOwnMachinesOnly" boolean not null default false, "originLatitude" double precision null, "originLongitude" double precision null, "placementMinimumTier" varchar null, "maxHourlyPriceMicroUsd" numeric(40,0) null, "maxEgressMicroUsdPerGiB" numeric(40,0) null, "voucherSigning" varchar not null default 'delegated', "startWaitUntil" timestamptz(3) null, "sandboxClass" varchar not null default 'linux_vm', "mode" "sandbox_mode_enum" not null, "capabilities" jsonb not null default '[]', "state" "sandbox_state_enum" not null default 'unknown', "desiredState" "sandbox_desiredstate_enum" not null default 'started', "snapshot" varchar null, "osUser" varchar not null, "errorReason" varchar null, "recoverable" boolean not null default false, "env" jsonb not null default '{}', "networkBlockAll" boolean not null default false, "networkAllowList" varchar null, "domainAllowList" varchar null, "egressBandwidthBps" double precision null, "networkThrottleBandwidthBps" double precision null, "labels" jsonb null, "backupRegistryId" varchar null, "backupSnapshot" varchar null, "lastBackupAt" timestamptz(3) null, "backupState" "sandbox_backupstate_enum" not null default 'none', "backupErrorReason" text null, "existingBackupSnapshots" jsonb not null default '[]', "cpu" integer not null default 2, "gpu" integer not null default 0, "gpu_type" varchar null, "mem" integer not null default 4, "disk" integer not null default 10, "volumes" jsonb not null default '[]', "createdAt" timestamptz(3) not null default now(), "updatedAt" timestamptz(3) not null default now(), "autoStopInterval" integer not null default 15, "autoArchiveInterval" integer not null default 0, "autoDeleteInterval" integer not null default -1, "pending" boolean not null default false, "buildInfoSnapshotRef" varchar null, "daemonVersion" varchar null, "linkedSandboxId" varchar null, "specGeneration" integer not null default 0, "runtimeLifecycle" smallint null, "runtimeSpec" jsonb null, "runtimeSpecDigest" varchar(64) null, "runtimeDirectives" jsonb null, "runtimeRegistryId" varchar null, constraint "sandbox_id_pk" primary key ("id"));`);
     this.addSql(`create unique index "UQ_sandbox_active_linked_owner" on "sandbox" ("linkedSandboxId") where "linkedSandboxId" is not null and "desiredState" <> 'destroyed';`);
     this.addSql(`create index "sandbox_linked_sandbox_id_idx" on "sandbox" ("linkedSandboxId");`);
     this.addSql(`create index "idx_sandbox_volumes_gin" on "sandbox" using gin ("volumes" jsonb_path_ops) where "desiredState" <> 'destroyed';`);
@@ -296,6 +286,14 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`create unique index "UQ_exposure_backend_live_listener" on "sandbox_exposure_backend" ("edgeId", "protocol", "publicPort") where "publicPort" is not null and "state" in ('pending', 'active', 'draining');`);
     this.addSql(`create unique index "UQ_exposure_backend_live_edge" on "sandbox_exposure_backend" ("exposureId", "edgeId") where "state" in ('pending', 'active', 'draining');`);
 
+    this.addSql(`create table "escrow_event" ("id" uuid not null default gen_random_uuid(), "chainId" integer not null, "contractAddress" varchar(42) not null, "transactionHash" varchar(66) not null, "logIndex" integer not null, "blockNumber" bigint not null, "blockHash" varchar(66) not null, "blockTimestamp" timestamptz(3) not null, "kind" varchar not null, "args" jsonb not null, "customerAddress" varchar(42) null, "hostAddress" varchar(42) null, "customerOrganizationId" uuid null, "hostOrganizationId" uuid null, "processedAt" timestamptz(3) null, "createdAt" timestamptz(3) not null default now(), constraint "escrow_event_id_pk" primary key ("id"));`);
+    this.addSql(`create index "IDX_escrow_event_claimed_channel" on "escrow_event" ("chainId", "contractAddress", ("args"->>'channelId')) where "kind" = 'Claimed';`);
+    this.addSql(`create index "IDX_escrow_event_host_address" on "escrow_event" ("hostAddress");`);
+    this.addSql(`create index "IDX_escrow_event_customer_address" on "escrow_event" ("customerAddress");`);
+    this.addSql(`create index "IDX_escrow_event_host_organization" on "escrow_event" ("hostOrganizationId", "blockNumber", "logIndex");`);
+    this.addSql(`create index "IDX_escrow_event_customer_organization" on "escrow_event" ("customerOrganizationId", "blockNumber", "logIndex");`);
+    this.addSql(`alter table "escrow_event" add constraint "UQ_escrow_event_log" unique ("chainId", "transactionHash", "logIndex");`);
+
     this.addSql(`create table "docker_registry" ("id" uuid not null default gen_random_uuid(), "name" varchar not null, "url" varchar not null, "username" varchar not null, "password" varchar not null, "project" varchar not null default '', "organizationId" uuid null, "registryType" "docker_registry_registrytype_enum" not null default 'internal', "createdAt" timestamptz(3) not null default now(), "updatedAt" timestamptz(3) not null default now(), constraint "docker_registry_id_pk" primary key ("id"));`);
     this.addSql(`create index "IDX_docker_registry_organization_list" on "docker_registry" ("organizationId", "registryType", "createdAt", "id");`);
     this.addSql(`create index "docker_registry_organizationId_registryType_index" on "docker_registry" ("organizationId", "registryType");`);
@@ -309,8 +307,6 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`create index "IDX_billing_budget_version_history" on "billing_budget_version" ("organizationId", "updatedAt");`);
 
     this.addSql(`create table "billing_budget" ("organizationId" uuid not null, "resourceVersion" integer not null default 1, "monthlyLimitMicroUsd" numeric(40,0) not null, "networkLimitMicroUsd" numeric(40,0) null, "mode" varchar not null default 'alert', "warningThresholdBasisPoints" integer not null default 8000, "desiredMinimumRunwayMinutes" integer not null, "updatedBy" varchar not null, "updatedAt" timestamptz(3) not null default now(), primary key ("organizationId"));`);
-
-    this.addSql(`create table "auto_top_up_policy" ("organizationId" uuid not null, "enabled" boolean not null, "thresholdCents" integer not null, "amountCents" integer not null, "paymentMethodId" uuid not null, "suspendedReason" varchar null, "consecutiveFailures" integer not null default 0, "lastAttemptAt" timestamptz(3) null, "consentedAt" timestamptz(3) not null, "consentedBy" uuid not null, "version" integer not null default 1, constraint "auto_top_up_policy_organizationId_pk" primary key ("organizationId"));`);
 
     this.addSql(`create table "apikey" ("id" uuid not null default gen_random_uuid(), "configId" text not null default 'default', "name" text null, "start" text null, "referenceId" uuid not null, "prefix" text null, "key" text not null, "refillInterval" integer null, "refillAmount" integer null, "lastRefillAt" timestamptz(3) null, "enabled" boolean null default true, "rateLimitEnabled" boolean null default true, "rateLimitTimeWindow" integer null, "rateLimitMax" integer null, "requestCount" integer null default 0, "remaining" integer null, "lastRequest" timestamptz(3) null, "expiresAt" timestamptz(3) null, "createdAt" timestamptz(3) not null default now(), "updatedAt" timestamptz(3) not null default now(), "permissions" text null, "metadata" text null, constraint "apikey_id_pk" primary key ("id"));`);
     this.addSql(`create index "apikey_config_id_index" on "apikey" ("configId");`);
@@ -346,6 +342,19 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`create table "placement_billing_authorization" ("placementId" uuid not null, "sandboxId" varchar not null, "assignmentGeneration" integer not null, "customerOrganizationId" uuid not null, "hostOrganizationId" uuid not null, "leaseId" uuid not null, "estimatedHourlyMicroUsd" numeric(40,0) not null, "reservedMicroUsd" numeric(40,0) not null, "remainingReservedMicroUsd" numeric(40,0) not null, "createdBy" varchar not null, "createdAt" timestamptz(3) not null, "expiresAt" timestamptz(3) not null, "fundingState" varchar not null default 'healthy', "fundingStateChangedAt" timestamptz(3) not null default now(), "billingCutoffAt" timestamptz(3) null, "releasedAt" timestamptz(3) null, primary key ("placementId"));`);
     this.addSql(`create index "IDX_placement_billing_authorization_host" on "placement_billing_authorization" ("hostOrganizationId", "expiresAt");`);
     this.addSql(`create index "IDX_placement_billing_authorization_customer" on "placement_billing_authorization" ("customerOrganizationId", "expiresAt");`);
+
+    this.addSql(`create table "payment_channel" ("id" uuid not null default gen_random_uuid(), "chainId" integer not null, "contractAddress" varchar(42) not null, "channelId" varchar(66) not null, "kind" varchar not null, "leaseId" uuid null, "sandboxId" varchar null, "machineId" uuid null, "servicePeriodStart" timestamptz(3) null, "customerOrganizationId" uuid not null, "hostOrganizationId" uuid null, "customerAddress" varchar(42) not null, "hostAddress" varchar(42) not null, "signingMode" varchar not null, "state" varchar not null, "openedAt" timestamptz(3) not null, "closedAt" timestamptz(3) null, "coveredAt" timestamptz(3) not null, "nextIssueAt" timestamptz(3) not null, "voucherError" varchar null, "claimedSequence" integer not null, "claimSequence" integer null, "claimTransactionHash" varchar(66) null, "claimAttemptedAt" timestamptz(3) null, "claimError" text null, "createdAt" timestamptz(3) not null default now(), "updatedAt" timestamptz(3) not null default now(), constraint "payment_channel_id_pk" primary key ("id"));`);
+    this.addSql(`create index "IDX_payment_channel_issue_due" on "payment_channel" ("nextIssueAt") where "state" <> 'closed';`);
+    this.addSql(`create index "IDX_payment_channel_machine" on "payment_channel" ("machineId", "state");`);
+    this.addSql(`create index "IDX_payment_channel_customer_address" on "payment_channel" ("customerAddress");`);
+    this.addSql(`create index "IDX_payment_channel_customer" on "payment_channel" ("customerOrganizationId", "openedAt", "id");`);
+    this.addSql(`alter table "payment_channel" add constraint "UQ_payment_channel_service_period" unique ("chainId", "contractAddress", "customerOrganizationId", "servicePeriodStart");`);
+    this.addSql(`alter table "payment_channel" add constraint "UQ_payment_channel_lease" unique ("leaseId");`);
+    this.addSql(`alter table "payment_channel" add constraint "UQ_payment_channel_channel" unique ("chainId", "contractAddress", "channelId");`);
+
+    this.addSql(`create table "payment_voucher" ("id" uuid not null default gen_random_uuid(), "paymentChannelId" uuid not null, "sequence" integer not null, "hostAmountMicroUsd" numeric(40,0) not null, "feeAmountMicroUsd" numeric(40,0) not null, "serviceAmountMicroUsd" numeric(40,0) not null, "issuedAt" timestamptz(3) not null, "expiresAt" timestamptz(3) not null, "signerAddress" varchar(42) null, "signature" text null, "signedAt" timestamptz(3) null, "claimableUntil" timestamptz(3) null, "createdAt" timestamptz(3) not null default now(), constraint "payment_voucher_id_pk" primary key ("id"));`);
+    this.addSql(`create index "IDX_payment_voucher_signer" on "payment_voucher" ("signerAddress", "paymentChannelId", "sequence");`);
+    this.addSql(`alter table "payment_voucher" add constraint "UQ_payment_voucher_sequence" unique ("paymentChannelId", "sequence");`);
 
     this.addSql(`create table "network_usage_period" ("id" uuid not null default gen_random_uuid(), "leaseId" uuid not null, "placementId" uuid not null, "sandboxId" varchar not null, "machineId" uuid not null, "customerOrganizationId" uuid not null, "hostOrganizationId" uuid not null, "assignmentGeneration" integer not null, "periodStart" timestamptz(3) not null, "supplement" integer not null default 0, "periodEnd" timestamptz(3) not null, "edgeEgressBytes" numeric(40,0) not null, "edgeIngressBytes" numeric(40,0) not null, "internetEgressBytes" numeric(40,0) not null, "internetIngressBytes" numeric(40,0) not null, "hostEgressBytes" numeric(40,0) not null, "hostIngressBytes" numeric(40,0) not null, "clampedInternetEgressBytes" numeric(40,0) not null, "billedEgressBytes" numeric(40,0) not null, "egressRateMicroUsdPerGiB" numeric(40,0) not null, "hostMicroUsd" numeric(40,0) not null, "markupMicroUsd" numeric(40,0) not null, "grossMicroUsd" numeric(40,0) not null, "markupBasisPoints" integer not null, "receiptCount" integer not null, "edgeSampleCount" integer not null, "createdAt" timestamptz(3) not null default now(), constraint "PK_network_usage_period" primary key ("id"));`);
     this.addSql(`create index "IDX_network_usage_period_placement" on "network_usage_period" ("placementId", "periodStart");`);
@@ -430,7 +439,7 @@ export class Migration20261028214334 extends Migration {
 				using errcode = 'integrity_constraint_violation'; 		end if; 		return NEW; end; \$\$ language plpgsql;`);
     this.addSql(`create trigger "audit_log_immutable" BEFORE UPDATE on "audit_log" for each ROW execute function "audit_log_audit_log_immutable_fn"();`);
 
-    this.addSql(`alter table "billing_ledger_account" add constraint "CHK_billing_ledger_account_code" check ("accountCode" in ('customer_credit', 'admin_credit_grants', 'host_earnings_payable', 'platform_markup_revenue', 'platform_qualification_expense', 'host_earnings_pending', 'stripe_balance', 'payment_processing_fees', 'stripe_platform_fees', 'dispute_fees', 'disputed_funds', 'dispute_losses', 'refund_losses', 'host_transfers_pending', 'stripe_payouts_in_transit', 'platform_bank_cash', 'sales_tax_payable'));`);
+    this.addSql(`alter table "billing_ledger_account" add constraint "CHK_billing_ledger_account_code" check ("accountCode" in ('customer_credit', 'admin_credit_grants', 'platform_markup_revenue', 'platform_service_revenue', 'platform_qualification_expense', 'host_earnings_pending', 'escrow_custody', 'platform_wallet'));`);
     this.addSql(`alter table "billing_ledger_account" add constraint "CHK_billing_ledger_account_owner" check ("ownerKind" in ('organization', 'platform'));`);
     this.addSql(`alter table "billing_ledger_account" add constraint "CHK_billing_ledger_account_currency" check ("currency" in ('USD'));`);
     this.addSql(`create or replace function "billing_ledger_account_billing_ledger_immutable_fn"() returns trigger as \$\$ begin raise exception 'Posted billing ledger records are immutable.'
@@ -507,9 +516,6 @@ export class Migration20261028214334 extends Migration {
 
     this.addSql(`alter table "realtime_outbox_event" add constraint "CHK_realtime_outbox_event_status" check (status in ('pending', 'processing', 'published', 'failed'));`);
 
-    this.addSql(`alter table "stripe_event" add constraint "CHK_stripe_event_attempts" check ("attempts" >= 0);`);
-    this.addSql(`alter table "stripe_event" add constraint "CHK_stripe_event_scope" check ("scope" in ('platform', 'connect'));`);
-
     this.addSql(`alter table "twoFactor" add constraint "two_factor_user_id_fk" foreign key ("userId") references "user" ("id") on delete cascade;`);
 
     this.addSql(`alter table "session" add constraint "session_user_id_fk" foreign key ("userId") references "user" ("id") on delete cascade;`);
@@ -525,12 +531,11 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`alter table "settings" add constraint "CHK_settings_version" check ("resourceVersion" > 0);`);
     this.addSql(`alter table "settings" add constraint "CHK_settings_sandbox_class" check ("defaultSandboxClass" in ('linux_vm'));`);
     this.addSql(`alter table "settings" add constraint "CHK_settings_draining_mode" check ("drainingMode" in ('migrate', 'archive'));`);
-    this.addSql(`alter table "settings" add constraint "CHK_settings_payout_weekday" check ("payoutWeekday" >= 1 and "payoutWeekday" <= 7);`);
-    this.addSql(`alter table "settings" add constraint "CHK_settings_top_up_range" check ("topUpMaximumCents" >= "topUpMinimumCents");`);
     this.addSql(`alter table "settings" add constraint "CHK_settings_network_budget_throttle" check ("networkBudgetThrottleBandwidthBps" >= 524288 and "networkBudgetThrottleBandwidthBps" <= 32000000000);`);
-    this.addSql(`alter table "settings" add constraint "CHK_settings_basis_points" check ("platformMarkupBasisPoints" <= 10000 and "priceFloorBasisPoints" <= 10000 and "verifiedMinimumUptimeBasisPoints" <= 10000 and "spotCheckToleranceBasisPoints" <= 10000);`);
-    this.addSql(`alter table "settings" add constraint "CHK_settings_positive" check ("priceFloorMinimumSamples" >= 1 and "priceLockDays" >= 1 and "leaseRenewalGraceDays" >= 1 and "stoppedSandboxRetentionDays" >= 1 and "pinnedStartWaitMinutes" >= 1 and "egressCeilingMedianBasisPoints" >= 1 and "exposureCeilingProbationaryCents" >= 1 and "exposureCeilingEstablishedCents" >= 1 and "exposureCeilingHostCents" >= 1 and "topUpMinimumCents" >= 1);`);
-    this.addSql(`alter table "settings" add constraint "CHK_settings_non_negative" check ("totalCpuQuota" >= 0 and "totalMemoryQuota" >= 0 and "totalDiskQuota" >= 0 and "maxCpuPerSandbox" >= 0 and "maxMemoryPerSandbox" >= 0 and "maxDiskPerSandbox" >= 0 and "snapshotQuota" >= 0 and "maxSnapshotSize" >= 0 and "volumeQuota" >= 0 and "egressPriceCeilingMicroUsdPerGiB" >= 0 and "platformMarkupBasisPoints" >= 0 and "priceFloorBasisPoints" >= 0 and "listingMinimumDownlinkMbps" >= 0 and "listingMinimumUplinkMbps" >= 0 and "listingMinimumDiskRandomReadIops" >= 0 and "listingMinimumDiskSequentialMibps" >= 0 and "verifiedMinimumListedDays" >= 0 and "verifiedMinimumUptimeBasisPoints" >= 0 and "verifiedMinimumSpotChecks" >= 0 and "spotCheckIntervalHoursCommunity" >= 0 and "spotCheckIntervalHoursVerified" >= 0 and "spotCheckMonthlyBudgetCents" >= 0 and "spotCheckToleranceBasisPoints" >= 0 and "autoTopUpMinimumCents" >= 0 and "autoTopUpMinimumIntervalMinutes" >= 0 and "topUpAttemptsPerHour" >= 0 and "paymentMethodsPerDay" >= 0 and "organizationsPerCardFingerprint" >= 0 and "payoutMinimumCents" >= 0 and "payoutHoldCommunityDays" >= 0 and "payoutHoldVerifiedDays" >= 0 and "payoutHoldDatacenterDays" >= 0 and "newFundingHoldDays" >= 0);`);
+    this.addSql(`alter table "settings" add constraint "CHK_settings_markup" check ("standardMarkupBasisPoints" <= 3000 and "verifiedMarkupBasisPoints" <= 3000);`);
+    this.addSql(`alter table "settings" add constraint "CHK_settings_basis_points" check ("priceFloorBasisPoints" <= 10000 and "verifiedMinimumUptimeBasisPoints" <= 10000 and "spotCheckToleranceBasisPoints" <= 10000);`);
+    this.addSql(`alter table "settings" add constraint "CHK_settings_positive" check ("priceFloorMinimumSamples" >= 1 and "priceLockDays" >= 1 and "leaseRenewalGraceDays" >= 1 and "stoppedSandboxRetentionDays" >= 1 and "pinnedStartWaitMinutes" >= 1 and "egressCeilingMedianBasisPoints" >= 1 and "exposureCeilingProbationaryCents" >= 1 and "exposureCeilingEstablishedCents" >= 1 and "exposureCeilingHostCents" >= 1 and "voucherIntervalSeconds" >= 1 and "voucherGraceIntervals" >= 1 and "voucherLifetimeHours" >= 1 and "claimIntervalMinutes" >= 1);`);
+    this.addSql(`alter table "settings" add constraint "CHK_settings_non_negative" check ("totalCpuQuota" >= 0 and "totalMemoryQuota" >= 0 and "totalDiskQuota" >= 0 and "maxCpuPerSandbox" >= 0 and "maxMemoryPerSandbox" >= 0 and "maxDiskPerSandbox" >= 0 and "snapshotQuota" >= 0 and "maxSnapshotSize" >= 0 and "volumeQuota" >= 0 and "egressPriceCeilingMicroUsdPerGiB" >= 0 and "standardMarkupBasisPoints" >= 0 and "verifiedMarkupBasisPoints" >= 0 and "privatePoolMachineMonthlyMicroUsd" >= 0 and "vcpuHourPriceMinimumMicroUsd" >= 0 and "vcpuHourPriceMaximumMicroUsd" >= 0 and "memoryGibHourPriceMinimumMicroUsd" >= 0 and "memoryGibHourPriceMaximumMicroUsd" >= 0 and "gpuHourPriceMinimumMicroUsd" >= 0 and "gpuHourPriceMaximumMicroUsd" >= 0 and "diskGibMonthPriceMinimumMicroUsd" >= 0 and "diskGibMonthPriceMaximumMicroUsd" >= 0 and "priceFloorBasisPoints" >= 0 and "listingMinimumDownlinkMbps" >= 0 and "listingMinimumUplinkMbps" >= 0 and "listingMinimumDiskRandomReadIops" >= 0 and "listingMinimumDiskSequentialMibps" >= 0 and "verifiedMinimumListedDays" >= 0 and "verifiedMinimumUptimeBasisPoints" >= 0 and "verifiedMinimumSpotChecks" >= 0 and "spotCheckIntervalHoursCommunity" >= 0 and "spotCheckIntervalHoursVerified" >= 0 and "spotCheckMonthlyBudgetCents" >= 0 and "spotCheckToleranceBasisPoints" >= 0 and "settlementConfirmations" >= 0);`);
     this.addSql(`alter table "settings" add constraint "CHK_settings_singleton" check ("id" = 1);`);
 
     this.addSql(`alter table "secret" add constraint "FK_secret_organization" foreign key ("organizationId") references "organization" ("id") on update no action on delete restrict;`);
@@ -543,28 +548,12 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`alter table "secret_version" add constraint "CHK_secret_version_resource_version" check ("resourceVersion" > 0);`);
     this.addSql(`alter table "secret_version" add constraint "CHK_secret_version_positive" check ("version" > 0);`);
 
-    this.addSql(`alter table "payout" add constraint "FK_payout_organization" foreign key ("organizationId") references "organization" ("id") on update no action on delete restrict;`);
-    this.addSql(`alter table "payout" add constraint "FK_payout_batch" foreign key ("batchId") references "payout_batch" ("id") on update no action on delete restrict;`);
-    this.addSql(`alter table "payout" add constraint "CHK_payout_state" check ("state" in ('pending', 'transferred', 'failed'));`);
-    this.addSql(`alter table "payout" add constraint "CHK_payout_amounts" check ("amountCents" > 0 and "amountMicroUsd" > 0);`);
+    this.addSql(`alter table "private_pool_charge" add constraint "FK_private_pool_charge_organization" foreign key ("organizationId") references "organization" ("id") on update no action on delete restrict;`);
+    this.addSql(`alter table "private_pool_charge" add constraint "CHK_private_pool_charge_amount" check ("amountMicroUsd" >= 0);`);
 
-    this.addSql(`alter table "payment_method" add constraint "FK_payment_method_organization" foreign key ("organizationId") references "organization" ("id") on update no action on delete restrict;`);
-
-    this.addSql(`alter table "top_up" add constraint "FK_top_up_organization" foreign key ("organizationId") references "organization" ("id") on update no action on delete restrict;`);
-    this.addSql(`alter table "top_up" add constraint "FK_top_up_payment_method" foreign key ("paymentMethodId") references "payment_method" ("id") on update no action on delete restrict;`);
-    this.addSql(`alter table "top_up" add constraint "CHK_top_up_state" check ("state" in ('created', 'requires_action', 'succeeded', 'failed', 'expired'));`);
-    this.addSql(`alter table "top_up" add constraint "CHK_top_up_kind" check ("kind" in ('manual', 'auto'));`);
-    this.addSql(`alter table "top_up" add constraint "CHK_top_up_amounts" check ("amountCents" > 0 and "taxCents" >= 0);`);
-
-    this.addSql(`alter table "payment_dispute" add constraint "FK_payment_dispute_organization" foreign key ("organizationId") references "organization" ("id") on update no action on delete restrict;`);
-    this.addSql(`alter table "payment_dispute" add constraint "FK_payment_dispute_top_up" foreign key ("topUpId") references "top_up" ("id") on update no action on delete restrict;`);
-    this.addSql(`alter table "payment_dispute" add constraint "CHK_payment_dispute_state" check ("state" in ('needs_response', 'under_review', 'won', 'lost'));`);
-    this.addSql(`alter table "payment_dispute" add constraint "CHK_payment_dispute_amounts" check ("amountCents" >= 0 and "frozenMicroUsd" >= 0);`);
-
-    this.addSql(`alter table "payment_account" add constraint "FK_payment_account_organization" foreign key ("organizationId") references "organization" ("id") on update no action on delete restrict;`);
-    this.addSql(`alter table "payment_account" add constraint "CHK_payment_account_tax_information_status" check ("taxInformationStatus" in ('missing', 'provided'));`);
-    this.addSql(`alter table "payment_account" add constraint "CHK_payment_account_requirements_status" check ("requirementsStatus" in ('none', 'eventually_due', 'currently_due', 'past_due'));`);
-    this.addSql(`alter table "payment_account" add constraint "CHK_payment_account_transfers_status" check ("transfersStatus" in ('inactive', 'pending', 'active', 'restricted'));`);
+    this.addSql(`alter table "payment_wallet" add constraint "FK_payment_wallet_organization" foreign key ("organizationId") references "organization" ("id") on update no action on delete cascade;`);
+    this.addSql(`alter table "payment_wallet" add constraint "CHK_payment_wallet_sanctions_status" check ("sanctionsStatus" in ('clear', 'blocked', 'unchecked'));`);
+    this.addSql(`alter table "payment_wallet" add constraint "CHK_payment_wallet_purpose" check ("purpose" in ('funding', 'payout'));`);
 
     this.addSql(`alter table "organizationRole" add constraint "organizationRole_organizationId_fk" foreign key ("organizationId") references "organization" ("id") on delete cascade;`);
 
@@ -586,6 +575,7 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`alter table "sandbox" add constraint "FK_sandbox_organization" foreign key ("organizationId") references "organization" ("id") on update no action on delete restrict;`);
     this.addSql(`alter table "sandbox" add constraint "FK_sandbox_pinned_machine" foreign key ("pinnedMachineId") references "machine" ("id") on update no action on delete restrict;`);
     this.addSql(`alter table "sandbox" add constraint "sandbox_buildInfoSnapshotRef_fk" foreign key ("buildInfoSnapshotRef") references "build_info" ("snapshotRef") on update no action on delete no action;`);
+    this.addSql(`alter table "sandbox" add constraint "CHK_sandbox_voucher_signing" check ("voucherSigning" in ('delegated', 'client'));`);
     this.addSql(`alter table "sandbox" add constraint "CHK_sandbox_max_egress_price" check ("maxEgressMicroUsdPerGiB" is null or "maxEgressMicroUsdPerGiB" >= 0);`);
     this.addSql(`alter table "sandbox" add constraint "CHK_sandbox_max_hourly_price" check ("maxHourlyPriceMicroUsd" is null or "maxHourlyPriceMicroUsd" >= 0);`);
     this.addSql(`alter table "sandbox" add constraint "CHK_sandbox_placement_minimum_tier" check ("placementMinimumTier" is null or "placementMinimumTier" in ('private', 'community', 'verified', 'datacenter'));`);
@@ -751,6 +741,10 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`alter table "sandbox_exposure_backend" add constraint "CHK_exposure_backend_assignment_generation" check ("assignmentGeneration" > 0);`);
     this.addSql(`alter table "sandbox_exposure_backend" add constraint "CHK_exposure_backend_exposure_generation" check ("exposureGeneration" > 0);`);
 
+    this.addSql(`alter table "escrow_event" add constraint "FK_escrow_event_customer_organization" foreign key ("customerOrganizationId") references "organization" ("id") on update no action on delete set null;`);
+    this.addSql(`alter table "escrow_event" add constraint "FK_escrow_event_host_organization" foreign key ("hostOrganizationId") references "organization" ("id") on update no action on delete set null;`);
+    this.addSql(`alter table "escrow_event" add constraint "CHK_escrow_event_kind" check ("kind" in ('AddressBlocked', 'AddressUnblocked', 'Claimed', 'DefaultAdminDelayChangeCanceled', 'DefaultAdminDelayChangeScheduled', 'DefaultAdminTransferCanceled', 'DefaultAdminTransferScheduled', 'Deposited', 'EIP712DomainChanged', 'FeeCapScheduleCancelled', 'FeeCapScheduled', 'FeeCapUpdated', 'FeeRecipientUpdated', 'Paused', 'RoleAdminChanged', 'RoleGranted', 'RoleRevoked', 'SessionKeyRevoked', 'SessionKeySet', 'Unpaused', 'WithdrawalCancelled', 'WithdrawalRequested', 'Withdrawn'));`);
+
     this.addSql(`alter table "docker_registry" add constraint "docker_registry_organizationId_fk" foreign key ("organizationId") references "organization" ("id") on delete restrict;`);
 
     this.addSql(`alter table "sandbox_custom_domain" add constraint "FK_custom_domain_organization" foreign key ("organizationId") references "organization" ("id") on update no action on delete cascade;`);
@@ -768,11 +762,6 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`alter table "billing_budget" add constraint "CHK_billing_budget_mode" check (mode in ('alert', 'block_new'));`);
     this.addSql(`alter table "billing_budget" add constraint "CHK_billing_budget_amounts" check ("monthlyLimitMicroUsd" > 0 and ("networkLimitMicroUsd" is null or "networkLimitMicroUsd" > 0));`);
     this.addSql(`alter table "billing_budget" add constraint "CHK_billing_budget_version" check ("resourceVersion" > 0);`);
-
-    this.addSql(`alter table "auto_top_up_policy" add constraint "FK_auto_top_up_policy_organization" foreign key ("organizationId") references "organization" ("id") on update no action on delete restrict;`);
-    this.addSql(`alter table "auto_top_up_policy" add constraint "FK_auto_top_up_policy_payment_method" foreign key ("paymentMethodId") references "payment_method" ("id") on update no action on delete restrict;`);
-    this.addSql(`alter table "auto_top_up_policy" add constraint "CHK_auto_top_up_policy_failures" check ("consecutiveFailures" >= 0);`);
-    this.addSql(`alter table "auto_top_up_policy" add constraint "CHK_auto_top_up_policy_amounts" check ("amountCents" > 0 and "thresholdCents" >= 0);`);
 
     this.addSql(`alter table "apikey" add constraint "apikey_reference_id_fk" foreign key ("referenceId") references "organization" ("id") on delete cascade;`);
 
@@ -836,6 +825,21 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`alter table "placement_billing_authorization" add constraint "FK_placement_billing_authorization_lease" foreign key ("leaseId") references "sandbox_lease" ("id") on update no action on delete restrict;`);
     this.addSql(`alter table "placement_billing_authorization" add constraint "CHK_placement_billing_authorization_funding_state" check ("fundingState" in ('healthy', 'warning', 'suspension_pending', 'suspended'));`);
     this.addSql(`alter table "placement_billing_authorization" add constraint "CHK_placement_billing_authorization_amounts" check ("estimatedHourlyMicroUsd" >= 0 and "reservedMicroUsd" >= 0 and "remainingReservedMicroUsd" >= 0);`);
+
+    this.addSql(`alter table "payment_channel" add constraint "FK_payment_channel_lease" foreign key ("leaseId") references "sandbox_lease" ("id") on update no action on delete restrict;`);
+    this.addSql(`alter table "payment_channel" add constraint "FK_payment_channel_customer_organization" foreign key ("customerOrganizationId") references "organization" ("id") on update no action on delete restrict;`);
+    this.addSql(`alter table "payment_channel" add constraint "FK_payment_channel_host_organization" foreign key ("hostOrganizationId") references "organization" ("id") on update no action on delete restrict;`);
+    this.addSql(`alter table "payment_channel" add constraint "CHK_payment_channel_claim" check (("claimTransactionHash" is null) = ("claimSequence" is null));`);
+    this.addSql(`alter table "payment_channel" add constraint "CHK_payment_channel_closed" check (("state" = 'open') = ("closedAt" is null));`);
+    this.addSql(`alter table "payment_channel" add constraint "CHK_payment_channel_signing_mode" check ("signingMode" in ('delegated', 'client'));`);
+    this.addSql(`alter table "payment_channel" add constraint "CHK_payment_channel_kind" check (("kind" = 'lease' and "leaseId" is not null and "sandboxId" is not null and "machineId" is not null and "hostOrganizationId" is not null and "servicePeriodStart" is null)
+		or ("kind" = 'platform_service' and "leaseId" is null and "sandboxId" is null and "machineId" is null and "hostOrganizationId" is null and "servicePeriodStart" is not null));`);
+    this.addSql(`alter table "payment_channel" add constraint "CHK_payment_channel_state" check ("state" in ('open', 'closing', 'closed'));`);
+
+    this.addSql(`alter table "payment_voucher" add constraint "FK_payment_voucher_channel" foreign key ("paymentChannelId") references "payment_channel" ("id") on update no action on delete cascade;`);
+    this.addSql(`alter table "payment_voucher" add constraint "CHK_payment_voucher_signature" check (("signature" is null) = ("signerAddress" is null) and ("signature" is null) = ("signedAt" is null) and ("signature" is null) = ("claimableUntil" is null));`);
+    this.addSql(`alter table "payment_voucher" add constraint "CHK_payment_voucher_amounts" check ("hostAmountMicroUsd" >= 0 and "feeAmountMicroUsd" >= 0 and "serviceAmountMicroUsd" >= 0);`);
+    this.addSql(`alter table "payment_voucher" add constraint "CHK_payment_voucher_sequence" check ("sequence" > 0);`);
 
     this.addSql(`alter table "network_usage_period" add constraint "FK_network_usage_period_lease" foreign key ("leaseId") references "sandbox_lease" ("id") on update no action on delete restrict;`);
     this.addSql(`alter table "network_usage_period" add constraint "FK_network_usage_period_placement" foreign key ("placementId") references "sandbox_placement" ("id") on update no action on delete restrict;`);
@@ -931,7 +935,6 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`alter table "exposure_network_usage" drop constraint "FK_exposure_network_usage_checkpoint";`);
     this.addSql(`alter table "machine_reliability_event" drop constraint "FK_machine_reliability_event_job";`);
     this.addSql(`alter table "machine_qualification_challenge" drop constraint "FK_machine_qualification_challenge_job";`);
-    this.addSql(`alter table "payout" drop constraint "FK_payout_batch";`);
     this.addSql(`alter table "twoFactor" drop constraint "two_factor_user_id_fk";`);
     this.addSql(`alter table "session" drop constraint "session_user_id_fk";`);
     this.addSql(`alter table "passkey" drop constraint "passkey_user_id_fk";`);
@@ -944,11 +947,8 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`alter table "snapshot" drop constraint "FK_snapshot_organization";`);
     this.addSql(`alter table "settings" drop constraint "settings_spotCheckOrganizationId_fk";`);
     this.addSql(`alter table "secret" drop constraint "FK_secret_organization";`);
-    this.addSql(`alter table "payout" drop constraint "FK_payout_organization";`);
-    this.addSql(`alter table "payment_method" drop constraint "FK_payment_method_organization";`);
-    this.addSql(`alter table "top_up" drop constraint "FK_top_up_organization";`);
-    this.addSql(`alter table "payment_dispute" drop constraint "FK_payment_dispute_organization";`);
-    this.addSql(`alter table "payment_account" drop constraint "FK_payment_account_organization";`);
+    this.addSql(`alter table "private_pool_charge" drop constraint "FK_private_pool_charge_organization";`);
+    this.addSql(`alter table "payment_wallet" drop constraint "FK_payment_wallet_organization";`);
     this.addSql(`alter table "organizationRole" drop constraint "organizationRole_organizationId_fk";`);
     this.addSql(`alter table "organization_quota" drop constraint "organization_quota_organizationId_fk";`);
     this.addSql(`alter table "organization_limits" drop constraint "organization_limits_organizationId_fk";`);
@@ -958,11 +958,12 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`alter table "sandbox_secret_binding_set" drop constraint "FK_sandbox_secret_binding_set_organization";`);
     this.addSql(`alter table "machine_reliability_event" drop constraint "FK_machine_reliability_event_customer_organization";`);
     this.addSql(`alter table "sandbox_exposure" drop constraint "FK_sandbox_exposure_organization";`);
+    this.addSql(`alter table "escrow_event" drop constraint "FK_escrow_event_customer_organization";`);
+    this.addSql(`alter table "escrow_event" drop constraint "FK_escrow_event_host_organization";`);
     this.addSql(`alter table "docker_registry" drop constraint "docker_registry_organizationId_fk";`);
     this.addSql(`alter table "sandbox_custom_domain" drop constraint "FK_custom_domain_organization";`);
     this.addSql(`alter table "billing_budget_version" drop constraint "FK_billing_budget_version_organization";`);
     this.addSql(`alter table "billing_budget" drop constraint "billing_budget_organizationId_fkey";`);
-    this.addSql(`alter table "auto_top_up_policy" drop constraint "FK_auto_top_up_policy_organization";`);
     this.addSql(`alter table "apikey" drop constraint "apikey_reference_id_fk";`);
     this.addSql(`alter table "member" drop constraint "member_organizationId_fk";`);
     this.addSql(`alter table "machine_price_card" drop constraint "FK_machine_price_card_organization";`);
@@ -976,6 +977,8 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`alter table "sandbox_billable_usage" drop constraint "FK_sandbox_billable_usage_host_organization";`);
     this.addSql(`alter table "placement_billing_authorization" drop constraint "FK_placement_billing_authorization_customer_organization";`);
     this.addSql(`alter table "placement_billing_authorization" drop constraint "FK_placement_billing_authorization_host_organization";`);
+    this.addSql(`alter table "payment_channel" drop constraint "FK_payment_channel_customer_organization";`);
+    this.addSql(`alter table "payment_channel" drop constraint "FK_payment_channel_host_organization";`);
     this.addSql(`alter table "network_usage_period" drop constraint "FK_network_usage_period_customer";`);
     this.addSql(`alter table "network_usage_period" drop constraint "FK_network_usage_period_host";`);
     this.addSql(`alter table "exposure_network_usage" drop constraint "FK_exposure_network_usage_organization";`);
@@ -987,9 +990,6 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`alter table "secret_version" drop constraint "FK_secret_version_secret";`);
     this.addSql(`alter table "sandbox_secret_binding" drop constraint "FK_sandbox_secret_binding_secret";`);
     this.addSql(`alter table "sandbox_secret_binding" drop constraint "FK_sandbox_secret_binding_version";`);
-    this.addSql(`alter table "top_up" drop constraint "FK_top_up_payment_method";`);
-    this.addSql(`alter table "auto_top_up_policy" drop constraint "FK_auto_top_up_policy_payment_method";`);
-    this.addSql(`alter table "payment_dispute" drop constraint "FK_payment_dispute_top_up";`);
     this.addSql(`alter table "sandbox" drop constraint "FK_sandbox_pinned_machine";`);
     this.addSql(`alter table "sandbox_placement" drop constraint "FK_sandbox_placement_machine";`);
     this.addSql(`alter table "sandbox_observed_status" drop constraint "FK_sandbox_observed_status_machine";`);
@@ -1058,8 +1058,10 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`alter table "sandbox_usage_periods" drop constraint "FK_sandbox_usage_periods_lease";`);
     this.addSql(`alter table "sandbox_billable_usage" drop constraint "FK_sandbox_billable_usage_lease";`);
     this.addSql(`alter table "placement_billing_authorization" drop constraint "FK_placement_billing_authorization_lease";`);
+    this.addSql(`alter table "payment_channel" drop constraint "FK_payment_channel_lease";`);
     this.addSql(`alter table "network_usage_period" drop constraint "FK_network_usage_period_lease";`);
     this.addSql(`alter table "billing_line_item" drop constraint "FK_billing_line_item_lease";`);
+    this.addSql(`alter table "payment_voucher" drop constraint "FK_payment_voucher_channel";`);
     this.addSql(`alter table "machine_usage_receipt" drop constraint "FK_machine_usage_receipt_network_period";`);
     this.addSql(`alter table "exposure_network_usage" drop constraint "FK_exposure_network_usage_period";`);
     this.addSql(`alter table "machine_usage_receipt" drop constraint "FK_machine_usage_receipt_predecessor";`);
@@ -1089,14 +1091,15 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`drop table if exists "network_edge" cascade;`);
     this.addSql(`drop table if exists "network_edge_session" cascade;`);
     this.addSql(`drop table if exists "edge_usage_checkpoint" cascade;`);
+    this.addSql(`drop table if exists "escrow_account" cascade;`);
+    this.addSql(`drop table if exists "escrow_session_key" cascade;`);
     this.addSql(`drop table if exists "job" cascade;`);
     this.addSql(`drop table if exists "machine_snapshot_target" cascade;`);
     this.addSql(`drop table if exists "machine_workload_outcome" cascade;`);
     this.addSql(`drop table if exists "market_reference_price" cascade;`);
-    this.addSql(`drop table if exists "payout_batch" cascade;`);
     this.addSql(`drop table if exists "realtime_outbox_event" cascade;`);
+    this.addSql(`drop table if exists "settlement_chain_cursor" cascade;`);
     this.addSql(`drop table if exists "snapshot_machine" cascade;`);
-    this.addSql(`drop table if exists "stripe_event" cascade;`);
     this.addSql(`drop table if exists "user" cascade;`);
     this.addSql(`drop table if exists "twoFactor" cascade;`);
     this.addSql(`drop table if exists "session" cascade;`);
@@ -1106,11 +1109,8 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`drop table if exists "settings" cascade;`);
     this.addSql(`drop table if exists "secret" cascade;`);
     this.addSql(`drop table if exists "secret_version" cascade;`);
-    this.addSql(`drop table if exists "payout" cascade;`);
-    this.addSql(`drop table if exists "payment_method" cascade;`);
-    this.addSql(`drop table if exists "top_up" cascade;`);
-    this.addSql(`drop table if exists "payment_dispute" cascade;`);
-    this.addSql(`drop table if exists "payment_account" cascade;`);
+    this.addSql(`drop table if exists "private_pool_charge" cascade;`);
+    this.addSql(`drop table if exists "payment_wallet" cascade;`);
     this.addSql(`drop table if exists "organizationRole" cascade;`);
     this.addSql(`drop table if exists "organization_quota" cascade;`);
     this.addSql(`drop table if exists "organization_limits" cascade;`);
@@ -1139,11 +1139,11 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`drop table if exists "sandbox_exposure" cascade;`);
     this.addSql(`drop table if exists "sandbox_exposure_reconciliation" cascade;`);
     this.addSql(`drop table if exists "sandbox_exposure_backend" cascade;`);
+    this.addSql(`drop table if exists "escrow_event" cascade;`);
     this.addSql(`drop table if exists "docker_registry" cascade;`);
     this.addSql(`drop table if exists "sandbox_custom_domain" cascade;`);
     this.addSql(`drop table if exists "billing_budget_version" cascade;`);
     this.addSql(`drop table if exists "billing_budget" cascade;`);
-    this.addSql(`drop table if exists "auto_top_up_policy" cascade;`);
     this.addSql(`drop table if exists "apikey" cascade;`);
     this.addSql(`drop table if exists "member" cascade;`);
     this.addSql(`drop trigger if exists "machine_price_card_immutable" on "machine_price_card";`);
@@ -1154,6 +1154,8 @@ export class Migration20261028214334 extends Migration {
     this.addSql(`drop table if exists "sandbox_usage_periods" cascade;`);
     this.addSql(`drop table if exists "sandbox_billable_usage" cascade;`);
     this.addSql(`drop table if exists "placement_billing_authorization" cascade;`);
+    this.addSql(`drop table if exists "payment_channel" cascade;`);
+    this.addSql(`drop table if exists "payment_voucher" cascade;`);
     this.addSql(`drop table if exists "network_usage_period" cascade;`);
     this.addSql(`drop table if exists "machine_usage_receipt" cascade;`);
     this.addSql(`drop table if exists "exposure_network_usage" cascade;`);
