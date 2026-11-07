@@ -9,16 +9,25 @@
 	"license": "Apache-2.0",
 	"type": "module",
 	"exports": {
-		".": "./src/index.js"
+		".": "./src/index.js",
+		"./actions": "./src/actions.js"
 	},
 	"dependencies": {
 		"abitype": "catalog:"
 	},
 	"peerDependencies": {
+		"@wagmi/core": "catalog:",
 		"viem": "catalog:"
+	},
+	"peerDependenciesMeta": {
+		"@wagmi/core": {
+			"optional": true
+		}
 	},
 	"devDependencies": {
 		"@types/node": "catalog:",
+		"@wagmi/cli": "catalog:",
+		"@wagmi/core": "catalog:",
 		"typescript": "catalog:",
 		"viem": "catalog:",
 		"vitest": "catalog:"

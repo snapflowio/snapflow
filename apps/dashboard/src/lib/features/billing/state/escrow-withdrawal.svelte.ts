@@ -8,14 +8,20 @@
  */
 
 import type { EscrowAccount } from '@snapflow/api-client';
+import {
+	simulateSnapflowEscrowCancelWithdrawal,
+	simulateSnapflowEscrowRequestWithdrawal,
+	simulateSnapflowEscrowWithdraw,
+	writeSnapflowEscrowCancelWithdrawal,
+	writeSnapflowEscrowRequestWithdrawal,
+	writeSnapflowEscrowWithdraw,
+} from '@snapflow/contracts/actions';
 import { createMutation } from '@tanstack/svelte-query';
 import { ESCROW_QUERY_KEYS } from '#lib/api/settlement/escrow.ts';
 import {
-	cancelWithdrawal,
+	confirmTransaction,
 	type EscrowWallet,
-	requestWithdrawal,
-	withdraw,
-} from '#lib/features/billing/lib/escrow-contract.ts';
+} from '#lib/features/billing/lib/escrow-wallet.ts';
 import { USDC_BALANCE_QUERY_KEY } from '#lib/features/billing/lib/wallet-queries.ts';
 import { usdInputToMicroUsd } from '#lib/utils/usd.ts';
 import { Clock } from './clock.svelte.ts';
@@ -68,7 +74,18 @@ export class EscrowWithdrawal {
 		this.#account = account;
 		this.request = createMutation(() => ({
 			mutationFn: ({ wallet, amount }: WithdrawalRequest) =>
-				requestWithdrawal(wallet, amount),
+				confirmTransaction(wallet, async () => {
+					const { request } = await simulateSnapflowEscrowRequestWithdrawal(
+						wallet.config,
+						{
+							address: wallet.escrow,
+							args: [amount],
+							account: wallet.account,
+							chainId: wallet.chainId,
+						}
+					);
+					return writeSnapflowEscrowRequestWithdrawal(wallet.config, request);
+				}),
 			onSuccess: () => {
 				this.amount = '';
 			},
@@ -79,7 +96,18 @@ export class EscrowWithdrawal {
 			},
 		}));
 		this.cancel = createMutation(() => ({
-			mutationFn: (wallet: EscrowWallet) => cancelWithdrawal(wallet),
+			mutationFn: (wallet: EscrowWallet) =>
+				confirmTransaction(wallet, async () => {
+					const { request } = await simulateSnapflowEscrowCancelWithdrawal(
+						wallet.config,
+						{
+							address: wallet.escrow,
+							account: wallet.account,
+							chainId: wallet.chainId,
+						}
+					);
+					return writeSnapflowEscrowCancelWithdrawal(wallet.config, request);
+				}),
 			meta: {
 				success: `Withdrawal cancelled. ${INDEXING_NOTE}`,
 				failure: 'The withdrawal could not be cancelled',
@@ -87,7 +115,18 @@ export class EscrowWithdrawal {
 			},
 		}));
 		this.complete = createMutation(() => ({
-			mutationFn: (wallet: EscrowWallet) => withdraw(wallet),
+			mutationFn: (wallet: EscrowWallet) =>
+				confirmTransaction(wallet, async () => {
+					const { request } = await simulateSnapflowEscrowWithdraw(
+						wallet.config,
+						{
+							address: wallet.escrow,
+							account: wallet.account,
+							chainId: wallet.chainId,
+						}
+					);
+					return writeSnapflowEscrowWithdraw(wallet.config, request);
+				}),
 			meta: {
 				success: `Withdrawal sent to your wallet. ${INDEXING_NOTE}`,
 				failure: 'The withdrawal failed',

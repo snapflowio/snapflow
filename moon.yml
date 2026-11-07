@@ -7,6 +7,13 @@ toolchains:
   go: false
 
 tasks:
+  # Everything generated from apps/contracts: the voucher vectors and the TypeScript and Go bindings.
+  contracts-bindings:
+    deps:
+      - "contracts:vectors"
+      - "contracts-ts:generate"
+      - "contracts-go:generate"
+
   reset-local-database:
     command: "node"
     args:

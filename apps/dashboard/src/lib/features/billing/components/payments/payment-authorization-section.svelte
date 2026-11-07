@@ -9,6 +9,10 @@
 
 <script lang="ts">
 import type { VoucherDelegation } from '@snapflow/api-client';
+import {
+	simulateSnapflowEscrowRevokeSessionKey,
+	writeSnapflowEscrowRevokeSessionKey,
+} from '@snapflow/contracts/actions';
 import { createMutation } from '@tanstack/svelte-query';
 import { getAddress } from 'viem';
 import { ESCROW_QUERY_KEYS } from '#lib/api/settlement/escrow.ts';
@@ -20,9 +24,9 @@ import ChipModalConfirm from '#lib/components/ui/chip-modal/chip-modal-confirm.s
 import Notice from '#lib/components/ui/notice.svelte';
 import SummaryRow from '#lib/features/billing/components/overview/summary-row.svelte';
 import {
+	confirmTransaction,
 	type EscrowWallet,
-	revokeSessionKey,
-} from '#lib/features/billing/lib/escrow-contract.ts';
+} from '#lib/features/billing/lib/escrow-wallet.ts';
 import { shortAddress } from '#lib/features/billing/lib/payment-wallet.ts';
 import type { WalletConnection } from '#lib/features/billing/state/wallet.svelte.ts';
 import { formatDateTime } from '#lib/utils/format.ts';
@@ -58,7 +62,18 @@ const signerHint = $derived(
 );
 const revoke = createMutation(() => ({
 	mutationFn: (wallet: EscrowWallet) =>
-		revokeSessionKey(wallet, getAddress(delegation.signerAddress)),
+		confirmTransaction(wallet, async () => {
+			const { request } = await simulateSnapflowEscrowRevokeSessionKey(
+				wallet.config,
+				{
+					address: wallet.escrow,
+					args: [getAddress(delegation.signerAddress)],
+					account: wallet.account,
+					chainId: wallet.chainId,
+				}
+			);
+			return writeSnapflowEscrowRevokeSessionKey(wallet.config, request);
+		}),
 	meta: {
 		success:
 			'Authorization revoked. Running sandboxes are held once their payments fall behind.',

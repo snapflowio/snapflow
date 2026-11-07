@@ -7,8 +7,10 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
+import { readUsdcBalanceOf } from '@snapflow/contracts/actions';
 import { queryOptions, skipToken } from '@tanstack/svelte-query';
-import { type EscrowWallet, usdcBalance } from './escrow-contract.ts';
+import type { EscrowWallet } from './escrow-wallet.ts';
+import { walletCall } from './wallet-error.ts';
 
 const USDC_BALANCE_QUERY_SCOPE = 'wallet-usdc-balance';
 
@@ -21,6 +23,15 @@ export function usdcBalanceQueryOptions(wallet: EscrowWallet | null) {
 			wallet?.chainId,
 			wallet?.account,
 		] as const,
-		queryFn: wallet ? () => usdcBalance(wallet) : skipToken,
+		queryFn: wallet
+			? () =>
+					walletCall(() =>
+						readUsdcBalanceOf(wallet.config, {
+							address: wallet.usdc,
+							args: [wallet.account],
+							chainId: wallet.chainId,
+						})
+					)
+			: skipToken,
 	});
 }

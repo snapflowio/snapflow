@@ -118,6 +118,7 @@ catalog:
   '@socket.io/redis-adapter': ^8.3.0
   '@reown/appkit': 1.8.24
   '@reown/appkit-adapter-wagmi': 1.8.24
+  '@wagmi/cli': 2.10.1
   '@wagmi/core': 3.6.9
   '@tailwindcss/vite': ^4.3.3
   '@tanstack/svelte-form': 1.33.5

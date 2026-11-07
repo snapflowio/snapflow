@@ -291,23 +291,28 @@ jobs:
         env:
           FOUNDRY_PROFILE: ci
         run: forge test
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          run_install: false
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
       - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
         with:
           go-version-file: go.work
           cache: false
+      - name: Install pnpm dependencies
+        working-directory: .
+        run: pnpm install --frozen-lockfile
       # The bindings in libs/ are generated from this build; they must be regenerated in the same change.
       - name: Check generated bindings and vectors are current
         working-directory: .
         run: |
-          (cd apps/contracts && forge script script/GenerateVoucherVectors.s.sol)
-          (cd libs/contracts && node scripts/generate-bindings.mts)
-          (cd apps/contracts && forge inspect SnapflowEscrow abi --json) > libs/contracts-go/escrow/snapflow_escrow.abi.json
-          (cd libs/contracts-go && go run github.com/ethereum/go-ethereum/cmd/abigen@v1.17.10 --v2 \
-            --abi escrow/snapflow_escrow.abi.json --pkg escrow --type SnapflowEscrow --out escrow/snapflow_escrow.gen.go)
-          git diff --exit-code -- apps/contracts/test/vectors libs/contracts/src/generated libs/contracts-go/escrow
+          pnpm exec moon run workspace:contracts-bindings
+          changes="$(git status --porcelain --untracked-files=all -- apps/contracts/test/vectors libs/contracts/src/generated libs/contracts-go/escrow)"
+          test -z "$changes" || { printf '%s\n' "$changes"; exit 1; }
       - name: Slither
         uses: crytic/slither-action@b52cc1cbfee9ca3e8722dd5224299d16c9a6b80f # v0.4.2
         with:

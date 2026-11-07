@@ -7,15 +7,21 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
+import {
+	readUsdcAllowance,
+	simulateSnapflowEscrowDepositFor,
+	simulateUsdcApprove,
+	writeSnapflowEscrowDepositFor,
+	writeUsdcApprove,
+} from '@snapflow/contracts/actions';
 import { createMutation, createQuery } from '@tanstack/svelte-query';
 import { type Address, getAddress } from 'viem';
 import { ESCROW_QUERY_KEYS } from '#lib/api/settlement/escrow.ts';
 import {
-	approveUsdc,
-	depositFor,
+	confirmTransaction,
 	type EscrowWallet,
-	needsUsdcApproval,
-} from '#lib/features/billing/lib/escrow-contract.ts';
+} from '#lib/features/billing/lib/escrow-wallet.ts';
+import { walletCall } from '#lib/features/billing/lib/wallet-error.ts';
 import {
 	USDC_BALANCE_QUERY_KEY,
 	usdcBalanceQueryOptions,
@@ -77,12 +83,38 @@ export class EscrowDeposit {
 		this.balance = createQuery(() => usdcBalanceQueryOptions(this.#wallet()));
 		this.mutation = createMutation(() => ({
 			mutationFn: async ({ wallet, customer, amount }: DepositRequest) => {
-				if (await needsUsdcApproval(wallet, amount)) {
+				const allowance = await walletCall(() =>
+					readUsdcAllowance(wallet.config, {
+						address: wallet.usdc,
+						args: [wallet.account, wallet.escrow],
+						chainId: wallet.chainId,
+					})
+				);
+				if (allowance < amount) {
 					this.stage = 'approving';
-					await approveUsdc(wallet, amount);
+					await confirmTransaction(wallet, async () => {
+						const { request } = await simulateUsdcApprove(wallet.config, {
+							address: wallet.usdc,
+							args: [wallet.escrow, amount],
+							account: wallet.account,
+							chainId: wallet.chainId,
+						});
+						return writeUsdcApprove(wallet.config, request);
+					});
 				}
 				this.stage = 'depositing';
-				return depositFor(wallet, customer, amount);
+				return confirmTransaction(wallet, async () => {
+					const { request } = await simulateSnapflowEscrowDepositFor(
+						wallet.config,
+						{
+							address: wallet.escrow,
+							args: [customer, amount],
+							account: wallet.account,
+							chainId: wallet.chainId,
+						}
+					);
+					return writeSnapflowEscrowDepositFor(wallet.config, request);
+				});
 			},
 			onSuccess: () => {
 				this.amount = '';

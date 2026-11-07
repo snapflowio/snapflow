@@ -8,9 +8,15 @@
  */
 
 import type { VoucherDelegation } from '@snapflow/api-client';
-import { getAddress } from 'viem';
-import type { SessionKeyGrant } from '#lib/features/billing/lib/escrow-contract.ts';
+import { type Address, getAddress } from 'viem';
 import { formatMicroUsdAmount, usdInputToMicroUsd } from '#lib/utils/usd.ts';
+
+export interface SessionKeyGrant {
+	key: Address;
+	spendCap: bigint;
+	hourlyCap: bigint;
+	expiry: bigint;
+}
 
 const SECONDS_PER_DAY = 86_400;
 const MILLISECONDS_PER_SECOND = 1_000;

@@ -4,11 +4,11 @@ tags: ["contracts", "payments"]
 
 tasks:
   generate:
-    command: "node"
-    args: ["scripts/generate-bindings.mts"]
+    command: "wagmi"
+    args: ["generate"]
     deps: ["contracts:build"]
     inputs:
-      - "scripts/generate-bindings.mts"
+      - "wagmi.config.ts"
       - "/apps/contracts/out/SnapflowEscrow.sol/SnapflowEscrow.json"
     outputs: ["src/generated"]
 

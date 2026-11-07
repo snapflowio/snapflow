@@ -15,3 +15,11 @@ export function walletError(error: unknown): SnapflowError {
 		? new SnapflowError(error.shortMessage, { cause: error })
 		: SnapflowError.fromUnknown(error);
 }
+
+export async function walletCall<T>(call: () => Promise<T>): Promise<T> {
+	try {
+		return await call();
+	} catch (error) {
+		throw walletError(error);
+	}
+}

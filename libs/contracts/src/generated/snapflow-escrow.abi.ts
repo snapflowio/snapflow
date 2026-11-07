@@ -1,19 +1,1079 @@
-/*
- * Copyright (c) 2026 Snapflow. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * SPDX-License-Identifier: Apache-2.0
- */
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// SnapflowEscrow
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Generated from apps/contracts by libs/contracts/scripts/generate-bindings.mts. Do not edit.
-
-export const snapflowEscrowAbi = [{"type":"constructor","inputs":[{"name":"token_","type":"address","internalType":"contract IERC20"},{"name":"admin","type":"address","internalType":"address"},{"name":"initialFeeRecipient","type":"address","internalType":"address"},{"name":"initialFeeCapBps","type":"uint16","internalType":"uint16"},{"name":"disputeWindow_","type":"uint64","internalType":"uint64"}],"stateMutability":"nonpayable"},{"type":"function","name":"COMPLIANCE_ROLE","inputs":[],"outputs":[{"name":"","type":"bytes32","internalType":"bytes32"}],"stateMutability":"view"},{"type":"function","name":"DEFAULT_ADMIN_ROLE","inputs":[],"outputs":[{"name":"","type":"bytes32","internalType":"bytes32"}],"stateMutability":"view"},{"type":"function","name":"PAUSER_ROLE","inputs":[],"outputs":[{"name":"","type":"bytes32","internalType":"bytes32"}],"stateMutability":"view"},{"type":"function","name":"acceptDefaultAdminTransfer","inputs":[],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"applyFeeCap","inputs":[],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"balanceOf","inputs":[{"name":"customer","type":"address","internalType":"address"}],"outputs":[{"name":"","type":"uint256","internalType":"uint256"}],"stateMutability":"view"},{"type":"function","name":"beginDefaultAdminTransfer","inputs":[{"name":"newAdmin","type":"address","internalType":"address"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"blockAccount","inputs":[{"name":"account","type":"address","internalType":"address"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"cancelDefaultAdminTransfer","inputs":[],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"cancelFeeCapSchedule","inputs":[],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"cancelWithdrawal","inputs":[],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"changeDefaultAdminDelay","inputs":[{"name":"newDelay","type":"uint48","internalType":"uint48"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"channelOf","inputs":[{"name":"channelId","type":"bytes32","internalType":"bytes32"}],"outputs":[{"name":"","type":"tuple","internalType":"struct Channel","components":[{"name":"customer","type":"address","internalType":"address"},{"name":"host","type":"address","internalType":"address"},{"name":"sequence","type":"uint64","internalType":"uint64"},{"name":"hostClaimed","type":"uint256","internalType":"uint256"},{"name":"feeClaimed","type":"uint256","internalType":"uint256"},{"name":"serviceClaimed","type":"uint256","internalType":"uint256"}]}],"stateMutability":"view"},{"type":"function","name":"claim","inputs":[{"name":"signed","type":"tuple","internalType":"struct SignedVoucher","components":[{"name":"voucher","type":"tuple","internalType":"struct Voucher","components":[{"name":"channelId","type":"bytes32","internalType":"bytes32"},{"name":"customer","type":"address","internalType":"address"},{"name":"host","type":"address","internalType":"address"},{"name":"hostAmount","type":"uint256","internalType":"uint256"},{"name":"feeAmount","type":"uint256","internalType":"uint256"},{"name":"serviceAmount","type":"uint256","internalType":"uint256"},{"name":"sequence","type":"uint64","internalType":"uint64"},{"name":"expiry","type":"uint64","internalType":"uint64"}]},{"name":"signer","type":"address","internalType":"address"},{"name":"signature","type":"bytes","internalType":"bytes"}]}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"claimBatch","inputs":[{"name":"signed","type":"tuple[]","internalType":"struct SignedVoucher[]","components":[{"name":"voucher","type":"tuple","internalType":"struct Voucher","components":[{"name":"channelId","type":"bytes32","internalType":"bytes32"},{"name":"customer","type":"address","internalType":"address"},{"name":"host","type":"address","internalType":"address"},{"name":"hostAmount","type":"uint256","internalType":"uint256"},{"name":"feeAmount","type":"uint256","internalType":"uint256"},{"name":"serviceAmount","type":"uint256","internalType":"uint256"},{"name":"sequence","type":"uint64","internalType":"uint64"},{"name":"expiry","type":"uint64","internalType":"uint64"}]},{"name":"signer","type":"address","internalType":"address"},{"name":"signature","type":"bytes","internalType":"bytes"}]}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"defaultAdmin","inputs":[],"outputs":[{"name":"","type":"address","internalType":"address"}],"stateMutability":"view"},{"type":"function","name":"defaultAdminDelay","inputs":[],"outputs":[{"name":"","type":"uint48","internalType":"uint48"}],"stateMutability":"view"},{"type":"function","name":"defaultAdminDelayIncreaseWait","inputs":[],"outputs":[{"name":"","type":"uint48","internalType":"uint48"}],"stateMutability":"view"},{"type":"function","name":"deposit","inputs":[{"name":"amount","type":"uint256","internalType":"uint256"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"depositFor","inputs":[{"name":"customer","type":"address","internalType":"address"},{"name":"amount","type":"uint256","internalType":"uint256"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"depositWithPermit","inputs":[{"name":"amount","type":"uint256","internalType":"uint256"},{"name":"deadline","type":"uint256","internalType":"uint256"},{"name":"v","type":"uint8","internalType":"uint8"},{"name":"r","type":"bytes32","internalType":"bytes32"},{"name":"s","type":"bytes32","internalType":"bytes32"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"disputeWindow","inputs":[],"outputs":[{"name":"","type":"uint64","internalType":"uint64"}],"stateMutability":"view"},{"type":"function","name":"eip712Domain","inputs":[],"outputs":[{"name":"fields","type":"bytes1","internalType":"bytes1"},{"name":"name","type":"string","internalType":"string"},{"name":"version","type":"string","internalType":"string"},{"name":"chainId","type":"uint256","internalType":"uint256"},{"name":"verifyingContract","type":"address","internalType":"address"},{"name":"salt","type":"bytes32","internalType":"bytes32"},{"name":"extensions","type":"uint256[]","internalType":"uint256[]"}],"stateMutability":"view"},{"type":"function","name":"feeCapBps","inputs":[],"outputs":[{"name":"","type":"uint16","internalType":"uint16"}],"stateMutability":"view"},{"type":"function","name":"feeRecipient","inputs":[],"outputs":[{"name":"","type":"address","internalType":"address"}],"stateMutability":"view"},{"type":"function","name":"getRoleAdmin","inputs":[{"name":"role","type":"bytes32","internalType":"bytes32"}],"outputs":[{"name":"","type":"bytes32","internalType":"bytes32"}],"stateMutability":"view"},{"type":"function","name":"grantRole","inputs":[{"name":"role","type":"bytes32","internalType":"bytes32"},{"name":"account","type":"address","internalType":"address"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"hasRole","inputs":[{"name":"role","type":"bytes32","internalType":"bytes32"},{"name":"account","type":"address","internalType":"address"}],"outputs":[{"name":"","type":"bool","internalType":"bool"}],"stateMutability":"view"},{"type":"function","name":"isBlocked","inputs":[{"name":"account","type":"address","internalType":"address"}],"outputs":[{"name":"","type":"bool","internalType":"bool"}],"stateMutability":"view"},{"type":"function","name":"owner","inputs":[],"outputs":[{"name":"","type":"address","internalType":"address"}],"stateMutability":"view"},{"type":"function","name":"pause","inputs":[],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"paused","inputs":[],"outputs":[{"name":"","type":"bool","internalType":"bool"}],"stateMutability":"view"},{"type":"function","name":"pendingDefaultAdmin","inputs":[],"outputs":[{"name":"newAdmin","type":"address","internalType":"address"},{"name":"schedule","type":"uint48","internalType":"uint48"}],"stateMutability":"view"},{"type":"function","name":"pendingDefaultAdminDelay","inputs":[],"outputs":[{"name":"newDelay","type":"uint48","internalType":"uint48"},{"name":"schedule","type":"uint48","internalType":"uint48"}],"stateMutability":"view"},{"type":"function","name":"pendingFeeCap","inputs":[],"outputs":[{"name":"","type":"tuple","internalType":"struct FeeCapChange","components":[{"name":"bps","type":"uint16","internalType":"uint16"},{"name":"effectiveAt","type":"uint64","internalType":"uint64"}]}],"stateMutability":"view"},{"type":"function","name":"renounceRole","inputs":[{"name":"role","type":"bytes32","internalType":"bytes32"},{"name":"account","type":"address","internalType":"address"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"requestWithdrawal","inputs":[{"name":"amount","type":"uint256","internalType":"uint256"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"revokeRole","inputs":[{"name":"role","type":"bytes32","internalType":"bytes32"},{"name":"account","type":"address","internalType":"address"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"revokeSessionKey","inputs":[{"name":"key","type":"address","internalType":"address"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"rollbackDefaultAdminDelay","inputs":[],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"scheduleFeeCap","inputs":[{"name":"bps","type":"uint16","internalType":"uint16"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"sessionKeyOf","inputs":[{"name":"customer","type":"address","internalType":"address"},{"name":"key","type":"address","internalType":"address"}],"outputs":[{"name":"","type":"tuple","internalType":"struct SessionKey","components":[{"name":"spendCap","type":"uint128","internalType":"uint128"},{"name":"spent","type":"uint128","internalType":"uint128"},{"name":"hourlyCap","type":"uint128","internalType":"uint128"},{"name":"activatedAt","type":"uint64","internalType":"uint64"},{"name":"expiry","type":"uint64","internalType":"uint64"}]}],"stateMutability":"view"},{"type":"function","name":"setFeeRecipient","inputs":[{"name":"recipient","type":"address","internalType":"address"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"setSessionKey","inputs":[{"name":"key","type":"address","internalType":"address"},{"name":"spendCap","type":"uint128","internalType":"uint128"},{"name":"hourlyCap","type":"uint128","internalType":"uint128"},{"name":"expiry","type":"uint64","internalType":"uint64"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"supportsInterface","inputs":[{"name":"interfaceId","type":"bytes4","internalType":"bytes4"}],"outputs":[{"name":"","type":"bool","internalType":"bool"}],"stateMutability":"view"},{"type":"function","name":"token","inputs":[],"outputs":[{"name":"","type":"address","internalType":"contract IERC20"}],"stateMutability":"view"},{"type":"function","name":"unblockAccount","inputs":[{"name":"account","type":"address","internalType":"address"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"unpause","inputs":[],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"voucherDigest","inputs":[{"name":"voucher","type":"tuple","internalType":"struct Voucher","components":[{"name":"channelId","type":"bytes32","internalType":"bytes32"},{"name":"customer","type":"address","internalType":"address"},{"name":"host","type":"address","internalType":"address"},{"name":"hostAmount","type":"uint256","internalType":"uint256"},{"name":"feeAmount","type":"uint256","internalType":"uint256"},{"name":"serviceAmount","type":"uint256","internalType":"uint256"},{"name":"sequence","type":"uint64","internalType":"uint64"},{"name":"expiry","type":"uint64","internalType":"uint64"}]}],"outputs":[{"name":"","type":"bytes32","internalType":"bytes32"}],"stateMutability":"view"},{"type":"function","name":"withdraw","inputs":[],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"withdrawalOf","inputs":[{"name":"customer","type":"address","internalType":"address"}],"outputs":[{"name":"","type":"tuple","internalType":"struct WithdrawalRequest","components":[{"name":"amount","type":"uint256","internalType":"uint256"},{"name":"readyAt","type":"uint64","internalType":"uint64"}]}],"stateMutability":"view"},{"type":"event","name":"AddressBlocked","inputs":[{"name":"account","type":"address","indexed":true,"internalType":"address"}],"anonymous":false},{"type":"event","name":"AddressUnblocked","inputs":[{"name":"account","type":"address","indexed":true,"internalType":"address"}],"anonymous":false},{"type":"event","name":"Claimed","inputs":[{"name":"channelId","type":"bytes32","indexed":true,"internalType":"bytes32"},{"name":"customer","type":"address","indexed":true,"internalType":"address"},{"name":"host","type":"address","indexed":true,"internalType":"address"},{"name":"hostPaid","type":"uint256","indexed":false,"internalType":"uint256"},{"name":"feePaid","type":"uint256","indexed":false,"internalType":"uint256"},{"name":"servicePaid","type":"uint256","indexed":false,"internalType":"uint256"},{"name":"sequence","type":"uint64","indexed":false,"internalType":"uint64"}],"anonymous":false},{"type":"event","name":"DefaultAdminDelayChangeCanceled","inputs":[],"anonymous":false},{"type":"event","name":"DefaultAdminDelayChangeScheduled","inputs":[{"name":"newDelay","type":"uint48","indexed":false,"internalType":"uint48"},{"name":"effectSchedule","type":"uint48","indexed":false,"internalType":"uint48"}],"anonymous":false},{"type":"event","name":"DefaultAdminTransferCanceled","inputs":[],"anonymous":false},{"type":"event","name":"DefaultAdminTransferScheduled","inputs":[{"name":"newAdmin","type":"address","indexed":true,"internalType":"address"},{"name":"acceptSchedule","type":"uint48","indexed":false,"internalType":"uint48"}],"anonymous":false},{"type":"event","name":"Deposited","inputs":[{"name":"customer","type":"address","indexed":true,"internalType":"address"},{"name":"payer","type":"address","indexed":true,"internalType":"address"},{"name":"amount","type":"uint256","indexed":false,"internalType":"uint256"}],"anonymous":false},{"type":"event","name":"EIP712DomainChanged","inputs":[],"anonymous":false},{"type":"event","name":"FeeCapScheduleCancelled","inputs":[],"anonymous":false},{"type":"event","name":"FeeCapScheduled","inputs":[{"name":"bps","type":"uint16","indexed":false,"internalType":"uint16"},{"name":"effectiveAt","type":"uint64","indexed":false,"internalType":"uint64"}],"anonymous":false},{"type":"event","name":"FeeCapUpdated","inputs":[{"name":"previousBps","type":"uint16","indexed":false,"internalType":"uint16"},{"name":"bps","type":"uint16","indexed":false,"internalType":"uint16"}],"anonymous":false},{"type":"event","name":"FeeRecipientUpdated","inputs":[{"name":"previousRecipient","type":"address","indexed":true,"internalType":"address"},{"name":"recipient","type":"address","indexed":true,"internalType":"address"}],"anonymous":false},{"type":"event","name":"Paused","inputs":[{"name":"account","type":"address","indexed":false,"internalType":"address"}],"anonymous":false},{"type":"event","name":"RoleAdminChanged","inputs":[{"name":"role","type":"bytes32","indexed":true,"internalType":"bytes32"},{"name":"previousAdminRole","type":"bytes32","indexed":true,"internalType":"bytes32"},{"name":"newAdminRole","type":"bytes32","indexed":true,"internalType":"bytes32"}],"anonymous":false},{"type":"event","name":"RoleGranted","inputs":[{"name":"role","type":"bytes32","indexed":true,"internalType":"bytes32"},{"name":"account","type":"address","indexed":true,"internalType":"address"},{"name":"sender","type":"address","indexed":true,"internalType":"address"}],"anonymous":false},{"type":"event","name":"RoleRevoked","inputs":[{"name":"role","type":"bytes32","indexed":true,"internalType":"bytes32"},{"name":"account","type":"address","indexed":true,"internalType":"address"},{"name":"sender","type":"address","indexed":true,"internalType":"address"}],"anonymous":false},{"type":"event","name":"SessionKeyRevoked","inputs":[{"name":"customer","type":"address","indexed":true,"internalType":"address"},{"name":"key","type":"address","indexed":true,"internalType":"address"}],"anonymous":false},{"type":"event","name":"SessionKeySet","inputs":[{"name":"customer","type":"address","indexed":true,"internalType":"address"},{"name":"key","type":"address","indexed":true,"internalType":"address"},{"name":"spendCap","type":"uint128","indexed":false,"internalType":"uint128"},{"name":"hourlyCap","type":"uint128","indexed":false,"internalType":"uint128"},{"name":"expiry","type":"uint64","indexed":false,"internalType":"uint64"}],"anonymous":false},{"type":"event","name":"Unpaused","inputs":[{"name":"account","type":"address","indexed":false,"internalType":"address"}],"anonymous":false},{"type":"event","name":"WithdrawalCancelled","inputs":[{"name":"customer","type":"address","indexed":true,"internalType":"address"}],"anonymous":false},{"type":"event","name":"WithdrawalRequested","inputs":[{"name":"customer","type":"address","indexed":true,"internalType":"address"},{"name":"amount","type":"uint256","indexed":false,"internalType":"uint256"},{"name":"readyAt","type":"uint64","indexed":false,"internalType":"uint64"}],"anonymous":false},{"type":"event","name":"Withdrawn","inputs":[{"name":"customer","type":"address","indexed":true,"internalType":"address"},{"name":"amount","type":"uint256","indexed":false,"internalType":"uint256"}],"anonymous":false},{"type":"error","name":"AccessControlBadConfirmation","inputs":[]},{"type":"error","name":"AccessControlEnforcedDefaultAdminDelay","inputs":[{"name":"schedule","type":"uint48","internalType":"uint48"}]},{"type":"error","name":"AccessControlEnforcedDefaultAdminRules","inputs":[]},{"type":"error","name":"AccessControlInvalidDefaultAdmin","inputs":[{"name":"defaultAdmin","type":"address","internalType":"address"}]},{"type":"error","name":"AccessControlUnauthorizedAccount","inputs":[{"name":"account","type":"address","internalType":"address"},{"name":"neededRole","type":"bytes32","internalType":"bytes32"}]},{"type":"error","name":"AccountBlocked","inputs":[{"name":"account","type":"address","internalType":"address"}]},{"type":"error","name":"AmountDecreased","inputs":[{"name":"channelId","type":"bytes32","internalType":"bytes32"}]},{"type":"error","name":"ChannelMismatch","inputs":[{"name":"channelId","type":"bytes32","internalType":"bytes32"}]},{"type":"error","name":"DisputeWindowOutOfRange","inputs":[{"name":"window","type":"uint64","internalType":"uint64"}]},{"type":"error","name":"EmptyBatch","inputs":[]},{"type":"error","name":"EnforcedPause","inputs":[]},{"type":"error","name":"ExpectedPause","inputs":[]},{"type":"error","name":"FeeAboveCap","inputs":[{"name":"feeDelta","type":"uint256","internalType":"uint256"},{"name":"allowed","type":"uint256","internalType":"uint256"}]},{"type":"error","name":"FeeCapNotReady","inputs":[{"name":"effectiveAt","type":"uint64","internalType":"uint64"}]},{"type":"error","name":"FeeCapTooHigh","inputs":[{"name":"bps","type":"uint16","internalType":"uint16"},{"name":"maxBps","type":"uint16","internalType":"uint16"}]},{"type":"error","name":"InsufficientBalance","inputs":[{"name":"customer","type":"address","internalType":"address"},{"name":"requested","type":"uint256","internalType":"uint256"},{"name":"available","type":"uint256","internalType":"uint256"}]},{"type":"error","name":"InvalidSessionKey","inputs":[]},{"type":"error","name":"InvalidShortString","inputs":[]},{"type":"error","name":"InvalidSignature","inputs":[{"name":"signer","type":"address","internalType":"address"}]},{"type":"error","name":"NoFeeCapScheduled","inputs":[]},{"type":"error","name":"NoWithdrawalRequested","inputs":[{"name":"customer","type":"address","internalType":"address"}]},{"type":"error","name":"ReentrancyGuardReentrantCall","inputs":[]},{"type":"error","name":"SafeCastOverflowedUintDowncast","inputs":[{"name":"bits","type":"uint8","internalType":"uint8"},{"name":"value","type":"uint256","internalType":"uint256"}]},{"type":"error","name":"SafeERC20FailedOperation","inputs":[{"name":"token","type":"address","internalType":"address"}]},{"type":"error","name":"SessionHourlyCapExceeded","inputs":[{"name":"key","type":"address","internalType":"address"},{"name":"requested","type":"uint256","internalType":"uint256"},{"name":"remaining","type":"uint256","internalType":"uint256"}]},{"type":"error","name":"SessionKeyInactive","inputs":[{"name":"customer","type":"address","internalType":"address"},{"name":"key","type":"address","internalType":"address"}]},{"type":"error","name":"SessionSpendCapExceeded","inputs":[{"name":"key","type":"address","internalType":"address"},{"name":"requested","type":"uint256","internalType":"uint256"},{"name":"remaining","type":"uint256","internalType":"uint256"}]},{"type":"error","name":"StaleVoucher","inputs":[{"name":"sequence","type":"uint64","internalType":"uint64"},{"name":"lastSequence","type":"uint64","internalType":"uint64"}]},{"type":"error","name":"StringTooLong","inputs":[{"name":"str","type":"string","internalType":"string"}]},{"type":"error","name":"VoucherExpired","inputs":[{"name":"expiry","type":"uint64","internalType":"uint64"}]},{"type":"error","name":"WithdrawalNotReady","inputs":[{"name":"readyAt","type":"uint64","internalType":"uint64"}]},{"type":"error","name":"ZeroAddress","inputs":[]},{"type":"error","name":"ZeroAmount","inputs":[]}] as const;
+export const snapflowEscrowAbi = [
+  {
+    type: 'constructor',
+    inputs: [
+      { name: 'token_', internalType: 'contract IERC20', type: 'address' },
+      { name: 'admin', internalType: 'address', type: 'address' },
+      { name: 'initialFeeRecipient', internalType: 'address', type: 'address' },
+      { name: 'initialFeeCapBps', internalType: 'uint16', type: 'uint16' },
+      { name: 'disputeWindow_', internalType: 'uint64', type: 'uint64' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'COMPLIANCE_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'DEFAULT_ADMIN_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'PAUSER_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'acceptDefaultAdminTransfer',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'applyFeeCap',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'customer', internalType: 'address', type: 'address' }],
+    name: 'balanceOf',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'newAdmin', internalType: 'address', type: 'address' }],
+    name: 'beginDefaultAdminTransfer',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'blockAccount',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'cancelDefaultAdminTransfer',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'cancelFeeCapSchedule',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'cancelWithdrawal',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'newDelay', internalType: 'uint48', type: 'uint48' }],
+    name: 'changeDefaultAdminDelay',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'channelId', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'channelOf',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct Channel',
+        type: 'tuple',
+        components: [
+          { name: 'customer', internalType: 'address', type: 'address' },
+          { name: 'host', internalType: 'address', type: 'address' },
+          { name: 'sequence', internalType: 'uint64', type: 'uint64' },
+          { name: 'hostClaimed', internalType: 'uint256', type: 'uint256' },
+          { name: 'feeClaimed', internalType: 'uint256', type: 'uint256' },
+          { name: 'serviceClaimed', internalType: 'uint256', type: 'uint256' },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'signed',
+        internalType: 'struct SignedVoucher',
+        type: 'tuple',
+        components: [
+          {
+            name: 'voucher',
+            internalType: 'struct Voucher',
+            type: 'tuple',
+            components: [
+              { name: 'channelId', internalType: 'bytes32', type: 'bytes32' },
+              { name: 'customer', internalType: 'address', type: 'address' },
+              { name: 'host', internalType: 'address', type: 'address' },
+              { name: 'hostAmount', internalType: 'uint256', type: 'uint256' },
+              { name: 'feeAmount', internalType: 'uint256', type: 'uint256' },
+              {
+                name: 'serviceAmount',
+                internalType: 'uint256',
+                type: 'uint256',
+              },
+              { name: 'sequence', internalType: 'uint64', type: 'uint64' },
+              { name: 'expiry', internalType: 'uint64', type: 'uint64' },
+            ],
+          },
+          { name: 'signer', internalType: 'address', type: 'address' },
+          { name: 'signature', internalType: 'bytes', type: 'bytes' },
+        ],
+      },
+    ],
+    name: 'claim',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'signed',
+        internalType: 'struct SignedVoucher[]',
+        type: 'tuple[]',
+        components: [
+          {
+            name: 'voucher',
+            internalType: 'struct Voucher',
+            type: 'tuple',
+            components: [
+              { name: 'channelId', internalType: 'bytes32', type: 'bytes32' },
+              { name: 'customer', internalType: 'address', type: 'address' },
+              { name: 'host', internalType: 'address', type: 'address' },
+              { name: 'hostAmount', internalType: 'uint256', type: 'uint256' },
+              { name: 'feeAmount', internalType: 'uint256', type: 'uint256' },
+              {
+                name: 'serviceAmount',
+                internalType: 'uint256',
+                type: 'uint256',
+              },
+              { name: 'sequence', internalType: 'uint64', type: 'uint64' },
+              { name: 'expiry', internalType: 'uint64', type: 'uint64' },
+            ],
+          },
+          { name: 'signer', internalType: 'address', type: 'address' },
+          { name: 'signature', internalType: 'bytes', type: 'bytes' },
+        ],
+      },
+    ],
+    name: 'claimBatch',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'defaultAdmin',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'defaultAdminDelay',
+    outputs: [{ name: '', internalType: 'uint48', type: 'uint48' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'defaultAdminDelayIncreaseWait',
+    outputs: [{ name: '', internalType: 'uint48', type: 'uint48' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'amount', internalType: 'uint256', type: 'uint256' }],
+    name: 'deposit',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'customer', internalType: 'address', type: 'address' },
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'depositFor',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: 'deadline', internalType: 'uint256', type: 'uint256' },
+      { name: 'v', internalType: 'uint8', type: 'uint8' },
+      { name: 'r', internalType: 'bytes32', type: 'bytes32' },
+      { name: 's', internalType: 'bytes32', type: 'bytes32' },
+    ],
+    name: 'depositWithPermit',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'disputeWindow',
+    outputs: [{ name: '', internalType: 'uint64', type: 'uint64' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'eip712Domain',
+    outputs: [
+      { name: 'fields', internalType: 'bytes1', type: 'bytes1' },
+      { name: 'name', internalType: 'string', type: 'string' },
+      { name: 'version', internalType: 'string', type: 'string' },
+      { name: 'chainId', internalType: 'uint256', type: 'uint256' },
+      { name: 'verifyingContract', internalType: 'address', type: 'address' },
+      { name: 'salt', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'extensions', internalType: 'uint256[]', type: 'uint256[]' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'feeCapBps',
+    outputs: [{ name: '', internalType: 'uint16', type: 'uint16' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'feeRecipient',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'role', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'getRoleAdmin',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'account', internalType: 'address', type: 'address' },
+    ],
+    name: 'grantRole',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'account', internalType: 'address', type: 'address' },
+    ],
+    name: 'hasRole',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'isBlocked',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'owner',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'pause',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'paused',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'pendingDefaultAdmin',
+    outputs: [
+      { name: 'newAdmin', internalType: 'address', type: 'address' },
+      { name: 'schedule', internalType: 'uint48', type: 'uint48' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'pendingDefaultAdminDelay',
+    outputs: [
+      { name: 'newDelay', internalType: 'uint48', type: 'uint48' },
+      { name: 'schedule', internalType: 'uint48', type: 'uint48' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'pendingFeeCap',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct FeeCapChange',
+        type: 'tuple',
+        components: [
+          { name: 'bps', internalType: 'uint16', type: 'uint16' },
+          { name: 'effectiveAt', internalType: 'uint64', type: 'uint64' },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'account', internalType: 'address', type: 'address' },
+    ],
+    name: 'renounceRole',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'amount', internalType: 'uint256', type: 'uint256' }],
+    name: 'requestWithdrawal',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'account', internalType: 'address', type: 'address' },
+    ],
+    name: 'revokeRole',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'key', internalType: 'address', type: 'address' }],
+    name: 'revokeSessionKey',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'rollbackDefaultAdminDelay',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'bps', internalType: 'uint16', type: 'uint16' }],
+    name: 'scheduleFeeCap',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'customer', internalType: 'address', type: 'address' },
+      { name: 'key', internalType: 'address', type: 'address' },
+    ],
+    name: 'sessionKeyOf',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct SessionKey',
+        type: 'tuple',
+        components: [
+          { name: 'spendCap', internalType: 'uint128', type: 'uint128' },
+          { name: 'spent', internalType: 'uint128', type: 'uint128' },
+          { name: 'hourlyCap', internalType: 'uint128', type: 'uint128' },
+          { name: 'activatedAt', internalType: 'uint64', type: 'uint64' },
+          { name: 'expiry', internalType: 'uint64', type: 'uint64' },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'recipient', internalType: 'address', type: 'address' }],
+    name: 'setFeeRecipient',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'key', internalType: 'address', type: 'address' },
+      { name: 'spendCap', internalType: 'uint128', type: 'uint128' },
+      { name: 'hourlyCap', internalType: 'uint128', type: 'uint128' },
+      { name: 'expiry', internalType: 'uint64', type: 'uint64' },
+    ],
+    name: 'setSessionKey',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
+    name: 'supportsInterface',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'token',
+    outputs: [{ name: '', internalType: 'contract IERC20', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'unblockAccount',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'unpause',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'voucher',
+        internalType: 'struct Voucher',
+        type: 'tuple',
+        components: [
+          { name: 'channelId', internalType: 'bytes32', type: 'bytes32' },
+          { name: 'customer', internalType: 'address', type: 'address' },
+          { name: 'host', internalType: 'address', type: 'address' },
+          { name: 'hostAmount', internalType: 'uint256', type: 'uint256' },
+          { name: 'feeAmount', internalType: 'uint256', type: 'uint256' },
+          { name: 'serviceAmount', internalType: 'uint256', type: 'uint256' },
+          { name: 'sequence', internalType: 'uint64', type: 'uint64' },
+          { name: 'expiry', internalType: 'uint64', type: 'uint64' },
+        ],
+      },
+    ],
+    name: 'voucherDigest',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'withdraw',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'customer', internalType: 'address', type: 'address' }],
+    name: 'withdrawalOf',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct WithdrawalRequest',
+        type: 'tuple',
+        components: [
+          { name: 'amount', internalType: 'uint256', type: 'uint256' },
+          { name: 'readyAt', internalType: 'uint64', type: 'uint64' },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'AddressBlocked',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'AddressUnblocked',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'channelId',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: true,
+      },
+      {
+        name: 'customer',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'host', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'hostPaid',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'feePaid',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'servicePaid',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'sequence',
+        internalType: 'uint64',
+        type: 'uint64',
+        indexed: false,
+      },
+    ],
+    name: 'Claimed',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [],
+    name: 'DefaultAdminDelayChangeCanceled',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'newDelay',
+        internalType: 'uint48',
+        type: 'uint48',
+        indexed: false,
+      },
+      {
+        name: 'effectSchedule',
+        internalType: 'uint48',
+        type: 'uint48',
+        indexed: false,
+      },
+    ],
+    name: 'DefaultAdminDelayChangeScheduled',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [],
+    name: 'DefaultAdminTransferCanceled',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'newAdmin',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'acceptSchedule',
+        internalType: 'uint48',
+        type: 'uint48',
+        indexed: false,
+      },
+    ],
+    name: 'DefaultAdminTransferScheduled',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'customer',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'payer',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'Deposited',
+  },
+  { type: 'event', anonymous: false, inputs: [], name: 'EIP712DomainChanged' },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [],
+    name: 'FeeCapScheduleCancelled',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'bps', internalType: 'uint16', type: 'uint16', indexed: false },
+      {
+        name: 'effectiveAt',
+        internalType: 'uint64',
+        type: 'uint64',
+        indexed: false,
+      },
+    ],
+    name: 'FeeCapScheduled',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'previousBps',
+        internalType: 'uint16',
+        type: 'uint16',
+        indexed: false,
+      },
+      { name: 'bps', internalType: 'uint16', type: 'uint16', indexed: false },
+    ],
+    name: 'FeeCapUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'previousRecipient',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'recipient',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'FeeRecipientUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'Paused',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32', indexed: true },
+      {
+        name: 'previousAdminRole',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: true,
+      },
+      {
+        name: 'newAdminRole',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: true,
+      },
+    ],
+    name: 'RoleAdminChanged',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32', indexed: true },
+      {
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'sender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'RoleGranted',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32', indexed: true },
+      {
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'sender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'RoleRevoked',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'customer',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'key', internalType: 'address', type: 'address', indexed: true },
+    ],
+    name: 'SessionKeyRevoked',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'customer',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'key', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'spendCap',
+        internalType: 'uint128',
+        type: 'uint128',
+        indexed: false,
+      },
+      {
+        name: 'hourlyCap',
+        internalType: 'uint128',
+        type: 'uint128',
+        indexed: false,
+      },
+      {
+        name: 'expiry',
+        internalType: 'uint64',
+        type: 'uint64',
+        indexed: false,
+      },
+    ],
+    name: 'SessionKeySet',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'Unpaused',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'customer',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'WithdrawalCancelled',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'customer',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'readyAt',
+        internalType: 'uint64',
+        type: 'uint64',
+        indexed: false,
+      },
+    ],
+    name: 'WithdrawalRequested',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'customer',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'Withdrawn',
+  },
+  { type: 'error', inputs: [], name: 'AccessControlBadConfirmation' },
+  {
+    type: 'error',
+    inputs: [{ name: 'schedule', internalType: 'uint48', type: 'uint48' }],
+    name: 'AccessControlEnforcedDefaultAdminDelay',
+  },
+  { type: 'error', inputs: [], name: 'AccessControlEnforcedDefaultAdminRules' },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'defaultAdmin', internalType: 'address', type: 'address' },
+    ],
+    name: 'AccessControlInvalidDefaultAdmin',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'account', internalType: 'address', type: 'address' },
+      { name: 'neededRole', internalType: 'bytes32', type: 'bytes32' },
+    ],
+    name: 'AccessControlUnauthorizedAccount',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'AccountBlocked',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'channelId', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'AmountDecreased',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'channelId', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'ChannelMismatch',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'window', internalType: 'uint64', type: 'uint64' }],
+    name: 'DisputeWindowOutOfRange',
+  },
+  { type: 'error', inputs: [], name: 'EmptyBatch' },
+  { type: 'error', inputs: [], name: 'EnforcedPause' },
+  { type: 'error', inputs: [], name: 'ExpectedPause' },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'feeDelta', internalType: 'uint256', type: 'uint256' },
+      { name: 'allowed', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'FeeAboveCap',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'effectiveAt', internalType: 'uint64', type: 'uint64' }],
+    name: 'FeeCapNotReady',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'bps', internalType: 'uint16', type: 'uint16' },
+      { name: 'maxBps', internalType: 'uint16', type: 'uint16' },
+    ],
+    name: 'FeeCapTooHigh',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'customer', internalType: 'address', type: 'address' },
+      { name: 'requested', internalType: 'uint256', type: 'uint256' },
+      { name: 'available', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'InsufficientBalance',
+  },
+  { type: 'error', inputs: [], name: 'InvalidSessionKey' },
+  { type: 'error', inputs: [], name: 'InvalidShortString' },
+  {
+    type: 'error',
+    inputs: [{ name: 'signer', internalType: 'address', type: 'address' }],
+    name: 'InvalidSignature',
+  },
+  { type: 'error', inputs: [], name: 'NoFeeCapScheduled' },
+  {
+    type: 'error',
+    inputs: [{ name: 'customer', internalType: 'address', type: 'address' }],
+    name: 'NoWithdrawalRequested',
+  },
+  { type: 'error', inputs: [], name: 'ReentrancyGuardReentrantCall' },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'bits', internalType: 'uint8', type: 'uint8' },
+      { name: 'value', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'SafeCastOverflowedUintDowncast',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
+    name: 'SafeERC20FailedOperation',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'key', internalType: 'address', type: 'address' },
+      { name: 'requested', internalType: 'uint256', type: 'uint256' },
+      { name: 'remaining', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'SessionHourlyCapExceeded',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'customer', internalType: 'address', type: 'address' },
+      { name: 'key', internalType: 'address', type: 'address' },
+    ],
+    name: 'SessionKeyInactive',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'key', internalType: 'address', type: 'address' },
+      { name: 'requested', internalType: 'uint256', type: 'uint256' },
+      { name: 'remaining', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'SessionSpendCapExceeded',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'sequence', internalType: 'uint64', type: 'uint64' },
+      { name: 'lastSequence', internalType: 'uint64', type: 'uint64' },
+    ],
+    name: 'StaleVoucher',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'str', internalType: 'string', type: 'string' }],
+    name: 'StringTooLong',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'expiry', internalType: 'uint64', type: 'uint64' }],
+    name: 'VoucherExpired',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'readyAt', internalType: 'uint64', type: 'uint64' }],
+    name: 'WithdrawalNotReady',
+  },
+  { type: 'error', inputs: [], name: 'ZeroAddress' },
+  { type: 'error', inputs: [], name: 'ZeroAmount' },
+] as const

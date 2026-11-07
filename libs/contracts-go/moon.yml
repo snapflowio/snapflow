@@ -9,13 +9,14 @@ fileGroups:
 
 tasks:
   generate:
-    script: >-
-      (cd ../../apps/contracts && forge inspect SnapflowEscrow abi --json) > escrow/snapflow_escrow.abi.json
-      && go run github.com/ethereum/go-ethereum/cmd/abigen@v1.17.10 --v2
-      --abi escrow/snapflow_escrow.abi.json --pkg escrow --type SnapflowEscrow --out escrow/snapflow_escrow.gen.go
+    command: "go"
+    args: ["generate", "./..."]
     deps: ["contracts:build"]
-    inputs: ["/apps/contracts/src/**/*.sol"]
-    outputs: ["escrow"]
+    inputs:
+      - "escrow/generate.go"
+      - "go.mod"
+      - "/apps/contracts/out/SnapflowEscrow.sol/SnapflowEscrow.abi.json"
+    outputs: ["escrow/snapflow_escrow.gen.go"]
 
   build:
     command: "go"

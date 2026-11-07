@@ -8,10 +8,8 @@
 -->
 
 <script lang="ts" module>
-import type {
-	EscrowWallet,
-	SessionKeyGrant,
-} from '#lib/features/billing/lib/escrow-contract.ts';
+import type { EscrowWallet } from '#lib/features/billing/lib/escrow-wallet.ts';
+import type { SessionKeyGrant } from '#lib/features/billing/state/session-key-draft.svelte.ts';
 
 interface SessionKeyAuthorization {
 	wallet: EscrowWallet;
@@ -21,6 +19,10 @@ interface SessionKeyAuthorization {
 
 <script lang="ts">
 import type { VoucherDelegation } from '@snapflow/api-client';
+import {
+	simulateSnapflowEscrowSetSessionKey,
+	writeSnapflowEscrowSetSessionKey,
+} from '@snapflow/contracts/actions';
 import { createMutation } from '@tanstack/svelte-query';
 import { watch } from 'runed';
 import { ESCROW_QUERY_KEYS } from '#lib/api/settlement/escrow.ts';
@@ -34,7 +36,7 @@ import ChipModalError from '#lib/components/ui/chip-modal/chip-modal-error.svelt
 import ChipModalField from '#lib/components/ui/chip-modal/chip-modal-field.svelte';
 import ChipModalFooter from '#lib/components/ui/chip-modal/chip-modal-footer.svelte';
 import ChipModalHeader from '#lib/components/ui/chip-modal/chip-modal-header.svelte';
-import { setSessionKey } from '#lib/features/billing/lib/escrow-contract.ts';
+import { confirmTransaction } from '#lib/features/billing/lib/escrow-wallet.ts';
 import { SessionKeyDraft } from '#lib/features/billing/state/session-key-draft.svelte.ts';
 import { formatUsd } from '#lib/utils/usd.ts';
 
@@ -59,7 +61,18 @@ const ids = {
 const draft = new SessionKeyDraft(() => delegation);
 const authorize = createMutation(() => ({
 	mutationFn: ({ wallet: signer, grant }: SessionKeyAuthorization) =>
-		setSessionKey(signer, grant),
+		confirmTransaction(signer, async () => {
+			const { request } = await simulateSnapflowEscrowSetSessionKey(
+				signer.config,
+				{
+					address: signer.escrow,
+					args: [grant.key, grant.spendCap, grant.hourlyCap, grant.expiry],
+					account: signer.account,
+					chainId: signer.chainId,
+				}
+			);
+			return writeSnapflowEscrowSetSessionKey(signer.config, request);
+		}),
 	meta: {
 		success:
 			'Payments authorized. Snapflow can sign vouchers within these limits.',

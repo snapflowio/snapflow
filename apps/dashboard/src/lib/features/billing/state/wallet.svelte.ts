@@ -14,8 +14,11 @@ import { type Address, getAddress, isAddress, isAddressEqual } from 'viem';
 import { showApiError } from '#lib/api/errors/show-api-error.ts';
 import type { SnapflowError } from '#lib/api/errors/snapflow-error.ts';
 import { getPublicConfig } from '#lib/api/public-config.ts';
-import type { EscrowWallet } from '#lib/features/billing/lib/escrow-contract.ts';
-import { walletError } from '#lib/features/billing/lib/wallet-error.ts';
+import type { EscrowWallet } from '#lib/features/billing/lib/escrow-wallet.ts';
+import {
+	walletCall,
+	walletError,
+} from '#lib/features/billing/lib/wallet-error.ts';
 import type {
 	WalletKit,
 	WalletView,
@@ -113,11 +116,9 @@ export class WalletConnection {
 	signMessage = async (message: string): Promise<string> => {
 		const account = this.address;
 		if (!account) throw walletError(NOT_CONNECTED_MESSAGE);
-		try {
-			return await signMessage(this.#kit.config, { account, message });
-		} catch (error) {
-			throw walletError(error);
-		}
+		return walletCall(() =>
+			signMessage(this.#kit.config, { account, message })
+		);
 	};
 }
 
