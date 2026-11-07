@@ -23,15 +23,12 @@ import {
 } from '@snapflow/contracts';
 import {
 	type Address,
-	createPublicClient,
 	createWalletClient,
 	erc20Abi,
 	type Hash,
 	type Hex,
 	http,
-	type PublicClient,
 	parseEther,
-	type WalletClient,
 } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { foundry } from 'viem/chains';
@@ -102,9 +99,11 @@ import { unbilledServicePeriods } from '../queries/unbilled-service-periods.quer
 import { ClaimRelayerService } from '../scheduler/services/claim-relayer.service';
 import { EscrowIndexerService } from '../scheduler/services/escrow-indexer.service';
 import {
-	type IntegrationChain,
-	integrationChain,
-} from '../testing/integration-chain.util';
+	type LocalEscrowChain,
+	localEscrowChainSkipReason,
+	startLocalEscrowChain,
+	testAccount,
+} from '../testing/local-escrow-chain.util';
 import { channelDomain, voucherMessage } from '../utils/voucher-message.util';
 import { EscrowFeePolicyService } from './escrow-fee-policy.service';
 import { EscrowIngestionService } from './escrow-ingestion.service';
@@ -116,13 +115,11 @@ import { VoucherIssuanceService } from './voucher-issuance.service';
 import { VoucherSigningService } from './voucher-signing.service';
 import { VoucherSubmissionService } from './voucher-submission.service';
 
-const CHAIN = integrationChain();
 const DATABASE_URL = integrationDatabaseUrl();
-// Anvil accounts the other chain tests leave alone; DeployLocal must fund
-// the customer with test USDC.
-const CUSTOMER_ACCOUNT_INDEX = 5;
-const HOST_ACCOUNT_INDEX = 6;
-const GAS_FUNDER_ACCOUNT_INDEX = 0;
+const CHAIN_SKIP_REASON = localEscrowChainSkipReason();
+const CUSTOMER_ACCOUNT_INDEX = 0;
+const HOST_ACCOUNT_INDEX = 1;
+const GAS_FUNDER_ACCOUNT_INDEX = 2;
 const RELAYER_GAS = parseEther('1');
 const DEPOSIT_MICRO_USD = 10_000_000n;
 const SPEND_CAP_MICRO_USD = 50_000_000n;
@@ -150,10 +147,7 @@ interface LineAmounts {
 }
 
 describe('escrow payment channels end to end', {
-	skip:
-		CHAIN && DATABASE_URL
-			? false
-			: 'SETTLEMENT_INTEGRATION_RPC_URL and DATABASE_URL are required',
+	skip: DATABASE_URL ? CHAIN_SKIP_REASON : 'DATABASE_URL is not configured',
 }, () => {
 	const schema = `payment_channels_${randomUUID().replaceAll('-', '')}`;
 	const customerOrganizationId = randomUUID();
@@ -161,8 +155,9 @@ describe('escrow payment channels end to end', {
 	const signer = privateKeyToAccount(generatePrivateKey());
 	const relayerAccount = privateKeyToAccount(generatePrivateKey());
 	let orm: MikroORM;
-	let publicClient: PublicClient;
-	let walletClient: WalletClient;
+	let chain: LocalEscrowChain;
+	let publicClient: LocalEscrowChain['publicClient'];
+	let walletClient: LocalEscrowChain['walletClient'];
 	let customer: Address;
 	let host: Address;
 	let machine: Machine;
@@ -177,7 +172,6 @@ describe('escrow payment channels end to end', {
 	let relay: MachineVoucherRelayService;
 	let hostOpeningUsdc: bigint;
 	let config: TypedConfigService;
-	let chain: IntegrationChain;
 	const settings: SettingsService = fakeSettings({
 		settlementConfirmations: 0,
 	});
@@ -345,20 +339,11 @@ describe('escrow payment channels end to end', {
 	}
 
 	before(async () => {
-		if (!CHAIN || !DATABASE_URL) return;
-		chain = CHAIN;
-		const transport = http(chain.rpcUrl);
-		publicClient = createPublicClient({ chain: foundry, transport });
-		walletClient = createWalletClient({ chain: foundry, transport });
-		const accounts = await walletClient.getAddresses();
-		const customerAccount = accounts[CUSTOMER_ACCOUNT_INDEX];
-		const hostAccount = accounts[HOST_ACCOUNT_INDEX];
-		const funder = accounts[GAS_FUNDER_ACCOUNT_INDEX];
-		if (!customerAccount || !hostAccount || !funder) {
-			throw new Error('The chain has too few unlocked accounts');
-		}
-		customer = customerAccount;
-		host = hostAccount;
+		chain = await startLocalEscrowChain();
+		({ publicClient, walletClient } = chain);
+		customer = testAccount(chain, CUSTOMER_ACCOUNT_INDEX);
+		host = testAccount(chain, HOST_ACCOUNT_INDEX);
+		const funder = testAccount(chain, GAS_FUNDER_ACCOUNT_INDEX);
 		const firstBlock =
 			(await publicClient.getBlockNumber({ cacheTime: 0 })) + 1n;
 		const values: Readonly<Record<string, unknown>> = {
@@ -436,7 +421,7 @@ describe('escrow payment channels end to end', {
 			createWalletClient({
 				account: relayerAccount,
 				chain: foundry,
-				transport,
+				transport: http(chain.rpcUrl),
 			}),
 			config,
 			settings,
@@ -544,6 +529,7 @@ describe('escrow payment channels end to end', {
 	});
 
 	after(async () => {
+		await chain?.stop();
 		if (!orm) return;
 		await orm.em.getConnection().execute(`DROP SCHEMA ${schema} CASCADE`);
 		await orm.close(true);

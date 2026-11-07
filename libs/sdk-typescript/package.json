@@ -65,6 +65,7 @@
 		"@types/busboy": "^1.0.0",
 		"@types/node": "catalog:",
 		"@types/ws": "^8.18.1",
+		"prool": "catalog:",
 		"typescript": "catalog:",
 		"viem": "catalog:",
 		"vitest": "catalog:"

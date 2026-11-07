@@ -8,25 +8,21 @@
  */
 
 import assert from 'node:assert/strict';
-import { before, describe, it } from 'node:test';
+import { after, before, describe, it } from 'node:test';
 import { snapflowEscrowAbi } from '@snapflow/contracts';
-import {
-	type Address,
-	createPublicClient,
-	createWalletClient,
-	erc20Abi,
-	type Hash,
-	http,
-	type PublicClient,
-	type WalletClient,
-} from 'viem';
+import { type Address, erc20Abi, type Hash } from 'viem';
 import { foundry } from 'viem/chains';
 import {
 	MILLISECONDS_PER_SECOND,
 	SECONDS_PER_HOUR,
 } from '../../common/constants/time.constants';
 import { MicroUsd } from '../../common/values/micro-usd.value';
-import { integrationChain } from '../testing/integration-chain.util';
+import {
+	type LocalEscrowChain,
+	localEscrowChainSkipReason,
+	startLocalEscrowChain,
+	testAccount,
+} from '../testing/local-escrow-chain.util';
 import type { EscrowLog } from '../types/escrow.types';
 import { escrowEventRecord } from './escrow-event-record.util';
 import {
@@ -36,45 +32,35 @@ import {
 	sessionKeyChange,
 } from './escrow-projection.util';
 
-const CHAIN = integrationChain();
 const DEPOSIT_MICRO_USD = 5_000_000n;
 const WITHDRAWAL_MICRO_USD = 2_000_000n;
 const SPEND_CAP_MICRO_USD = 1_000_000n;
 const HOURLY_CAP_MICRO_USD = 100_000n;
-const CUSTOMER_ACCOUNT_INDEX = 1;
-const SESSION_KEY_ACCOUNT_INDEX = 2;
+const CUSTOMER_ACCOUNT_INDEX = 0;
+const SESSION_KEY_ACCOUNT_INDEX = 1;
 
 describe('escrow events read from a local chain', {
-	skip: CHAIN ? false : 'SETTLEMENT_INTEGRATION_RPC_URL is not configured',
+	skip: localEscrowChainSkipReason(),
 }, () => {
-	let publicClient: PublicClient;
-	let walletClient: WalletClient;
+	let chain: LocalEscrowChain;
 	let customer: Address;
 	let sessionKey: Address;
 	let logs: EscrowLog[];
 	let openingBalance: bigint;
 
 	async function send(hash: Promise<Hash>): Promise<void> {
-		const receipt = await publicClient.waitForTransactionReceipt({
+		const receipt = await chain.publicClient.waitForTransactionReceipt({
 			hash: await hash,
 		});
 		assert.equal(receipt.status, 'success');
 	}
 
 	before(async () => {
-		if (!CHAIN) return;
-		const transport = http(CHAIN.rpcUrl);
-		publicClient = createPublicClient({ chain: foundry, transport });
-		walletClient = createWalletClient({ chain: foundry, transport });
-		const accounts = await walletClient.getAddresses();
-		const customerAccount = accounts[CUSTOMER_ACCOUNT_INDEX];
-		const keyAccount = accounts[SESSION_KEY_ACCOUNT_INDEX];
-		if (!customerAccount || !keyAccount) {
-			throw new Error('The chain has too few unlocked accounts');
-		}
-		customer = customerAccount;
-		sessionKey = keyAccount;
-		const escrow = { address: CHAIN.escrowAddress, abi: snapflowEscrowAbi };
+		chain = await startLocalEscrowChain();
+		const { publicClient, walletClient } = chain;
+		customer = testAccount(chain, CUSTOMER_ACCOUNT_INDEX);
+		sessionKey = testAccount(chain, SESSION_KEY_ACCOUNT_INDEX);
+		const escrow = { address: chain.escrowAddress, abi: snapflowEscrowAbi };
 		openingBalance = await publicClient.readContract({
 			...escrow,
 			functionName: 'balanceOf',
@@ -87,10 +73,10 @@ describe('escrow events read from a local chain', {
 		await send(
 			walletClient.writeContract({
 				...write,
-				address: CHAIN.usdcAddress,
+				address: chain.usdcAddress,
 				abi: erc20Abi,
 				functionName: 'approve',
-				args: [CHAIN.escrowAddress, DEPOSIT_MICRO_USD],
+				args: [chain.escrowAddress, DEPOSIT_MICRO_USD],
 			})
 		);
 		await send(
@@ -131,7 +117,7 @@ describe('escrow events read from a local chain', {
 			})
 		);
 		const confirmed = await publicClient.getContractEvents({
-			address: CHAIN.escrowAddress,
+			address: chain.escrowAddress,
 			abi: snapflowEscrowAbi,
 			fromBlock,
 			toBlock: await publicClient.getBlockNumber({ cacheTime: 0 }),
@@ -139,6 +125,8 @@ describe('escrow events read from a local chain', {
 		});
 		logs = confirmed;
 	});
+
+	after(() => chain?.stop());
 
 	it('decodes every customer event through the generated ABI', () => {
 		assert.deepEqual(
@@ -153,20 +141,19 @@ describe('escrow events read from a local chain', {
 	});
 
 	it('projects the same account the contract reports', async () => {
-		if (!CHAIN) return;
 		const projected = logs
 			.filter((log) => escrowAccountAddress(log) === customer)
 			.reduce(projectEscrowAccount, {
 				...EMPTY_ESCROW_ACCOUNT,
 				balanceMicroUsd: MicroUsd.of(openingBalance),
 			});
-		const escrow = { address: CHAIN.escrowAddress, abi: snapflowEscrowAbi };
-		const balance = await publicClient.readContract({
+		const escrow = { address: chain.escrowAddress, abi: snapflowEscrowAbi };
+		const balance = await chain.publicClient.readContract({
 			...escrow,
 			functionName: 'balanceOf',
 			args: [customer],
 		});
-		const withdrawal = await publicClient.readContract({
+		const withdrawal = await chain.publicClient.readContract({
 			...escrow,
 			functionName: 'withdrawalOf',
 			args: [customer],

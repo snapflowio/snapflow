@@ -166,6 +166,7 @@ catalog:
   remark-gfm: ^4.0.1
   socket.io-client: ^4.8.3
   socket.io: ^4.8.1
+  prool: 0.2.17
   t3: 0.0.31
   tailwind-merge: 3.6.0
   tailwindcss: ^4.3.3
