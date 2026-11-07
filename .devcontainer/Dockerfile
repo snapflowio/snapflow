@@ -27,6 +27,11 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG MOON_VERSION=2.4.6
 ARG CODEX_VERSION=0.145.0
 ARG FOUNDRY_VERSION=1.9.0
+ARG ADERYN_VERSION=0.6.8
+ARG MEDUSA_VERSION=1.5.1
+# Medusa publishes Sigstore bundles but no checksum file; this is the release's medusa-linux-x64.tar.gz digest.
+ARG MEDUSA_SHA256=ddfe1517ae9028ef9fc331b00f5a6a9d5406f3fcd11a715d60c6b6fb3e4546d3
+ARG CRYTIC_COMPILE_VERSION=0.4.2
 ARG KUBECTL_VERSION=1.37.1
 ARG HELM_VERSION=4.3.1
 ARG FLUX_VERSION=2.9.6
@@ -93,6 +98,27 @@ RUN package="foundry_v${FOUNDRY_VERSION}_linux_$(dpkg --print-architecture)" \
   && tar -xzf "/tmp/${package}.tar.gz" -C /usr/local/bin forge cast anvil chisel \
   && rm "/tmp/${package}.tar.gz" "/tmp/${package}.sha256" \
   && forge --version
+
+RUN package="aderyn-x86_64-unknown-linux-gnu" \
+  && release="https://github.com/Cyfrin/aderyn/releases/download/aderyn-v${ADERYN_VERSION}" \
+  && curl --http1.1 --retry 5 --retry-all-errors --retry-delay 2 -fsSL \
+    "${release}/${package}.tar.xz" -o "/tmp/${package}.tar.xz" \
+  && curl --http1.1 --retry 5 --retry-all-errors --retry-delay 2 -fsSL \
+    "${release}/${package}.tar.xz.sha256" -o "/tmp/${package}.tar.xz.sha256" \
+  && (cd /tmp && sha256sum -c "${package}.tar.xz.sha256") \
+  && tar -xJf "/tmp/${package}.tar.xz" -C /usr/local/bin --strip-components=1 "${package}/aderyn" \
+  && rm "/tmp/${package}.tar.xz" "/tmp/${package}.tar.xz.sha256" \
+  && aderyn --version
+
+RUN package="medusa-linux-x64.tar.gz" \
+  && curl --http1.1 --retry 5 --retry-all-errors --retry-delay 2 -fsSL \
+    "https://github.com/crytic/medusa/releases/download/v${MEDUSA_VERSION}/${package}" -o "/tmp/${package}" \
+  && echo "${MEDUSA_SHA256}  /tmp/${package}" | sha256sum -c - \
+  && tar -xzf "/tmp/${package}" -C /usr/local/bin medusa \
+  && rm "/tmp/${package}" \
+  && PIPX_HOME=/opt/pipx PIPX_BIN_DIR=/usr/local/bin pipx install "crytic-compile==${CRYTIC_COMPILE_VERSION}" \
+  && medusa --version \
+  && crytic-compile --version
 
 RUN release="https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64" \
   && curl --http1.1 --retry 5 --retry-all-errors --retry-delay 2 -fsSL \

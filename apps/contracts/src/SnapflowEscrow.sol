@@ -132,6 +132,8 @@ contract SnapflowEscrow is
 
     function claimBatch(SignedVoucher[] calldata signed) external nonReentrant whenNotPaused {
         if (signed.length == 0) revert EmptyBatch();
+        // Batches are all-or-nothing by design: the relayer simulates them and isolates failing vouchers first.
+        // aderyn-ignore-next-line(costly-loop,require-revert-in-loop)
         for (uint256 i; i < signed.length; ++i) {
             _claim(signed[i]);
         }
@@ -247,10 +249,12 @@ contract SnapflowEscrow is
         if (amount > 0) token.safeTransfer(msg.sender, amount);
     }
 
+    // aderyn-ignore-next-line(centralization-risk) admin policy; increases wait out FEE_CAP_TIMELOCK
     function scheduleFeeCap(uint16 bps) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _scheduleFeeCap(bps);
     }
 
+    // aderyn-ignore-next-line(centralization-risk) admin policy; cancelling keeps the current cap
     function cancelFeeCapSchedule() external onlyRole(DEFAULT_ADMIN_ROLE) {
         _cancelFeeCapSchedule();
     }
@@ -260,27 +264,32 @@ contract SnapflowEscrow is
         _applyFeeCap();
     }
 
+    // aderyn-ignore-next-line(centralization-risk) admin policy; the recipient only ever receives voucher fees
     function setFeeRecipient(address recipient) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _setFeeRecipient(recipient);
     }
 
     /// @notice Freezes an address after a sanctions match: it can neither deposit, claim, be paid nor withdraw.
+    // aderyn-ignore-next-line(centralization-risk) sanctions freezes are the compliance role's job
     function blockAccount(address account) external onlyRole(COMPLIANCE_ROLE) {
         if (account == address(0)) revert ZeroAddress();
         _blocked[account] = true;
         emit AddressBlocked(account);
     }
 
+    // aderyn-ignore-next-line(centralization-risk) sanctions freezes are the compliance role's job
     function unblockAccount(address account) external onlyRole(COMPLIANCE_ROLE) {
         _blocked[account] = false;
         emit AddressUnblocked(account);
     }
 
     /// @notice Stops deposits and claims in an emergency. Withdrawals keep working.
+    // aderyn-ignore-next-line(centralization-risk) emergency stop by design; withdrawals keep working while paused
     function pause() external onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
+    // aderyn-ignore-next-line(centralization-risk) emergency stop by design; withdrawals keep working while paused
     function unpause() external onlyRole(PAUSER_ROLE) {
         _unpause();
     }

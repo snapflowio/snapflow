@@ -12,7 +12,10 @@
   bytecode_hash = "none"
   extra_output_files = ["abi"]
   gas_reports = ["SnapflowEscrow"]
-  fs_permissions = [{ access = "read-write", path = "./test/vectors" }]
+  fs_permissions = [
+    { access = "read-write", path = "./test/vectors" },
+    { access = "read", path = "./script/createx" },
+  ]
 
 [profile.default.fuzz]
   runs = 10_000
@@ -40,6 +43,10 @@
   runs = 32
   depth = 32
 
+# The gas snapshot (.gas-snapshot) covers only the concrete tests: fuzz and invariant gas varies with random inputs.
+[profile.gas]
+  match_path = "test/integration/concrete/*"
+
 [fmt]
   bracket_spacing = true
   int_types = "long"
@@ -59,11 +66,11 @@
 [rpc_endpoints]
   base = "${BASE_RPC_URL}"
   base_sepolia = "${BASE_SEPOLIA_RPC_URL}"
-  anvil = "http://127.0.0.1:8545"
 
+# Etherscan API V2: one etherscan.io key verifies on every chain it lists, Basescan included.
 [etherscan]
-  base = { key = "${BASESCAN_API_KEY}", chain = 8453 }
-  base_sepolia = { key = "${BASESCAN_API_KEY}", chain = 84532 }
+  base = { key = "${ETHERSCAN_API_KEY}", chain = 8453 }
+  base_sepolia = { key = "${ETHERSCAN_API_KEY}", chain = 84532 }
 
 [soldeer]
   remappings_generate = true

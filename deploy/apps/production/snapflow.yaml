@@ -23,11 +23,14 @@ spec:
       platform: ${PLATFORM_DOMAIN}
     email:
       from: Snapflow <noreply@${EMAIL_DOMAIN}>
-    # Base mainnet and Circle's USDC on it. The escrow address and its
-    # deployment block come from apps/contracts/script/DeployEscrow.s.sol's
-    # broadcast; the Reown Cloud project id is public. The chart refuses to
-    # render while any of them is empty. The RPC URL carries a provider key,
-    # so it lives in OpenBao (moon run deploy:openbao).
+    # Base mainnet and Circle's USDC on it. The escrow address, its
+    # deployment block and the USDC address are written from
+    # apps/contracts/deployments/<chainId>.json by moon run
+    # contracts:deploy-base (or deploy:settlement-values), and deploy:validate
+    # fails when they differ; never edit them by hand. The Reown Cloud project
+    # id is public. The chart refuses to render while any of them is empty.
+    # The RPC URL carries a provider key, so it lives in OpenBao (moon run
+    # deploy:openbao).
     settlement:
       chainId: 8453
       escrowAddress: ""

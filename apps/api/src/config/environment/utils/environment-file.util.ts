@@ -51,17 +51,27 @@ function variableLines(content: string): Map<string, string> {
 	return lines;
 }
 
-export function layoutEnvironmentFile(content: string): EnvironmentFileLayout {
+// Development values fill only variables the file leaves unset or empty, so
+// a value the developer chose always wins.
+export function layoutEnvironmentFile(
+	content: string,
+	developmentValues: Readonly<Record<string, string>>
+): EnvironmentFileLayout {
 	const lines = variableLines(content);
 	const sections = environmentFileSections().filter(
 		(section) => section.names.length > 0
 	);
 	const registered = new Set(sections.flatMap((section) => section.names));
+	const lineFor = (name: string): string => {
+		const line = lines.get(name);
+		const developmentValue = developmentValues[name];
+		if (developmentValue !== undefined && (!line || line === `${name}=`)) {
+			return `${name}=${developmentValue}`;
+		}
+		return line ?? `${name}=`;
+	};
 	const blocks = sections.map(({ title, names }) =>
-		[
-			`${SECTION_PREFIX}${title}`,
-			...names.map((name) => lines.get(name) ?? `${name}=`),
-		].join(LINE_SEPARATOR)
+		[`${SECTION_PREFIX}${title}`, ...names.map(lineFor)].join(LINE_SEPARATOR)
 	);
 	return {
 		content: `${blocks.join(SECTION_SEPARATOR)}${LINE_SEPARATOR}`,

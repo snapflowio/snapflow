@@ -3,3 +3,7 @@
 /dependencies
 /broadcast/*/31337
 /broadcast/**/dry-run
+/lcov.info
+/aderyn-report.json
+/medusa-corpus
+/crytic-export

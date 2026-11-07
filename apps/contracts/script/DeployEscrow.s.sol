@@ -7,45 +7,45 @@
 pragma solidity 0.8.38;
 
 import { IERC20 } from "@openzeppelin-contracts/token/ERC20/IERC20.sol";
-import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
 import { SnapflowEscrow } from "../src/SnapflowEscrow.sol";
+import { EscrowDeployer } from "./base/EscrowDeployer.sol";
 
-/// @notice Deploys the escrow for an existing USDC token. The broadcaster deploys and grants the operating roles, then
-/// starts the delayed hand-over of the admin role to `ESCROW_ADMIN`, which must accept it after the delay.
+/// @notice Deploys the escrow for an existing USDC token at the broadcaster's deterministic address (see
+/// `predict`). The broadcaster deploys and grants the operating roles, then starts the delayed hand-over of the admin
+/// role to `ESCROW_ADMIN`, which must accept it after the delay.
 ///
 /// Environment: ESCROW_USDC, ESCROW_ADMIN, ESCROW_FEE_RECIPIENT, ESCROW_COMPLIANCE, ESCROW_PAUSER,
-/// ESCROW_FEE_CAP_BPS, ESCROW_DISPUTE_WINDOW_SECONDS. In production ESCROW_USDC is Circle's USDC on Base
-/// (0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913); the deployed address and its block go under `settlement` in
-/// deploy/apps/production/snapflow.yaml.
-contract DeployEscrow is Script {
+/// ESCROW_FEE_CAP_BPS, ESCROW_DISPUTE_WINDOW_SECONDS. Run it through `moon run contracts:deploy-base-sepolia` or
+/// `contracts:deploy-base`, which verify the source and record the result in deployments/<chainId>.json.
+contract DeployEscrow is EscrowDeployer {
+    error PendingAdminMismatch(address expected, address actual);
+
     function run() external returns (SnapflowEscrow escrow) {
         address finalAdmin = vm.envAddress("ESCROW_ADMIN");
+        EscrowConfig memory config = EscrowConfig({
+            token: IERC20(vm.envAddress("ESCROW_USDC")),
+            feeRecipient: vm.envAddress("ESCROW_FEE_RECIPIENT"),
+            compliance: vm.envAddress("ESCROW_COMPLIANCE"),
+            pauser: vm.envAddress("ESCROW_PAUSER"),
+            feeCapBps: uint16(vm.envUint("ESCROW_FEE_CAP_BPS")),
+            disputeWindow: uint64(vm.envUint("ESCROW_DISPUTE_WINDOW_SECONDS"))
+        });
+
         vm.startBroadcast();
-        escrow = deploy(
-            IERC20(vm.envAddress("ESCROW_USDC")),
-            vm.envAddress("ESCROW_FEE_RECIPIENT"),
-            vm.envAddress("ESCROW_COMPLIANCE"),
-            vm.envAddress("ESCROW_PAUSER"),
-            uint16(vm.envUint("ESCROW_FEE_CAP_BPS")),
-            uint64(vm.envUint("ESCROW_DISPUTE_WINDOW_SECONDS"))
-        );
+        escrow = _deployEscrow(config);
         if (finalAdmin != msg.sender) escrow.beginDefaultAdminTransfer(finalAdmin);
         vm.stopBroadcast();
+
+        (address pendingAdmin,) = escrow.pendingDefaultAdmin();
+        address expectedPending = finalAdmin == msg.sender ? address(0) : finalAdmin;
+        if (pendingAdmin != expectedPending) revert PendingAdminMismatch(expectedPending, pendingAdmin);
+        console.log("SnapflowEscrow", address(escrow));
     }
 
-    function deploy(
-        IERC20 usdc,
-        address feeRecipient,
-        address compliance,
-        address pauser,
-        uint16 feeCapBps,
-        uint64 disputeWindow
-    )
-        public
-        returns (SnapflowEscrow escrow)
-    {
-        escrow = new SnapflowEscrow(usdc, msg.sender, feeRecipient, feeCapBps, disputeWindow);
-        escrow.grantRole(escrow.COMPLIANCE_ROLE(), compliance);
-        escrow.grantRole(escrow.PAUSER_ROLE(), pauser);
+    /// @notice Prints the escrow address the sender (`--sender`) gets on every chain, before deploying anything.
+    function predict() external view returns (address escrow) {
+        escrow = predictEscrow(msg.sender);
+        console.log("SnapflowEscrow", escrow);
     }
 }

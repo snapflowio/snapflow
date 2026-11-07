@@ -1,0 +1,6 @@
+# Aderyn static analysis of the escrow sources (moon run contracts:aderyn); CI fails on any high or low finding,
+# the same bar as Slither's fail_on = low. Suppress a finding only inline, with the reason, using
+# `// aderyn-ignore-next-line(<detector>)`.
+version = 1
+root = "."
+src = "src/"

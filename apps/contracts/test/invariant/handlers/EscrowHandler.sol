@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: AGPL-3.0
 pragma solidity >=0.8.30;
 
+import { IERC20 } from "@openzeppelin-contracts/token/ERC20/IERC20.sol";
 import { CommonBase } from "forge-std/Base.sol";
 import { StdCheats } from "forge-std/StdCheats.sol";
 import { StdUtils } from "forge-std/StdUtils.sol";
@@ -15,14 +16,17 @@ import { Channel, SignedVoucher, Voucher } from "../../../src/types/EscrowTypes.
 import { MockUSDC } from "../../mocks/MockUSDC.sol";
 import { Constants } from "../../utils/Constants.sol";
 
-/// @notice Drives the escrow through random deposits, claims, withdrawals and time jumps while recording what moved.
+/// @notice Deploys an escrow and drives it through random deposits, claims, withdrawals and time jumps while
+/// recording what moved. It builds its own escrow so Medusa, which only deploys contracts without constructor
+/// arguments, can fuzz the same handler as Foundry.
 contract EscrowHandler is CommonBase, StdCheats, StdUtils, Constants {
     uint256 private constant CUSTOMER_COUNT = 3;
     uint256 private constant HOST_COUNT = 2;
     uint256 private constant MAX_TIME_JUMP = 2 days;
 
-    SnapflowEscrow private immutable escrow;
-    MockUSDC private immutable usdc;
+    SnapflowEscrow public immutable escrow;
+    MockUSDC public immutable usdc;
+    address public immutable platform;
 
     address[] public customers;
     uint256[] private customerKeys;
@@ -32,14 +36,14 @@ contract EscrowHandler is CommonBase, StdCheats, StdUtils, Constants {
     uint256 public paidOut;
     uint256 public withdrawn;
     uint256 public feesOverAllowance;
-    uint256 public decreasedChannels;
 
     bytes32[] public channels;
     mapping(bytes32 channelId => uint256) private lastHostClaimed;
 
-    constructor(SnapflowEscrow escrow_, MockUSDC usdc_) {
-        escrow = escrow_;
-        usdc = usdc_;
+    constructor() {
+        platform = makeAddr("platform");
+        usdc = new MockUSDC();
+        escrow = new SnapflowEscrow(IERC20(address(usdc)), makeAddr("admin"), platform, FEE_CAP_BPS, DISPUTE_WINDOW);
         for (uint256 i; i < CUSTOMER_COUNT; ++i) {
             (address account, uint256 key) = makeAddrAndKey(string.concat("invariant-customer-", vm.toString(i)));
             customers.push(account);
@@ -118,9 +122,9 @@ contract EscrowHandler is CommonBase, StdCheats, StdUtils, Constants {
         vm.warp(block.timestamp + bound(seconds_, 1, MAX_TIME_JUMP));
     }
 
-    function checkChannelsNeverDecrease() external {
+    function decreasedChannels() external view returns (uint256 decreased) {
         for (uint256 i; i < channels.length; ++i) {
-            if (escrow.channelOf(channels[i]).hostClaimed < lastHostClaimed[channels[i]]) decreasedChannels += 1;
+            if (escrow.channelOf(channels[i]).hostClaimed < lastHostClaimed[channels[i]]) ++decreased;
         }
     }
 

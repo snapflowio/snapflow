@@ -5,6 +5,7 @@
 		"docker-compose.yml",
 		"compose/data.yml",
 		"compose/build.yml",
+		"compose/chain.yml",
 		"compose/openbao.yml",
 		"compose/resend.yml",
 		"compose/wslg.yml"
@@ -39,6 +40,7 @@
 		3001,
 		3002,
 		4321,
+		"anvil:8545",
 		"postgres:5432",
 		"redis:6379",
 		"registry:5000",
@@ -55,6 +57,7 @@
 		"8082": { "label": "Snapflow Edge HTTP Ingress" },
 		"8444": { "label": "Snapflow Edge HTTPS Ingress" },
 		"23000-23031": { "label": "Snapflow Edge Public TCP/UDP Exposures" },
+		"anvil:8545": { "label": "Local settlement chain (anvil)" },
 		"postgres:5432": { "label": "PostgreSQL" },
 		"redis:6379": { "label": "Redis" },
 		"registry:5000": { "label": "Registry" },

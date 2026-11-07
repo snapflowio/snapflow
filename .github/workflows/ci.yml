@@ -291,6 +291,25 @@ jobs:
         env:
           FOUNDRY_PROFILE: ci
         run: forge test
+      - name: Gas snapshot
+        env:
+          FOUNDRY_PROFILE: gas
+        run: forge snapshot --check
+      - name: Coverage of src/ above the minimums
+        run: bash script/check-coverage.sh lcov.info
+      - name: Install Aderyn
+        env:
+          ADERYN_URL: https://github.com/Cyfrin/aderyn/releases/download/aderyn-v0.6.8/aderyn-x86_64-unknown-linux-gnu.tar.xz
+          ADERYN_SHA256: ffd6ca658962e211a3ac821c646f69c8e14bf1b1001cbfe091bcd4535a691e46
+        run: | # zizmor: ignore[github-env]
+          tools="${RUNNER_TEMP}/aderyn"
+          mkdir -p "${tools}"
+          curl -fsSLo "${RUNNER_TEMP}/aderyn.tar.xz" "${ADERYN_URL}"
+          echo "${ADERYN_SHA256}  ${RUNNER_TEMP}/aderyn.tar.xz" | sha256sum --check --quiet
+          tar -xJf "${RUNNER_TEMP}/aderyn.tar.xz" -C "${tools}" --strip-components=1 aderyn-x86_64-unknown-linux-gnu/aderyn
+          echo "${tools}" >>"${GITHUB_PATH}"
+      - name: Aderyn
+        run: bash script/check-aderyn.sh "${RUNNER_TEMP}/aderyn-report.json"
       - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
         with:
           run_install: false

@@ -69,7 +69,7 @@ tasks:
       runFromWorkspaceRoot: true
 
   env-file:
-    description: "Lays out apps/api/.env with every variable development may set, in schema order"
+    description: "Lays out apps/api/.env with every variable development may set, in schema order, filling unset settlement variables from apps/contracts/deployments/31337.json"
     command: "node"
     args:
       - "dist/apps/api/cli.mjs"

@@ -1,0 +1,61 @@
+name: Contracts fuzzing
+
+# A long Medusa campaign against the escrow invariants every night; CI runs
+# the Foundry invariant tests on every change.
+on:
+  schedule:
+    - cron: "41 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: contracts-fuzz-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  medusa:
+    name: Medusa
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    # The campaign plus building and shrinking a failing sequence.
+    timeout-minutes: 90
+    env:
+      MEDUSA_TIMEOUT_SECONDS: "3600"
+      MEDUSA_URL: https://github.com/crytic/medusa/releases/download/v1.5.1/medusa-linux-x64.tar.gz
+      MEDUSA_SHA256: ddfe1517ae9028ef9fc331b00f5a6a9d5406f3fcd11a715d60c6b6fb3e4546d3
+    defaults:
+      run:
+        working-directory: apps/contracts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1.9.2
+        with:
+          version: v1.9.0
+      - name: Install dependencies
+        run: forge soldeer install
+      - name: Install Medusa and crytic-compile
+        run: | # zizmor: ignore[github-env]
+          tools="${RUNNER_TEMP}/fuzz-tools"
+          mkdir -p "${tools}"
+          curl -fsSLo "${RUNNER_TEMP}/medusa.tar.gz" "${MEDUSA_URL}"
+          echo "${MEDUSA_SHA256}  ${RUNNER_TEMP}/medusa.tar.gz" | sha256sum --check --quiet
+          tar -xzf "${RUNNER_TEMP}/medusa.tar.gz" -C "${tools}" medusa
+          python3 -m venv "${RUNNER_TEMP}/crytic-compile"
+          "${RUNNER_TEMP}/crytic-compile/bin/pip" install --quiet --require-hashes --only-binary :all: -r medusa-requirements.txt
+          ln -s "${RUNNER_TEMP}/crytic-compile/bin/crytic-compile" "${tools}/crytic-compile"
+          echo "${tools}" >>"${GITHUB_PATH}"
+      - name: Fuzz the escrow invariants
+        run: medusa fuzz --config medusa.json --timeout "${MEDUSA_TIMEOUT_SECONDS}"
+      # The corpus holds every call sequence Medusa kept, including a failing
+      # one and its shrunk reproduction, and the coverage report.
+      - name: Upload the corpus
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: medusa-corpus
+          path: apps/contracts/medusa-corpus
+          if-no-files-found: ignore
+          retention-days: 14

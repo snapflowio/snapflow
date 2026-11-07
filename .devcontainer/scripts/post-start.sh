@@ -56,6 +56,8 @@ verify_service "OpenBao Proxy" \
 	http://openbao-proxy:8201/v1/auth/token/lookup-self
 verify_service "Resend emulator" \
 	curl --fail --silent --show-error --output /dev/null http://resend:4008/emails
+verify_service "local settlement chain" \
+	cast chain-id --rpc-url http://anvil:8545
 
 if [[ ! -r .tmp/openbao/tunnel-client-ca.pem || ! -s .tmp/openbao/tunnel-client-ca.pem ]]; then
 	printf '%s\n' \

@@ -51,6 +51,51 @@ tasks:
     options:
       cache: false
 
+  coverage:
+    description: "Measures src/ line and branch coverage into lcov.info and fails below the minimums in script/check-coverage.sh"
+    command: "bash"
+    args: ["script/check-coverage.sh", "lcov.info"]
+    deps: ["~:install"]
+    inputs: ["@group(sources)", "@group(tests)", "script/check-coverage.sh"]
+    outputs: ["lcov.info"]
+
+  gas-snapshot:
+    description: "Fails when the concrete tests' gas differs from .gas-snapshot"
+    command: "forge"
+    args: ["snapshot", "--check"]
+    deps: ["~:install"]
+    env:
+      FOUNDRY_PROFILE: "gas"
+    inputs: ["@group(sources)", "@group(tests)", ".gas-snapshot"]
+
+  gas-snapshot-update:
+    description: "Rewrites .gas-snapshot from the concrete tests"
+    command: "forge"
+    args: ["snapshot"]
+    deps: ["~:install"]
+    env:
+      FOUNDRY_PROFILE: "gas"
+    options:
+      cache: false
+
+  aderyn:
+    description: "Runs Aderyn over src/ and fails on any high or low finding"
+    command: "bash"
+    args: ["script/check-aderyn.sh", "aderyn-report.json"]
+    deps: ["~:install"]
+    inputs: ["@group(sources)", "aderyn.toml", "script/check-aderyn.sh"]
+    outputs: ["aderyn-report.json"]
+
+  fuzz:
+    description: "Runs Medusa against the escrow invariants (medusa.json) for MEDUSA_TIMEOUT_SECONDS"
+    script: 'medusa fuzz --config medusa.json --timeout "${MEDUSA_TIMEOUT_SECONDS}"'
+    deps: ["~:install"]
+    env:
+      MEDUSA_TIMEOUT_SECONDS: "600"
+    options:
+      cache: false
+      runInCI: false
+
   vectors:
     command: "forge"
     args: ["script", "script/GenerateVoucherVectors.s.sol"]
@@ -58,10 +103,59 @@ tasks:
     inputs: ["@group(sources)", "script/GenerateVoucherVectors.s.sol", "test/vectors/*.sol"]
     outputs: ["test/vectors/vouchers.json"]
 
-  deploy-local:
-    command: "forge"
-    args: ["script", "script/DeployLocal.s.sol", "--rpc-url", "anvil", "--broadcast"]
+  # The dev stack's anvil service boots from dev/anvil/state.json; regenerate it after any change to the escrow.
+  dev-chain-state:
+    description: "Deploys CreateX, the mock USDC and the escrow deterministically on a private anvil, funds the dev accounts and saves the chain to dev/anvil/state.json and deployments/31337.json"
+    command: "bash"
+    args: ["script/dev-chain-state.sh"]
+    deps: ["~:build"]
+    env:
+      DEV_CHAIN_PORT: "18545"
+      DEV_CHAIN_STATE_FILE: "../../dev/anvil/state.json"
+      # The maximum fee cap, so every markup the API charges fits, and the shortest dispute window.
+      ESCROW_FEE_CAP_BPS: "3000"
+      ESCROW_DISPUTE_WINDOW_SECONDS: "3600"
+      # One million USDC (six decimals) per dev account.
+      LOCAL_FUNDING_AMOUNT: "1000000000000"
+    options:
+      cache: false
+      runInCI: false
+
+  predict-escrow:
+    description: "Prints the escrow address ESCROW_DEPLOYER gets on every chain"
+    script: 'forge script script/DeployEscrow.s.sol --sig "predict()" --sender "${ESCROW_DEPLOYER:?set ESCROW_DEPLOYER to the deployer address}"'
     deps: ["~:build"]
     options:
       cache: false
+      runInCI: false
+
+  # Live deployments sign with a Foundry keystore account (cast wallet import), verify the source on Basescan through
+  # the Etherscan V2 API and record the result in deployments/<chainId>.json. They need the ESCROW_* variables of
+  # script/DeployEscrow.s.sol, the chain's RPC URL variable from foundry.toml, ETHERSCAN_API_KEY and
+  # ETH_KEYSTORE_ACCOUNT.
+  deploy-base-sepolia:
+    description: "Deploys the escrow on Base Sepolia, verifies it on Basescan and records it in deployments/84532.json"
+    script: >-
+      : "${ETHERSCAN_API_KEY:?set ETHERSCAN_API_KEY}" &&
+      forge script script/DeployEscrow.s.sol --rpc-url base_sepolia --broadcast --slow --verify
+      --account "${ETH_KEYSTORE_ACCOUNT:?set ETH_KEYSTORE_ACCOUNT}" &&
+      bash script/record-deployment.sh DeployEscrow.s.sol 84532
+    deps: ["~:build"]
+    options:
+      cache: false
+      interactive: true
+      runInCI: false
+
+  deploy-base:
+    description: "Deploys the escrow on Base, verifies it on Basescan, records it in deployments/8453.json and writes the production settlement values"
+    script: >-
+      : "${ETHERSCAN_API_KEY:?set ETHERSCAN_API_KEY}" &&
+      forge script script/DeployEscrow.s.sol --rpc-url base --broadcast --slow --verify
+      --account "${ETH_KEYSTORE_ACCOUNT:?set ETH_KEYSTORE_ACCOUNT}" &&
+      bash script/record-deployment.sh DeployEscrow.s.sol 8453 &&
+      cd ../.. && bash deploy/scripts/settlement-values.sh
+    deps: ["~:build"]
+    options:
+      cache: false
+      interactive: true
       runInCI: false
