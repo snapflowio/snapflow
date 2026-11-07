@@ -57,6 +57,7 @@ overrides:
   'ws@>=8.0.0 <8.21.0': 8.21.0
 
 allowBuilds:
+  '@reown/appkit': false
   '@scarf/scarf': false
   esbuild: true
   msgpackr-extract: true
