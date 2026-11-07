@@ -19,7 +19,7 @@ const workspaceDirectory = join(appDirectory, '../..');
 const sourceDirectory = join(appDirectory, 'src');
 const migrationDirectory = join(sourceDirectory, 'migrations');
 const bundledWorkspacePackages =
-	/^@snapflow\/(machine-proto|organization-access|toolbox-api-client)(\/|$)/;
+	/^@snapflow\/(contracts|machine-proto|organization-access|toolbox-api-client)(\/|$)/;
 const workspaceSourceCondition = '@snapflow/source';
 const testFilePattern = /\.test\.ts$/;
 const migrationFilePattern = /^\d+-migration\.ts$/;

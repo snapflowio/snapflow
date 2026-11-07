@@ -23,11 +23,11 @@ import {
 	type HeaderAction,
 	saveDiscardActions,
 } from '#lib/components/page/header-actions.ts';
-import { PayoutOnboarding } from '#lib/features/billing/state/payout-onboarding.svelte.ts';
 import {
 	type ListingBlockers,
 	listingBlockers,
 } from '#lib/features/listings/lib/host-listing.ts';
+import { HostPayoutReadiness } from '#lib/features/listings/state/host-payout-readiness.svelte.ts';
 import { getOrganizationPermission } from '#lib/features/organizations/state/organization-permission.svelte.ts';
 import { Path } from '#lib/routing/paths.ts';
 import { resolve } from '$app/paths';
@@ -36,7 +36,7 @@ const NO_BLOCKERS: ListingBlockers = { needsPrice: false, needsPayout: false };
 
 export class HostListingDetail {
 	readonly #permission = getOrganizationPermission();
-	readonly #onboarding = new PayoutOnboarding();
+	readonly payout = new HostPayoutReadiness();
 	readonly #machineId: () => string;
 	readonly #updateListing = createMutation(() =>
 		updateListingMutationOptions()
@@ -63,11 +63,6 @@ export class HostListingDetail {
 			(candidate) => candidate.machineId === this.#machineId()
 		)
 	);
-	readonly payoutReady: boolean | undefined = $derived.by(() =>
-		this.#onboarding.canRead && this.#onboarding.resolved
-			? this.#onboarding.ready
-			: undefined
-	);
 	readonly listingState: ListingState | undefined = $derived.by(
 		() => this.stateDraft ?? this.machine?.listing.state
 	);
@@ -85,7 +80,7 @@ export class HostListingDetail {
 			? listingBlockers(
 					this.machine,
 					{ state: this.listingState, visibility: this.visibility },
-					this.payoutReady
+					this.payout.ready
 				)
 			: NO_BLOCKERS
 	);
@@ -123,7 +118,7 @@ export class HostListingDetail {
 							disabled: true,
 							disabledReason: this.blockers.needsPrice
 								? 'Publish prices first'
-								: 'Set up payouts first',
+								: 'Link a payout wallet first',
 						}
 					: action
 			),

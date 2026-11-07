@@ -13,7 +13,6 @@ import type { Snippet } from 'svelte';
 import type { HeaderAction } from '#lib/components/page/header-actions.ts';
 import ResourceHeader from '#lib/components/resource/resource-header.svelte';
 import { earningsTabs } from '#lib/features/billing/lib/billing-tabs.ts';
-import { getOrganizationPermission } from '#lib/features/organizations/state/organization-permission.svelte.ts';
 import { page } from '$app/state';
 
 interface EarningsHeaderProps {
@@ -23,10 +22,7 @@ interface EarningsHeaderProps {
 
 let { actions, status }: EarningsHeaderProps = $props();
 
-const permission = getOrganizationPermission();
-const tabs = $derived(
-	earningsTabs(page.url.pathname, permission.can({ payouts: ['manage'] }))
-);
+const tabs = $derived(earningsTabs(page.url.pathname));
 </script>
 
 <ResourceHeader

@@ -90,9 +90,10 @@ export interface MachineFilters {
 	locations: string[];
 }
 
-export const DEFAULT_MACHINE_SORT = MachineBrowseSort.Price;
+export const DEFAULT_MACHINE_SORT = MachineBrowseSort.Value;
 
 export const MACHINE_SORT_OPTIONS: readonly ResourceSortOption[] = [
+	{ id: MachineBrowseSort.Value, label: 'Best value' },
 	{ id: MachineBrowseSort.Price, label: 'Price' },
 	{ id: MachineBrowseSort.Reliability, label: 'Reliability' },
 	{ id: MachineBrowseSort.Performance, label: 'Performance' },
@@ -104,6 +105,7 @@ export const MACHINE_SORT_DIRECTIONS: Record<
 	MachineBrowseSort,
 	ResourceSortDirection
 > = {
+	[MachineBrowseSort.Value]: 'desc',
 	[MachineBrowseSort.Price]: 'asc',
 	[MachineBrowseSort.Reliability]: 'desc',
 	[MachineBrowseSort.Performance]: 'desc',

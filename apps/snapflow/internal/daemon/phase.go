@@ -25,6 +25,7 @@ const (
 	PhasePrepareUsage       Phase = "prepare usage reporting"
 	PhasePrepareSnapshots   Phase = "prepare snapshot inventory"
 	PhasePrepareConvergence Phase = "prepare sandbox convergence"
+	PhasePrepareSettlement  Phase = "prepare payment vouchers"
 	PhasePrepareHealth      Phase = "prepare health reporting"
 	PhasePrepareExecutor    Phase = "prepare job executor"
 	PhasePrepareAPI         Phase = "prepare Snapflow API"

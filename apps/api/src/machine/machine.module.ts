@@ -18,6 +18,7 @@ import { LocationModule } from '../location/location.module';
 import { MarketplaceModule } from '../marketplace/marketplace.module';
 import { SecretsModule } from '../secrets/secrets.module';
 import { SettingsModule } from '../settings/settings.module';
+import { SettlementModule } from '../settlement/settlement.module';
 import { AdminMachineController } from './controllers/admin-machine.controller';
 import { MachineController } from './controllers/machine.controller';
 import { MachineSessionController } from './controllers/machine-session.controller';
@@ -46,7 +47,6 @@ import { MachineDirectoryService } from './services/machine-directory.service';
 import { MachineHealthService } from './services/machine-health.service';
 import { MachineJobNotificationService } from './services/machine-job-notification.service';
 import { MachineLocationService } from './services/machine-location.service';
-import { MachinePayoutReadinessService } from './services/machine-payout-readiness.service';
 import { MachinePlatformObservationService } from './services/machine-platform-observation.service';
 import { MachineProofService } from './services/machine-proof.service';
 import { MachineRegistrationService } from './services/machine-registration.service';
@@ -83,6 +83,7 @@ import { MachineReliabilityRetentionService } from './services/qualification/mac
 		LocationModule,
 		SecretsModule,
 		SettingsModule,
+		SettlementModule,
 	],
 	controllers: [
 		MachineController,
@@ -101,7 +102,6 @@ import { MachineReliabilityRetentionService } from './services/qualification/mac
 		MachineHealthService,
 		MachineJobNotificationService,
 		MachineDirectoryService,
-		MachinePayoutReadinessService,
 		MachinePlatformObservationService,
 		MachineProofService,
 		MachineQualificationAppraisalService,

@@ -11,6 +11,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { SettingsModule } from '../settings/settings.module';
 import { BillingController } from './controllers/billing.controller';
+import { BillingStatementController } from './controllers/billing-statement.controller';
 import { BillingBudget } from './entities/billing-budget.entity';
 import { BillingBudgetVersion } from './entities/billing-budget-version.entity';
 import { BillingEvidenceBundle } from './entities/billing-evidence-bundle.entity';
@@ -21,6 +22,7 @@ import { BillingLineAdjustment } from './entities/billing-line-adjustment.entity
 import { BillingLineItem } from './entities/billing-line-item.entity';
 import { BillingLineQuarantine } from './entities/billing-line-quarantine.entity';
 import { PlacementBillingAuthorization } from './entities/placement-billing-authorization.entity';
+import { PrivatePoolCharge } from './entities/private-pool-charge.entity';
 import { BillingBudgetService } from './services/billing-budget.service';
 import { BillingConfigService } from './services/billing-config.service';
 import { BillingCreditGrantService } from './services/billing-credit-grant.service';
@@ -30,6 +32,7 @@ import { BillingLineItemService } from './services/billing-line-item.service';
 import { BillingLineQueryService } from './services/billing-line-query.service';
 import { BillingOverviewService } from './services/billing-overview.service';
 import { BillingRunwayService } from './services/billing-runway.service';
+import { BillingStatementService } from './services/billing-statement.service';
 import { BillingAttestationService } from './services/evidence/billing-attestation.service';
 import { BillingEvidenceAuditorService } from './services/evidence/billing-evidence-auditor.service';
 import { BillingEvidenceBundleService } from './services/evidence/billing-evidence-bundle.service';
@@ -37,6 +40,7 @@ import { BillingEvidenceRetentionService } from './services/evidence/billing-evi
 import { BillingQuarantineService } from './services/evidence/billing-quarantine.service';
 import { PlacementBillingAuthorizationService } from './services/placement/placement-billing-authorization.service';
 import { PlacementBillingCapacityService } from './services/placement/placement-billing-capacity.service';
+import { PrivatePoolBillingService } from './services/private-pool-billing.service';
 
 @Module({
 	imports: [
@@ -51,10 +55,11 @@ import { PlacementBillingCapacityService } from './services/placement/placement-
 			BillingLineItem,
 			BillingLineQuarantine,
 			PlacementBillingAuthorization,
+			PrivatePoolCharge,
 		]),
 		SettingsModule,
 	],
-	controllers: [BillingController],
+	controllers: [BillingController, BillingStatementController],
 	providers: [
 		BillingAttestationService,
 		BillingBudgetService,
@@ -69,8 +74,10 @@ import { PlacementBillingCapacityService } from './services/placement/placement-
 		BillingOverviewService,
 		BillingQuarantineService,
 		BillingRunwayService,
+		BillingStatementService,
 		PlacementBillingAuthorizationService,
 		PlacementBillingCapacityService,
+		PrivatePoolBillingService,
 		BillingLedgerService,
 	],
 	exports: [
@@ -82,6 +89,7 @@ import { PlacementBillingCapacityService } from './services/placement/placement-
 		BillingOverviewService,
 		PlacementBillingAuthorizationService,
 		PlacementBillingCapacityService,
+		PrivatePoolBillingService,
 		BillingQuarantineService,
 		BillingLedgerService,
 		BillingEvidenceRetentionService,

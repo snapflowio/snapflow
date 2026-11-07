@@ -6,6 +6,7 @@ tags:
 
 dependsOn:
   - "api-client"
+  - "contracts-ts"
   - "toolbox-api-client"
 
 fileGroups:
@@ -26,11 +27,15 @@ tasks:
       pnpm exec attw --pack --profile esm-only ../../dist/libs/sdk-typescript
     deps:
       - "api-client:build"
+      - "contracts-ts:build"
       - "toolbox-api-client:build"
     inputs:
       - "@group(production)"
       - "scripts/post-build.js"
+      - "/scripts/catalog.mjs"
+      - "/pnpm-workspace.yaml"
       - "/dist/libs/api-client/**/*"
+      - "/dist/libs/contracts/**/*"
       - "/dist/libs/toolbox-api-client/**/*"
     outputs:
       - "/dist/libs/sdk-typescript"
@@ -43,6 +48,7 @@ tasks:
       - "--noEmit"
     deps:
       - "api-client:build"
+      - "contracts-ts:build"
       - "toolbox-api-client:build"
 
   test:
@@ -53,6 +59,7 @@ tasks:
       - "unit"
     deps:
       - "api-client:build"
+      - "contracts-ts:build"
       - "toolbox-api-client:build"
 
   test-e2e:
@@ -63,6 +70,7 @@ tasks:
       - "e2e"
     deps:
       - "api-client:build"
+      - "contracts-ts:build"
       - "toolbox-api-client:build"
 
   lint:

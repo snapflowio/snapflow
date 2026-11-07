@@ -15,7 +15,6 @@ import {
 	IsBoolean,
 	IsEnum,
 	IsInt,
-	IsISO31661Alpha2,
 	IsNotEmpty,
 	IsOptional,
 	IsString,
@@ -30,10 +29,10 @@ import {
 	MINIMUM_EGRESS_BANDWIDTH_BPS,
 } from '../../sandbox/constants/network.constants';
 import { SandboxClass } from '../../sandbox/enums/sandbox-class.enum';
+import { ESCROW_MAXIMUM_FEE_BASIS_POINTS } from '../../settlement/constants/settlement.constants';
 import {
 	DrainingMode,
 	EDGE_TRUSTED_HTTP_PROXY_CIDRS_MAXIMUM,
-	ISO_WEEKDAY,
 	SETTINGS_POSITIVE_MINIMUM,
 } from '../constants/settings.constants';
 
@@ -76,6 +75,16 @@ function OptionalBasisPoints(description: string) {
 		description,
 		MINIMUM_QUANTITY,
 		BASIS_POINTS_SCALE
+	);
+}
+
+// The escrow refuses any fee above its fixed maximum, so no markup may exceed
+// it; the live fee cap, which may be lower, is checked when a lease opens.
+function OptionalMarkup(description: string) {
+	return OptionalBoundedInteger(
+		description,
+		MINIMUM_QUANTITY,
+		ESCROW_MAXIMUM_FEE_BASIS_POINTS
 	);
 }
 
@@ -153,10 +162,52 @@ export class UpdateSettingsDto {
 	@OptionalSwitch('Allow public (unauthenticated) exposures')
 	publicIngressEnabled?: boolean;
 
-	@OptionalBasisPoints(
-		'Markup added to host prices, in basis points of the host price'
+	@OptionalMarkup(
+		'Markup added to the host price of machines below the Verified tier, in basis points of the host price'
 	)
-	platformMarkupBasisPoints?: number;
+	standardMarkupBasisPoints?: number;
+
+	@OptionalMarkup(
+		'Markup added to the host price of Verified and Datacenter machines, in basis points of the host price'
+	)
+	verifiedMarkupBasisPoints?: number;
+
+	@OptionalQuantity(
+		'Monthly fee per machine an organization keeps in its private pool, micro-USD, prorated by UTC day'
+	)
+	privatePoolMachineMonthlyMicroUsd?: number;
+
+	@OptionalQuantity('Lowest vCPU-hour price a host may set, micro-USD')
+	vcpuHourPriceMinimumMicroUsd?: number;
+
+	@OptionalQuantity('Highest vCPU-hour price a host may set, micro-USD')
+	vcpuHourPriceMaximumMicroUsd?: number;
+
+	@OptionalQuantity(
+		'Lowest memory price a host may set, micro-USD per GiB-hour'
+	)
+	memoryGibHourPriceMinimumMicroUsd?: number;
+
+	@OptionalQuantity(
+		'Highest memory price a host may set, micro-USD per GiB-hour'
+	)
+	memoryGibHourPriceMaximumMicroUsd?: number;
+
+	@OptionalQuantity('Lowest GPU-hour price a host may set, micro-USD')
+	gpuHourPriceMinimumMicroUsd?: number;
+
+	@OptionalQuantity('Highest GPU-hour price a host may set, micro-USD')
+	gpuHourPriceMaximumMicroUsd?: number;
+
+	@OptionalQuantity(
+		'Lowest running or stopped disk price a host may set, micro-USD per GiB-month'
+	)
+	diskGibMonthPriceMinimumMicroUsd?: number;
+
+	@OptionalQuantity(
+		'Highest running or stopped disk price a host may set, micro-USD per GiB-month'
+	)
+	diskGibMonthPriceMaximumMicroUsd?: number;
 
 	@OptionalBasisPoints(
 		'Price floor, in basis points of the market reference price median'
@@ -251,70 +302,28 @@ export class UpdateSettingsDto {
 	@IsUUID()
 	spotCheckOrganizationId?: string | null;
 
-	@OptionalPositiveQuantity('Smallest top-up, cents')
-	topUpMinimumCents?: number;
-
-	@OptionalPositiveQuantity('Largest top-up, cents')
-	topUpMaximumCents?: number;
-
-	@ApiPropertyOptional({
-		type: [Number],
-		description: 'Suggested top-ups, cents',
-	})
-	@IsOptional()
-	@IsArray()
-	@IsInt({ each: true })
-	@Min(SETTINGS_POSITIVE_MINIMUM, { each: true })
-	topUpPresetsCents?: number[];
-
-	@OptionalQuantity('Smallest automatic top-up, cents')
-	autoTopUpMinimumCents?: number;
-
-	@OptionalQuantity('Minutes between automatic top-up attempts')
-	autoTopUpMinimumIntervalMinutes?: number;
-
-	@OptionalQuantity('Top-up attempts per organization per hour')
-	topUpAttemptsPerHour?: number;
-
-	@OptionalQuantity('Payment methods per organization per day')
-	paymentMethodsPerDay?: number;
-
-	@OptionalQuantity('Organizations that may share one card')
-	organizationsPerCardFingerprint?: number;
-
-	@OptionalQuantity('Smallest payout, cents')
-	payoutMinimumCents?: number;
-
-	@OptionalBoundedInteger(
-		'ISO weekday payouts run on (1 is Monday)',
-		ISO_WEEKDAY.MONDAY,
-		ISO_WEEKDAY.SUNDAY
+	@OptionalQuantity(
+		'Blocks the settlement chain must build on an escrow event before Snapflow indexes it'
 	)
-	payoutWeekday?: number;
+	settlementConfirmations?: number;
 
-	@OptionalQuantity('Earnings hold for Community machines, days')
-	payoutHoldCommunityDays?: number;
+	@OptionalPositiveQuantity(
+		'Seconds between the escrow vouchers issued for each lease'
+	)
+	voucherIntervalSeconds?: number;
 
-	@OptionalQuantity('Earnings hold for Verified machines, days')
-	payoutHoldVerifiedDays?: number;
+	@OptionalPositiveQuantity(
+		'Voucher intervals a lease may go without a signed voucher before its sandbox counts as unfunded'
+	)
+	voucherGraceIntervals?: number;
 
-	@OptionalQuantity('Earnings hold for Datacenter machines, days')
-	payoutHoldDatacenterDays?: number;
+	@OptionalPositiveQuantity('Hours an escrow voucher stays claimable')
+	voucherLifetimeHours?: number;
 
-	@OptionalQuantity('Days credit from a new card cannot fund payouts')
-	newFundingHoldDays?: number;
-
-	@OptionalSwitch('Calculate sales tax on top-ups with Stripe Tax')
-	stripeTaxEnabled?: boolean;
-
-	@ApiPropertyOptional({
-		type: [String],
-		description: 'ISO 3166-1 alpha-2 countries hosts may be paid in',
-	})
-	@IsOptional()
-	@IsArray()
-	@IsISO31661Alpha2({ each: true })
-	payoutCountries?: string[];
+	@OptionalPositiveQuantity(
+		'Minutes between the claims Snapflow relays for each lease'
+	)
+	claimIntervalMinutes?: number;
 
 	@ApiPropertyOptional({
 		type: [String],

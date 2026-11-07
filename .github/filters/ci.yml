@@ -34,9 +34,22 @@ typescript:
   - ".moon/**"
   - "**/*.{ts,tsx,mts,cts,js,mjs,cjs,json,jsonc,css,svelte,astro,html}"
 
+# The Solidity contracts and the bindings generated from them, including the
+# generators' versions (pnpm catalog, Go tool) and the Moon tasks that run them.
+contracts:
+  - ".github/**"
+  - "apps/contracts/**"
+  - "libs/contracts/**"
+  - "libs/contracts-go/**"
+  - "pnpm-lock.yaml"
+  - "pnpm-workspace.yaml"
+  - "moon.yml"
+  - ".moon/**"
+
 deploy:
   - ".github/**"
   - "deploy/**"
+  - "apps/contracts/deployments/**"
   - "package.json"
   - "pnpm-lock.yaml"
   - "moon.yml"

@@ -7,7 +7,6 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { ArrayType } from '@mikro-orm/core';
 import {
 	Check,
 	Entity,
@@ -22,9 +21,9 @@ import {
 	MINIMUM_EGRESS_BANDWIDTH_BPS,
 } from '../../sandbox/constants/network.constants';
 import { SandboxClass } from '../../sandbox/enums/sandbox-class.enum';
+import { ESCROW_MAXIMUM_FEE_BASIS_POINTS } from '../../settlement/constants/settlement.constants';
 import {
 	DrainingMode,
-	ISO_WEEKDAY,
 	SETTINGS_ID,
 	SETTINGS_POSITIVE_MINIMUM,
 	SETTINGS_RESOURCE_VERSION_INITIAL,
@@ -44,7 +43,17 @@ const NON_NEGATIVE_COLUMNS = [
 	'maxSnapshotSize',
 	'volumeQuota',
 	'egressPriceCeilingMicroUsdPerGiB',
-	'platformMarkupBasisPoints',
+	'standardMarkupBasisPoints',
+	'verifiedMarkupBasisPoints',
+	'privatePoolMachineMonthlyMicroUsd',
+	'vcpuHourPriceMinimumMicroUsd',
+	'vcpuHourPriceMaximumMicroUsd',
+	'memoryGibHourPriceMinimumMicroUsd',
+	'memoryGibHourPriceMaximumMicroUsd',
+	'gpuHourPriceMinimumMicroUsd',
+	'gpuHourPriceMaximumMicroUsd',
+	'diskGibMonthPriceMinimumMicroUsd',
+	'diskGibMonthPriceMaximumMicroUsd',
 	'priceFloorBasisPoints',
 	'listingMinimumDownlinkMbps',
 	'listingMinimumUplinkMbps',
@@ -57,16 +66,7 @@ const NON_NEGATIVE_COLUMNS = [
 	'spotCheckIntervalHoursVerified',
 	'spotCheckMonthlyBudgetCents',
 	'spotCheckToleranceBasisPoints',
-	'autoTopUpMinimumCents',
-	'autoTopUpMinimumIntervalMinutes',
-	'topUpAttemptsPerHour',
-	'paymentMethodsPerDay',
-	'organizationsPerCardFingerprint',
-	'payoutMinimumCents',
-	'payoutHoldCommunityDays',
-	'payoutHoldVerifiedDays',
-	'payoutHoldDatacenterDays',
-	'newFundingHoldDays',
+	'settlementConfirmations',
 ] as const;
 
 const POSITIVE_COLUMNS = [
@@ -79,14 +79,21 @@ const POSITIVE_COLUMNS = [
 	'exposureCeilingProbationaryCents',
 	'exposureCeilingEstablishedCents',
 	'exposureCeilingHostCents',
-	'topUpMinimumCents',
+	'voucherIntervalSeconds',
+	'voucherGraceIntervals',
+	'voucherLifetimeHours',
+	'claimIntervalMinutes',
 ] as const;
 
 const BASIS_POINTS_COLUMNS = [
-	'platformMarkupBasisPoints',
 	'priceFloorBasisPoints',
 	'verifiedMinimumUptimeBasisPoints',
 	'spotCheckToleranceBasisPoints',
+] as const;
+
+const MARKUP_COLUMNS = [
+	'standardMarkupBasisPoints',
+	'verifiedMarkupBasisPoints',
 ] as const;
 
 const integerColumn = (fieldName: string) =>
@@ -119,16 +126,14 @@ const booleanColumn = (fieldName: string) =>
 	).join(' and '),
 })
 @Check({
+	name: 'CHK_settings_markup',
+	expression: MARKUP_COLUMNS.map(
+		(column) => `"${column}" <= ${ESCROW_MAXIMUM_FEE_BASIS_POINTS}`
+	).join(' and '),
+})
+@Check({
 	name: 'CHK_settings_network_budget_throttle',
 	expression: `"networkBudgetThrottleBandwidthBps" >= ${MINIMUM_EGRESS_BANDWIDTH_BPS} and "networkBudgetThrottleBandwidthBps" <= ${MAXIMUM_EGRESS_BANDWIDTH_BPS}`,
-})
-@Check({
-	name: 'CHK_settings_top_up_range',
-	expression: '"topUpMaximumCents" >= "topUpMinimumCents"',
-})
-@Check({
-	name: 'CHK_settings_payout_weekday',
-	expression: `"payoutWeekday" >= ${ISO_WEEKDAY.MONDAY} and "payoutWeekday" <= ${ISO_WEEKDAY.SUNDAY}`,
 })
 @Check({
 	name: 'CHK_settings_draining_mode',
@@ -208,8 +213,38 @@ export class Settings {
 	@Property(booleanColumn('publicIngressEnabled'))
 	publicIngressEnabled: boolean;
 
-	@Property(integerColumn('platformMarkupBasisPoints'))
-	platformMarkupBasisPoints: number;
+	@Property(integerColumn('standardMarkupBasisPoints'))
+	standardMarkupBasisPoints: number;
+
+	@Property(integerColumn('verifiedMarkupBasisPoints'))
+	verifiedMarkupBasisPoints: number;
+
+	@Property(integerColumn('privatePoolMachineMonthlyMicroUsd'))
+	privatePoolMachineMonthlyMicroUsd: number;
+
+	@Property(integerColumn('vcpuHourPriceMinimumMicroUsd'))
+	vcpuHourPriceMinimumMicroUsd: number;
+
+	@Property(integerColumn('vcpuHourPriceMaximumMicroUsd'))
+	vcpuHourPriceMaximumMicroUsd: number;
+
+	@Property(integerColumn('memoryGibHourPriceMinimumMicroUsd'))
+	memoryGibHourPriceMinimumMicroUsd: number;
+
+	@Property(integerColumn('memoryGibHourPriceMaximumMicroUsd'))
+	memoryGibHourPriceMaximumMicroUsd: number;
+
+	@Property(integerColumn('gpuHourPriceMinimumMicroUsd'))
+	gpuHourPriceMinimumMicroUsd: number;
+
+	@Property(integerColumn('gpuHourPriceMaximumMicroUsd'))
+	gpuHourPriceMaximumMicroUsd: number;
+
+	@Property(integerColumn('diskGibMonthPriceMinimumMicroUsd'))
+	diskGibMonthPriceMinimumMicroUsd: number;
+
+	@Property(integerColumn('diskGibMonthPriceMaximumMicroUsd'))
+	diskGibMonthPriceMaximumMicroUsd: number;
 
 	@Property(integerColumn('priceFloorBasisPoints'))
 	priceFloorBasisPoints: number;
@@ -291,61 +326,20 @@ export class Settings {
 	})
 	spotCheckOrganizationId: string | null;
 
-	@Property(integerColumn('topUpMinimumCents'))
-	topUpMinimumCents: number;
+	@Property(integerColumn('settlementConfirmations'))
+	settlementConfirmations: number;
 
-	@Property(integerColumn('topUpMaximumCents'))
-	topUpMaximumCents: number;
+	@Property(integerColumn('voucherIntervalSeconds'))
+	voucherIntervalSeconds: number;
 
-	@Property({
-		type: new ArrayType<number>(Number),
-		columnType: 'integer[]',
-		fieldName: 'topUpPresetsCents',
-	})
-	topUpPresetsCents: number[];
+	@Property(integerColumn('voucherGraceIntervals'))
+	voucherGraceIntervals: number;
 
-	@Property(integerColumn('autoTopUpMinimumCents'))
-	autoTopUpMinimumCents: number;
+	@Property(integerColumn('voucherLifetimeHours'))
+	voucherLifetimeHours: number;
 
-	@Property(integerColumn('autoTopUpMinimumIntervalMinutes'))
-	autoTopUpMinimumIntervalMinutes: number;
-
-	@Property(integerColumn('topUpAttemptsPerHour'))
-	topUpAttemptsPerHour: number;
-
-	@Property(integerColumn('paymentMethodsPerDay'))
-	paymentMethodsPerDay: number;
-
-	@Property(integerColumn('organizationsPerCardFingerprint'))
-	organizationsPerCardFingerprint: number;
-
-	@Property(integerColumn('payoutMinimumCents'))
-	payoutMinimumCents: number;
-
-	@Property(integerColumn('payoutWeekday'))
-	payoutWeekday: number;
-
-	@Property(integerColumn('payoutHoldCommunityDays'))
-	payoutHoldCommunityDays: number;
-
-	@Property(integerColumn('payoutHoldVerifiedDays'))
-	payoutHoldVerifiedDays: number;
-
-	@Property(integerColumn('payoutHoldDatacenterDays'))
-	payoutHoldDatacenterDays: number;
-
-	@Property(integerColumn('newFundingHoldDays'))
-	newFundingHoldDays: number;
-
-	@Property(booleanColumn('stripeTaxEnabled'))
-	stripeTaxEnabled: boolean;
-
-	@Property({
-		type: 'string[]',
-		columnType: 'text[]',
-		fieldName: 'payoutCountries',
-	})
-	payoutCountries: string[];
+	@Property(integerColumn('claimIntervalMinutes'))
+	claimIntervalMinutes: number;
 
 	@Property({
 		type: 'string[]',

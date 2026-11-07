@@ -77,6 +77,8 @@ services:
         condition: service_healthy
       resend:
         condition: service_healthy
+      anvil:
+        condition: service_healthy
 
 volumes:
   pnpm-store:

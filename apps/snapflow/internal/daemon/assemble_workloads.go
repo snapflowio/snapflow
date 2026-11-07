@@ -18,6 +18,7 @@ import (
 	"github.com/snapflowio/snapflow/internal/meter"
 	"github.com/snapflowio/snapflow/internal/release"
 	"github.com/snapflowio/snapflow/internal/sandbox"
+	"github.com/snapflowio/snapflow/internal/settlement"
 	"github.com/snapflowio/snapflow/internal/snapshot"
 	"github.com/snapflowio/snapflow/internal/telemetry"
 )
@@ -68,6 +69,7 @@ func (daemon *Daemon) prepareConvergence(ready *foundation, prepared *services) 
 	}
 	prepared.runtimeIdentity = runtimeIdentity
 	prepared.localRuntimes = sandbox.NewLocalRuntimes()
+	prepared.paymentHolds = sandbox.NewPaymentHolds()
 	controlPlane, err := sandbox.NewControlPlane(daemon.client)
 	if err != nil {
 		return err
@@ -90,10 +92,30 @@ func (daemon *Daemon) prepareConvergence(ready *foundation, prepared *services) 
 		sandbox.ManagerDependencies{
 			Control: controlPlane, Converger: prepared.converger, Runtime: prepared.runtime, Records: ready.database,
 			LocalRuntimes: prepared.localRuntimes, Snapshots: prepared.snapshots, Meter: prepared.usage,
+			PaymentHolds: prepared.paymentHolds,
 		},
 		sandbox.WithLogger(daemon.logger),
 	)
 	return err
+}
+
+// prepareSettlement restores stored payment holds while still preparing, so
+// convergence never starts with a held sandbox it would resume.
+func (daemon *Daemon) prepareSettlement(ctx context.Context, ready *foundation, prepared *services) error {
+	controlPlane, err := settlement.NewControlPlane(daemon.client)
+	if err != nil {
+		return err
+	}
+	prepared.settlement, err = settlement.New(
+		settlement.Dependencies{
+			Control: controlPlane, Store: ready.database, Runtime: prepared.runtime, Holds: prepared.paymentHolds,
+		},
+		settlement.WithLogger(daemon.logger),
+	)
+	if err != nil {
+		return err
+	}
+	return prepared.settlement.Restore(ctx)
 }
 
 func (daemon *Daemon) prepareHealth(prepared *services) error {

@@ -11,7 +11,15 @@ import { MicroUsd } from '../../common/values/micro-usd.value';
 import { BillingRestriction } from '../enums/billing-restriction.enum';
 
 export interface BillingCapacityInput {
+	// Negative once a customer withdrew escrow funds that usage had consumed
+	// but no host had claimed yet; it then offers no capacity at all.
 	creditBalanceMicroUsd: MicroUsd;
+	// A requested escrow withdrawal can leave once its dispute window ends, so
+	// it is no longer available to new work.
+	pendingWithdrawalMicroUsd: MicroUsd;
+	// Usage is only paid through the escrow, so without a linked, unblocked
+	// funding wallet nothing is admissible whatever the credit.
+	fundingWalletReady: boolean;
 	unpostedChargesMicroUsd: MicroUsd;
 	reservedUsageMicroUsd: MicroUsd;
 	requestedMicroUsd: MicroUsd;
@@ -49,6 +57,7 @@ export function evaluateBillingCapacity(
 	);
 	const availableMicroUsd = input.creditBalanceMicroUsd
 		.subtract(committedMicroUsd)
+		.subtract(input.pendingWithdrawalMicroUsd)
 		.nonnegative();
 	const monthlyCommittedMicroUsd = input.monthSpendMicroUsd.add(
 		input.requestedMicroUsd
@@ -56,7 +65,9 @@ export function evaluateBillingCapacity(
 	const networkMonthlyCommittedMicroUsd = input.networkMonthSpendMicroUsd.add(
 		input.networkRequestedMicroUsd
 	);
-	const fundingAllowed = availableMicroUsd.atLeast(input.requestedMicroUsd);
+	const fundingAllowed =
+		input.fundingWalletReady &&
+		availableMicroUsd.atLeast(input.requestedMicroUsd);
 	const monthlyBudgetAllowed =
 		input.monthlyLimitMicroUsd === null ||
 		monthlyCommittedMicroUsd.atMost(input.monthlyLimitMicroUsd);
@@ -122,7 +133,8 @@ function exposureAllowed(
 }
 
 function assertNonnegative(input: BillingCapacityInput): void {
-	for (const [name, value] of Object.entries(input)) {
+	const { creditBalanceMicroUsd: _owedCreditMayBeNegative, ...amounts } = input;
+	for (const [name, value] of Object.entries(amounts)) {
 		if (value instanceof MicroUsd && value.isNegative()) {
 			throw new Error(`${name} must be nonnegative`);
 		}

@@ -50,4 +50,6 @@ for kustomization in "${substituted_kustomizations[@]}"; do
 done
 kubeconform_strict <"${deploy_root}/clusters/production/stages.yaml"
 
+bash "${deploy_root}/scripts/settlement-values.sh" --check
+
 shellcheck --external-sources "${deploy_root}"/scripts/*.sh "${deploy_root}"/bootstrap/*.sh "${deploy_root}"/platform/openbao-configure/*.sh

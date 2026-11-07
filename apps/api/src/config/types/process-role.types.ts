@@ -9,4 +9,5 @@
 
 export interface ProcessRoleTraits {
 	readonly servesHttp: boolean;
+	readonly runsScheduledJobs: boolean;
 }

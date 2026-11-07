@@ -1,0 +1,11 @@
+◆ snapflow  Accepted vouchers · production
+
+  Channel       0x706f…3255 · open
+  Sandbox       0b9d4f62-5d1c-4f0e-9a51-3c7e2f8b6a14 · held for payment since 2026-11-05 09:15 UTC
+  Voucher       #2 · 123.456789 USDC to you · expires 2030-03-17 17:46 UTC
+
+  Channel       0x706f…3255 · open
+  Sandbox       f2a749e8-7f31-4ad3-8e12-8de345be5e3b
+  Voucher       awaiting the first signed voucher
+
+  → export the signed vouchers with `sudo snapflow vouchers --json` to claim them from your own wallet

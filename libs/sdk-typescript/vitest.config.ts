@@ -35,6 +35,10 @@ export default defineConfig({
 				replacement: local('../api-client/src/client/index.ts'),
 			},
 			{
+				find: /^@snapflow\/contracts$/,
+				replacement: local('../contracts/src/index.ts'),
+			},
+			{
 				find: /^@snapflow\/toolbox-api-client$/,
 				replacement: local('../toolbox-api-client/src/index.ts'),
 			},

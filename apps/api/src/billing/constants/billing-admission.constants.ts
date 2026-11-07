@@ -17,6 +17,7 @@ export const BillingAdmissionErrorCode = {
 	BILLING_AUTHORIZATION_REQUIRED: 'billing_authorization_required',
 	MACHINE_EXPOSURE_LIMITED: 'machine_exposure_limited',
 	HOST_EXPOSURE_LIMITED: 'host_exposure_limited',
+	VOUCHER_COVERAGE_LAPSED: 'voucher_coverage_lapsed',
 } as const;
 
 export type BillingAdmissionErrorCode =

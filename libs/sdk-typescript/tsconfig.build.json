@@ -8,6 +8,7 @@
 			"@snapflow/api-client/client": [
 				"../../dist/libs/api-client/src/client/index.d.ts"
 			],
+			"@snapflow/contracts": ["../../dist/libs/contracts/src/index.d.ts"],
 			"@snapflow/toolbox-api-client": [
 				"../../dist/libs/toolbox-api-client/src/index.d.ts"
 			],

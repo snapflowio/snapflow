@@ -7,35 +7,68 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
+import {
+	SECONDS_PER_HOUR,
+	SECONDS_PER_MINUTE,
+} from '../../common/constants/time.constants';
 import type { Settings } from '../entities/settings.entity';
 
 type OrderedSettingKey =
-	| 'topUpMinimumCents'
-	| 'topUpMaximumCents'
-	| 'autoTopUpMinimumCents'
 	| 'exposureCeilingProbationaryCents'
 	| 'exposureCeilingEstablishedCents'
 	| 'exposureCeilingHostCents'
-	| 'payoutHoldDatacenterDays'
-	| 'payoutHoldVerifiedDays'
-	| 'payoutHoldCommunityDays';
+	| 'vcpuHourPriceMinimumMicroUsd'
+	| 'vcpuHourPriceMaximumMicroUsd'
+	| 'memoryGibHourPriceMinimumMicroUsd'
+	| 'memoryGibHourPriceMaximumMicroUsd'
+	| 'gpuHourPriceMinimumMicroUsd'
+	| 'gpuHourPriceMaximumMicroUsd'
+	| 'diskGibMonthPriceMinimumMicroUsd'
+	| 'diskGibMonthPriceMaximumMicroUsd';
+
+type VoucherSettingKey =
+	| 'voucherIntervalSeconds'
+	| 'voucherGraceIntervals'
+	| 'voucherLifetimeHours'
+	| 'claimIntervalMinutes';
 
 export type ConsistencySettings = Pick<
 	Settings,
-	OrderedSettingKey | 'topUpPresetsCents'
+	OrderedSettingKey | VoucherSettingKey
 >;
 
 const ORDERED_SETTINGS: readonly (readonly [
 	OrderedSettingKey,
 	OrderedSettingKey,
 ])[] = [
-	['topUpMinimumCents', 'topUpMaximumCents'],
-	['topUpMinimumCents', 'autoTopUpMinimumCents'],
-	['autoTopUpMinimumCents', 'topUpMaximumCents'],
 	['exposureCeilingProbationaryCents', 'exposureCeilingEstablishedCents'],
 	['exposureCeilingEstablishedCents', 'exposureCeilingHostCents'],
-	['payoutHoldDatacenterDays', 'payoutHoldVerifiedDays'],
-	['payoutHoldVerifiedDays', 'payoutHoldCommunityDays'],
+	['vcpuHourPriceMinimumMicroUsd', 'vcpuHourPriceMaximumMicroUsd'],
+	['memoryGibHourPriceMinimumMicroUsd', 'memoryGibHourPriceMaximumMicroUsd'],
+	['gpuHourPriceMinimumMicroUsd', 'gpuHourPriceMaximumMicroUsd'],
+	['diskGibMonthPriceMinimumMicroUsd', 'diskGibMonthPriceMaximumMicroUsd'],
+];
+
+// Vouchers are reissued once half their lifetime has passed, so a voucher a
+// host holds is always claimable for at least that long. A lapse must be
+// noticed and a claim relayed within it, or vouchers would expire unclaimed.
+const VOUCHER_LIFETIME_SHARE_DIVISOR = 2;
+
+interface VoucherWindow {
+	name: string;
+	seconds: (settings: ConsistencySettings) => number;
+}
+
+const VOUCHER_WINDOWS: readonly VoucherWindow[] = [
+	{
+		name: 'voucherIntervalSeconds * voucherGraceIntervals',
+		seconds: (settings) =>
+			settings.voucherIntervalSeconds * settings.voucherGraceIntervals,
+	},
+	{
+		name: 'claimIntervalMinutes',
+		seconds: (settings) => settings.claimIntervalMinutes * SECONDS_PER_MINUTE,
+	},
 ];
 
 export function settingsInconsistency(
@@ -46,12 +79,13 @@ export function settingsInconsistency(
 			return `${upper} must be at least ${lower}`;
 		}
 	}
-	const outOfRange = settings.topUpPresetsCents.find(
-		(preset) =>
-			preset < settings.topUpMinimumCents || preset > settings.topUpMaximumCents
-	);
-	if (outOfRange !== undefined) {
-		return `Top-up preset ${outOfRange} must be between topUpMinimumCents and topUpMaximumCents`;
+	const halfLifetimeSeconds =
+		(settings.voucherLifetimeHours * SECONDS_PER_HOUR) /
+		VOUCHER_LIFETIME_SHARE_DIVISOR;
+	for (const window of VOUCHER_WINDOWS) {
+		if (window.seconds(settings) > halfLifetimeSeconds) {
+			return `${window.name} must be at most half of voucherLifetimeHours`;
+		}
 	}
 	return null;
 }

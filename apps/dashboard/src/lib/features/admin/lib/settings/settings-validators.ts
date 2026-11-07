@@ -31,11 +31,6 @@ export const UUID_PATTERN: SettingPattern = {
 	message: 'Enter an organization ID',
 };
 
-export const COUNTRY_CODE_PATTERN: SettingPattern = {
-	regex: /^[A-Z]{2}$/,
-	message: 'Enter one ISO country code per line',
-};
-
 type SettingSchema = z.ZodType<boolean | string, boolean | string>;
 
 function fieldSchema(field: SettingField): SettingSchema {
@@ -49,22 +44,6 @@ function fieldSchema(field: SettingField): SettingSchema {
 				.regex(WHOLE_NUMBER_PATTERN, 'Enter a whole number');
 		case 'choice':
 			return z.string().min(1, `Select a ${field.label.toLowerCase()}`);
-		case 'quantityList': {
-			const { maximum } = field;
-			return z
-				.string()
-				.refine(
-					(value) => listEntries(value).length <= maximum,
-					`Enter at most ${maximum} entries`
-				)
-				.refine(
-					(value) =>
-						listEntries(value).every((entry) =>
-							WHOLE_NUMBER_PATTERN.test(entry)
-						),
-					'Enter one whole number per line'
-				);
-		}
 		case 'list': {
 			const { maximum, pattern } = field;
 			return z

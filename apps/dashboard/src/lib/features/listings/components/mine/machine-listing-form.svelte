@@ -143,15 +143,15 @@ const needsPayout = $derived(listsPublicly && payoutReady === false);
 				<div class="px-2">
 					<Notice tone="warning">
 						{#snippet title()}
-							Set up payouts first
+							Link a payout wallet first
 						{/snippet}
 						{#snippet description()}
-							Public listings earn money, so they need a verified Stripe payout
-							account.
+							Public listings earn money, so they need a linked payout wallet
+							that passed sanctions screening.
 						{/snippet}
 						{#snippet action()}
-							<Chip variant="primary" href={resolve(Path.EARNINGS_ACCOUNT)}>
-								Set up payouts
+							<Chip variant="primary" href={resolve(Path.EARNINGS_PAYOUTS)}>
+								Link payout wallet
 							</Chip>
 						{/snippet}
 					</Notice>

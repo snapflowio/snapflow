@@ -12,11 +12,14 @@ import {
 	type HostMachine,
 	MarketplaceErrorCode,
 	type PriceBelowFloorError,
+	PricedResource,
 	type PriceFloor,
+	type PriceOutOfRangeError,
 } from '@snapflow/api-client';
 import { SnapflowError } from '#lib/api/errors/snapflow-error.ts';
 import {
 	formatHourlyPrice,
+	formatMicroUsd,
 	formatMicroUsdAmount,
 	usdInputToNonNegativeMicroUsd,
 } from '#lib/utils/usd.ts';
@@ -34,13 +37,67 @@ const PRICE_CARD_ERROR_MESSAGES: Partial<Record<MarketplaceErrorCode, string>> =
 			'The egress price is above the market ceiling. Lower it to publish this card.',
 	};
 
-function isPriceBelowFloor(details: unknown): details is PriceBelowFloorError {
+const PRICED_RESOURCE_FIELDS = {
+	[PricedResource.VcpuHour]: 'vcpuHourMicroUsd',
+	[PricedResource.MemoryGibHour]: 'memoryGibHourMicroUsd',
+	[PricedResource.GpuHour]: 'gpuHourMicroUsd',
+	[PricedResource.DiskGibMonth]: 'diskGibMonthMicroUsd',
+	[PricedResource.StoppedDiskGibMonth]: 'stoppedDiskGibMonthMicroUsd',
+	[PricedResource.EgressGib]: 'egressMicroUsdPerGiB',
+} as const satisfies Record<PricedResource, keyof CreatePriceCard>;
+
+function hasMarketplaceErrorCode<
+	Details extends { code: MarketplaceErrorCode },
+>(details: unknown, code: Details['code']): details is Details {
 	return (
 		typeof details === 'object' &&
 		details !== null &&
 		'code' in details &&
-		details.code === MarketplaceErrorCode.PriceBelowFloor
+		details.code === code
 	);
+}
+
+function isPriceBelowFloor(details: unknown): details is PriceBelowFloorError {
+	return hasMarketplaceErrorCode<PriceBelowFloorError>(
+		details,
+		MarketplaceErrorCode.PriceBelowFloor
+	);
+}
+
+function isPriceOutOfRange(details: unknown): details is PriceOutOfRangeError {
+	return hasMarketplaceErrorCode<PriceOutOfRangeError>(
+		details,
+		MarketplaceErrorCode.PriceOutOfRange
+	);
+}
+
+export interface PriceRangeViolation {
+	field: keyof CreatePriceCard;
+	priceMicroUsd: string;
+	message: string;
+}
+
+export function priceRangeViolation(
+	error: unknown
+): PriceRangeViolation | null {
+	const { details } = SnapflowError.fromUnknown(error);
+	if (!isPriceOutOfRange(details)) return null;
+	return {
+		field: PRICED_RESOURCE_FIELDS[details.resource],
+		priceMicroUsd: details.priceMicroUsd,
+		message: `Must be between ${formatMicroUsd(details.minimumMicroUsd)} and ${formatMicroUsd(details.maximumMicroUsd)}.`,
+	};
+}
+
+export function rateFieldError(
+	violation: PriceRangeViolation | null,
+	field: keyof CreatePriceCard,
+	input: string
+): string | null {
+	return violation?.field === field &&
+		usdInputToNonNegativeMicroUsd(input) === violation.priceMicroUsd
+		? violation.message
+		: null;
 }
 
 function isMarketplaceErrorCode(
@@ -65,29 +122,39 @@ const FREE_EGRESS_INPUT = '0';
 const GAUGE_MEDIAN_MULTIPLE = 2n;
 const FREE_GPU_INPUT = '0';
 
-export const RATE_FIELDS = [
-	{ key: 'vcpuHourMicroUsd', label: 'vCPU', unit: '/vCPU-hour' },
-	{
-		key: 'memoryGibHourMicroUsd',
-		label: 'Memory',
-		unit: '/GiB-hour',
-	},
-	{ key: 'gpuHourMicroUsd', label: 'GPU', unit: '/GPU-hour' },
-	{
-		key: 'diskGibMonthMicroUsd',
-		label: 'Disk while running',
-		unit: '/GiB-month',
-	},
-	{
-		key: 'stoppedDiskGibMonthMicroUsd',
+interface RateLabel {
+	label: string;
+	unit: string;
+}
+
+export const RATE_LABELS = {
+	vcpuHourMicroUsd: { label: 'vCPU', unit: '/vCPU-hour' },
+	memoryGibHourMicroUsd: { label: 'Memory', unit: '/GiB-hour' },
+	gpuHourMicroUsd: { label: 'GPU', unit: '/GPU-hour' },
+	diskGibMonthMicroUsd: { label: 'Disk while running', unit: '/GiB-month' },
+	stoppedDiskGibMonthMicroUsd: {
 		label: 'Disk while stopped',
 		unit: '/GiB-month',
 	},
-] as const satisfies readonly {
-	key: keyof CreatePriceCard;
-	label: string;
-	unit: string;
-}[];
+	egressMicroUsdPerGiB: { label: 'Egress', unit: '/GB' },
+} as const satisfies Record<keyof CreatePriceCard, RateLabel>;
+
+const COMPUTE_RATE_KEYS = [
+	'vcpuHourMicroUsd',
+	'memoryGibHourMicroUsd',
+	'gpuHourMicroUsd',
+	'diskGibMonthMicroUsd',
+	'stoppedDiskGibMonthMicroUsd',
+] as const satisfies readonly (keyof CreatePriceCard)[];
+
+export const RATE_FIELDS = COMPUTE_RATE_KEYS.map((key) => ({
+	key,
+	...RATE_LABELS[key],
+}));
+
+export function pricedResourceRate(resource: PricedResource): RateLabel {
+	return RATE_LABELS[PRICED_RESOURCE_FIELDS[resource]];
+}
 
 export type RateInputs = Record<keyof CreatePriceCard, string>;
 

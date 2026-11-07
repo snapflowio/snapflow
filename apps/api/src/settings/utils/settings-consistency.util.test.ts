@@ -16,46 +16,32 @@ import {
 } from './settings-consistency.util';
 
 const defaults: ConsistencySettings = {
-	topUpMinimumCents: SETTINGS_DEFAULTS.topUpMinimumCents,
-	topUpMaximumCents: SETTINGS_DEFAULTS.topUpMaximumCents,
-	autoTopUpMinimumCents: SETTINGS_DEFAULTS.autoTopUpMinimumCents,
-	topUpPresetsCents: [...SETTINGS_DEFAULTS.topUpPresetsCents],
 	exposureCeilingProbationaryCents:
 		SETTINGS_DEFAULTS.exposureCeilingProbationaryCents,
 	exposureCeilingEstablishedCents:
 		SETTINGS_DEFAULTS.exposureCeilingEstablishedCents,
 	exposureCeilingHostCents: SETTINGS_DEFAULTS.exposureCeilingHostCents,
-	payoutHoldDatacenterDays: SETTINGS_DEFAULTS.payoutHoldDatacenterDays,
-	payoutHoldVerifiedDays: SETTINGS_DEFAULTS.payoutHoldVerifiedDays,
-	payoutHoldCommunityDays: SETTINGS_DEFAULTS.payoutHoldCommunityDays,
+	voucherIntervalSeconds: SETTINGS_DEFAULTS.voucherIntervalSeconds,
+	voucherGraceIntervals: SETTINGS_DEFAULTS.voucherGraceIntervals,
+	voucherLifetimeHours: SETTINGS_DEFAULTS.voucherLifetimeHours,
+	claimIntervalMinutes: SETTINGS_DEFAULTS.claimIntervalMinutes,
+	vcpuHourPriceMinimumMicroUsd: SETTINGS_DEFAULTS.vcpuHourPriceMinimumMicroUsd,
+	vcpuHourPriceMaximumMicroUsd: SETTINGS_DEFAULTS.vcpuHourPriceMaximumMicroUsd,
+	memoryGibHourPriceMinimumMicroUsd:
+		SETTINGS_DEFAULTS.memoryGibHourPriceMinimumMicroUsd,
+	memoryGibHourPriceMaximumMicroUsd:
+		SETTINGS_DEFAULTS.memoryGibHourPriceMaximumMicroUsd,
+	gpuHourPriceMinimumMicroUsd: SETTINGS_DEFAULTS.gpuHourPriceMinimumMicroUsd,
+	gpuHourPriceMaximumMicroUsd: SETTINGS_DEFAULTS.gpuHourPriceMaximumMicroUsd,
+	diskGibMonthPriceMinimumMicroUsd:
+		SETTINGS_DEFAULTS.diskGibMonthPriceMinimumMicroUsd,
+	diskGibMonthPriceMaximumMicroUsd:
+		SETTINGS_DEFAULTS.diskGibMonthPriceMaximumMicroUsd,
 };
 
 describe('settingsInconsistency', () => {
 	it('accepts the defaults', () => {
 		assert.equal(settingsInconsistency(defaults), null);
-	});
-
-	it('rejects a top-up maximum below the minimum', () => {
-		assert.equal(
-			settingsInconsistency({
-				...defaults,
-				topUpMinimumCents: 5_000,
-				topUpMaximumCents: 4_000,
-				autoTopUpMinimumCents: 5_000,
-				topUpPresetsCents: [5_000],
-			}),
-			'topUpMaximumCents must be at least topUpMinimumCents'
-		);
-	});
-
-	it('rejects an automatic top-up minimum below the top-up minimum', () => {
-		assert.equal(
-			settingsInconsistency({
-				...defaults,
-				autoTopUpMinimumCents: defaults.topUpMinimumCents - 1,
-			}),
-			'autoTopUpMinimumCents must be at least topUpMinimumCents'
-		);
 	});
 
 	it('rejects exposure ceilings that shrink with trust', () => {
@@ -69,23 +55,52 @@ describe('settingsInconsistency', () => {
 		);
 	});
 
-	it('rejects payout holds that grow with trust', () => {
+	it('rejects a price limit whose minimum exceeds its maximum', () => {
 		assert.equal(
 			settingsInconsistency({
 				...defaults,
-				payoutHoldDatacenterDays: defaults.payoutHoldVerifiedDays + 1,
+				gpuHourPriceMinimumMicroUsd: defaults.gpuHourPriceMaximumMicroUsd + 1,
 			}),
-			'payoutHoldVerifiedDays must be at least payoutHoldDatacenterDays'
+			'gpuHourPriceMaximumMicroUsd must be at least gpuHourPriceMinimumMicroUsd'
+		);
+		assert.equal(
+			settingsInconsistency({
+				...defaults,
+				diskGibMonthPriceMinimumMicroUsd:
+					defaults.diskGibMonthPriceMaximumMicroUsd,
+			}),
+			null
 		);
 	});
 
-	it('rejects presets outside the top-up range', () => {
+	it('rejects a voucher grace window longer than half a voucher lifetime', () => {
 		assert.equal(
 			settingsInconsistency({
 				...defaults,
-				topUpPresetsCents: [defaults.topUpMaximumCents + 1],
+				voucherLifetimeHours: 1,
+				voucherIntervalSeconds: 1_801,
+				voucherGraceIntervals: 1,
 			}),
-			`Top-up preset ${defaults.topUpMaximumCents + 1} must be between topUpMinimumCents and topUpMaximumCents`
+			'voucherIntervalSeconds * voucherGraceIntervals must be at most half of voucherLifetimeHours'
+		);
+	});
+
+	it('rejects claims rarer than half a voucher lifetime', () => {
+		assert.equal(
+			settingsInconsistency({
+				...defaults,
+				voucherLifetimeHours: 2,
+				claimIntervalMinutes: 61,
+			}),
+			'claimIntervalMinutes must be at most half of voucherLifetimeHours'
+		);
+		assert.equal(
+			settingsInconsistency({
+				...defaults,
+				voucherLifetimeHours: 2,
+				claimIntervalMinutes: 60,
+			}),
+			null
 		);
 	});
 });

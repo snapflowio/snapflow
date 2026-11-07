@@ -133,18 +133,6 @@ export class MicroUsd {
 		return this.amount < 0n;
 	}
 
-	wholeCents(): number {
-		const cents = Number(floorDivide(this.amount, MICRO_USD_PER_CENT));
-		if (!Number.isSafeInteger(cents)) {
-			throw new Error('Cents exceed the safe integer range');
-		}
-		return cents;
-	}
-
-	roundDownToCent(): MicroUsd {
-		return MicroUsd.fromCents(this.wholeCents());
-	}
-
 	toBigInt(): bigint {
 		return this.amount;
 	}

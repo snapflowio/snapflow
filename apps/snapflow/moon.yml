@@ -7,6 +7,7 @@ tags:
 dependsOn:
   - "api-client-go"
   - "common-go"
+  - "contracts-go"
   - "microvm-go"
   - "tunnel-go"
 

@@ -14,7 +14,17 @@ tasks:
     args: ["deploy/scripts/validate.sh"]
     inputs:
       - "@group(manifests)"
+      - "/apps/contracts/deployments/*.json"
     options:
+      runFromWorkspaceRoot: true
+
+  settlement-values:
+    description: "Writes the production escrow address, deployment block and USDC address from apps/contracts/deployments/<chainId>.json"
+    command: "bash"
+    args: ["deploy/scripts/settlement-values.sh"]
+    options:
+      cache: false
+      runInCI: false
       runFromWorkspaceRoot: true
 
   bootstrap:

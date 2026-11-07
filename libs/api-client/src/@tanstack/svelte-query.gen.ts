@@ -3,8 +3,8 @@
 import { type DefaultError, type InfiniteData, infiniteQueryOptions, type MutationOptions, queryOptions } from '@tanstack/svelte-query';
 
 import { client } from '../client.gen.js';
-import { acceptSandboxLeaseRenewal, acknowledgeMachineTunnelBinding, acknowledgeMachineTunnelTargetPlan, activateSnapshot, adminBeginExposureCutover, adminCanCleanupImage, adminCreateEdge, adminCreateOrganizationQuota, adminCreatePlatformRegistry, adminDeleteEdge, adminDeleteMachine, adminDeleteOrganizationQuota, adminDeletePlatformRegistry, adminGetAllAuditLogs, adminGetEdge, adminGetMachineById, adminGetMachineTrust, adminGetOrganization, adminGetOrganizationLimits, adminGetOrganizationQuota, adminGetSettings, adminGrantOrganizationCredit, adminListEdges, adminListExposureCutovers, adminListMachineReliabilityEvents, adminListMachines, adminListOrganizationQuotas, adminListOrganizations, adminListPlatformRegistries, adminListUsers, adminRecoverSandbox, adminReissueEdgeEnrollmentSecret, adminRollbackExposureCutover, adminSetDrainingPolicy, adminSetMaintenanceMode, adminSetSnapshotGeneralStatus, adminSuspendOrganization, adminUnsuspendOrganization, adminUpdateEdgeStatus, adminUpdateMachineDraining, adminUpdateMachineScheduling, adminUpdateOrganizationLimits, adminUpdateOrganizationQuota, adminUpdatePlatformRegistry, adminUpdateSettings, adminVerifyExposureCutover, archiveSandbox, awaitSandboxStateChange, closeMachineSession, completeEdgeEnrollment, createApiKey, createBackup, createCustomDomain, createEdgeSession, createMachinePriceCard, createMachineSession, createPayoutAccount, createPayoutAccountSession, createProtectedAccessGrant, createRegistry, createSandbox, createSandboxExposure, createSandboxSnapshot, createSecret, createSecretVersion, createSnapshot, createSshAccess, createTopUp, createVolume, deactivateSnapshot, deleteActiveOrganization, deleteCustomDomain, deleteMachine, deletePaymentMethod, deleteRegistry, deleteSandbox, deleteSandboxExposure, deleteSecret, deleteVolume, enrollDevelopmentMachine, ensurePreviewExposure, exportBillingUsage, forkSandbox, getAdminPaymentAccount, getAllSnapshots, getAuditLogs, getAuthenticatedUser, getAutoTopUp, getBillingBudget, getBillingConfig, getBillingLineItem, getBillingOverview, getBillingSandboxUsage, getBillingStatement, getEdgeRouteSnapshot, getHostEarnings, getHostMachine, getInfoForAuthenticatedMachine, getJob, getListing, getMachineById, getMachineControlPolicy, getMachineDesiredState, getMachineIdentityStatus, getMachinePriceFloor, getMachineSandboxSecrets, getMachineSnapshotRegistryCredentials, getMachineTrust, getMachineTunnelPlan, getMachineVerification, getOrganizationLimits, getOrganizationSettings, getOrganizationUsageOverview, getPayoutAccount, getPublicConfig, getPushAccess, getRegistry, getRegistryTokenKeys, getSandbox, getSandboxAncestors, getSandboxBillingSummary, getSandboxExposure, getSandboxForks, getSandboxLease, getSandboxParent, getSandboxSecretBindings, getSecret, getSnapshot, getSnapshotBuildLogsUrl, getTopUp, getTransientPushAccess, getVolume, getVolumeByName, healthControllerCheck, healthControllerLive, ingestEdgeUsageCheckpoint, issueMachineTunnelCertificate, listAdminDisputes, listAdminListings, listAdminPayouts, listBillingSandboxUsage, listBillingStatements, listBillingUsage, listCustomDomains, listCustomerNetworkUsage, listEdgeSpeedtestTokenKeys, listHostMachines, listHostNetworkUsage, listJobs, listListings, listMachineLocations, listMachinePriceCards, listMachines, listMachineUsagePlacements, listMarketReferencePrices, listOrganizationQuotas, listPaymentMethods, listPayouts, listRegistries, listSandboxes, listSandboxExposures, listSecrets, listSecretVersions, listTopUps, listVerificationReviews, listVolumes, machineHealthcheck, moveSandbox, openEdgeUsageEpoch, type Options, pauseSandbox, pollJobs, quoteSandbox, recoverSandbox, redeemProtectedAccessGrant, registerMachine, removeSnapshot, renewEdgeSession, renewJobLease, renewMachineSession, replaceLabels, replaceSandboxSecretBindings, reportAuthenticatedMachineUpdateStatus, reportEdgeHeartbeat, reportMachineObservedStatus, reportMachineSnapshotInventory, requestAuthenticatedMachineUpdateDrain, requestMachineBenchmark, requestSystemExposure, resizeSandbox, resizeVolume, resolveSshAccessRelay, resolveVerificationReview, restoreVolume, retryAdminPayout, revokeMachineIdentity, revokeProtectedAccessGrant, revokeSecretVersion, revokeSshAccess, setAutoArchiveInterval, setAutoDeleteInterval, setAutostopInterval, startSandbox, stopSandbox, submitMachineUsageReceipt, updateAdminMachineTier, updateAutoTopUp, updateBillingBudget, updateJobStatus, updateLastActivity, updateMachineDraining, updateMachineListing, updateMachineScheduling, updateMarketReferencePrice, updateNetworkSettings, updateOrganizationSettings, updateRegistry, updateSandboxExposure, updateSecret, updateTopUpAmount } from '../sdk.gen.js';
-import type { AcceptSandboxLeaseRenewalData, AcceptSandboxLeaseRenewalError, AcceptSandboxLeaseRenewalResponse, AcknowledgeMachineTunnelBindingData, AcknowledgeMachineTunnelBindingResponse, AcknowledgeMachineTunnelTargetPlanData, AcknowledgeMachineTunnelTargetPlanResponse, ActivateSnapshotData, ActivateSnapshotResponse, AdminBeginExposureCutoverData, AdminBeginExposureCutoverResponse, AdminCanCleanupImageData, AdminCanCleanupImageResponse, AdminCreateEdgeData, AdminCreateEdgeResponse, AdminCreateOrganizationQuotaData, AdminCreateOrganizationQuotaResponse, AdminCreatePlatformRegistryData, AdminCreatePlatformRegistryResponse, AdminDeleteEdgeData, AdminDeleteEdgeResponse, AdminDeleteMachineData, AdminDeleteMachineResponse, AdminDeleteOrganizationQuotaData, AdminDeleteOrganizationQuotaResponse, AdminDeletePlatformRegistryData, AdminDeletePlatformRegistryResponse, AdminGetAllAuditLogsData, AdminGetAllAuditLogsResponse, AdminGetEdgeData, AdminGetEdgeResponse, AdminGetMachineByIdData, AdminGetMachineByIdResponse, AdminGetMachineTrustData, AdminGetMachineTrustResponse, AdminGetOrganizationData, AdminGetOrganizationLimitsData, AdminGetOrganizationLimitsResponse, AdminGetOrganizationQuotaData, AdminGetOrganizationQuotaResponse, AdminGetOrganizationResponse, AdminGetSettingsData, AdminGetSettingsResponse, AdminGrantOrganizationCreditData, AdminGrantOrganizationCreditResponse, AdminListEdgesData, AdminListEdgesResponse, AdminListExposureCutoversData, AdminListExposureCutoversResponse, AdminListMachineReliabilityEventsData, AdminListMachineReliabilityEventsResponse, AdminListMachinesData, AdminListMachinesResponse, AdminListOrganizationQuotasData, AdminListOrganizationQuotasResponse, AdminListOrganizationsData, AdminListOrganizationsResponse, AdminListPlatformRegistriesData, AdminListPlatformRegistriesResponse, AdminListUsersData, AdminListUsersResponse, AdminRecoverSandboxData, AdminRecoverSandboxResponse, AdminReissueEdgeEnrollmentSecretData, AdminReissueEdgeEnrollmentSecretResponse, AdminRollbackExposureCutoverData, AdminRollbackExposureCutoverResponse, AdminSetDrainingPolicyData, AdminSetDrainingPolicyResponse, AdminSetMaintenanceModeData, AdminSetMaintenanceModeResponse, AdminSetSnapshotGeneralStatusData, AdminSetSnapshotGeneralStatusResponse, AdminSuspendOrganizationData, AdminSuspendOrganizationResponse, AdminUnsuspendOrganizationData, AdminUnsuspendOrganizationResponse, AdminUpdateEdgeStatusData, AdminUpdateEdgeStatusResponse, AdminUpdateMachineDrainingData, AdminUpdateMachineDrainingResponse, AdminUpdateMachineSchedulingData, AdminUpdateMachineSchedulingResponse, AdminUpdateOrganizationLimitsData, AdminUpdateOrganizationLimitsResponse, AdminUpdateOrganizationQuotaData, AdminUpdateOrganizationQuotaResponse, AdminUpdatePlatformRegistryData, AdminUpdatePlatformRegistryResponse, AdminUpdateSettingsData, AdminUpdateSettingsResponse, AdminVerifyExposureCutoverData, AdminVerifyExposureCutoverResponse, ArchiveSandboxData, ArchiveSandboxResponse, AwaitSandboxStateChangeData, AwaitSandboxStateChangeResponse, CloseMachineSessionData, CloseMachineSessionResponse, CompleteEdgeEnrollmentData, CompleteEdgeEnrollmentResponse, CreateApiKeyData, CreateApiKeyResponse, CreateBackupData, CreateBackupResponse, CreateCustomDomainData, CreateCustomDomainResponse, CreateEdgeSessionData, CreateEdgeSessionResponse, CreateMachinePriceCardData, CreateMachinePriceCardError, CreateMachinePriceCardResponse, CreateMachineSessionData, CreateMachineSessionResponse, CreatePayoutAccountData, CreatePayoutAccountResponse, CreatePayoutAccountSessionData, CreatePayoutAccountSessionResponse, CreateProtectedAccessGrantData, CreateProtectedAccessGrantResponse, CreateRegistryData, CreateRegistryResponse, CreateSandboxData, CreateSandboxError, CreateSandboxExposureData, CreateSandboxExposureResponse, CreateSandboxResponse, CreateSandboxSnapshotData, CreateSandboxSnapshotResponse, CreateSecretData, CreateSecretResponse, CreateSecretVersionData, CreateSnapshotData, CreateSnapshotResponse, CreateSshAccessData, CreateSshAccessResponse, CreateTopUpData, CreateTopUpResponse, CreateVolumeData, CreateVolumeResponse, DeactivateSnapshotData, DeactivateSnapshotResponse, DeleteActiveOrganizationData, DeleteActiveOrganizationResponse, DeleteCustomDomainData, DeleteMachineData, DeleteMachineResponse, DeletePaymentMethodData, DeletePaymentMethodResponse, DeleteRegistryData, DeleteRegistryResponse, DeleteSandboxData, DeleteSandboxExposureData, DeleteSandboxResponse, DeleteSecretData, DeleteSecretResponse, DeleteVolumeData, EnrollDevelopmentMachineData, EnrollDevelopmentMachineResponse, EnsurePreviewExposureData, EnsurePreviewExposureResponse, ExportBillingUsageData, ExportBillingUsageResponse, ForkSandboxData, ForkSandboxResponse, GetAdminPaymentAccountData, GetAdminPaymentAccountResponse, GetAllSnapshotsData, GetAllSnapshotsResponse, GetAuditLogsData, GetAuditLogsResponse, GetAuthenticatedUserData, GetAuthenticatedUserResponse, GetAutoTopUpData, GetAutoTopUpResponse, GetBillingBudgetData, GetBillingBudgetResponse, GetBillingConfigData, GetBillingConfigResponse, GetBillingLineItemData, GetBillingLineItemResponse, GetBillingOverviewData, GetBillingOverviewResponse, GetBillingSandboxUsageData, GetBillingSandboxUsageResponse, GetBillingStatementData, GetBillingStatementResponse, GetEdgeRouteSnapshotData, GetEdgeRouteSnapshotResponse, GetHostEarningsData, GetHostEarningsResponse, GetHostMachineData, GetHostMachineResponse, GetInfoForAuthenticatedMachineData, GetInfoForAuthenticatedMachineResponse, GetJobData, GetJobResponse, GetListingData, GetListingResponse, GetMachineByIdData, GetMachineByIdResponse, GetMachineControlPolicyData, GetMachineControlPolicyResponse, GetMachineDesiredStateData, GetMachineDesiredStateResponse, GetMachineIdentityStatusData, GetMachineIdentityStatusResponse, GetMachinePriceFloorData, GetMachinePriceFloorResponse, GetMachineSandboxSecretsData, GetMachineSandboxSecretsResponse, GetMachineSnapshotRegistryCredentialsData, GetMachineSnapshotRegistryCredentialsResponse, GetMachineTrustData, GetMachineTrustResponse, GetMachineTunnelPlanData, GetMachineTunnelPlanResponse, GetMachineVerificationData, GetMachineVerificationResponse, GetOrganizationLimitsData, GetOrganizationLimitsResponse, GetOrganizationSettingsData, GetOrganizationSettingsResponse, GetOrganizationUsageOverviewData, GetOrganizationUsageOverviewResponse, GetPayoutAccountData, GetPayoutAccountResponse, GetPublicConfigData, GetPublicConfigResponse, GetPushAccessData, GetPushAccessResponse, GetRegistryData, GetRegistryResponse, GetRegistryTokenKeysData, GetRegistryTokenKeysResponse, GetSandboxAncestorsData, GetSandboxAncestorsResponse, GetSandboxBillingSummaryData, GetSandboxBillingSummaryResponse, GetSandboxData, GetSandboxExposureData, GetSandboxExposureResponse, GetSandboxForksData, GetSandboxForksResponse, GetSandboxLeaseData, GetSandboxLeaseResponse, GetSandboxParentData, GetSandboxParentResponse, GetSandboxResponse, GetSandboxSecretBindingsData, GetSecretData, GetSecretResponse, GetSnapshotBuildLogsUrlData, GetSnapshotBuildLogsUrlResponse, GetSnapshotData, GetSnapshotResponse, GetTopUpData, GetTopUpResponse, GetTransientPushAccessData, GetTransientPushAccessResponse, GetVolumeByNameData, GetVolumeByNameResponse, GetVolumeData, GetVolumeResponse, HealthControllerCheckData, HealthControllerCheckError, HealthControllerCheckResponse, HealthControllerLiveData, IngestEdgeUsageCheckpointData, IngestEdgeUsageCheckpointResponse, IssueMachineTunnelCertificateData, IssueMachineTunnelCertificateResponse, ListAdminDisputesData, ListAdminDisputesResponse, ListAdminListingsData, ListAdminListingsResponse, ListAdminPayoutsData, ListAdminPayoutsResponse, ListBillingSandboxUsageData, ListBillingSandboxUsageResponse, ListBillingStatementsData, ListBillingStatementsResponse, ListBillingUsageData, ListBillingUsageResponse, ListCustomDomainsData, ListCustomDomainsResponse, ListCustomerNetworkUsageData, ListCustomerNetworkUsageResponse, ListEdgeSpeedtestTokenKeysData, ListEdgeSpeedtestTokenKeysResponse, ListHostMachinesData, ListHostMachinesResponse, ListHostNetworkUsageData, ListHostNetworkUsageResponse, ListJobsData, ListJobsResponse, ListListingsData, ListListingsResponse, ListMachineLocationsData, ListMachineLocationsResponse, ListMachinePriceCardsData, ListMachinePriceCardsResponse, ListMachinesData, ListMachinesResponse, ListMachineUsagePlacementsData, ListMachineUsagePlacementsResponse, ListMarketReferencePricesData, ListMarketReferencePricesResponse, ListOrganizationQuotasData, ListOrganizationQuotasResponse, ListPaymentMethodsData, ListPaymentMethodsResponse, ListPayoutsData, ListPayoutsResponse, ListRegistriesData, ListRegistriesResponse, ListSandboxesData, ListSandboxesResponse2, ListSandboxExposuresData, ListSandboxExposuresResponse, ListSecretsData, ListSecretsResponse, ListSecretVersionsData, ListTopUpsData, ListTopUpsResponse, ListVerificationReviewsData, ListVerificationReviewsResponse, ListVolumesData, ListVolumesResponse, MachineHealthcheckData, MoveSandboxData, MoveSandboxError, MoveSandboxResponse, OpenEdgeUsageEpochData, OpenEdgeUsageEpochResponse, PauseSandboxData, PauseSandboxResponse, PollJobsData, PollJobsResponse2, QuoteSandboxData, QuoteSandboxResponse, RecoverSandboxData, RecoverSandboxResponse, RedeemProtectedAccessGrantData, RedeemProtectedAccessGrantResponse, RegisterMachineData, RegisterMachineResponse, RemoveSnapshotData, RenewEdgeSessionData, RenewEdgeSessionResponse, RenewJobLeaseData, RenewJobLeaseResponse, RenewMachineSessionData, RenewMachineSessionResponse, ReplaceLabelsData, ReplaceLabelsResponse, ReplaceSandboxSecretBindingsData, ReportAuthenticatedMachineUpdateStatusData, ReportAuthenticatedMachineUpdateStatusResponse, ReportEdgeHeartbeatData, ReportEdgeHeartbeatResponse, ReportMachineObservedStatusData, ReportMachineObservedStatusResponse, ReportMachineSnapshotInventoryData, ReportMachineSnapshotInventoryResponse, RequestAuthenticatedMachineUpdateDrainData, RequestAuthenticatedMachineUpdateDrainResponse, RequestMachineBenchmarkData, RequestMachineBenchmarkResponse, RequestSystemExposureData, RequestSystemExposureResponse, ResizeSandboxData, ResizeSandboxResponse, ResizeVolumeData, ResizeVolumeResponse, ResolveSshAccessRelayData, ResolveSshAccessRelayResponse, ResolveVerificationReviewData, ResolveVerificationReviewResponse, RestoreVolumeData, RestoreVolumeResponse, RetryAdminPayoutData, RetryAdminPayoutResponse, RevokeMachineIdentityData, RevokeMachineIdentityResponse, RevokeProtectedAccessGrantData, RevokeProtectedAccessGrantResponse, RevokeSecretVersionData, RevokeSshAccessData, RevokeSshAccessResponse, SetAutoArchiveIntervalData, SetAutoArchiveIntervalResponse, SetAutoDeleteIntervalData, SetAutoDeleteIntervalResponse, SetAutostopIntervalData, SetAutostopIntervalResponse, StartSandboxData, StartSandboxError, StartSandboxResponse, StopSandboxData, StopSandboxResponse, SubmitMachineUsageReceiptData, SubmitMachineUsageReceiptResponse, UpdateAdminMachineTierData, UpdateAdminMachineTierResponse, UpdateAutoTopUpData, UpdateAutoTopUpResponse, UpdateBillingBudgetData, UpdateBillingBudgetResponse, UpdateJobStatusData, UpdateJobStatusResponse, UpdateLastActivityData, UpdateMachineDrainingData, UpdateMachineDrainingResponse, UpdateMachineListingData, UpdateMachineListingResponse, UpdateMachineSchedulingData, UpdateMachineSchedulingResponse, UpdateMarketReferencePriceData, UpdateMarketReferencePriceResponse, UpdateNetworkSettingsData, UpdateNetworkSettingsResponse, UpdateOrganizationSettingsData, UpdateOrganizationSettingsResponse, UpdateRegistryData, UpdateRegistryResponse, UpdateSandboxExposureData, UpdateSandboxExposureResponse, UpdateSecretData, UpdateTopUpAmountData, UpdateTopUpAmountResponse } from '../types.gen.js';
+import { acceptSandboxLeaseRenewal, acknowledgeMachineTunnelBinding, acknowledgeMachineTunnelTargetPlan, activateSnapshot, adminBeginExposureCutover, adminCanCleanupImage, adminCreateEdge, adminCreateOrganizationQuota, adminCreatePlatformRegistry, adminDeleteEdge, adminDeleteMachine, adminDeleteOrganizationQuota, adminDeletePlatformRegistry, adminGetAllAuditLogs, adminGetEdge, adminGetMachineById, adminGetMachineTrust, adminGetOrganization, adminGetOrganizationLimits, adminGetOrganizationQuota, adminGetSettings, adminGrantOrganizationCredit, adminListEdges, adminListExposureCutovers, adminListMachineReliabilityEvents, adminListMachines, adminListOrganizationQuotas, adminListOrganizations, adminListPlatformRegistries, adminListUsers, adminRecoverSandbox, adminReissueEdgeEnrollmentSecret, adminRollbackExposureCutover, adminSetDrainingPolicy, adminSetMaintenanceMode, adminSetSnapshotGeneralStatus, adminSuspendOrganization, adminUnsuspendOrganization, adminUpdateEdgeStatus, adminUpdateMachineDraining, adminUpdateMachineScheduling, adminUpdateOrganizationLimits, adminUpdateOrganizationQuota, adminUpdatePlatformRegistry, adminUpdateSettings, adminVerifyExposureCutover, archiveSandbox, awaitSandboxStateChange, closeMachineSession, completeEdgeEnrollment, createApiKey, createBackup, createCustomDomain, createEdgeSession, createMachinePriceCard, createMachineSession, createProtectedAccessGrant, createRegistry, createSandbox, createSandboxExposure, createSandboxSnapshot, createSecret, createSecretVersion, createSnapshot, createSshAccess, createVolume, createWalletChallenge, deactivateSnapshot, deleteActiveOrganization, deleteCustomDomain, deleteMachine, deleteRegistry, deleteSandbox, deleteSandboxExposure, deleteSecret, deleteVolume, enrollDevelopmentMachine, ensurePreviewExposure, exportBillingUsage, forkSandbox, getAllSnapshots, getAuditLogs, getAuthenticatedUser, getBillingBudget, getBillingConfig, getBillingLineItem, getBillingOverview, getBillingSandboxUsage, getBillingStatement, getEdgeRouteSnapshot, getEscrowAccount, getHostMachine, getInfoForAuthenticatedMachine, getJob, getListing, getMachineById, getMachineControlPolicy, getMachineDesiredState, getMachineIdentityStatus, getMachinePriceFloor, getMachinePriceHint, getMachineSandboxSecrets, getMachineSnapshotRegistryCredentials, getMachineTrust, getMachineTunnelPlan, getMachineVerification, getMachineVouchers, getOrganizationLimits, getOrganizationSettings, getOrganizationUsageOverview, getPaymentChannel, getPublicConfig, getPushAccess, getRegistry, getRegistryTokenKeys, getSandbox, getSandboxAncestors, getSandboxBillingSummary, getSandboxExposure, getSandboxForks, getSandboxLease, getSandboxParent, getSandboxSecretBindings, getSecret, getSnapshot, getSnapshotBuildLogsUrl, getTransientPushAccess, getVolume, getVolumeByName, getVoucherDelegation, healthControllerCheck, healthControllerLive, ingestEdgeUsageCheckpoint, issueMachineTunnelCertificate, linkPaymentWallet, listAdminListings, listBillingSandboxUsage, listBillingStatements, listBillingUsage, listCustomDomains, listCustomerNetworkUsage, listEdgeSpeedtestTokenKeys, listEscrowEvents, listHostMachines, listHostNetworkUsage, listJobs, listListings, listMachineLocations, listMachinePriceCards, listMachines, listMachineUsagePlacements, listMarketReferencePrices, listOrganizationQuotas, listPaymentChannels, listPaymentWallets, listPendingVouchers, listRegistries, listSandboxes, listSandboxExposures, listSecrets, listSecretVersions, listVerificationReviews, listVolumes, machineHealthcheck, moveSandbox, openEdgeUsageEpoch, type Options, pauseSandbox, pollJobs, quoteSandbox, recoverSandbox, redeemProtectedAccessGrant, registerMachine, removeSnapshot, renewEdgeSession, renewJobLease, renewMachineSession, replaceLabels, replaceSandboxSecretBindings, reportAuthenticatedMachineUpdateStatus, reportEdgeHeartbeat, reportMachineObservedStatus, reportMachineSnapshotInventory, requestAuthenticatedMachineUpdateDrain, requestMachineBenchmark, requestSystemExposure, resizeSandbox, resizeVolume, resolveSshAccessRelay, resolveVerificationReview, restoreVolume, revokeMachineIdentity, revokeProtectedAccessGrant, revokeSecretVersion, revokeSshAccess, setAutoArchiveInterval, setAutoDeleteInterval, setAutostopInterval, startSandbox, stopSandbox, submitMachineUsageReceipt, submitVoucherSignature, unlinkPaymentWallet, updateAdminMachineTier, updateBillingBudget, updateJobStatus, updateLastActivity, updateMachineDraining, updateMachineListing, updateMachineScheduling, updateMarketReferencePrice, updateNetworkSettings, updateOrganizationSettings, updateRegistry, updateSandboxExposure, updateSecret } from '../sdk.gen.js';
+import type { AcceptSandboxLeaseRenewalData, AcceptSandboxLeaseRenewalError, AcceptSandboxLeaseRenewalResponse, AcknowledgeMachineTunnelBindingData, AcknowledgeMachineTunnelBindingResponse, AcknowledgeMachineTunnelTargetPlanData, AcknowledgeMachineTunnelTargetPlanResponse, ActivateSnapshotData, ActivateSnapshotResponse, AdminBeginExposureCutoverData, AdminBeginExposureCutoverResponse, AdminCanCleanupImageData, AdminCanCleanupImageResponse, AdminCreateEdgeData, AdminCreateEdgeResponse, AdminCreateOrganizationQuotaData, AdminCreateOrganizationQuotaResponse, AdminCreatePlatformRegistryData, AdminCreatePlatformRegistryResponse, AdminDeleteEdgeData, AdminDeleteEdgeResponse, AdminDeleteMachineData, AdminDeleteMachineResponse, AdminDeleteOrganizationQuotaData, AdminDeleteOrganizationQuotaResponse, AdminDeletePlatformRegistryData, AdminDeletePlatformRegistryResponse, AdminGetAllAuditLogsData, AdminGetAllAuditLogsResponse, AdminGetEdgeData, AdminGetEdgeResponse, AdminGetMachineByIdData, AdminGetMachineByIdResponse, AdminGetMachineTrustData, AdminGetMachineTrustResponse, AdminGetOrganizationData, AdminGetOrganizationLimitsData, AdminGetOrganizationLimitsResponse, AdminGetOrganizationQuotaData, AdminGetOrganizationQuotaResponse, AdminGetOrganizationResponse, AdminGetSettingsData, AdminGetSettingsResponse, AdminGrantOrganizationCreditData, AdminGrantOrganizationCreditResponse, AdminListEdgesData, AdminListEdgesResponse, AdminListExposureCutoversData, AdminListExposureCutoversResponse, AdminListMachineReliabilityEventsData, AdminListMachineReliabilityEventsResponse, AdminListMachinesData, AdminListMachinesResponse, AdminListOrganizationQuotasData, AdminListOrganizationQuotasResponse, AdminListOrganizationsData, AdminListOrganizationsResponse, AdminListPlatformRegistriesData, AdminListPlatformRegistriesResponse, AdminListUsersData, AdminListUsersResponse, AdminRecoverSandboxData, AdminRecoverSandboxResponse, AdminReissueEdgeEnrollmentSecretData, AdminReissueEdgeEnrollmentSecretResponse, AdminRollbackExposureCutoverData, AdminRollbackExposureCutoverResponse, AdminSetDrainingPolicyData, AdminSetDrainingPolicyResponse, AdminSetMaintenanceModeData, AdminSetMaintenanceModeResponse, AdminSetSnapshotGeneralStatusData, AdminSetSnapshotGeneralStatusResponse, AdminSuspendOrganizationData, AdminSuspendOrganizationResponse, AdminUnsuspendOrganizationData, AdminUnsuspendOrganizationResponse, AdminUpdateEdgeStatusData, AdminUpdateEdgeStatusResponse, AdminUpdateMachineDrainingData, AdminUpdateMachineDrainingResponse, AdminUpdateMachineSchedulingData, AdminUpdateMachineSchedulingResponse, AdminUpdateOrganizationLimitsData, AdminUpdateOrganizationLimitsResponse, AdminUpdateOrganizationQuotaData, AdminUpdateOrganizationQuotaResponse, AdminUpdatePlatformRegistryData, AdminUpdatePlatformRegistryResponse, AdminUpdateSettingsData, AdminUpdateSettingsResponse, AdminVerifyExposureCutoverData, AdminVerifyExposureCutoverResponse, ArchiveSandboxData, ArchiveSandboxResponse, AwaitSandboxStateChangeData, AwaitSandboxStateChangeResponse, CloseMachineSessionData, CloseMachineSessionResponse, CompleteEdgeEnrollmentData, CompleteEdgeEnrollmentResponse, CreateApiKeyData, CreateApiKeyResponse, CreateBackupData, CreateBackupResponse, CreateCustomDomainData, CreateCustomDomainResponse, CreateEdgeSessionData, CreateEdgeSessionResponse, CreateMachinePriceCardData, CreateMachinePriceCardError, CreateMachinePriceCardResponse, CreateMachineSessionData, CreateMachineSessionResponse, CreateProtectedAccessGrantData, CreateProtectedAccessGrantResponse, CreateRegistryData, CreateRegistryResponse, CreateSandboxData, CreateSandboxError, CreateSandboxExposureData, CreateSandboxExposureResponse, CreateSandboxResponse, CreateSandboxSnapshotData, CreateSandboxSnapshotResponse, CreateSecretData, CreateSecretResponse, CreateSecretVersionData, CreateSnapshotData, CreateSnapshotResponse, CreateSshAccessData, CreateSshAccessResponse, CreateVolumeData, CreateVolumeResponse, CreateWalletChallengeData, CreateWalletChallengeResponse, DeactivateSnapshotData, DeactivateSnapshotResponse, DeleteActiveOrganizationData, DeleteActiveOrganizationResponse, DeleteCustomDomainData, DeleteMachineData, DeleteMachineResponse, DeleteRegistryData, DeleteRegistryResponse, DeleteSandboxData, DeleteSandboxExposureData, DeleteSandboxResponse, DeleteSecretData, DeleteSecretResponse, DeleteVolumeData, EnrollDevelopmentMachineData, EnrollDevelopmentMachineResponse, EnsurePreviewExposureData, EnsurePreviewExposureResponse, ExportBillingUsageData, ExportBillingUsageResponse, ForkSandboxData, ForkSandboxResponse, GetAllSnapshotsData, GetAllSnapshotsResponse, GetAuditLogsData, GetAuditLogsResponse, GetAuthenticatedUserData, GetAuthenticatedUserResponse, GetBillingBudgetData, GetBillingBudgetResponse, GetBillingConfigData, GetBillingConfigResponse, GetBillingLineItemData, GetBillingLineItemResponse, GetBillingOverviewData, GetBillingOverviewResponse, GetBillingSandboxUsageData, GetBillingSandboxUsageResponse, GetBillingStatementData, GetBillingStatementResponse, GetEdgeRouteSnapshotData, GetEdgeRouteSnapshotResponse, GetEscrowAccountData, GetEscrowAccountResponse, GetHostMachineData, GetHostMachineResponse, GetInfoForAuthenticatedMachineData, GetInfoForAuthenticatedMachineResponse, GetJobData, GetJobResponse, GetListingData, GetListingResponse, GetMachineByIdData, GetMachineByIdResponse, GetMachineControlPolicyData, GetMachineControlPolicyResponse, GetMachineDesiredStateData, GetMachineDesiredStateResponse, GetMachineIdentityStatusData, GetMachineIdentityStatusResponse, GetMachinePriceFloorData, GetMachinePriceFloorResponse, GetMachinePriceHintData, GetMachinePriceHintResponse, GetMachineSandboxSecretsData, GetMachineSandboxSecretsResponse, GetMachineSnapshotRegistryCredentialsData, GetMachineSnapshotRegistryCredentialsResponse, GetMachineTrustData, GetMachineTrustResponse, GetMachineTunnelPlanData, GetMachineTunnelPlanResponse, GetMachineVerificationData, GetMachineVerificationResponse, GetMachineVouchersData, GetMachineVouchersResponse, GetOrganizationLimitsData, GetOrganizationLimitsResponse, GetOrganizationSettingsData, GetOrganizationSettingsResponse, GetOrganizationUsageOverviewData, GetOrganizationUsageOverviewResponse, GetPaymentChannelData, GetPaymentChannelResponse, GetPublicConfigData, GetPublicConfigResponse, GetPushAccessData, GetPushAccessResponse, GetRegistryData, GetRegistryResponse, GetRegistryTokenKeysData, GetRegistryTokenKeysResponse, GetSandboxAncestorsData, GetSandboxAncestorsResponse, GetSandboxBillingSummaryData, GetSandboxBillingSummaryResponse, GetSandboxData, GetSandboxExposureData, GetSandboxExposureResponse, GetSandboxForksData, GetSandboxForksResponse, GetSandboxLeaseData, GetSandboxLeaseResponse, GetSandboxParentData, GetSandboxParentResponse, GetSandboxResponse, GetSandboxSecretBindingsData, GetSecretData, GetSecretResponse, GetSnapshotBuildLogsUrlData, GetSnapshotBuildLogsUrlResponse, GetSnapshotData, GetSnapshotResponse, GetTransientPushAccessData, GetTransientPushAccessResponse, GetVolumeByNameData, GetVolumeByNameResponse, GetVolumeData, GetVolumeResponse, GetVoucherDelegationData, GetVoucherDelegationResponse, HealthControllerCheckData, HealthControllerCheckError, HealthControllerCheckResponse, HealthControllerLiveData, IngestEdgeUsageCheckpointData, IngestEdgeUsageCheckpointResponse, IssueMachineTunnelCertificateData, IssueMachineTunnelCertificateResponse, LinkPaymentWalletData, LinkPaymentWalletResponse, ListAdminListingsData, ListAdminListingsResponse, ListBillingSandboxUsageData, ListBillingSandboxUsageResponse, ListBillingStatementsData, ListBillingStatementsResponse, ListBillingUsageData, ListBillingUsageResponse, ListCustomDomainsData, ListCustomDomainsResponse, ListCustomerNetworkUsageData, ListCustomerNetworkUsageResponse, ListEdgeSpeedtestTokenKeysData, ListEdgeSpeedtestTokenKeysResponse, ListEscrowEventsData, ListEscrowEventsResponse, ListHostMachinesData, ListHostMachinesResponse, ListHostNetworkUsageData, ListHostNetworkUsageResponse, ListJobsData, ListJobsResponse, ListListingsData, ListListingsResponse, ListMachineLocationsData, ListMachineLocationsResponse, ListMachinePriceCardsData, ListMachinePriceCardsResponse, ListMachinesData, ListMachinesResponse, ListMachineUsagePlacementsData, ListMachineUsagePlacementsResponse, ListMarketReferencePricesData, ListMarketReferencePricesResponse, ListOrganizationQuotasData, ListOrganizationQuotasResponse, ListPaymentChannelsData, ListPaymentChannelsResponse, ListPaymentWalletsData, ListPaymentWalletsResponse, ListPendingVouchersData, ListPendingVouchersResponse, ListRegistriesData, ListRegistriesResponse, ListSandboxesData, ListSandboxesResponse2, ListSandboxExposuresData, ListSandboxExposuresResponse, ListSecretsData, ListSecretsResponse, ListSecretVersionsData, ListVerificationReviewsData, ListVerificationReviewsResponse, ListVolumesData, ListVolumesResponse, MachineHealthcheckData, MoveSandboxData, MoveSandboxError, MoveSandboxResponse, OpenEdgeUsageEpochData, OpenEdgeUsageEpochResponse, PauseSandboxData, PauseSandboxResponse, PollJobsData, PollJobsResponse2, QuoteSandboxData, QuoteSandboxResponse, RecoverSandboxData, RecoverSandboxResponse, RedeemProtectedAccessGrantData, RedeemProtectedAccessGrantResponse, RegisterMachineData, RegisterMachineResponse, RemoveSnapshotData, RenewEdgeSessionData, RenewEdgeSessionResponse, RenewJobLeaseData, RenewJobLeaseResponse, RenewMachineSessionData, RenewMachineSessionResponse, ReplaceLabelsData, ReplaceLabelsResponse, ReplaceSandboxSecretBindingsData, ReportAuthenticatedMachineUpdateStatusData, ReportAuthenticatedMachineUpdateStatusResponse, ReportEdgeHeartbeatData, ReportEdgeHeartbeatResponse, ReportMachineObservedStatusData, ReportMachineObservedStatusResponse, ReportMachineSnapshotInventoryData, ReportMachineSnapshotInventoryResponse, RequestAuthenticatedMachineUpdateDrainData, RequestAuthenticatedMachineUpdateDrainResponse, RequestMachineBenchmarkData, RequestMachineBenchmarkResponse, RequestSystemExposureData, RequestSystemExposureResponse, ResizeSandboxData, ResizeSandboxResponse, ResizeVolumeData, ResizeVolumeResponse, ResolveSshAccessRelayData, ResolveSshAccessRelayResponse, ResolveVerificationReviewData, ResolveVerificationReviewResponse, RestoreVolumeData, RestoreVolumeResponse, RevokeMachineIdentityData, RevokeMachineIdentityResponse, RevokeProtectedAccessGrantData, RevokeProtectedAccessGrantResponse, RevokeSecretVersionData, RevokeSshAccessData, RevokeSshAccessResponse, SetAutoArchiveIntervalData, SetAutoArchiveIntervalResponse, SetAutoDeleteIntervalData, SetAutoDeleteIntervalResponse, SetAutostopIntervalData, SetAutostopIntervalResponse, StartSandboxData, StartSandboxError, StartSandboxResponse, StopSandboxData, StopSandboxResponse, SubmitMachineUsageReceiptData, SubmitMachineUsageReceiptResponse, SubmitVoucherSignatureData, SubmitVoucherSignatureResponse, UnlinkPaymentWalletData, UnlinkPaymentWalletResponse, UpdateAdminMachineTierData, UpdateAdminMachineTierResponse, UpdateBillingBudgetData, UpdateBillingBudgetResponse, UpdateJobStatusData, UpdateJobStatusResponse, UpdateLastActivityData, UpdateMachineDrainingData, UpdateMachineDrainingResponse, UpdateMachineListingData, UpdateMachineListingResponse, UpdateMachineSchedulingData, UpdateMachineSchedulingResponse, UpdateMarketReferencePriceData, UpdateMarketReferencePriceResponse, UpdateNetworkSettingsData, UpdateNetworkSettingsResponse, UpdateOrganizationSettingsData, UpdateOrganizationSettingsResponse, UpdateRegistryData, UpdateRegistryResponse, UpdateSandboxExposureData, UpdateSandboxExposureResponse, UpdateSecretData } from '../types.gen.js';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -789,24 +789,6 @@ export const adminUpdateOrganizationLimitsMutation = (options?: Partial<Options<
     return mutationOptions;
 };
 
-export const getAdminPaymentAccountQueryKey = (options: Options<GetAdminPaymentAccountData>) => createQueryKey('getAdminPaymentAccount', options);
-
-/**
- * Get the Stripe payment account of an organization
- */
-export const getAdminPaymentAccountOptions = (options: Options<GetAdminPaymentAccountData>) => queryOptions<GetAdminPaymentAccountResponse, DefaultError, GetAdminPaymentAccountResponse, ReturnType<typeof getAdminPaymentAccountQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await getAdminPaymentAccount({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getAdminPaymentAccountQueryKey(options)
-});
-
 export const adminListOrganizationQuotasQueryKey = (options: Options<AdminListOrganizationQuotasData>) => createQueryKey('adminListOrganizationQuotas', options);
 
 /**
@@ -918,119 +900,6 @@ export const adminUnsuspendOrganizationMutation = (options?: Partial<Options<Adm
     const mutationOptions: MutationOptions<AdminUnsuspendOrganizationResponse, DefaultError, Options<AdminUnsuspendOrganizationData>> = {
         mutationFn: async (fnOptions) => {
             const { data } = await adminUnsuspendOrganization({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
-
-export const listAdminDisputesQueryKey = (options?: Options<ListAdminDisputesData>) => createQueryKey('listAdminDisputes', options);
-
-/**
- * List payment disputes
- */
-export const listAdminDisputesOptions = (options?: Options<ListAdminDisputesData>) => queryOptions<ListAdminDisputesResponse, DefaultError, ListAdminDisputesResponse, ReturnType<typeof listAdminDisputesQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await listAdminDisputes({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: listAdminDisputesQueryKey(options)
-});
-
-export const listAdminDisputesInfiniteQueryKey = (options?: Options<ListAdminDisputesData>): QueryKey<Options<ListAdminDisputesData>> => createQueryKey('listAdminDisputes', options, true);
-
-/**
- * List payment disputes
- */
-export const listAdminDisputesInfiniteOptions = (options?: Options<ListAdminDisputesData>) => {
-    const opts = infiniteQueryOptions<ListAdminDisputesResponse, DefaultError, InfiniteData<ListAdminDisputesResponse>, QueryKey<Options<ListAdminDisputesData>>, string | Pick<QueryKey<Options<ListAdminDisputesData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-    // @ts-ignore
-    {
-        queryFn: async ({ pageParam, queryKey, signal }) => {
-            // @ts-ignore
-            const page: Pick<QueryKey<Options<ListAdminDisputesData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-                query: {
-                    cursor: pageParam
-                }
-            };
-            const params = createInfiniteParams(queryKey, page);
-            const { data } = await listAdminDisputes({
-                ...options,
-                ...params,
-                signal,
-                throwOnError: true
-            });
-            return data;
-        },
-        queryKey: listAdminDisputesInfiniteQueryKey(options)
-    });
-    return opts as Omit<typeof opts, 'initialData'>;
-};
-
-export const listAdminPayoutsQueryKey = (options?: Options<ListAdminPayoutsData>) => createQueryKey('listAdminPayouts', options);
-
-/**
- * List host payouts
- */
-export const listAdminPayoutsOptions = (options?: Options<ListAdminPayoutsData>) => queryOptions<ListAdminPayoutsResponse, DefaultError, ListAdminPayoutsResponse, ReturnType<typeof listAdminPayoutsQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await listAdminPayouts({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: listAdminPayoutsQueryKey(options)
-});
-
-export const listAdminPayoutsInfiniteQueryKey = (options?: Options<ListAdminPayoutsData>): QueryKey<Options<ListAdminPayoutsData>> => createQueryKey('listAdminPayouts', options, true);
-
-/**
- * List host payouts
- */
-export const listAdminPayoutsInfiniteOptions = (options?: Options<ListAdminPayoutsData>) => {
-    const opts = infiniteQueryOptions<ListAdminPayoutsResponse, DefaultError, InfiniteData<ListAdminPayoutsResponse>, QueryKey<Options<ListAdminPayoutsData>>, string | Pick<QueryKey<Options<ListAdminPayoutsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-    // @ts-ignore
-    {
-        queryFn: async ({ pageParam, queryKey, signal }) => {
-            // @ts-ignore
-            const page: Pick<QueryKey<Options<ListAdminPayoutsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-                query: {
-                    cursor: pageParam
-                }
-            };
-            const params = createInfiniteParams(queryKey, page);
-            const { data } = await listAdminPayouts({
-                ...options,
-                ...params,
-                signal,
-                throwOnError: true
-            });
-            return data;
-        },
-        queryKey: listAdminPayoutsInfiniteQueryKey(options)
-    });
-    return opts as Omit<typeof opts, 'initialData'>;
-};
-
-/**
- * Retry the Stripe transfer of a pending payout
- */
-export const retryAdminPayoutMutation = (options?: Partial<Options<RetryAdminPayoutData>>): MutationOptions<RetryAdminPayoutResponse, DefaultError, Options<RetryAdminPayoutData>> => {
-    const mutationOptions: MutationOptions<RetryAdminPayoutResponse, DefaultError, Options<RetryAdminPayoutData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await retryAdminPayout({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -1340,41 +1209,6 @@ export const getAuditLogsInfiniteOptions = (options?: Options<GetAuditLogsData>)
     return opts as Omit<typeof opts, 'initialData'>;
 };
 
-export const getAutoTopUpQueryKey = (options?: Options<GetAutoTopUpData>) => createQueryKey('getAutoTopUp', options);
-
-/**
- * Get the automatic top-up of the active organization
- */
-export const getAutoTopUpOptions = (options?: Options<GetAutoTopUpData>) => queryOptions<GetAutoTopUpResponse, DefaultError, GetAutoTopUpResponse, ReturnType<typeof getAutoTopUpQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await getAutoTopUp({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getAutoTopUpQueryKey(options)
-});
-
-/**
- * Consent to and configure the automatic top-up
- */
-export const updateAutoTopUpMutation = (options?: Partial<Options<UpdateAutoTopUpData>>): MutationOptions<UpdateAutoTopUpResponse, DefaultError, Options<UpdateAutoTopUpData>> => {
-    const mutationOptions: MutationOptions<UpdateAutoTopUpResponse, DefaultError, Options<UpdateAutoTopUpData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await updateAutoTopUp({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
-
 export const getBillingBudgetQueryKey = (options?: Options<GetBillingBudgetData>) => createQueryKey('getBillingBudget', options);
 
 /**
@@ -1446,41 +1280,6 @@ export const getBillingOverviewOptions = (options?: Options<GetBillingOverviewDa
     queryKey: getBillingOverviewQueryKey(options)
 });
 
-export const listPaymentMethodsQueryKey = (options?: Options<ListPaymentMethodsData>) => createQueryKey('listPaymentMethods', options);
-
-/**
- * List the saved cards of the active organization
- */
-export const listPaymentMethodsOptions = (options?: Options<ListPaymentMethodsData>) => queryOptions<ListPaymentMethodsResponse, DefaultError, ListPaymentMethodsResponse, ReturnType<typeof listPaymentMethodsQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await listPaymentMethods({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: listPaymentMethodsQueryKey(options)
-});
-
-/**
- * Detach a saved card; automatic top-ups using it stop
- */
-export const deletePaymentMethodMutation = (options?: Partial<Options<DeletePaymentMethodData>>): MutationOptions<DeletePaymentMethodResponse, DefaultError, Options<DeletePaymentMethodData>> => {
-    const mutationOptions: MutationOptions<DeletePaymentMethodResponse, DefaultError, Options<DeletePaymentMethodData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await deletePaymentMethod({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
-
 export const getSandboxBillingSummaryQueryKey = (options: Options<GetSandboxBillingSummaryData>) => createQueryKey('getSandboxBillingSummary', options);
 
 /**
@@ -1534,106 +1333,6 @@ export const getBillingStatementOptions = (options: Options<GetBillingStatementD
     },
     queryKey: getBillingStatementQueryKey(options)
 });
-
-export const listTopUpsQueryKey = (options?: Options<ListTopUpsData>) => createQueryKey('listTopUps', options);
-
-/**
- * List the top-ups of the active organization
- */
-export const listTopUpsOptions = (options?: Options<ListTopUpsData>) => queryOptions<ListTopUpsResponse, DefaultError, ListTopUpsResponse, ReturnType<typeof listTopUpsQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await listTopUps({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: listTopUpsQueryKey(options)
-});
-
-export const listTopUpsInfiniteQueryKey = (options?: Options<ListTopUpsData>): QueryKey<Options<ListTopUpsData>> => createQueryKey('listTopUps', options, true);
-
-/**
- * List the top-ups of the active organization
- */
-export const listTopUpsInfiniteOptions = (options?: Options<ListTopUpsData>) => {
-    const opts = infiniteQueryOptions<ListTopUpsResponse, DefaultError, InfiniteData<ListTopUpsResponse>, QueryKey<Options<ListTopUpsData>>, string | Pick<QueryKey<Options<ListTopUpsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-    // @ts-ignore
-    {
-        queryFn: async ({ pageParam, queryKey, signal }) => {
-            // @ts-ignore
-            const page: Pick<QueryKey<Options<ListTopUpsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-                query: {
-                    cursor: pageParam
-                }
-            };
-            const params = createInfiniteParams(queryKey, page);
-            const { data } = await listTopUps({
-                ...options,
-                ...params,
-                signal,
-                throwOnError: true
-            });
-            return data;
-        },
-        queryKey: listTopUpsInfiniteQueryKey(options)
-    });
-    return opts as Omit<typeof opts, 'initialData'>;
-};
-
-/**
- * Start an embedded Checkout session that buys credit
- */
-export const createTopUpMutation = (options?: Partial<Options<CreateTopUpData>>): MutationOptions<CreateTopUpResponse, DefaultError, Options<CreateTopUpData>> => {
-    const mutationOptions: MutationOptions<CreateTopUpResponse, DefaultError, Options<CreateTopUpData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await createTopUp({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
-
-export const getTopUpQueryKey = (options: Options<GetTopUpData>) => createQueryKey('getTopUp', options);
-
-/**
- * Get a top-up, with the client secret while it requires action
- */
-export const getTopUpOptions = (options: Options<GetTopUpData>) => queryOptions<GetTopUpResponse, DefaultError, GetTopUpResponse, ReturnType<typeof getTopUpQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await getTopUp({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getTopUpQueryKey(options)
-});
-
-/**
- * Change the amount of a top-up whose Checkout session is still open
- */
-export const updateTopUpAmountMutation = (options?: Partial<Options<UpdateTopUpAmountData>>): MutationOptions<UpdateTopUpAmountResponse, DefaultError, Options<UpdateTopUpAmountData>> => {
-    const mutationOptions: MutationOptions<UpdateTopUpAmountResponse, DefaultError, Options<UpdateTopUpAmountData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await updateTopUpAmount({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
 
 export const listBillingUsageQueryKey = (options?: Options<ListBillingUsageData>) => createQueryKey('listBillingUsage', options);
 
@@ -2275,6 +1974,24 @@ export const getMachinePriceFloorOptions = (options: Options<GetMachinePriceFloo
     queryKey: getMachinePriceFloorQueryKey(options)
 });
 
+export const getMachinePriceHintQueryKey = (options: Options<GetMachinePriceHintData>) => createQueryKey('getMachinePriceHint', options);
+
+/**
+ * Get what similar machines list for and what the current price would earn
+ */
+export const getMachinePriceHintOptions = (options: Options<GetMachinePriceHintData>) => queryOptions<GetMachinePriceHintResponse, DefaultError, GetMachinePriceHintResponse, ReturnType<typeof getMachinePriceHintQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getMachinePriceHint({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getMachinePriceHintQueryKey(options)
+});
+
 export const getMachineVerificationQueryKey = (options: Options<GetMachineVerificationData>) => createQueryKey('getMachineVerification', options);
 
 /**
@@ -2722,6 +2439,21 @@ export const renewMachineSessionMutation = (options?: Partial<Options<RenewMachi
     };
     return mutationOptions;
 };
+
+export const getMachineVouchersQueryKey = (options?: Options<GetMachineVouchersData>) => createQueryKey('getMachineVouchers', options);
+
+export const getMachineVouchersOptions = (options?: Options<GetMachineVouchersData>) => queryOptions<GetMachineVouchersResponse, DefaultError, GetMachineVouchersResponse, ReturnType<typeof getMachineVouchersQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getMachineVouchers({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getMachineVouchersQueryKey(options)
+});
 
 export const reportMachineSnapshotInventoryMutation = (options?: Partial<Options<ReportMachineSnapshotInventoryData>>): MutationOptions<ReportMachineSnapshotInventoryResponse, DefaultError, Options<ReportMachineSnapshotInventoryData>> => {
     const mutationOptions: MutationOptions<ReportMachineSnapshotInventoryResponse, DefaultError, Options<ReportMachineSnapshotInventoryData>> = {
@@ -3187,124 +2919,6 @@ export const getOrganizationUsageOverviewOptions = (options?: Options<GetOrganiz
         return data;
     },
     queryKey: getOrganizationUsageOverviewQueryKey(options)
-});
-
-export const listPayoutsQueryKey = (options?: Options<ListPayoutsData>) => createQueryKey('listPayouts', options);
-
-/**
- * List the payouts of the active organization
- */
-export const listPayoutsOptions = (options?: Options<ListPayoutsData>) => queryOptions<ListPayoutsResponse, DefaultError, ListPayoutsResponse, ReturnType<typeof listPayoutsQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await listPayouts({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: listPayoutsQueryKey(options)
-});
-
-export const listPayoutsInfiniteQueryKey = (options?: Options<ListPayoutsData>): QueryKey<Options<ListPayoutsData>> => createQueryKey('listPayouts', options, true);
-
-/**
- * List the payouts of the active organization
- */
-export const listPayoutsInfiniteOptions = (options?: Options<ListPayoutsData>) => {
-    const opts = infiniteQueryOptions<ListPayoutsResponse, DefaultError, InfiniteData<ListPayoutsResponse>, QueryKey<Options<ListPayoutsData>>, string | Pick<QueryKey<Options<ListPayoutsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-    // @ts-ignore
-    {
-        queryFn: async ({ pageParam, queryKey, signal }) => {
-            // @ts-ignore
-            const page: Pick<QueryKey<Options<ListPayoutsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-                query: {
-                    cursor: pageParam
-                }
-            };
-            const params = createInfiniteParams(queryKey, page);
-            const { data } = await listPayouts({
-                ...options,
-                ...params,
-                signal,
-                throwOnError: true
-            });
-            return data;
-        },
-        queryKey: listPayoutsInfiniteQueryKey(options)
-    });
-    return opts as Omit<typeof opts, 'initialData'>;
-};
-
-export const getPayoutAccountQueryKey = (options?: Options<GetPayoutAccountData>) => createQueryKey('getPayoutAccount', options);
-
-/**
- * Get the payout account of the active organization
- */
-export const getPayoutAccountOptions = (options?: Options<GetPayoutAccountData>) => queryOptions<GetPayoutAccountResponse, DefaultError, GetPayoutAccountResponse, ReturnType<typeof getPayoutAccountQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await getPayoutAccount({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getPayoutAccountQueryKey(options)
-});
-
-/**
- * Create the Stripe payout account of the active organization
- */
-export const createPayoutAccountMutation = (options?: Partial<Options<CreatePayoutAccountData>>): MutationOptions<CreatePayoutAccountResponse, DefaultError, Options<CreatePayoutAccountData>> => {
-    const mutationOptions: MutationOptions<CreatePayoutAccountResponse, DefaultError, Options<CreatePayoutAccountData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await createPayoutAccount({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
-
-/**
- * Create a session for the Connect onboarding and payout components
- */
-export const createPayoutAccountSessionMutation = (options?: Partial<Options<CreatePayoutAccountSessionData>>): MutationOptions<CreatePayoutAccountSessionResponse, DefaultError, Options<CreatePayoutAccountSessionData>> => {
-    const mutationOptions: MutationOptions<CreatePayoutAccountSessionResponse, DefaultError, Options<CreatePayoutAccountSessionData>> = {
-        mutationFn: async (fnOptions) => {
-            const { data } = await createPayoutAccountSession({
-                ...options,
-                ...fnOptions,
-                throwOnError: true
-            });
-            return data;
-        }
-    };
-    return mutationOptions;
-};
-
-export const getHostEarningsQueryKey = (options?: Options<GetHostEarningsData>) => createQueryKey('getHostEarnings', options);
-
-/**
- * Get the pending, available and maturing host earnings
- */
-export const getHostEarningsOptions = (options?: Options<GetHostEarningsData>) => queryOptions<GetHostEarningsResponse, DefaultError, GetHostEarningsResponse, ReturnType<typeof getHostEarningsQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await getHostEarnings({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getHostEarningsQueryKey(options)
 });
 
 export const getPublicConfigQueryKey = (options?: Options<GetPublicConfigData>) => createQueryKey('getPublicConfig', options);
@@ -4400,6 +4014,191 @@ export const revokeSecretVersionMutation = (options?: Partial<Options<RevokeSecr
     return mutationOptions;
 };
 
+export const listPaymentChannelsQueryKey = (options?: Options<ListPaymentChannelsData>) => createQueryKey('listPaymentChannels', options);
+
+/**
+ * List the payment channels of the active organization, newest first, with their latest voucher
+ */
+export const listPaymentChannelsOptions = (options?: Options<ListPaymentChannelsData>) => queryOptions<ListPaymentChannelsResponse, DefaultError, ListPaymentChannelsResponse, ReturnType<typeof listPaymentChannelsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listPaymentChannels({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listPaymentChannelsQueryKey(options)
+});
+
+export const listPaymentChannelsInfiniteQueryKey = (options?: Options<ListPaymentChannelsData>): QueryKey<Options<ListPaymentChannelsData>> => createQueryKey('listPaymentChannels', options, true);
+
+/**
+ * List the payment channels of the active organization, newest first, with their latest voucher
+ */
+export const listPaymentChannelsInfiniteOptions = (options?: Options<ListPaymentChannelsData>) => {
+    const opts = infiniteQueryOptions<ListPaymentChannelsResponse, DefaultError, InfiniteData<ListPaymentChannelsResponse>, QueryKey<Options<ListPaymentChannelsData>>, string | Pick<QueryKey<Options<ListPaymentChannelsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<ListPaymentChannelsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    cursor: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await listPaymentChannels({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: listPaymentChannelsInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
+
+export const getPaymentChannelQueryKey = (options: Options<GetPaymentChannelData>) => createQueryKey('getPaymentChannel', options);
+
+/**
+ * Get a payment channel with its latest voucher
+ */
+export const getPaymentChannelOptions = (options: Options<GetPaymentChannelData>) => queryOptions<GetPaymentChannelResponse, DefaultError, GetPaymentChannelResponse, ReturnType<typeof getPaymentChannelQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getPaymentChannel({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getPaymentChannelQueryKey(options)
+});
+
+export const getVoucherDelegationQueryKey = (options?: Options<GetVoucherDelegationData>) => createQueryKey('getVoucherDelegation', options);
+
+/**
+ * Get Snapflow's delegated voucher signer and session key caps that cover the running sandboxes
+ */
+export const getVoucherDelegationOptions = (options?: Options<GetVoucherDelegationData>) => queryOptions<GetVoucherDelegationResponse, DefaultError, GetVoucherDelegationResponse, ReturnType<typeof getVoucherDelegationQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getVoucherDelegation({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getVoucherDelegationQueryKey(options)
+});
+
+export const getEscrowAccountQueryKey = (options?: Options<GetEscrowAccountData>) => createQueryKey('getEscrowAccount', options);
+
+/**
+ * Get the escrow account of the active organization's funding wallet
+ */
+export const getEscrowAccountOptions = (options?: Options<GetEscrowAccountData>) => queryOptions<GetEscrowAccountResponse, DefaultError, GetEscrowAccountResponse, ReturnType<typeof getEscrowAccountQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getEscrowAccount({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getEscrowAccountQueryKey(options)
+});
+
+export const listEscrowEventsQueryKey = (options?: Options<ListEscrowEventsData>) => createQueryKey('listEscrowEvents', options);
+
+/**
+ * List the escrow events the active organization took part in, newest first
+ */
+export const listEscrowEventsOptions = (options?: Options<ListEscrowEventsData>) => queryOptions<ListEscrowEventsResponse, DefaultError, ListEscrowEventsResponse, ReturnType<typeof listEscrowEventsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listEscrowEvents({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listEscrowEventsQueryKey(options)
+});
+
+export const listEscrowEventsInfiniteQueryKey = (options?: Options<ListEscrowEventsData>): QueryKey<Options<ListEscrowEventsData>> => createQueryKey('listEscrowEvents', options, true);
+
+/**
+ * List the escrow events the active organization took part in, newest first
+ */
+export const listEscrowEventsInfiniteOptions = (options?: Options<ListEscrowEventsData>) => {
+    const opts = infiniteQueryOptions<ListEscrowEventsResponse, DefaultError, InfiniteData<ListEscrowEventsResponse>, QueryKey<Options<ListEscrowEventsData>>, string | Pick<QueryKey<Options<ListEscrowEventsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<ListEscrowEventsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    cursor: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await listEscrowEvents({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: listEscrowEventsInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
+
+/**
+ * Submit the signature of a pending voucher
+ */
+export const submitVoucherSignatureMutation = (options?: Partial<Options<SubmitVoucherSignatureData>>): MutationOptions<SubmitVoucherSignatureResponse, DefaultError, Options<SubmitVoucherSignatureData>> => {
+    const mutationOptions: MutationOptions<SubmitVoucherSignatureResponse, DefaultError, Options<SubmitVoucherSignatureData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await submitVoucherSignature({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const listPendingVouchersQueryKey = (options?: Options<ListPendingVouchersData>) => createQueryKey('listPendingVouchers', options);
+
+/**
+ * List the vouchers waiting for a signature from the funding wallet or one of its session keys
+ */
+export const listPendingVouchersOptions = (options?: Options<ListPendingVouchersData>) => queryOptions<ListPendingVouchersResponse, DefaultError, ListPendingVouchersResponse, ReturnType<typeof listPendingVouchersQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listPendingVouchers({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listPendingVouchersQueryKey(options)
+});
+
 export const getAllSnapshotsQueryKey = (options?: Options<GetAllSnapshotsData>) => createQueryKey('getAllSnapshots', options);
 
 /**
@@ -4712,6 +4511,75 @@ export const restoreVolumeMutation = (options?: Partial<Options<RestoreVolumeDat
     const mutationOptions: MutationOptions<RestoreVolumeResponse, DefaultError, Options<RestoreVolumeData>> = {
         mutationFn: async (fnOptions) => {
             const { data } = await restoreVolume({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const listPaymentWalletsQueryKey = (options?: Options<ListPaymentWalletsData>) => createQueryKey('listPaymentWallets', options);
+
+/**
+ * List the payment wallets of the active organization
+ */
+export const listPaymentWalletsOptions = (options?: Options<ListPaymentWalletsData>) => queryOptions<ListPaymentWalletsResponse, DefaultError, ListPaymentWalletsResponse, ReturnType<typeof listPaymentWalletsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listPaymentWallets({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listPaymentWalletsQueryKey(options)
+});
+
+/**
+ * Link the wallet that signed a challenge
+ */
+export const linkPaymentWalletMutation = (options?: Partial<Options<LinkPaymentWalletData>>): MutationOptions<LinkPaymentWalletResponse, DefaultError, Options<LinkPaymentWalletData>> => {
+    const mutationOptions: MutationOptions<LinkPaymentWalletResponse, DefaultError, Options<LinkPaymentWalletData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await linkPaymentWallet({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Issue the Sign-In With Ethereum message that links a wallet
+ */
+export const createWalletChallengeMutation = (options?: Partial<Options<CreateWalletChallengeData>>): MutationOptions<CreateWalletChallengeResponse, DefaultError, Options<CreateWalletChallengeData>> => {
+    const mutationOptions: MutationOptions<CreateWalletChallengeResponse, DefaultError, Options<CreateWalletChallengeData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await createWalletChallenge({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Unlink the wallet of a purpose
+ */
+export const unlinkPaymentWalletMutation = (options?: Partial<Options<UnlinkPaymentWalletData>>): MutationOptions<UnlinkPaymentWalletResponse, DefaultError, Options<UnlinkPaymentWalletData>> => {
+    const mutationOptions: MutationOptions<UnlinkPaymentWalletResponse, DefaultError, Options<UnlinkPaymentWalletData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await unlinkPaymentWallet({
                 ...options,
                 ...fnOptions,
                 throwOnError: true

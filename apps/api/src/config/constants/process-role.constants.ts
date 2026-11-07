@@ -13,9 +13,9 @@ import type { ProcessRoleTraits } from '../types/process-role.types';
 export const PROCESS_ROLE_TRAITS: Readonly<
 	Record<ProcessRole, ProcessRoleTraits>
 > = {
-	[ProcessRole.API]: { servesHttp: true },
-	[ProcessRole.WORKER]: { servesHttp: false },
-	[ProcessRole.ALL]: { servesHttp: true },
+	[ProcessRole.API]: { servesHttp: true, runsScheduledJobs: false },
+	[ProcessRole.WORKER]: { servesHttp: false, runsScheduledJobs: true },
+	[ProcessRole.ALL]: { servesHttp: true, runsScheduledJobs: true },
 };
 
 export const ONE_OFF_DATABASE_POOL_MAX = 1;

@@ -9,6 +9,14 @@
 
 import { isIP } from 'node:net';
 import type { BetterAuthOptions } from 'better-auth';
+import {
+	type Address,
+	getAddress,
+	type Hex,
+	isAddress,
+	isHex,
+	size,
+} from 'viem';
 import { z } from 'zod';
 
 const HTTP_PROTOCOLS: ReadonlySet<string> = new Set(['http:', 'https:']);
@@ -29,6 +37,7 @@ const IP_PREFIX_BITS: ReadonlyMap<number, number> = new Map([
 	[IP_VERSION_6, IPV6_PREFIX_BITS],
 ]);
 const MAXIMUM_PORT = 65_535;
+const PRIVATE_KEY_BYTES = 32;
 const MINIMUM_SECRET_LENGTH = 32;
 const BETTER_AUTH_VERSION_SEPARATOR = ':';
 const INTEGER_PATTERN = /^-?\d+$/;
@@ -91,10 +100,35 @@ export const iamRoleArnText = () =>
 			'must be an IAM role ARN (arn:aws:iam::<account>:role/<name>)'
 		);
 
+export const integerChoiceText = <const Choices extends readonly number[]>(
+	choices: Choices
+) => integerText().pipe(z.literal(choices));
+
+export const evmAddressText = () =>
+	parsed((value): Address => {
+		if (!isAddress(value)) {
+			throw new Error('must be an EVM address (0x followed by 40 hex digits)');
+		}
+		return getAddress(value);
+	});
+
+// The value itself never appears in the message, since it is a secret.
+export const privateKeyText = () =>
+	parsed((value): Hex => {
+		if (!isHex(value, { strict: true }) || size(value) !== PRIVATE_KEY_BYTES) {
+			throw new Error(
+				`must be a ${PRIVATE_KEY_BYTES}-byte private key (0x followed by ${PRIVATE_KEY_BYTES * 2} hex digits)`
+			);
+		}
+		return value;
+	});
+
 export const portText = () =>
 	integerText({ minimum: 1, maximum: MAXIMUM_PORT });
 
 export const positiveIntegerText = () => integerText({ minimum: 1 });
+
+export const nonNegativeIntegerText = () => integerText({ minimum: 0 });
 
 export const originText = () =>
 	parsed((value) => {

@@ -23,6 +23,7 @@ import {
 import { BillingRestriction } from '../../billing/enums/billing-restriction.enum';
 import { LocationDto } from '../../location/dto/location.dto';
 import { GpuType } from '../../machine/enums/gpu-type.enum';
+import { MARKUP_BASIS_POINTS_DESCRIPTION } from '../../marketplace/constants/marketplace.constants';
 import { MachineUnavailableReason } from '../../marketplace/enums/machine-unavailable-reason.enum';
 import { PlacementKind } from '../../marketplace/enums/placement-kind.enum';
 import { SandboxPlacementRequestDto } from './sandbox-placement.dto';
@@ -127,7 +128,8 @@ export class SandboxQuoteDto {
 	@ApiProperty() hourlyPriceMicroUsd: string;
 	@ApiProperty() hostHourlyMicroUsd: string;
 	@ApiProperty() markupHourlyMicroUsd: string;
-	@ApiProperty() markupBasisPoints: number;
+	@ApiProperty({ description: MARKUP_BASIS_POINTS_DESCRIPTION })
+	markupBasisPoints: number;
 	@ApiProperty() stoppedHourlyPriceMicroUsd: string;
 	@ApiProperty() dailyPriceMicroUsd: string;
 	@ApiProperty() monthlyPriceMicroUsd: string;

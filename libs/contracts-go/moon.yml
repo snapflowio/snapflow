@@ -1,0 +1,24 @@
+layer: "library"
+stack: "systems"
+tags: ["contracts", "payments"]
+
+fileGroups:
+  production:
+    - "**/*"
+    - "!**/*_test.go"
+
+tasks:
+  generate:
+    command: "go"
+    args: ["generate", "./..."]
+    deps: ["contracts:build"]
+    inputs:
+      - "escrow/generate.go"
+      - "go.mod"
+      - "/apps/contracts/out/SnapflowEscrow.sol/SnapflowEscrow.abi.json"
+    outputs: ["escrow/snapflow_escrow.gen.go"]
+
+  build:
+    command: "go"
+    args: ["build", "./..."]
+    inputs: ["@group(production)"]

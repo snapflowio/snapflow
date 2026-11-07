@@ -30,14 +30,14 @@ export const FAQS = [
 	],
 	[
 		'How do pricing and payments work?',
-		"Every machine shows one all-in hourly price before you start, and that price is locked once the workload is placed. Usage is recorded by the second and paid from prepaid credit in US dollars. Add credit by card through Stripe from $10, or turn on auto top-up. The price includes a 25% platform fee on top of the host's rate.",
+		"Every machine shows one all-in hourly price before you start, and that price is locked once the workload is placed. Usage is recorded by the second and paid in USDC from your own non-custodial escrow on Base. Deposit USDC from your wallet, or buy it by card in the dashboard. Each sandbox is paid through signed vouchers: Snapflow can sign them for you within the caps you authorize, or your SDK signs them itself. Withdrawals always go back to your wallet after a dispute window. The price includes a platform fee on top of the host's rate: 20% on standard hosts and 30% on verified and datacenter hosts. Your own machines carry no fee beyond $5 a month for each one you keep private.",
 	],
 	[
 		'How do hosts get paid?',
-		'Hosts set their own rates and keep all of them; the 25% platform fee is added on top for the customer. Earnings are recorded in US dollars, held for 14, 7, or 3 days depending on the machine tier, then paid out through Stripe every Monday once the balance reaches $50. Hosts in the US, UK, EEA, Canada, and Switzerland can receive payouts.',
+		"Hosts set their own rates within per-resource ranges and keep all of them; the platform fee is added on top for the customer. Earnings are paid in USDC on Base straight to the host's own payout wallet as vouchers are claimed, with no holding period. Link a payout wallet by signing in with it (Sign-In With Ethereum); it must pass a sanctions check before you can list machines publicly.",
 	],
 	[
 		'What does a machine need to be listed?',
-		'Linux (Debian, Ubuntu, Fedora, or RHEL-compatible) on x86_64 or arm64 with KVM, kernel 6.2 or newer with Landlock, systemd, cgroup v2, and nftables; macOS is not supported. It also needs at least 200 Mbps down and 100 Mbps up, and a disk with at least 20,000 random-read IOPS and 500 MiB/s sequential throughput. GPUs need IOMMU and the NVIDIA driver. Payouts need a Stripe account in the US, UK, EEA, Canada, or Switzerland. Run sudo snapflow doctor to check a machine before you list it.',
+		'Linux (Debian, Ubuntu, Fedora, or RHEL-compatible) on x86_64 or arm64 with KVM, kernel 6.2 or newer with Landlock, systemd, cgroup v2, and nftables; macOS is not supported. It also needs at least 200 Mbps down and 100 Mbps up, and a disk with at least 20,000 random-read IOPS and 500 MiB/s sequential throughput. GPUs need IOMMU and the NVIDIA driver. Public listings need a linked payout wallet that has passed sanctions screening. Run sudo snapflow doctor to check a machine before you list it.',
 	],
 ] as const;

@@ -17,6 +17,11 @@
 import { SnapflowValidationError } from '../errors/snapflow-error.js';
 
 export const MILLISECONDS_PER_SECOND = 1000;
+export const SECONDS_PER_MINUTE = 60;
+const MINUTES_PER_HOUR = 60;
+export const MILLISECONDS_PER_MINUTE =
+	SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
+export const MILLISECONDS_PER_HOUR = MINUTES_PER_HOUR * MILLISECONDS_PER_MINUTE;
 
 export const DEFAULT_SANDBOX_TIMEOUT_SECONDS = 60;
 

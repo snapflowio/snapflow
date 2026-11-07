@@ -16,9 +16,7 @@ import type { BillingLedgerAccountReference } from '../../services/billing-ledge
 
 type OrganizationAccountCode =
 	| typeof BillingLedgerAccountCode.CUSTOMER_CREDIT
-	| typeof BillingLedgerAccountCode.HOST_EARNINGS_PAYABLE
-	| typeof BillingLedgerAccountCode.HOST_EARNINGS_PENDING
-	| typeof BillingLedgerAccountCode.HOST_TRANSFERS_PENDING;
+	| typeof BillingLedgerAccountCode.HOST_EARNINGS_PENDING;
 
 type PlatformAccountCode = Exclude<
 	BillingLedgerAccountCode,
@@ -45,30 +43,12 @@ export function customerCreditAccount(
 	);
 }
 
-export function providerEarningsAccount(
-	organizationId: string
-): BillingLedgerAccountReference {
-	return organizationAccount(
-		organizationId,
-		BillingLedgerAccountCode.HOST_EARNINGS_PAYABLE
-	);
-}
-
 export function hostPendingEarningsAccount(
 	organizationId: string
 ): BillingLedgerAccountReference {
 	return organizationAccount(
 		organizationId,
 		BillingLedgerAccountCode.HOST_EARNINGS_PENDING
-	);
-}
-
-export function hostTransfersPendingAccount(
-	organizationId: string
-): BillingLedgerAccountReference {
-	return organizationAccount(
-		organizationId,
-		BillingLedgerAccountCode.HOST_TRANSFERS_PENDING
 	);
 }
 

@@ -8,17 +8,19 @@
 -->
 
 <script lang="ts">
+import { PaymentWalletPurpose } from '@snapflow/api-client';
 import { createQuery } from '@tanstack/svelte-query';
-import { hostEarningsQueryOptions } from '#lib/api/billing/payouts.ts';
+import { paymentWalletsQueryOptions } from '#lib/api/settlement/wallets.ts';
 import PageColumn from '#lib/components/page/page-column.svelte';
 import QueryFeedbackState from '#lib/components/query-feedback-state.svelte';
 import EarningsOverview from '#lib/features/billing/components/earnings/earnings-overview.svelte';
 import EarningsHeader from '#lib/features/billing/components/earnings-header.svelte';
-import PayoutOnboardingChecklist from '#lib/features/billing/components/payouts/payout-onboarding-checklist.svelte';
-import { PayoutOnboarding } from '#lib/features/billing/state/payout-onboarding.svelte.ts';
+import { linkedWallet } from '#lib/features/billing/lib/payment-wallet.ts';
+import { payoutReadiness } from '#lib/features/listings/lib/payout-readiness.ts';
+import { getOrganizationPermission } from '#lib/features/organizations/state/organization-permission.svelte.ts';
 
-const query = createQuery(() => hostEarningsQueryOptions());
-const onboarding = new PayoutOnboarding();
+const permission = getOrganizationPermission();
+const wallets = createQuery(() => paymentWalletsQueryOptions());
 </script>
 
 <svelte:head>
@@ -26,16 +28,17 @@ const onboarding = new PayoutOnboarding();
 </svelte:head>
 
 <EarningsHeader />
-{#if query.isSuccess}
+{#if wallets.isSuccess}
 	<PageColumn>
-		<EarningsOverview earnings={query.data} />
-		{#if onboarding.resolved && !onboarding.ready}
-			<PayoutOnboardingChecklist {onboarding} />
-		{/if}
+		<EarningsOverview
+			readiness={payoutReadiness(wallets.data)}
+			payoutWallet={linkedWallet(wallets.data, PaymentWalletPurpose.Payout)}
+			canManage={permission.can({ payouts: ['manage'] })}
+		/>
 	</PageColumn>
 {:else}
 	<QueryFeedbackState
-		{query}
+		query={wallets}
 		loadingMessage="Loading earnings..."
 		errorMessage="Earnings could not be loaded."
 	/>

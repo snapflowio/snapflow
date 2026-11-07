@@ -10,6 +10,7 @@
 <script lang="ts">
 import BookOpen from '@lucide/svelte/icons/book-open';
 import Plus from '@lucide/svelte/icons/plus';
+import { PayoutReadiness } from '@snapflow/api-client';
 import { getWebsiteLinks } from '#lib/api/public-config.ts';
 import EmptyState from '#lib/components/empty-state.svelte';
 import Resource from '#lib/components/resource/resource.svelte';
@@ -106,10 +107,12 @@ const { docsHref } = getWebsiteLinks();
 		label="listings"
 		permission={{ listings: ['read'] }}
 	>
-		{#if list.onboarding.canRead &&
-			list.onboarding.resolved &&
-			!list.onboarding.ready}
-			<PayoutSetupBanner onboarding={list.onboarding} />
+		{#if list.payout.readiness !== undefined &&
+			list.payout.readiness !== PayoutReadiness.Ready}
+			<PayoutSetupBanner
+				readiness={list.payout.readiness}
+				canManage={list.payout.canManage}
+			/>
 		{/if}
 		<ResourceOptionsBar
 			search={{
@@ -149,5 +152,5 @@ const { docsHref } = getWebsiteLinks();
 <HostListingModals
 	bind:listing={list.listing}
 	bind:pricing={list.pricing}
-	payoutReady={list.payoutReady}
+	payoutReady={list.payout.ready}
 />

@@ -28,6 +28,7 @@ import {
 import { IsSafeDisplayString } from '../../common/validators/is-safe-string.validator';
 import { GpuType } from '../../machine/enums/gpu-type.enum';
 import { SecretBindingDto } from '../../secrets/dto/secret.dto';
+import { VoucherSigningMode } from '../../settlement/enums/voucher-signing-mode.enum';
 import { CreateBuildInfoDto } from '../../snapshot/dto/create-build-info.dto';
 import {
 	MAXIMUM_EGRESS_BANDWIDTH_BPS,
@@ -173,6 +174,17 @@ export class CreateSandboxDto {
 	@ValidateNested()
 	@Type(() => SandboxPlacementRequestDto)
 	placement?: SandboxPlacementRequestDto;
+
+	@ApiPropertyOptional({
+		enum: VoucherSigningMode,
+		enumName: 'VoucherSigningMode',
+		default: VoucherSigningMode.DELEGATED,
+		description:
+			"Who signs the escrow vouchers that pay for the sandbox: delegated lets Snapflow's signer sign them within the session key your funding wallet granted it; client leaves each voucher for your SDK or agent to sign",
+	})
+	@IsOptional()
+	@IsEnum(VoucherSigningMode)
+	voucherSigning?: VoucherSigningMode;
 
 	@ApiPropertyOptional({
 		description: 'CPU cores allocated to the sandbox',

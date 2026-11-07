@@ -34,7 +34,7 @@ func TestMachineCommandsAreExposedAtTheTopLevel(t *testing.T) {
 		names = append(names, command.Name())
 	}
 	for _, want := range []string{
-		"setup", "status", "doctor", "logs", "start", "stop",
+		"setup", "status", "payout", "vouchers", "doctor", "logs", "start", "stop",
 		"update", "rollback", "uninstall", "benchmark", "release",
 	} {
 		if !slices.Contains(names, want) {
@@ -99,6 +99,8 @@ func TestEveryCommandOffersJSON(t *testing.T) {
 	for _, path := range [][]string{
 		{"setup"},
 		{"status"},
+		{"payout"},
+		{"vouchers"},
 		{"doctor"},
 		{"logs"},
 		{"start"},

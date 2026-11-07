@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
-import { DISPLAY_LOCALE, formatBasisPointsPercent } from './format.ts';
+import { formatBasisPointsPercent } from './format.ts';
 
 export const DECIMAL_BASE = 10n;
 export const MICRO_USD_DECIMALS = 6;
@@ -20,34 +20,7 @@ const HALF_CENT_MICRO_USD = MICRO_USD_PER_CENT / 2n;
 const USD_INPUT_PATTERN = new RegExp(
 	String.raw`^(\d+)(?:\.(\d{1,${MICRO_USD_DECIMALS}}))?$`
 );
-const CENTS_INPUT_PATTERN = new RegExp(
-	String.raw`^(\d+)(?:\.(\d{1,${CENT_DECIMALS}}))?$`
-);
 const TRAILING_ZEROS = /0+$/;
-
-const USD_CURRENCY = 'USD';
-const WHOLE_USD_FORMAT = new Intl.NumberFormat(DISPLAY_LOCALE, {
-	currency: USD_CURRENCY,
-	maximumFractionDigits: 0,
-	minimumFractionDigits: 0,
-	style: 'currency',
-});
-const USD_FORMAT = new Intl.NumberFormat(DISPLAY_LOCALE, {
-	currency: USD_CURRENCY,
-	style: 'currency',
-});
-
-function parseUsd(
-	value: string,
-	pattern: RegExp,
-	decimals: number,
-	unitsPerUsd: bigint
-): bigint | null {
-	const match = pattern.exec(value.trim());
-	if (!match?.[1]) return null;
-	const fraction = (match[2] ?? '').padEnd(decimals, '0');
-	return BigInt(match[1]) * unitsPerUsd + BigInt(fraction);
-}
 
 export function usdInputToMicroUsd(value: string): string | null {
 	const microUsd = usdInputToNonNegativeMicroUsd(value);
@@ -55,37 +28,10 @@ export function usdInputToMicroUsd(value: string): string | null {
 }
 
 export function usdInputToNonNegativeMicroUsd(value: string): string | null {
-	const microUsd = parseUsd(
-		value,
-		USD_INPUT_PATTERN,
-		MICRO_USD_DECIMALS,
-		MICRO_USD_PER_USD
-	);
-	return microUsd === null ? null : microUsd.toString();
-}
-
-export function usdInputToCents(value: string): number | null {
-	const cents = parseUsd(
-		value,
-		CENTS_INPUT_PATTERN,
-		CENT_DECIMALS,
-		CENTS_PER_USD
-	);
-	if (cents === null || cents <= 0n || cents > BigInt(Number.MAX_SAFE_INTEGER))
-		return null;
-	return Number(cents);
-}
-
-export function centsToMicroUsd(cents: number): string {
-	return (BigInt(cents) * MICRO_USD_PER_CENT).toString();
-}
-
-export function centsToUsdInput(cents: number): string {
-	const amount = BigInt(cents);
-	const fraction = (amount % CENTS_PER_USD)
-		.toString()
-		.padStart(CENT_DECIMALS, '0');
-	return `${amount / CENTS_PER_USD}.${fraction}`;
+	const match = USD_INPUT_PATTERN.exec(value.trim());
+	if (!match?.[1]) return null;
+	const fraction = (match[2] ?? '').padEnd(MICRO_USD_DECIMALS, '0');
+	return (BigInt(match[1]) * MICRO_USD_PER_USD + BigInt(fraction)).toString();
 }
 
 function formatUnsignedMicroUsd(amount: bigint): string {
@@ -117,17 +63,6 @@ export function formatUsd(value: string): string {
 	const cents = (magnitude + HALF_CENT_MICRO_USD) / MICRO_USD_PER_CENT;
 	const rounded = cents * MICRO_USD_PER_CENT;
 	return formatMicroUsd((amount < 0n ? -rounded : rounded).toString());
-}
-
-export function formatCents(cents: number): string {
-	return formatMicroUsd(centsToMicroUsd(cents));
-}
-
-export function formatCentsShort(cents: number): string {
-	const dollars = cents / Number(CENTS_PER_USD);
-	return Number.isInteger(dollars)
-		? WHOLE_USD_FORMAT.format(dollars)
-		: USD_FORMAT.format(dollars);
 }
 
 export function formatHourlyPrice(microUsd: string): string {

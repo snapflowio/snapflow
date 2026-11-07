@@ -7,6 +7,7 @@ tags:
 
 dependsOn:
   - "api-client"
+  - "contracts-ts"
   - "organization-access"
 
 fileGroups:
@@ -24,6 +25,7 @@ tasks:
       - "dev"
     deps:
       - "api-client:build"
+      - "contracts-ts:build"
       - "organization-access:build"
     preset: "server"
     inputs:
@@ -35,6 +37,7 @@ tasks:
       - "build"
     deps:
       - "api-client:build"
+      - "contracts-ts:build"
       - "organization-access:build"
     env:
       NODE_ENV: "production"
@@ -47,6 +50,7 @@ tasks:
     script: "svelte-kit sync && svelte-check --tsconfig ./tsconfig.app.json --fail-on-warnings && tsc -p tsconfig.node.json --noEmit"
     deps:
       - "api-client:build"
+      - "contracts-ts:build"
       - "organization-access:build"
     inputs:
       - "@group(production)"

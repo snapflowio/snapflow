@@ -7,6 +7,7 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
+import type { Address } from 'viem';
 import type { CreatePriceCardDto } from '../../marketplace/dto/price-card.dto';
 
 export const DEVELOPMENT_MARKET_REFERENCE_PRICE = {
@@ -22,27 +23,9 @@ export const DEVELOPMENT_PRICE_CARD = {
 	egressMicroUsdPerGiB: '0',
 } as const satisfies CreatePriceCardDto;
 
-// Stripe test-mode values that verify an individual immediately; see
-// https://docs.stripe.com/connect/testing. They only work with test keys.
-export const DEVELOPMENT_HOST_ACCOUNT = {
-	country: 'US',
-	entityType: 'individual',
-	dashboard: 'none',
-	givenName: 'Development',
-	surname: 'Host',
-	phone: '+10000000000',
-	dateOfBirth: { day: 1, month: 1, year: 1901 },
-	address: {
-		line1: 'address_full_match',
-		city: 'San Francisco',
-		state: 'CA',
-		postal_code: '94111',
-		country: 'US',
-	},
-	idNumber: { type: 'us_ssn_last_4', value: '0000' },
-	termsAcceptanceIp: '127.0.0.1',
-	businessUrl: 'https://snapflow.io',
-	verifiedBankToken: 'btok_us_verified',
-} as const;
+// Anvil's well-known test account #1: the local escrow pays the development
+// host into a wallet whose key every Foundry install knows.
+export const DEVELOPMENT_PAYOUT_WALLET_ADDRESS =
+	'0x70997970C51812dc3A010C7d01b50e0d17dc79C8' satisfies Address;
 
 export const DEVELOPMENT_TIER_REASON = 'development machine seed';

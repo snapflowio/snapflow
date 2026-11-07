@@ -1,0 +1,39 @@
+layer: "library"
+stack: "backend"
+tags: ["contracts", "payments"]
+
+tasks:
+  generate:
+    command: "wagmi"
+    args: ["generate"]
+    deps: ["contracts:build"]
+    inputs:
+      - "wagmi.config.ts"
+      - "/apps/contracts/out/SnapflowEscrow.sol/SnapflowEscrow.json"
+    outputs: ["src/generated"]
+
+  build:
+    script: "rm -rf ../../dist/libs/contracts && pnpm exec tsc -p tsconfig.lib.json --outDir ../../dist/libs/contracts && node scripts/post-build.mts ../../dist/libs/contracts ../.."
+    inputs: ["src/**/*", "package.json", "tsconfig*.json", "scripts/post-build.mts", "/scripts/catalog.mjs", "/pnpm-workspace.yaml"]
+    outputs: ["/dist/libs/contracts"]
+
+  typecheck:
+    command: "tsc"
+    args: ["-p", "tsconfig.lib.json", "--noEmit"]
+
+  test:
+    command: "vitest"
+    args: ["run"]
+    inputs:
+      - "src/**/*"
+      - "/apps/contracts/test/vectors/vouchers.json"
+
+  lint:
+    command: "biome"
+    args: ["ci", ".", "--error-on-warnings"]
+
+  format:
+    command: "biome"
+    args: ["check", ".", "--write"]
+    options:
+      cache: false

@@ -144,7 +144,7 @@ export class MachineBrowseService {
 				row,
 				filter.shape,
 				filter.customerOrganizationId,
-				settings.platformMarkupBasisPoints
+				settings
 			);
 			return offer
 				? [

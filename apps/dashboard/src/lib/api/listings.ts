@@ -23,6 +23,8 @@ import {
 	getListingOptions,
 	getMachinePriceFloorOptions,
 	getMachinePriceFloorQueryKey,
+	getMachinePriceHintOptions,
+	getMachinePriceHintQueryKey,
 	getMachineVerificationOptions,
 	getMachineVerificationQueryKey,
 	listHostMachinesQueryKey,
@@ -90,6 +92,10 @@ export function machinePriceFloorQueryOptions(machineId: string) {
 	});
 }
 
+export function machinePriceHintQueryOptions(machineId: string) {
+	return getMachinePriceHintOptions({ path: { machineId } });
+}
+
 export function machinePriceCardsQueryOptions(machineId: string) {
 	return listMachinePriceCardsOptions({ path: { machineId } });
 }
@@ -139,6 +145,9 @@ export function publishPriceCardMutationOptions() {
 				}),
 				client.invalidateQueries({
 					queryKey: getMachinePriceFloorQueryKey({ path: { machineId } }),
+				}),
+				client.invalidateQueries({
+					queryKey: getMachinePriceHintQueryKey({ path: { machineId } }),
 				}),
 			]),
 		meta: { invalidates: MACHINE_LIST_KEYS, success: 'Prices published' },

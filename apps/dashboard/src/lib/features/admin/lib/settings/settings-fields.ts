@@ -15,7 +15,6 @@ type QuantitySettingKey = KeysOfType<UpdateSettings, number>;
 type SwitchSettingKey = KeysOfType<UpdateSettings, boolean>;
 type TextSettingKey = KeysOfType<UpdateSettings, string>;
 type ListSettingKey = KeysOfType<UpdateSettings, string[]>;
-type QuantityListSettingKey = KeysOfType<UpdateSettings, number[]>;
 
 export interface SettingPattern {
 	message: string;
@@ -56,15 +55,6 @@ interface ListSettingField {
 	placeholder?: string;
 }
 
-interface QuantityListSettingField {
-	kind: 'quantityList';
-	label: string;
-	maximum: number;
-	name: QuantityListSettingKey;
-	placeholder?: string;
-	unit: string;
-}
-
 interface ChoiceSettingField {
 	kind: 'choice';
 	label: string;
@@ -75,7 +65,6 @@ interface ChoiceSettingField {
 export type SettingField =
 	| ChoiceSettingField
 	| ListSettingField
-	| QuantityListSettingField
 	| QuantitySettingField
 	| SwitchSettingField
 	| TextSettingField;
@@ -126,10 +115,9 @@ export function settingFormValues(
 function apiValue(
 	field: SettingField,
 	value: boolean | string
-): boolean | number | number[] | string | string[] | null {
+): boolean | number | string | string[] | null {
 	if (typeof value === 'boolean') return value;
 	if (field.kind === 'quantity') return Number(value);
-	if (field.kind === 'quantityList') return listEntries(value).map(Number);
 	if (field.kind === 'list') return listEntries(value);
 	const trimmed = value.trim();
 	return field.kind === 'text' && field.optional && !trimmed ? null : trimmed;

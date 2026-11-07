@@ -1,0 +1,30 @@
+services:
+  # The local settlement chain. Its first boot copies dev/anvil/state.json
+  # (moon run contracts:dev-chain-state): CreateX, the mock USDC and the escrow
+  # at the addresses in apps/contracts/deployments/31337.json, and USDC for
+  # every dev account. After that the chain lives in the anvil-state volume,
+  # so it survives restarts like the database that indexes it; remove the
+  # volume to start again from the saved state.
+  anvil:
+    image: ghcr.io/foundry-rs/foundry:v1.9.0@sha256:3a392c18f9b16e665e932de159fb6fa9ed972c4b4352f2f76a1a8c7ca9b57d39
+    mem_limit: 512m
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        test -f /home/foundry/state.json || cp /seed/state.json /home/foundry/state.json;
+        exec anvil --host 0.0.0.0 --port 8545 --chain-id 31337
+        --state /home/foundry/state.json --state-interval 60
+    volumes:
+      - ../dev/anvil/state.json:/seed/state.json:ro
+      # The image's home directory is owned by its foundry user, so the volume
+      # it seeds is writable without running as root.
+      - anvil-state:/home/foundry
+    healthcheck:
+      test: ["CMD", "cast", "chain-id", "--rpc-url", "http://127.0.0.1:8545"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  anvil-state:

@@ -6,6 +6,12 @@ domains:
   platform: snapflow.run
 email:
   from: Snapflow <noreply@mail.snapflow.io>
+settlement:
+  chainId: 8453
+  escrowAddress: "0x0123456789abcdef0123456789abcdef01234567"
+  escrowDeploymentBlock: 1760000000
+  usdcAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+  reownProjectId: "0123456789abcdef0123456789abcdef"
 images:
   api:
     tag: build-0123456789abcdef0123456789abcdef01234567-1760000000

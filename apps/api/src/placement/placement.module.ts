@@ -13,6 +13,7 @@ import { LocationModule } from '../location/location.module';
 import { MachineModule } from '../machine/machine.module';
 import { MarketplaceModule } from '../marketplace/marketplace.module';
 import { SettingsModule } from '../settings/settings.module';
+import { SettlementModule } from '../settlement/settlement.module';
 import { MachineAvailabilityService } from './services/machine-availability.service';
 import { MachineCapacityService } from './services/machine-capacity.service';
 import { MachineReservationService } from './services/machine-reservation.service';
@@ -29,6 +30,7 @@ import { SandboxPlacementResolverService } from './services/sandbox-placement-re
 		LocationModule,
 		MachineModule,
 		SettingsModule,
+		SettlementModule,
 	],
 	providers: [
 		MachineAvailabilityService,

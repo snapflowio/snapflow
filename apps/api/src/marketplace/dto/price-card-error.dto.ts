@@ -9,6 +9,7 @@
 
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { MarketplaceErrorCode } from '../enums/marketplace-error-code.enum';
+import { PricedResource } from '../enums/priced-resource.enum';
 
 @ApiSchema({ name: 'PriceBelowFloorError' })
 export class PriceBelowFloorErrorDto {
@@ -40,4 +41,31 @@ export class PriceAboveCeilingErrorDto {
 	@ApiProperty() egressCeilingMicroUsdPerGiB: string;
 
 	@ApiProperty() egressMicroUsdPerGiB: string;
+}
+
+@ApiSchema({ name: 'PriceOutOfRangeError' })
+export class PriceOutOfRangeErrorDto {
+	@ApiProperty({
+		enum: MarketplaceErrorCode,
+		enumName: 'MarketplaceErrorCode',
+		example: MarketplaceErrorCode.PRICE_OUT_OF_RANGE,
+	})
+	code: MarketplaceErrorCode.PRICE_OUT_OF_RANGE;
+
+	@ApiProperty() message: string;
+
+	@ApiProperty({
+		enum: PricedResource,
+		enumName: 'PricedResource',
+		description: 'The resource whose price is out of range',
+	})
+	resource: PricedResource;
+
+	@ApiProperty() priceMicroUsd: string;
+
+	@ApiProperty({ description: 'Lowest allowed price, micro-USD' })
+	minimumMicroUsd: string;
+
+	@ApiProperty({ description: 'Highest allowed price, micro-USD' })
+	maximumMicroUsd: string;
 }

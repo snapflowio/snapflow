@@ -17,7 +17,9 @@ import {
 import { v4 } from 'uuid';
 import { ResourceShape } from '../../common/values/resource-shape.value';
 import { databaseNow } from '../../infra/database/utils/database-time.util';
+import { Machine } from '../../machine/entities/machine.entity';
 import { SettingsService } from '../../settings/services/settings.service';
+import { PaymentChannelService } from '../../settlement/services/payment-channel.service';
 import { SandboxLeaseDto } from '../dto/sandbox-lease.dto';
 import { MachineListing } from '../entities/machine-listing.entity';
 import { MachinePriceCard } from '../entities/machine-price-card.entity';
@@ -26,6 +28,7 @@ import { LeaseEndReason } from '../enums/lease-end-reason.enum';
 import { MarketplaceErrorCode } from '../enums/marketplace-error-code.enum';
 import { LeaseTermsUnavailableError } from '../exceptions/lease-terms-unavailable.exception';
 import type { OpenLeaseInput } from '../types/machine.types';
+import { marketMarkupBasisPoints } from '../utils/markup.util';
 import {
 	egressPricePerGiB,
 	priceTerms,
@@ -65,7 +68,10 @@ type TermsPolicy = (
 
 @Injectable()
 export class SandboxLeaseService {
-	constructor(private readonly settings: SettingsService) {}
+	constructor(
+		private readonly settings: SettingsService,
+		private readonly channels: PaymentChannelService
+	) {}
 
 	async open(
 		manager: EntityManager,
@@ -117,6 +123,7 @@ export class SandboxLeaseService {
 		lease.endedAt = await databaseNow(manager);
 		lease.endReason = reason;
 		await manager.flush();
+		await this.channels.close(manager, lease);
 		return lease;
 	}
 
@@ -158,6 +165,11 @@ export class SandboxLeaseService {
 			{ machineId: template.machineId },
 			{ lockMode: LockMode.PESSIMISTIC_READ }
 		);
+		const machine = await manager.findOneOrFail(
+			Machine,
+			{ id: template.machineId },
+			{ fields: ['tier'] }
+		);
 		const settings = await this.settings.get();
 		const result = policy(
 			{
@@ -165,7 +177,7 @@ export class SandboxLeaseService {
 				hostOrganizationId: template.hostOrganizationId,
 			},
 			listing,
-			settings.platformMarkupBasisPoints
+			marketMarkupBasisPoints(settings, machine.tier)
 		);
 		if (result.terms === null) {
 			throw new LeaseTermsUnavailableError(
@@ -197,6 +209,7 @@ export class SandboxLeaseService {
 		);
 		manager.persist(lease);
 		await manager.flush();
+		await this.channels.open(manager, lease);
 		return lease;
 	}
 }

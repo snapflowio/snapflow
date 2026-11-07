@@ -18,6 +18,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { resolveCatalogSpecs } from '../../../scripts/catalog.mjs';
 
 const [distDir, workspaceRoot, sourceDir] = process.argv.slice(2);
 if (!distDir || !workspaceRoot || !sourceDir) {
@@ -28,9 +29,13 @@ if (!distDir || !workspaceRoot || !sourceDir) {
 
 const readJson = (p) => JSON.parse(fs.readFileSync(p, 'utf8'));
 
-// Workspace links are replaced with the versions of the built client packages.
-const pkg = readJson(path.join(sourceDir, 'package.json'));
-for (const name of ['api-client', 'toolbox-api-client']) {
+// Workspace links are replaced with the versions of the built client packages
+// and catalog specifiers with their catalog ranges.
+const pkg = resolveCatalogSpecs(
+	readJson(path.join(sourceDir, 'package.json')),
+	workspaceRoot
+);
+for (const name of ['api-client', 'contracts', 'toolbox-api-client']) {
 	const distPkg = readJson(
 		path.join(workspaceRoot, 'dist', 'libs', name, 'package.json')
 	);

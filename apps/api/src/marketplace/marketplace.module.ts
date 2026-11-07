@@ -12,6 +12,7 @@ import { Module } from '@nestjs/common';
 import { IdempotencyModule } from '../idempotency/idempotency.module';
 import { OrganizationModule } from '../organization/organization.module';
 import { SettingsModule } from '../settings/settings.module';
+import { SettlementModule } from '../settlement/settlement.module';
 import { AdminMarketPriceController } from './controllers/admin-market-price.controller';
 import { HostMachineController } from './controllers/host-machine.controller';
 import { MachineListing } from './entities/machine-listing.entity';
@@ -24,6 +25,7 @@ import { MachineListingService } from './services/machine-listing.service';
 import { MachineMarketplaceService } from './services/machine-marketplace.service';
 import { PriceCardService } from './services/price-card.service';
 import { PriceFloorService } from './services/price-floor.service';
+import { PriceHintService } from './services/price-hint.service';
 import { SandboxLeaseService } from './services/sandbox-lease.service';
 
 @Module({
@@ -37,6 +39,7 @@ import { SandboxLeaseService } from './services/sandbox-lease.service';
 		IdempotencyModule,
 		OrganizationModule,
 		SettingsModule,
+		SettlementModule,
 	],
 	controllers: [HostMachineController, AdminMarketPriceController],
 	providers: [
@@ -45,6 +48,7 @@ import { SandboxLeaseService } from './services/sandbox-lease.service';
 		HostMachineService,
 		PriceCardService,
 		PriceFloorService,
+		PriceHintService,
 		EgressCeilingService,
 		SandboxLeaseService,
 	],

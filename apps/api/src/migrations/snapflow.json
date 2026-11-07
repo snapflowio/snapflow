@@ -1535,251 +1535,6 @@
       "comment": null
     },
     {
-      "name": "auto_top_up_policy",
-      "schema": "public",
-      "columns": {
-        "amountCents": {
-          "name": "amountCents",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "consecutiveFailures": {
-          "name": "consecutiveFailures",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": "0",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "consentedAt": {
-          "name": "consentedAt",
-          "type": "timestamptz(3)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": 3,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "datetime"
-        },
-        "consentedBy": {
-          "name": "consentedBy",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "uuid"
-        },
-        "enabled": {
-          "name": "enabled",
-          "type": "boolean",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "boolean"
-        },
-        "lastAttemptAt": {
-          "name": "lastAttemptAt",
-          "type": "timestamptz(3)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": 3,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "datetime"
-        },
-        "organizationId": {
-          "name": "organizationId",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": true,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "uuid"
-        },
-        "paymentMethodId": {
-          "name": "paymentMethodId",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "uuid"
-        },
-        "suspendedReason": {
-          "name": "suspendedReason",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "thresholdCents": {
-          "name": "thresholdCents",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "version": {
-          "name": "version",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": "1",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        }
-      },
-      "indexes": [
-        {
-          "columnNames": [
-            "organizationId"
-          ],
-          "composite": false,
-          "constraint": true,
-          "keyName": "auto_top_up_policy_organizationId_pk",
-          "primary": true,
-          "unique": true
-        }
-      ],
-      "checks": [
-        {
-          "name": "CHK_auto_top_up_policy_amounts",
-          "expression": "\"amountCents\" > 0 and \"thresholdCents\" >= 0",
-          "definition": "check (\"amountCents\" > 0 and \"thresholdCents\" >= 0)"
-        },
-        {
-          "name": "CHK_auto_top_up_policy_failures",
-          "expression": "\"consecutiveFailures\" >= 0",
-          "definition": "check (\"consecutiveFailures\" >= 0)"
-        }
-      ],
-      "triggers": [],
-      "foreignKeys": {
-        "FK_auto_top_up_policy_organization": {
-          "columnNames": [
-            "organizationId"
-          ],
-          "constraintName": "FK_auto_top_up_policy_organization",
-          "localTableName": "public.auto_top_up_policy",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.organization",
-          "deleteRule": "restrict"
-        },
-        "FK_auto_top_up_policy_payment_method": {
-          "columnNames": [
-            "paymentMethodId"
-          ],
-          "constraintName": "FK_auto_top_up_policy_payment_method",
-          "localTableName": "public.auto_top_up_policy",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.payment_method",
-          "deleteRule": "restrict"
-        }
-      },
-      "comment": null
-    },
-    {
       "name": "billing_budget",
       "schema": "public",
       "columns": {
@@ -2512,8 +2267,8 @@
       "checks": [
         {
           "name": "CHK_billing_ledger_account_code",
-          "expression": "\"accountCode\" in ('customer_credit', 'admin_credit_grants', 'host_earnings_payable', 'platform_markup_revenue', 'platform_qualification_expense', 'host_earnings_pending', 'stripe_balance', 'payment_processing_fees', 'stripe_platform_fees', 'dispute_fees', 'disputed_funds', 'dispute_losses', 'refund_losses', 'host_transfers_pending', 'stripe_payouts_in_transit', 'platform_bank_cash', 'sales_tax_payable')",
-          "definition": "check (\"accountCode\" in ('customer_credit', 'admin_credit_grants', 'host_earnings_payable', 'platform_markup_revenue', 'platform_qualification_expense', 'host_earnings_pending', 'stripe_balance', 'payment_processing_fees', 'stripe_platform_fees', 'dispute_fees', 'disputed_funds', 'dispute_losses', 'refund_losses', 'host_transfers_pending', 'stripe_payouts_in_transit', 'platform_bank_cash', 'sales_tax_payable'))"
+          "expression": "\"accountCode\" in ('customer_credit', 'admin_credit_grants', 'platform_markup_revenue', 'platform_service_revenue', 'platform_qualification_expense', 'host_earnings_pending', 'escrow_custody', 'platform_wallet')",
+          "definition": "check (\"accountCode\" in ('customer_credit', 'admin_credit_grants', 'platform_markup_revenue', 'platform_service_revenue', 'platform_qualification_expense', 'host_earnings_pending', 'escrow_custody', 'platform_wallet'))"
         },
         {
           "name": "CHK_billing_ledger_account_currency",
@@ -4998,6 +4753,839 @@
           "deleteRule": "restrict"
         }
       },
+      "comment": null
+    },
+    {
+      "name": "escrow_account",
+      "schema": "public",
+      "columns": {
+        "address": {
+          "name": "address",
+          "type": "varchar(42)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 42,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "balanceMicroUsd": {
+          "name": "balanceMicroUsd",
+          "type": "numeric(40,0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": 40,
+          "scale": 0,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "decimal"
+        },
+        "blocked": {
+          "name": "blocked",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "boolean"
+        },
+        "chainId": {
+          "name": "chainId",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": true,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "contractAddress": {
+          "name": "contractAddress",
+          "type": "varchar(42)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 42,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": "now()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "gen_random_uuid()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
+        },
+        "pendingWithdrawalMicroUsd": {
+          "name": "pendingWithdrawalMicroUsd",
+          "type": "numeric(40,0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": 40,
+          "scale": 0,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "decimal"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": "now()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "withdrawalReadyAt": {
+          "name": "withdrawalReadyAt",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        }
+      },
+      "indexes": [
+        {
+          "columnNames": [
+            "chainId",
+            "contractAddress",
+            "address"
+          ],
+          "composite": true,
+          "constraint": true,
+          "keyName": "UQ_escrow_account_address",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "keyName": "escrow_account_id_pk",
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "triggers": [],
+      "foreignKeys": {},
+      "comment": null
+    },
+    {
+      "name": "escrow_event",
+      "schema": "public",
+      "columns": {
+        "args": {
+          "name": "args",
+          "type": "jsonb",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "json"
+        },
+        "blockHash": {
+          "name": "blockHash",
+          "type": "varchar(66)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 66,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "blockNumber": {
+          "name": "blockNumber",
+          "type": "bigint",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "bigint"
+        },
+        "blockTimestamp": {
+          "name": "blockTimestamp",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "chainId": {
+          "name": "chainId",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": true,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "contractAddress": {
+          "name": "contractAddress",
+          "type": "varchar(42)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 42,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": "now()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "customerAddress": {
+          "name": "customerAddress",
+          "type": "varchar(42)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 42,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "customerOrganizationId": {
+          "name": "customerOrganizationId",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
+        },
+        "hostAddress": {
+          "name": "hostAddress",
+          "type": "varchar(42)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 42,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "hostOrganizationId": {
+          "name": "hostOrganizationId",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "gen_random_uuid()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
+        },
+        "kind": {
+          "name": "kind",
+          "type": "varchar",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": -1,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "logIndex": {
+          "name": "logIndex",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "processedAt": {
+          "name": "processedAt",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "transactionHash": {
+          "name": "transactionHash",
+          "type": "varchar(66)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 66,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        }
+      },
+      "indexes": [
+        {
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "keyName": "IDX_escrow_event_claimed_channel",
+          "primary": false,
+          "unique": false,
+          "expression": "create index \"IDX_escrow_event_claimed_channel\" on \"escrow_event\" (\"chainId\", \"contractAddress\", (\"args\"->>'channelId')) where \"kind\" = 'Claimed'"
+        },
+        {
+          "columnNames": [
+            "customerAddress"
+          ],
+          "composite": false,
+          "constraint": false,
+          "keyName": "IDX_escrow_event_customer_address",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "customerOrganizationId",
+            "blockNumber",
+            "logIndex"
+          ],
+          "composite": true,
+          "constraint": false,
+          "keyName": "IDX_escrow_event_customer_organization",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "hostAddress"
+          ],
+          "composite": false,
+          "constraint": false,
+          "keyName": "IDX_escrow_event_host_address",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "hostOrganizationId",
+            "blockNumber",
+            "logIndex"
+          ],
+          "composite": true,
+          "constraint": false,
+          "keyName": "IDX_escrow_event_host_organization",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "chainId",
+            "transactionHash",
+            "logIndex"
+          ],
+          "composite": true,
+          "constraint": true,
+          "keyName": "UQ_escrow_event_log",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "keyName": "escrow_event_id_pk",
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [
+        {
+          "name": "CHK_escrow_event_kind",
+          "expression": "\"kind\" in ('AddressBlocked', 'AddressUnblocked', 'Claimed', 'DefaultAdminDelayChangeCanceled', 'DefaultAdminDelayChangeScheduled', 'DefaultAdminTransferCanceled', 'DefaultAdminTransferScheduled', 'Deposited', 'EIP712DomainChanged', 'FeeCapScheduleCancelled', 'FeeCapScheduled', 'FeeCapUpdated', 'FeeRecipientUpdated', 'Paused', 'RoleAdminChanged', 'RoleGranted', 'RoleRevoked', 'SessionKeyRevoked', 'SessionKeySet', 'Unpaused', 'WithdrawalCancelled', 'WithdrawalRequested', 'Withdrawn')",
+          "definition": "check (\"kind\" in ('AddressBlocked', 'AddressUnblocked', 'Claimed', 'DefaultAdminDelayChangeCanceled', 'DefaultAdminDelayChangeScheduled', 'DefaultAdminTransferCanceled', 'DefaultAdminTransferScheduled', 'Deposited', 'EIP712DomainChanged', 'FeeCapScheduleCancelled', 'FeeCapScheduled', 'FeeCapUpdated', 'FeeRecipientUpdated', 'Paused', 'RoleAdminChanged', 'RoleGranted', 'RoleRevoked', 'SessionKeyRevoked', 'SessionKeySet', 'Unpaused', 'WithdrawalCancelled', 'WithdrawalRequested', 'Withdrawn'))"
+        }
+      ],
+      "triggers": [],
+      "foreignKeys": {
+        "FK_escrow_event_customer_organization": {
+          "columnNames": [
+            "customerOrganizationId"
+          ],
+          "constraintName": "FK_escrow_event_customer_organization",
+          "localTableName": "public.escrow_event",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "deleteRule": "set null"
+        },
+        "FK_escrow_event_host_organization": {
+          "columnNames": [
+            "hostOrganizationId"
+          ],
+          "constraintName": "FK_escrow_event_host_organization",
+          "localTableName": "public.escrow_event",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
+          "deleteRule": "set null"
+        }
+      },
+      "comment": null
+    },
+    {
+      "name": "escrow_session_key",
+      "schema": "public",
+      "columns": {
+        "activatedAt": {
+          "name": "activatedAt",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "chainId": {
+          "name": "chainId",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": true,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "contractAddress": {
+          "name": "contractAddress",
+          "type": "varchar(42)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 42,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": "now()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "customerAddress": {
+          "name": "customerAddress",
+          "type": "varchar(42)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 42,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "expiresAt": {
+          "name": "expiresAt",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "hourlyCapMicroUsd": {
+          "name": "hourlyCapMicroUsd",
+          "type": "numeric(40,0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": 40,
+          "scale": 0,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "decimal"
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "gen_random_uuid()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
+        },
+        "keyAddress": {
+          "name": "keyAddress",
+          "type": "varchar(42)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 42,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "revokedAt": {
+          "name": "revokedAt",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "spendCapMicroUsd": {
+          "name": "spendCapMicroUsd",
+          "type": "numeric(40,0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": 40,
+          "scale": 0,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "decimal"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": "now()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        }
+      },
+      "indexes": [
+        {
+          "columnNames": [
+            "chainId",
+            "contractAddress",
+            "customerAddress",
+            "keyAddress"
+          ],
+          "composite": true,
+          "constraint": true,
+          "keyName": "UQ_escrow_session_key",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "keyName": "escrow_session_key_id_pk",
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "triggers": [],
+      "foreignKeys": {},
       "comment": null
     },
     {
@@ -17057,137 +17645,35 @@
       "comment": null
     },
     {
-      "name": "payment_account",
+      "name": "payment_channel",
       "schema": "public",
       "columns": {
-        "country": {
-          "name": "country",
-          "type": "varchar(2)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": 2,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "createdAt": {
-          "name": "createdAt",
-          "type": "timestamptz(3)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": 3,
-          "precision": null,
-          "scale": null,
-          "default": "now()",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "datetime"
-        },
-        "customerConfigured": {
-          "name": "customerConfigured",
-          "type": "boolean",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": "false",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "boolean"
-        },
-        "organizationId": {
-          "name": "organizationId",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": true,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "uuid"
-        },
-        "payoutsBlockedReason": {
-          "name": "payoutsBlockedReason",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "recipientRequested": {
-          "name": "recipientRequested",
-          "type": "boolean",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": "false",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "boolean"
-        },
-        "requirementsStatus": {
-          "name": "requirementsStatus",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": "'none'",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "stripeAccountId": {
-          "name": "stripeAccountId",
-          "type": "varchar",
+        "chainId": {
+          "name": "chainId",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
           "unique": true,
-          "length": -1,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "channelId": {
+          "name": "channelId",
+          "type": "varchar(66)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 66,
           "precision": null,
           "scale": null,
           "default": null,
@@ -17196,120 +17682,76 @@
           "enumItems": [],
           "mappedType": "string"
         },
-        "taxInformationStatus": {
-          "name": "taxInformationStatus",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": "'missing'",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "transfersStatus": {
-          "name": "transfersStatus",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": "'inactive'",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "updatedAt": {
-          "name": "updatedAt",
+        "claimAttemptedAt": {
+          "name": "claimAttemptedAt",
           "type": "timestamptz(3)",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
+          "nullable": true,
           "unique": false,
           "length": 3,
           "precision": null,
           "scale": null,
-          "default": "now()",
+          "default": null,
           "comment": null,
           "collation": null,
           "enumItems": [],
           "mappedType": "datetime"
-        }
-      },
-      "indexes": [
-        {
-          "columnNames": [
-            "stripeAccountId"
-          ],
-          "composite": false,
-          "constraint": true,
-          "keyName": "UQ_payment_account_stripe_account",
+        },
+        "claimError": {
+          "name": "claimError",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
-          "unique": true
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
         },
-        {
-          "columnNames": [
-            "organizationId"
-          ],
-          "composite": false,
-          "constraint": true,
-          "keyName": "payment_account_organizationId_pk",
-          "primary": true,
-          "unique": true
-        }
-      ],
-      "checks": [
-        {
-          "name": "CHK_payment_account_requirements_status",
-          "expression": "\"requirementsStatus\" in ('none', 'eventually_due', 'currently_due', 'past_due')",
-          "definition": "check (\"requirementsStatus\" in ('none', 'eventually_due', 'currently_due', 'past_due'))"
+        "claimSequence": {
+          "name": "claimSequence",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
         },
-        {
-          "name": "CHK_payment_account_tax_information_status",
-          "expression": "\"taxInformationStatus\" in ('missing', 'provided')",
-          "definition": "check (\"taxInformationStatus\" in ('missing', 'provided'))"
+        "claimTransactionHash": {
+          "name": "claimTransactionHash",
+          "type": "varchar(66)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 66,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
         },
-        {
-          "name": "CHK_payment_account_transfers_status",
-          "expression": "\"transfersStatus\" in ('inactive', 'pending', 'active', 'restricted')",
-          "definition": "check (\"transfersStatus\" in ('inactive', 'pending', 'active', 'restricted'))"
-        }
-      ],
-      "triggers": [],
-      "foreignKeys": {
-        "FK_payment_account_organization": {
-          "columnNames": [
-            "organizationId"
-          ],
-          "constraintName": "FK_payment_account_organization",
-          "localTableName": "public.payment_account",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.organization",
-          "deleteRule": "restrict"
-        }
-      },
-      "comment": null
-    },
-    {
-      "name": "payment_dispute",
-      "schema": "public",
-      "columns": {
-        "amountCents": {
-          "name": "amountCents",
+        "claimedSequence": {
+          "name": "claimedSequence",
           "type": "int",
           "unsigned": false,
           "autoincrement": false,
@@ -17342,6 +17784,40 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
+        "contractAddress": {
+          "name": "contractAddress",
+          "type": "varchar(42)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 42,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "coveredAt": {
+          "name": "coveredAt",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
         "createdAt": {
           "name": "createdAt",
           "type": "timestamptz(3)",
@@ -17359,39 +17835,73 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "evidenceDueBy": {
-          "name": "evidenceDueBy",
-          "type": "timestamptz(3)",
+        "customerAddress": {
+          "name": "customerAddress",
+          "type": "varchar(42)",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": true,
+          "nullable": false,
           "unique": false,
-          "length": 3,
+          "length": 42,
           "precision": null,
           "scale": null,
           "default": null,
           "comment": null,
           "collation": null,
           "enumItems": [],
-          "mappedType": "datetime"
+          "mappedType": "string"
         },
-        "frozenMicroUsd": {
-          "name": "frozenMicroUsd",
-          "type": "numeric(40,0)",
+        "customerOrganizationId": {
+          "name": "customerOrganizationId",
+          "type": "uuid",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
           "unique": false,
           "length": null,
-          "precision": 40,
-          "scale": 0,
-          "default": "0",
+          "precision": null,
+          "scale": null,
+          "default": null,
           "comment": null,
           "collation": null,
           "enumItems": [],
-          "mappedType": "decimal"
+          "mappedType": "uuid"
+        },
+        "hostAddress": {
+          "name": "hostAddress",
+          "type": "varchar(42)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 42,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "hostOrganizationId": {
+          "name": "hostOrganizationId",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
         },
         "id": {
           "name": "id",
@@ -17410,13 +17920,47 @@
           "enumItems": [],
           "mappedType": "uuid"
         },
-        "organizationId": {
-          "name": "organizationId",
-          "type": "uuid",
+        "kind": {
+          "name": "kind",
+          "type": "varchar",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": -1,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "leaseId": {
+          "name": "leaseId",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": true,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
+        },
+        "machineId": {
+          "name": "machineId",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
           "unique": false,
           "length": null,
           "precision": null,
@@ -17427,8 +17971,76 @@
           "enumItems": [],
           "mappedType": "uuid"
         },
-        "reason": {
-          "name": "reason",
+        "nextIssueAt": {
+          "name": "nextIssueAt",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "openedAt": {
+          "name": "openedAt",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "sandboxId": {
+          "name": "sandboxId",
+          "type": "varchar",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": -1,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "servicePeriodStart": {
+          "name": "servicePeriodStart",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "signingMode": {
+          "name": "signingMode",
           "type": "varchar",
           "unsigned": false,
           "autoincrement": false,
@@ -17461,14 +18073,31 @@
           "enumItems": [],
           "mappedType": "string"
         },
-        "stripeDisputeId": {
-          "name": "stripeDisputeId",
-          "type": "varchar",
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamptz(3)",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "unique": true,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": "now()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "voucherError": {
+          "name": "voucherError",
+          "type": "varchar",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
           "length": -1,
           "precision": null,
           "scale": null,
@@ -17477,33 +18106,95 @@
           "collation": null,
           "enumItems": [],
           "mappedType": "string"
-        },
-        "topUpId": {
-          "name": "topUpId",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "uuid"
         }
       },
       "indexes": [
         {
           "columnNames": [
-            "stripeDisputeId"
+            "customerOrganizationId",
+            "openedAt",
+            "id"
+          ],
+          "composite": true,
+          "constraint": false,
+          "keyName": "IDX_payment_channel_customer",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "customerAddress"
+          ],
+          "composite": false,
+          "constraint": false,
+          "keyName": "IDX_payment_channel_customer_address",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "hostOrganizationId",
+            "openedAt",
+            "id"
+          ],
+          "composite": true,
+          "constraint": false,
+          "keyName": "IDX_payment_channel_host",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "keyName": "IDX_payment_channel_issue_due",
+          "primary": false,
+          "unique": false,
+          "expression": "create index \"IDX_payment_channel_issue_due\" on \"payment_channel\" (\"nextIssueAt\") where \"state\" <> 'closed'"
+        },
+        {
+          "columnNames": [
+            "machineId",
+            "state"
+          ],
+          "composite": true,
+          "constraint": false,
+          "keyName": "IDX_payment_channel_machine",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "chainId",
+            "contractAddress",
+            "channelId"
+          ],
+          "composite": true,
+          "constraint": true,
+          "keyName": "UQ_payment_channel_channel",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "leaseId"
           ],
           "composite": false,
           "constraint": true,
-          "keyName": "UQ_payment_dispute_stripe_dispute",
+          "keyName": "UQ_payment_channel_lease",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "chainId",
+            "contractAddress",
+            "customerOrganizationId",
+            "servicePeriodStart"
+          ],
+          "composite": true,
+          "constraint": true,
+          "keyName": "UQ_payment_channel_service_period",
           "primary": false,
           "unique": true
         },
@@ -17513,89 +18204,99 @@
           ],
           "composite": false,
           "constraint": true,
-          "keyName": "payment_dispute_id_pk",
+          "keyName": "payment_channel_id_pk",
           "primary": true,
           "unique": true
         }
       ],
       "checks": [
         {
-          "name": "CHK_payment_dispute_amounts",
-          "expression": "\"amountCents\" >= 0 and \"frozenMicroUsd\" >= 0",
-          "definition": "check (\"amountCents\" >= 0 and \"frozenMicroUsd\" >= 0)"
+          "name": "CHK_payment_channel_claim",
+          "expression": "(\"claimTransactionHash\" is null) = (\"claimSequence\" is null)",
+          "definition": "check ((\"claimTransactionHash\" is null) = (\"claimSequence\" is null))"
         },
         {
-          "name": "CHK_payment_dispute_state",
-          "expression": "\"state\" in ('needs_response', 'under_review', 'won', 'lost')",
-          "definition": "check (\"state\" in ('needs_response', 'under_review', 'won', 'lost'))"
+          "name": "CHK_payment_channel_closed",
+          "expression": "(\"state\" = 'open') = (\"closedAt\" is null)",
+          "definition": "check ((\"state\" = 'open') = (\"closedAt\" is null))"
+        },
+        {
+          "name": "CHK_payment_channel_kind",
+          "expression": "(\"kind\" = 'lease' and \"leaseId\" is not null and \"sandboxId\" is not null and \"machineId\" is not null and \"hostOrganizationId\" is not null and \"servicePeriodStart\" is null)\n\t\tor (\"kind\" = 'platform_service' and \"leaseId\" is null and \"sandboxId\" is null and \"machineId\" is null and \"hostOrganizationId\" is null and \"servicePeriodStart\" is not null)",
+          "definition": "check ((\"kind\" = 'lease' and \"leaseId\" is not null and \"sandboxId\" is not null and \"machineId\" is not null and \"hostOrganizationId\" is not null and \"servicePeriodStart\" is null)\n\t\tor (\"kind\" = 'platform_service' and \"leaseId\" is null and \"sandboxId\" is null and \"machineId\" is null and \"hostOrganizationId\" is null and \"servicePeriodStart\" is not null))"
+        },
+        {
+          "name": "CHK_payment_channel_signing_mode",
+          "expression": "\"signingMode\" in ('delegated', 'client')",
+          "definition": "check (\"signingMode\" in ('delegated', 'client'))"
+        },
+        {
+          "name": "CHK_payment_channel_state",
+          "expression": "\"state\" in ('open', 'closing', 'closed')",
+          "definition": "check (\"state\" in ('open', 'closing', 'closed'))"
         }
       ],
       "triggers": [],
       "foreignKeys": {
-        "FK_payment_dispute_organization": {
+        "FK_payment_channel_customer_organization": {
           "columnNames": [
-            "organizationId"
+            "customerOrganizationId"
           ],
-          "constraintName": "FK_payment_dispute_organization",
-          "localTableName": "public.payment_dispute",
+          "constraintName": "FK_payment_channel_customer_organization",
+          "localTableName": "public.payment_channel",
           "referencedColumnNames": [
             "id"
           ],
           "referencedTableName": "public.organization",
           "deleteRule": "restrict"
         },
-        "FK_payment_dispute_top_up": {
+        "FK_payment_channel_host_organization": {
           "columnNames": [
-            "topUpId"
+            "hostOrganizationId"
           ],
-          "constraintName": "FK_payment_dispute_top_up",
-          "localTableName": "public.payment_dispute",
+          "constraintName": "FK_payment_channel_host_organization",
+          "localTableName": "public.payment_channel",
           "referencedColumnNames": [
             "id"
           ],
-          "referencedTableName": "public.top_up",
+          "referencedTableName": "public.organization",
+          "deleteRule": "restrict"
+        },
+        "FK_payment_channel_lease": {
+          "columnNames": [
+            "leaseId"
+          ],
+          "constraintName": "FK_payment_channel_lease",
+          "localTableName": "public.payment_channel",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.sandbox_lease",
           "deleteRule": "restrict"
         }
       },
       "comment": null
     },
     {
-      "name": "payment_method",
+      "name": "payment_voucher",
       "schema": "public",
       "columns": {
-        "brand": {
-          "name": "brand",
-          "type": "varchar",
+        "claimableUntil": {
+          "name": "claimableUntil",
+          "type": "timestamptz(3)",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
+          "nullable": true,
           "unique": false,
-          "length": -1,
+          "length": 3,
           "precision": null,
           "scale": null,
           "default": null,
           "comment": null,
           "collation": null,
           "enumItems": [],
-          "mappedType": "string"
-        },
-        "cardFingerprint": {
-          "name": "cardFingerprint",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
+          "mappedType": "datetime"
         },
         "createdAt": {
           "name": "createdAt",
@@ -17614,13 +18315,13 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "detachedAt": {
-          "name": "detachedAt",
+        "expiresAt": {
+          "name": "expiresAt",
           "type": "timestamptz(3)",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": true,
+          "nullable": false,
           "unique": false,
           "length": 3,
           "precision": null,
@@ -17631,199 +18332,8 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "expMonth": {
-          "name": "expMonth",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "expYear": {
-          "name": "expYear",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "firstChargedAt": {
-          "name": "firstChargedAt",
-          "type": "timestamptz(3)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": 3,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "datetime"
-        },
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": true,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": "gen_random_uuid()",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "uuid"
-        },
-        "last4": {
-          "name": "last4",
-          "type": "varchar(4)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": 4,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "organizationId": {
-          "name": "organizationId",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "uuid"
-        },
-        "stripePaymentMethodId": {
-          "name": "stripePaymentMethodId",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": true,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        }
-      },
-      "indexes": [
-        {
-          "columnNames": [
-            "cardFingerprint"
-          ],
-          "composite": false,
-          "constraint": false,
-          "keyName": "IDX_payment_method_card_fingerprint",
-          "primary": false,
-          "unique": false
-        },
-        {
-          "columnNames": [
-            "stripePaymentMethodId"
-          ],
-          "composite": false,
-          "constraint": true,
-          "keyName": "UQ_payment_method_stripe_payment_method",
-          "primary": false,
-          "unique": true
-        },
-        {
-          "columnNames": [
-            "id"
-          ],
-          "composite": false,
-          "constraint": true,
-          "keyName": "payment_method_id_pk",
-          "primary": true,
-          "unique": true
-        }
-      ],
-      "checks": [],
-      "triggers": [],
-      "foreignKeys": {
-        "FK_payment_method_organization": {
-          "columnNames": [
-            "organizationId"
-          ],
-          "constraintName": "FK_payment_method_organization",
-          "localTableName": "public.payment_method",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.organization",
-          "deleteRule": "restrict"
-        }
-      },
-      "comment": null
-    },
-    {
-      "name": "payout",
-      "schema": "public",
-      "columns": {
-        "amountCents": {
-          "name": "amountCents",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "amountMicroUsd": {
-          "name": "amountMicroUsd",
+        "feeAmountMicroUsd": {
+          "name": "feeAmountMicroUsd",
           "type": "numeric(40,0)",
           "unsigned": false,
           "autoincrement": false,
@@ -17839,9 +18349,77 @@
           "enumItems": [],
           "mappedType": "decimal"
         },
-        "batchId": {
-          "name": "batchId",
+        "hostAmountMicroUsd": {
+          "name": "hostAmountMicroUsd",
+          "type": "numeric(40,0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": 40,
+          "scale": 0,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "decimal"
+        },
+        "id": {
+          "name": "id",
           "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "gen_random_uuid()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
+        },
+        "issuedAt": {
+          "name": "issuedAt",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "paymentChannelId": {
+          "name": "paymentChannelId",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": true,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
+        },
+        "sequence": {
+          "name": "sequence",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
@@ -17854,7 +18432,166 @@
           "comment": null,
           "collation": null,
           "enumItems": [],
-          "mappedType": "uuid"
+          "mappedType": "integer"
+        },
+        "serviceAmountMicroUsd": {
+          "name": "serviceAmountMicroUsd",
+          "type": "numeric(40,0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": 40,
+          "scale": 0,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "decimal"
+        },
+        "signature": {
+          "name": "signature",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "signedAt": {
+          "name": "signedAt",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "signerAddress": {
+          "name": "signerAddress",
+          "type": "varchar(42)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 42,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        }
+      },
+      "indexes": [
+        {
+          "columnNames": [
+            "signerAddress",
+            "paymentChannelId",
+            "sequence"
+          ],
+          "composite": true,
+          "constraint": false,
+          "keyName": "IDX_payment_voucher_signer",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "paymentChannelId",
+            "sequence"
+          ],
+          "composite": true,
+          "constraint": true,
+          "keyName": "UQ_payment_voucher_sequence",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "keyName": "payment_voucher_id_pk",
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [
+        {
+          "name": "CHK_payment_voucher_amounts",
+          "expression": "\"hostAmountMicroUsd\" >= 0 and \"feeAmountMicroUsd\" >= 0 and \"serviceAmountMicroUsd\" >= 0",
+          "definition": "check (\"hostAmountMicroUsd\" >= 0 and \"feeAmountMicroUsd\" >= 0 and \"serviceAmountMicroUsd\" >= 0)"
+        },
+        {
+          "name": "CHK_payment_voucher_sequence",
+          "expression": "\"sequence\" > 0",
+          "definition": "check (\"sequence\" > 0)"
+        },
+        {
+          "name": "CHK_payment_voucher_signature",
+          "expression": "(\"signature\" is null) = (\"signerAddress\" is null) and (\"signature\" is null) = (\"signedAt\" is null) and (\"signature\" is null) = (\"claimableUntil\" is null)",
+          "definition": "check ((\"signature\" is null) = (\"signerAddress\" is null) and (\"signature\" is null) = (\"signedAt\" is null) and (\"signature\" is null) = (\"claimableUntil\" is null))"
+        }
+      ],
+      "triggers": [],
+      "foreignKeys": {
+        "FK_payment_voucher_channel": {
+          "columnNames": [
+            "paymentChannelId"
+          ],
+          "constraintName": "FK_payment_voucher_channel",
+          "localTableName": "public.payment_voucher",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.payment_channel",
+          "deleteRule": "cascade"
+        }
+      },
+      "comment": null
+    },
+    {
+      "name": "payment_wallet",
+      "schema": "public",
+      "columns": {
+        "address": {
+          "name": "address",
+          "type": "varchar(42)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 42,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
         },
         "createdAt": {
           "name": "createdAt",
@@ -17872,23 +18609,6 @@
           "collation": null,
           "enumItems": [],
           "mappedType": "datetime"
-        },
-        "failureReason": {
-          "name": "failureReason",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
         },
         "id": {
           "name": "id",
@@ -17924,30 +18644,13 @@
           "enumItems": [],
           "mappedType": "uuid"
         },
-        "state": {
-          "name": "state",
+        "purpose": {
+          "name": "purpose",
           "type": "varchar",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "unique": false,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": "'pending'",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "stripeTransferId": {
-          "name": "stripeTransferId",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
           "unique": true,
           "length": -1,
           "precision": null,
@@ -17958,13 +18661,64 @@
           "enumItems": [],
           "mappedType": "string"
         },
-        "transferredAt": {
-          "name": "transferredAt",
+        "sanctionsCheckedAt": {
+          "name": "sanctionsCheckedAt",
           "type": "timestamptz(3)",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "sanctionsStatus": {
+          "name": "sanctionsStatus",
+          "type": "varchar",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": -1,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": "now()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "verifiedAt": {
+          "name": "verifiedAt",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
           "unique": false,
           "length": 3,
           "precision": null,
@@ -17980,32 +18734,22 @@
         {
           "columnNames": [
             "organizationId",
-            "createdAt"
+            "purpose"
           ],
           "composite": true,
-          "constraint": false,
-          "keyName": "IDX_payout_organization",
-          "primary": false,
-          "unique": false
-        },
-        {
-          "columnNames": [
-            "organizationId"
-          ],
-          "composite": false,
-          "constraint": false,
-          "keyName": "UQ_payout_pending",
-          "primary": false,
-          "unique": true,
-          "where": "\"state\" = 'pending'"
-        },
-        {
-          "columnNames": [
-            "stripeTransferId"
-          ],
-          "composite": false,
           "constraint": true,
-          "keyName": "UQ_payout_stripe_transfer",
+          "keyName": "UQ_payment_wallet_organization_purpose",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "purpose",
+            "address"
+          ],
+          "composite": true,
+          "constraint": true,
+          "keyName": "UQ_payment_wallet_purpose_address",
           "primary": false,
           "unique": true
         },
@@ -18015,150 +18759,38 @@
           ],
           "composite": false,
           "constraint": true,
-          "keyName": "payout_id_pk",
+          "keyName": "payment_wallet_id_pk",
           "primary": true,
           "unique": true
         }
       ],
       "checks": [
         {
-          "name": "CHK_payout_amounts",
-          "expression": "\"amountCents\" > 0 and \"amountMicroUsd\" > 0",
-          "definition": "check (\"amountCents\" > 0 and \"amountMicroUsd\" > 0)"
+          "name": "CHK_payment_wallet_purpose",
+          "expression": "\"purpose\" in ('funding', 'payout')",
+          "definition": "check (\"purpose\" in ('funding', 'payout'))"
         },
         {
-          "name": "CHK_payout_state",
-          "expression": "\"state\" in ('pending', 'transferred', 'failed')",
-          "definition": "check (\"state\" in ('pending', 'transferred', 'failed'))"
+          "name": "CHK_payment_wallet_sanctions_status",
+          "expression": "\"sanctionsStatus\" in ('clear', 'blocked', 'unchecked')",
+          "definition": "check (\"sanctionsStatus\" in ('clear', 'blocked', 'unchecked'))"
         }
       ],
       "triggers": [],
       "foreignKeys": {
-        "FK_payout_batch": {
-          "columnNames": [
-            "batchId"
-          ],
-          "constraintName": "FK_payout_batch",
-          "localTableName": "public.payout",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.payout_batch",
-          "deleteRule": "restrict"
-        },
-        "FK_payout_organization": {
+        "FK_payment_wallet_organization": {
           "columnNames": [
             "organizationId"
           ],
-          "constraintName": "FK_payout_organization",
-          "localTableName": "public.payout",
+          "constraintName": "FK_payment_wallet_organization",
+          "localTableName": "public.payment_wallet",
           "referencedColumnNames": [
             "id"
           ],
           "referencedTableName": "public.organization",
-          "deleteRule": "restrict"
+          "deleteRule": "cascade"
         }
       },
-      "comment": null
-    },
-    {
-      "name": "payout_batch",
-      "schema": "public",
-      "columns": {
-        "completedAt": {
-          "name": "completedAt",
-          "type": "timestamptz(3)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": 3,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "datetime"
-        },
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": true,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": "gen_random_uuid()",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "uuid"
-        },
-        "isoWeek": {
-          "name": "isoWeek",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": true,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "startedAt": {
-          "name": "startedAt",
-          "type": "timestamptz(3)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": 3,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "datetime"
-        }
-      },
-      "indexes": [
-        {
-          "columnNames": [
-            "isoWeek"
-          ],
-          "composite": false,
-          "constraint": true,
-          "keyName": "UQ_payout_batch_iso_week",
-          "primary": false,
-          "unique": true
-        },
-        {
-          "columnNames": [
-            "id"
-          ],
-          "composite": false,
-          "constraint": true,
-          "keyName": "payout_batch_id_pk",
-          "primary": true,
-          "unique": true
-        }
-      ],
-      "checks": [],
-      "triggers": [],
-      "foreignKeys": {},
       "comment": null
     },
     {
@@ -18520,6 +19152,171 @@
             "id"
           ],
           "referencedTableName": "public.sandbox_lease",
+          "deleteRule": "restrict"
+        }
+      },
+      "comment": null
+    },
+    {
+      "name": "private_pool_charge",
+      "schema": "public",
+      "columns": {
+        "amountMicroUsd": {
+          "name": "amountMicroUsd",
+          "type": "numeric(40,0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": 40,
+          "scale": 0,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "decimal"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": "now()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "gen_random_uuid()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
+        },
+        "machineId": {
+          "name": "machineId",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": true,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
+        },
+        "organizationId": {
+          "name": "organizationId",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "uuid"
+        },
+        "serviceDay": {
+          "name": "serviceDay",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        }
+      },
+      "indexes": [
+        {
+          "columnNames": [
+            "organizationId",
+            "serviceDay"
+          ],
+          "composite": true,
+          "constraint": false,
+          "keyName": "IDX_private_pool_charge_organization",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "machineId",
+            "serviceDay"
+          ],
+          "composite": true,
+          "constraint": true,
+          "keyName": "UQ_private_pool_charge_machine_day",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "keyName": "private_pool_charge_id_pk",
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [
+        {
+          "name": "CHK_private_pool_charge_amount",
+          "expression": "\"amountMicroUsd\" >= 0",
+          "definition": "check (\"amountMicroUsd\" >= 0)"
+        }
+      ],
+      "triggers": [],
+      "foreignKeys": {
+        "FK_private_pool_charge_organization": {
+          "columnNames": [
+            "organizationId"
+          ],
+          "constraintName": "FK_private_pool_charge_organization",
+          "localTableName": "public.private_pool_charge",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.organization",
           "deleteRule": "restrict"
         }
       },
@@ -19920,6 +20717,23 @@
           "collation": null,
           "enumItems": [],
           "mappedType": "json"
+        },
+        "voucherSigning": {
+          "name": "voucherSigning",
+          "type": "varchar",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": -1,
+          "precision": null,
+          "scale": null,
+          "default": "'delegated'",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
         }
       },
       "indexes": [
@@ -20248,6 +21062,11 @@
           "name": "CHK_sandbox_spec_generation",
           "expression": "\"specGeneration\" >= 0",
           "definition": "check (\"specGeneration\" >= 0)"
+        },
+        {
+          "name": "CHK_sandbox_voucher_signing",
+          "expression": "\"voucherSigning\" in ('delegated', 'client')",
+          "definition": "check (\"voucherSigning\" in ('delegated', 'client'))"
         }
       ],
       "triggers": [],
@@ -26576,25 +27395,8 @@
       "name": "settings",
       "schema": "public",
       "columns": {
-        "autoTopUpMinimumCents": {
-          "name": "autoTopUpMinimumCents",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "autoTopUpMinimumIntervalMinutes": {
-          "name": "autoTopUpMinimumIntervalMinutes",
+        "claimIntervalMinutes": {
+          "name": "claimIntervalMinutes",
           "type": "int",
           "unsigned": false,
           "autoincrement": false,
@@ -26643,6 +27445,40 @@
           "collation": null,
           "enumItems": [],
           "mappedType": "string"
+        },
+        "diskGibMonthPriceMaximumMicroUsd": {
+          "name": "diskGibMonthPriceMaximumMicroUsd",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "diskGibMonthPriceMinimumMicroUsd": {
+          "name": "diskGibMonthPriceMinimumMicroUsd",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
         },
         "drainingForce": {
           "name": "drainingForce",
@@ -26765,6 +27601,40 @@
         },
         "exposureCeilingProbationaryCents": {
           "name": "exposureCeilingProbationaryCents",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "gpuHourPriceMaximumMicroUsd": {
+          "name": "gpuHourPriceMaximumMicroUsd",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "gpuHourPriceMinimumMicroUsd": {
+          "name": "gpuHourPriceMinimumMicroUsd",
           "type": "int",
           "unsigned": false,
           "autoincrement": false,
@@ -27018,6 +27888,40 @@
           "enumItems": [],
           "mappedType": "integer"
         },
+        "memoryGibHourPriceMaximumMicroUsd": {
+          "name": "memoryGibHourPriceMaximumMicroUsd",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "memoryGibHourPriceMinimumMicroUsd": {
+          "name": "memoryGibHourPriceMinimumMicroUsd",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
         "networkBudgetThrottleBandwidthBps": {
           "name": "networkBudgetThrottleBandwidthBps",
           "type": "int",
@@ -27035,178 +27939,8 @@
           "enumItems": [],
           "mappedType": "integer"
         },
-        "newFundingHoldDays": {
-          "name": "newFundingHoldDays",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "organizationsPerCardFingerprint": {
-          "name": "organizationsPerCardFingerprint",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "paymentMethodsPerDay": {
-          "name": "paymentMethodsPerDay",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "payoutCountries": {
-          "name": "payoutCountries",
-          "type": "text[]",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "array"
-        },
-        "payoutHoldCommunityDays": {
-          "name": "payoutHoldCommunityDays",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "payoutHoldDatacenterDays": {
-          "name": "payoutHoldDatacenterDays",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "payoutHoldVerifiedDays": {
-          "name": "payoutHoldVerifiedDays",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "payoutMinimumCents": {
-          "name": "payoutMinimumCents",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "payoutWeekday": {
-          "name": "payoutWeekday",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
         "pinnedStartWaitMinutes": {
           "name": "pinnedStartWaitMinutes",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "platformMarkupBasisPoints": {
-          "name": "platformMarkupBasisPoints",
           "type": "int",
           "unsigned": false,
           "autoincrement": false,
@@ -27273,6 +28007,23 @@
           "enumItems": [],
           "mappedType": "integer"
         },
+        "privatePoolMachineMonthlyMicroUsd": {
+          "name": "privatePoolMachineMonthlyMicroUsd",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
         "publicIngressEnabled": {
           "name": "publicIngressEnabled",
           "type": "boolean",
@@ -27323,6 +28074,23 @@
           "collation": null,
           "enumItems": [],
           "mappedType": "boolean"
+        },
+        "settlementConfirmations": {
+          "name": "settlementConfirmations",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
         },
         "snapshotQuota": {
           "name": "snapshotQuota",
@@ -27426,6 +28194,23 @@
           "enumItems": [],
           "mappedType": "integer"
         },
+        "standardMarkupBasisPoints": {
+          "name": "standardMarkupBasisPoints",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
         "stoppedSandboxRetentionDays": {
           "name": "stoppedSandboxRetentionDays",
           "type": "int",
@@ -27442,91 +28227,6 @@
           "collation": null,
           "enumItems": [],
           "mappedType": "integer"
-        },
-        "stripeTaxEnabled": {
-          "name": "stripeTaxEnabled",
-          "type": "boolean",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "boolean"
-        },
-        "topUpAttemptsPerHour": {
-          "name": "topUpAttemptsPerHour",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "topUpMaximumCents": {
-          "name": "topUpMaximumCents",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "topUpMinimumCents": {
-          "name": "topUpMinimumCents",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "topUpPresetsCents": {
-          "name": "topUpPresetsCents",
-          "type": "integer[]",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "array"
         },
         "totalCpuQuota": {
           "name": "totalCpuQuota",
@@ -27613,6 +28313,57 @@
           "enumItems": [],
           "mappedType": "uuid"
         },
+        "vcpuHourPriceMaximumMicroUsd": {
+          "name": "vcpuHourPriceMaximumMicroUsd",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "vcpuHourPriceMinimumMicroUsd": {
+          "name": "vcpuHourPriceMinimumMicroUsd",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "verifiedMarkupBasisPoints": {
+          "name": "verifiedMarkupBasisPoints",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
         "verifiedMinimumListedDays": {
           "name": "verifiedMinimumListedDays",
           "type": "int",
@@ -27680,6 +28431,57 @@
           "collation": null,
           "enumItems": [],
           "mappedType": "integer"
+        },
+        "voucherGraceIntervals": {
+          "name": "voucherGraceIntervals",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "voucherIntervalSeconds": {
+          "name": "voucherIntervalSeconds",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "voucherLifetimeHours": {
+          "name": "voucherLifetimeHours",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
         }
       },
       "indexes": [
@@ -27697,13 +28499,18 @@
       "checks": [
         {
           "name": "CHK_settings_basis_points",
-          "expression": "\"platformMarkupBasisPoints\" <= 10000 and \"priceFloorBasisPoints\" <= 10000 and \"verifiedMinimumUptimeBasisPoints\" <= 10000 and \"spotCheckToleranceBasisPoints\" <= 10000",
-          "definition": "check (\"platformMarkupBasisPoints\" <= 10000 and \"priceFloorBasisPoints\" <= 10000 and \"verifiedMinimumUptimeBasisPoints\" <= 10000 and \"spotCheckToleranceBasisPoints\" <= 10000)"
+          "expression": "\"priceFloorBasisPoints\" <= 10000 and \"verifiedMinimumUptimeBasisPoints\" <= 10000 and \"spotCheckToleranceBasisPoints\" <= 10000",
+          "definition": "check (\"priceFloorBasisPoints\" <= 10000 and \"verifiedMinimumUptimeBasisPoints\" <= 10000 and \"spotCheckToleranceBasisPoints\" <= 10000)"
         },
         {
           "name": "CHK_settings_draining_mode",
           "expression": "\"drainingMode\" in ('migrate', 'archive')",
           "definition": "check (\"drainingMode\" in ('migrate', 'archive'))"
+        },
+        {
+          "name": "CHK_settings_markup",
+          "expression": "\"standardMarkupBasisPoints\" <= 3000 and \"verifiedMarkupBasisPoints\" <= 3000",
+          "definition": "check (\"standardMarkupBasisPoints\" <= 3000 and \"verifiedMarkupBasisPoints\" <= 3000)"
         },
         {
           "name": "CHK_settings_network_budget_throttle",
@@ -27712,18 +28519,13 @@
         },
         {
           "name": "CHK_settings_non_negative",
-          "expression": "\"totalCpuQuota\" >= 0 and \"totalMemoryQuota\" >= 0 and \"totalDiskQuota\" >= 0 and \"maxCpuPerSandbox\" >= 0 and \"maxMemoryPerSandbox\" >= 0 and \"maxDiskPerSandbox\" >= 0 and \"snapshotQuota\" >= 0 and \"maxSnapshotSize\" >= 0 and \"volumeQuota\" >= 0 and \"egressPriceCeilingMicroUsdPerGiB\" >= 0 and \"platformMarkupBasisPoints\" >= 0 and \"priceFloorBasisPoints\" >= 0 and \"listingMinimumDownlinkMbps\" >= 0 and \"listingMinimumUplinkMbps\" >= 0 and \"listingMinimumDiskRandomReadIops\" >= 0 and \"listingMinimumDiskSequentialMibps\" >= 0 and \"verifiedMinimumListedDays\" >= 0 and \"verifiedMinimumUptimeBasisPoints\" >= 0 and \"verifiedMinimumSpotChecks\" >= 0 and \"spotCheckIntervalHoursCommunity\" >= 0 and \"spotCheckIntervalHoursVerified\" >= 0 and \"spotCheckMonthlyBudgetCents\" >= 0 and \"spotCheckToleranceBasisPoints\" >= 0 and \"autoTopUpMinimumCents\" >= 0 and \"autoTopUpMinimumIntervalMinutes\" >= 0 and \"topUpAttemptsPerHour\" >= 0 and \"paymentMethodsPerDay\" >= 0 and \"organizationsPerCardFingerprint\" >= 0 and \"payoutMinimumCents\" >= 0 and \"payoutHoldCommunityDays\" >= 0 and \"payoutHoldVerifiedDays\" >= 0 and \"payoutHoldDatacenterDays\" >= 0 and \"newFundingHoldDays\" >= 0",
-          "definition": "check (\"totalCpuQuota\" >= 0 and \"totalMemoryQuota\" >= 0 and \"totalDiskQuota\" >= 0 and \"maxCpuPerSandbox\" >= 0 and \"maxMemoryPerSandbox\" >= 0 and \"maxDiskPerSandbox\" >= 0 and \"snapshotQuota\" >= 0 and \"maxSnapshotSize\" >= 0 and \"volumeQuota\" >= 0 and \"egressPriceCeilingMicroUsdPerGiB\" >= 0 and \"platformMarkupBasisPoints\" >= 0 and \"priceFloorBasisPoints\" >= 0 and \"listingMinimumDownlinkMbps\" >= 0 and \"listingMinimumUplinkMbps\" >= 0 and \"listingMinimumDiskRandomReadIops\" >= 0 and \"listingMinimumDiskSequentialMibps\" >= 0 and \"verifiedMinimumListedDays\" >= 0 and \"verifiedMinimumUptimeBasisPoints\" >= 0 and \"verifiedMinimumSpotChecks\" >= 0 and \"spotCheckIntervalHoursCommunity\" >= 0 and \"spotCheckIntervalHoursVerified\" >= 0 and \"spotCheckMonthlyBudgetCents\" >= 0 and \"spotCheckToleranceBasisPoints\" >= 0 and \"autoTopUpMinimumCents\" >= 0 and \"autoTopUpMinimumIntervalMinutes\" >= 0 and \"topUpAttemptsPerHour\" >= 0 and \"paymentMethodsPerDay\" >= 0 and \"organizationsPerCardFingerprint\" >= 0 and \"payoutMinimumCents\" >= 0 and \"payoutHoldCommunityDays\" >= 0 and \"payoutHoldVerifiedDays\" >= 0 and \"payoutHoldDatacenterDays\" >= 0 and \"newFundingHoldDays\" >= 0)"
-        },
-        {
-          "name": "CHK_settings_payout_weekday",
-          "expression": "\"payoutWeekday\" >= 1 and \"payoutWeekday\" <= 7",
-          "definition": "check (\"payoutWeekday\" >= 1 and \"payoutWeekday\" <= 7)"
+          "expression": "\"totalCpuQuota\" >= 0 and \"totalMemoryQuota\" >= 0 and \"totalDiskQuota\" >= 0 and \"maxCpuPerSandbox\" >= 0 and \"maxMemoryPerSandbox\" >= 0 and \"maxDiskPerSandbox\" >= 0 and \"snapshotQuota\" >= 0 and \"maxSnapshotSize\" >= 0 and \"volumeQuota\" >= 0 and \"egressPriceCeilingMicroUsdPerGiB\" >= 0 and \"standardMarkupBasisPoints\" >= 0 and \"verifiedMarkupBasisPoints\" >= 0 and \"privatePoolMachineMonthlyMicroUsd\" >= 0 and \"vcpuHourPriceMinimumMicroUsd\" >= 0 and \"vcpuHourPriceMaximumMicroUsd\" >= 0 and \"memoryGibHourPriceMinimumMicroUsd\" >= 0 and \"memoryGibHourPriceMaximumMicroUsd\" >= 0 and \"gpuHourPriceMinimumMicroUsd\" >= 0 and \"gpuHourPriceMaximumMicroUsd\" >= 0 and \"diskGibMonthPriceMinimumMicroUsd\" >= 0 and \"diskGibMonthPriceMaximumMicroUsd\" >= 0 and \"priceFloorBasisPoints\" >= 0 and \"listingMinimumDownlinkMbps\" >= 0 and \"listingMinimumUplinkMbps\" >= 0 and \"listingMinimumDiskRandomReadIops\" >= 0 and \"listingMinimumDiskSequentialMibps\" >= 0 and \"verifiedMinimumListedDays\" >= 0 and \"verifiedMinimumUptimeBasisPoints\" >= 0 and \"verifiedMinimumSpotChecks\" >= 0 and \"spotCheckIntervalHoursCommunity\" >= 0 and \"spotCheckIntervalHoursVerified\" >= 0 and \"spotCheckMonthlyBudgetCents\" >= 0 and \"spotCheckToleranceBasisPoints\" >= 0 and \"settlementConfirmations\" >= 0",
+          "definition": "check (\"totalCpuQuota\" >= 0 and \"totalMemoryQuota\" >= 0 and \"totalDiskQuota\" >= 0 and \"maxCpuPerSandbox\" >= 0 and \"maxMemoryPerSandbox\" >= 0 and \"maxDiskPerSandbox\" >= 0 and \"snapshotQuota\" >= 0 and \"maxSnapshotSize\" >= 0 and \"volumeQuota\" >= 0 and \"egressPriceCeilingMicroUsdPerGiB\" >= 0 and \"standardMarkupBasisPoints\" >= 0 and \"verifiedMarkupBasisPoints\" >= 0 and \"privatePoolMachineMonthlyMicroUsd\" >= 0 and \"vcpuHourPriceMinimumMicroUsd\" >= 0 and \"vcpuHourPriceMaximumMicroUsd\" >= 0 and \"memoryGibHourPriceMinimumMicroUsd\" >= 0 and \"memoryGibHourPriceMaximumMicroUsd\" >= 0 and \"gpuHourPriceMinimumMicroUsd\" >= 0 and \"gpuHourPriceMaximumMicroUsd\" >= 0 and \"diskGibMonthPriceMinimumMicroUsd\" >= 0 and \"diskGibMonthPriceMaximumMicroUsd\" >= 0 and \"priceFloorBasisPoints\" >= 0 and \"listingMinimumDownlinkMbps\" >= 0 and \"listingMinimumUplinkMbps\" >= 0 and \"listingMinimumDiskRandomReadIops\" >= 0 and \"listingMinimumDiskSequentialMibps\" >= 0 and \"verifiedMinimumListedDays\" >= 0 and \"verifiedMinimumUptimeBasisPoints\" >= 0 and \"verifiedMinimumSpotChecks\" >= 0 and \"spotCheckIntervalHoursCommunity\" >= 0 and \"spotCheckIntervalHoursVerified\" >= 0 and \"spotCheckMonthlyBudgetCents\" >= 0 and \"spotCheckToleranceBasisPoints\" >= 0 and \"settlementConfirmations\" >= 0)"
         },
         {
           "name": "CHK_settings_positive",
-          "expression": "\"priceFloorMinimumSamples\" >= 1 and \"priceLockDays\" >= 1 and \"leaseRenewalGraceDays\" >= 1 and \"stoppedSandboxRetentionDays\" >= 1 and \"pinnedStartWaitMinutes\" >= 1 and \"egressCeilingMedianBasisPoints\" >= 1 and \"exposureCeilingProbationaryCents\" >= 1 and \"exposureCeilingEstablishedCents\" >= 1 and \"exposureCeilingHostCents\" >= 1 and \"topUpMinimumCents\" >= 1",
-          "definition": "check (\"priceFloorMinimumSamples\" >= 1 and \"priceLockDays\" >= 1 and \"leaseRenewalGraceDays\" >= 1 and \"stoppedSandboxRetentionDays\" >= 1 and \"pinnedStartWaitMinutes\" >= 1 and \"egressCeilingMedianBasisPoints\" >= 1 and \"exposureCeilingProbationaryCents\" >= 1 and \"exposureCeilingEstablishedCents\" >= 1 and \"exposureCeilingHostCents\" >= 1 and \"topUpMinimumCents\" >= 1)"
+          "expression": "\"priceFloorMinimumSamples\" >= 1 and \"priceLockDays\" >= 1 and \"leaseRenewalGraceDays\" >= 1 and \"stoppedSandboxRetentionDays\" >= 1 and \"pinnedStartWaitMinutes\" >= 1 and \"egressCeilingMedianBasisPoints\" >= 1 and \"exposureCeilingProbationaryCents\" >= 1 and \"exposureCeilingEstablishedCents\" >= 1 and \"exposureCeilingHostCents\" >= 1 and \"voucherIntervalSeconds\" >= 1 and \"voucherGraceIntervals\" >= 1 and \"voucherLifetimeHours\" >= 1 and \"claimIntervalMinutes\" >= 1",
+          "definition": "check (\"priceFloorMinimumSamples\" >= 1 and \"priceLockDays\" >= 1 and \"leaseRenewalGraceDays\" >= 1 and \"stoppedSandboxRetentionDays\" >= 1 and \"pinnedStartWaitMinutes\" >= 1 and \"egressCeilingMedianBasisPoints\" >= 1 and \"exposureCeilingProbationaryCents\" >= 1 and \"exposureCeilingEstablishedCents\" >= 1 and \"exposureCeilingHostCents\" >= 1 and \"voucherIntervalSeconds\" >= 1 and \"voucherGraceIntervals\" >= 1 and \"voucherLifetimeHours\" >= 1 and \"claimIntervalMinutes\" >= 1)"
         },
         {
           "name": "CHK_settings_sandbox_class",
@@ -27734,11 +28536,6 @@
           "name": "CHK_settings_singleton",
           "expression": "\"id\" = 1",
           "definition": "check (\"id\" = 1)"
-        },
-        {
-          "name": "CHK_settings_top_up_range",
-          "expression": "\"topUpMaximumCents\" >= \"topUpMinimumCents\"",
-          "definition": "check (\"topUpMaximumCents\" >= \"topUpMinimumCents\")"
         },
         {
           "name": "CHK_settings_version",
@@ -27761,6 +28558,97 @@
           "deleteRule": "restrict"
         }
       },
+      "comment": null
+    },
+    {
+      "name": "settlement_chain_cursor",
+      "schema": "public",
+      "columns": {
+        "chainId": {
+          "name": "chainId",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "contractAddress": {
+          "name": "contractAddress",
+          "type": "varchar(42)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": 42,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "lastIndexedBlock": {
+          "name": "lastIndexedBlock",
+          "type": "bigint",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "bigint"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamptz(3)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": "now()",
+          "comment": null,
+          "collation": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        }
+      },
+      "indexes": [
+        {
+          "columnNames": [
+            "chainId",
+            "contractAddress"
+          ],
+          "composite": true,
+          "constraint": true,
+          "keyName": "settlement_chain_cursor_chainId_contractAddress_pk",
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "triggers": [],
+      "foreignKeys": {},
       "comment": null
     },
     {
@@ -28610,552 +29498,6 @@
           ],
           "referencedTableName": "public.sandbox",
           "deleteRule": "cascade"
-        }
-      },
-      "comment": null
-    },
-    {
-      "name": "stripe_event",
-      "schema": "public",
-      "columns": {
-        "attempts": {
-          "name": "attempts",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": "0",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "context": {
-          "name": "context",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "deadLetteredAt": {
-          "name": "deadLetteredAt",
-          "type": "timestamptz(3)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": 3,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "datetime"
-        },
-        "id": {
-          "name": "id",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": true,
-          "nullable": false,
-          "unique": false,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "lastError": {
-          "name": "lastError",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "text"
-        },
-        "livemode": {
-          "name": "livemode",
-          "type": "boolean",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "boolean"
-        },
-        "nextAttemptAt": {
-          "name": "nextAttemptAt",
-          "type": "timestamptz(3)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": 3,
-          "precision": null,
-          "scale": null,
-          "default": "now()",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "datetime"
-        },
-        "processedAt": {
-          "name": "processedAt",
-          "type": "timestamptz(3)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": 3,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "datetime"
-        },
-        "receivedAt": {
-          "name": "receivedAt",
-          "type": "timestamptz(3)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": 3,
-          "precision": null,
-          "scale": null,
-          "default": "now()",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "datetime"
-        },
-        "relatedObjectId": {
-          "name": "relatedObjectId",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "scope": {
-          "name": "scope",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "type": {
-          "name": "type",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        }
-      },
-      "indexes": [
-        {
-          "columnNames": [
-            "nextAttemptAt"
-          ],
-          "composite": false,
-          "constraint": false,
-          "keyName": "IDX_stripe_event_pending",
-          "primary": false,
-          "unique": false,
-          "where": "\"processedAt\" is null and \"deadLetteredAt\" is null"
-        },
-        {
-          "columnNames": [
-            "id"
-          ],
-          "composite": false,
-          "constraint": true,
-          "keyName": "stripe_event_id_pk",
-          "primary": true,
-          "unique": true
-        }
-      ],
-      "checks": [
-        {
-          "name": "CHK_stripe_event_attempts",
-          "expression": "\"attempts\" >= 0",
-          "definition": "check (\"attempts\" >= 0)"
-        },
-        {
-          "name": "CHK_stripe_event_scope",
-          "expression": "\"scope\" in ('platform', 'connect')",
-          "definition": "check (\"scope\" in ('platform', 'connect'))"
-        }
-      ],
-      "triggers": [],
-      "foreignKeys": {},
-      "comment": null
-    },
-    {
-      "name": "top_up",
-      "schema": "public",
-      "columns": {
-        "amountCents": {
-          "name": "amountCents",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        },
-        "createdAt": {
-          "name": "createdAt",
-          "type": "timestamptz(3)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": 3,
-          "precision": null,
-          "scale": null,
-          "default": "now()",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "datetime"
-        },
-        "failureCode": {
-          "name": "failureCode",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": true,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": "gen_random_uuid()",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "uuid"
-        },
-        "kind": {
-          "name": "kind",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "organizationId": {
-          "name": "organizationId",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "uuid"
-        },
-        "paymentMethodId": {
-          "name": "paymentMethodId",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "uuid"
-        },
-        "state": {
-          "name": "state",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": "'created'",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "stripeCheckoutSessionId": {
-          "name": "stripeCheckoutSessionId",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": true,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "stripePaymentIntentId": {
-          "name": "stripePaymentIntentId",
-          "type": "varchar",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": true,
-          "length": -1,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "string"
-        },
-        "succeededAt": {
-          "name": "succeededAt",
-          "type": "timestamptz(3)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "unique": false,
-          "length": 3,
-          "precision": null,
-          "scale": null,
-          "default": null,
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "datetime"
-        },
-        "taxCents": {
-          "name": "taxCents",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": null,
-          "precision": null,
-          "scale": null,
-          "default": "0",
-          "comment": null,
-          "collation": null,
-          "enumItems": [],
-          "mappedType": "integer"
-        }
-      },
-      "indexes": [
-        {
-          "columnNames": [
-            "organizationId",
-            "createdAt"
-          ],
-          "composite": true,
-          "constraint": false,
-          "keyName": "IDX_top_up_organization",
-          "primary": false,
-          "unique": false
-        },
-        {
-          "columnNames": [
-            "stripeCheckoutSessionId"
-          ],
-          "composite": false,
-          "constraint": true,
-          "keyName": "UQ_top_up_stripe_checkout_session",
-          "primary": false,
-          "unique": true
-        },
-        {
-          "columnNames": [
-            "stripePaymentIntentId"
-          ],
-          "composite": false,
-          "constraint": true,
-          "keyName": "UQ_top_up_stripe_payment_intent",
-          "primary": false,
-          "unique": true
-        },
-        {
-          "columnNames": [
-            "id"
-          ],
-          "composite": false,
-          "constraint": true,
-          "keyName": "top_up_id_pk",
-          "primary": true,
-          "unique": true
-        }
-      ],
-      "checks": [
-        {
-          "name": "CHK_top_up_amounts",
-          "expression": "\"amountCents\" > 0 and \"taxCents\" >= 0",
-          "definition": "check (\"amountCents\" > 0 and \"taxCents\" >= 0)"
-        },
-        {
-          "name": "CHK_top_up_kind",
-          "expression": "\"kind\" in ('manual', 'auto')",
-          "definition": "check (\"kind\" in ('manual', 'auto'))"
-        },
-        {
-          "name": "CHK_top_up_state",
-          "expression": "\"state\" in ('created', 'requires_action', 'succeeded', 'failed', 'expired')",
-          "definition": "check (\"state\" in ('created', 'requires_action', 'succeeded', 'failed', 'expired'))"
-        }
-      ],
-      "triggers": [],
-      "foreignKeys": {
-        "FK_top_up_organization": {
-          "columnNames": [
-            "organizationId"
-          ],
-          "constraintName": "FK_top_up_organization",
-          "localTableName": "public.top_up",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.organization",
-          "deleteRule": "restrict"
-        },
-        "FK_top_up_payment_method": {
-          "columnNames": [
-            "paymentMethodId"
-          ],
-          "constraintName": "FK_top_up_payment_method",
-          "localTableName": "public.top_up",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.payment_method",
-          "deleteRule": "restrict"
         }
       },
       "comment": null

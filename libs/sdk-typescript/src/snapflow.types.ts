@@ -22,6 +22,7 @@ import type {
 	SandboxCapability,
 	SandboxMode,
 	SandboxVolume,
+	VoucherSigningMode,
 } from '@snapflow/api-client';
 import type { Image } from './image.js';
 
@@ -96,6 +97,12 @@ export type CreateSandboxBaseParams = {
 	egressBandwidthBps?: number;
 	capabilities?: SandboxCapability[];
 	linkedSandbox?: string;
+	/**
+	 * Who signs the escrow vouchers that pay for the sandbox. `delegated`
+	 * (the API default) lets Snapflow's signer sign within the session key the
+	 * funding wallet granted it; `client` leaves them to a `VoucherSigner`.
+	 */
+	voucherSigning?: VoucherSigningMode;
 };
 
 export type CreateSandboxFromImageParams = CreateSandboxBaseParams & {

@@ -7,57 +7,134 @@
   ~ SPDX-License-Identifier: AGPL-3.0
 -->
 
+<script lang="ts" module>
+const RECENT_CLAIMS_LIMIT = 10;
+</script>
+
 <script lang="ts">
 import HandCoins from '@lucide/svelte/icons/hand-coins';
-import type { HostEarnings } from '@snapflow/api-client';
+import {
+	EscrowEventKind,
+	type PaymentWallet,
+	PayoutReadiness,
+	SettlementParty,
+} from '@snapflow/api-client';
+import { createQuery } from '@tanstack/svelte-query';
+import { recentEscrowEventsQueryOptions } from '#lib/api/settlement/escrow.ts';
+import QueryFeedbackState from '#lib/components/query-feedback-state.svelte';
 import SettingsSection from '#lib/components/settings/settings-section.svelte';
+import Badge from '#lib/components/ui/badge.svelte';
+import Chip from '#lib/components/ui/chip/chip.svelte';
 import BillingHeading from '#lib/features/billing/components/billing-heading.svelte';
+import {
+	escrowEventAmountMicroUsd,
+	escrowEventChannelId,
+} from '#lib/features/billing/lib/escrow-event.ts';
 import { formatBillingDate } from '#lib/features/billing/lib/format.ts';
-import { formatCents, formatUsd } from '#lib/utils/usd.ts';
+import {
+	PAYOUT_READINESS,
+	shortAddress,
+} from '#lib/features/billing/lib/payment-wallet.ts';
+import { Path } from '#lib/routing/paths.ts';
+import { formatUsd } from '#lib/utils/usd.ts';
+import { resolve } from '$app/paths';
 
 interface EarningsOverviewProps {
-	earnings: HostEarnings;
+	readiness: PayoutReadiness;
+	payoutWallet: PaymentWallet | undefined;
+	canManage: boolean;
 }
 
-let { earnings }: EarningsOverviewProps = $props();
+let { readiness, payoutWallet, canManage }: EarningsOverviewProps = $props();
 
-const inTransfer = $derived(BigInt(earnings.inTransferMicroUsd) > 0n);
-const payoutDetail = $derived(
-	[
-		`Paid out ${formatBillingDate(earnings.nextPayoutDate)} once it reaches ${formatCents(earnings.payoutMinimumCents)}`,
-		inTransfer
-			? `${formatUsd(earnings.inTransferMicroUsd)} on its way to your bank`
-			: null,
-	]
-		.filter(Boolean)
-		.join(' · ')
+const copy = $derived(PAYOUT_READINESS[readiness]);
+const events = createQuery(() =>
+	recentEscrowEventsQueryOptions({
+		limit: RECENT_CLAIMS_LIMIT,
+		role: SettlementParty.Host,
+		kind: [EscrowEventKind.Claimed],
+	})
+);
+const claims = $derived(events.data?.items ?? []);
+const claimedTotal = $derived(
+	claims
+		.reduce(
+			(total, claim) =>
+				total +
+				BigInt(escrowEventAmountMicroUsd(claim, SettlementParty.Host) ?? 0),
+			0n
+		)
+		.toString()
 );
 </script>
 
+{#snippet readinessBadge()}
+	<span class="flex shrink-0 items-center gap-2">
+		<Badge dot size="sm" variant={copy.badge.variant}>{copy.badge.label}</Badge>
+		{#if canManage && readiness !== PayoutReadiness.Ready}
+			<Chip variant="border-shadow" href={resolve(Path.EARNINGS_PAYOUTS)}>
+				Link payout wallet
+			</Chip>
+		{/if}
+	</span>
+{/snippet}
+
 <BillingHeading
 	icon={HandCoins}
-	title={formatUsd(earnings.availableMicroUsd)}
-	detail={payoutDetail}
+	title={payoutWallet ? shortAddress(payoutWallet.address) : copy.title}
+	detail={copy.description}
+	trailing={readinessBadge}
 />
 
-{#if earnings.maturing.length > 0}
-	{#snippet pendingTotal()}
-		<span class="text-(--text-muted) text-small tabular-nums">
-			{formatUsd(earnings.pendingMicroUsd)}
-		</span>
-	{/snippet}
-	<SettingsSection title="Pending" action={pendingTotal}>
-		<div class="-mx-2 flex flex-col gap-y-0.5">
-			{#each earnings.maturing as maturity (maturity.maturesOn)}
-				<div class="flex items-center gap-2.5 rounded-lg p-2">
-					<span class="min-w-0 flex-1 truncate text-(--text-body) text-sm">
-						{`Available ${formatBillingDate(maturity.maturesOn)}`}
-					</span>
-					<span class="shrink-0 text-(--text-muted) text-caption tabular-nums">
-						{formatUsd(maturity.amountMicroUsd)}
+{#snippet claimsAction()}
+	<Chip href={resolve(Path.EARNINGS_CLAIMS)}>View all</Chip>
+{/snippet}
+
+<SettingsSection title="Recent claims" action={claimsAction}>
+	{#if events.isSuccess}
+		{#if claims.length > 0}
+			<div class="-mx-2 flex flex-col gap-y-0.5">
+				{#each claims as claim (claim.id)}
+					{const channelId = $derived(escrowEventChannelId(claim))}
+					{const amount = $derived(
+						escrowEventAmountMicroUsd(claim, SettlementParty.Host)
+					)}
+					<div class="flex items-center gap-2.5 rounded-lg p-2">
+						<span class="w-28 shrink-0 text-(--text-body) text-sm">
+							{formatBillingDate(claim.blockTimestamp)}
+						</span>
+						<span
+							class="min-w-0 flex-1 truncate text-(--text-muted) text-caption"
+						>
+							{channelId ? `Channel ${shortAddress(channelId)}` : 'Claim'}
+						</span>
+						{#if amount}
+							<span
+								class="shrink-0 text-(--text-muted) text-caption tabular-nums"
+							>
+								{formatUsd(amount)}
+							</span>
+						{/if}
+					</div>
+				{/each}
+				<div class="flex items-center justify-between gap-2.5 p-2">
+					<span class="text-(--text-body) text-sm">Total shown</span>
+					<span class="text-(--text-muted) text-caption tabular-nums">
+						{formatUsd(claimedTotal)}
 					</span>
 				</div>
-			{/each}
-		</div>
-	</SettingsSection>
-{/if}
+			</div>
+		{:else}
+			<p class="pl-0.5 text-(--text-muted) text-caption">
+				Claims appear here as Snapflow settles the vouchers your machines earn.
+			</p>
+		{/if}
+	{:else}
+		<QueryFeedbackState
+			class="py-4"
+			query={events}
+			loadingMessage="Loading claims..."
+			errorMessage="Claims could not be loaded."
+		/>
+	{/if}
+</SettingsSection>

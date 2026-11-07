@@ -14,7 +14,7 @@ import (
 	"fmt"
 )
 
-const schemaVersion = 1
+const schemaVersion = 2
 
 func schemaStatements() []string {
 	return []string{
@@ -37,6 +37,7 @@ func schemaStatements() []string {
 			failure_reason TEXT NOT NULL,
 			daemon_version TEXT NOT NULL,
 			result TEXT,
+			payment_held INTEGER NOT NULL CHECK (payment_held IN (0, 1)),
 			updated_at TEXT NOT NULL
 		) STRICT`,
 		`CREATE TABLE machine_job_result (
@@ -75,6 +76,21 @@ func schemaStatements() []string {
 			updated_at INTEGER NOT NULL,
 			PRIMARY KEY (placement_id, generation_id)
 		) STRICT`,
+		`CREATE TABLE machine_payment_channel (
+			channel_id TEXT PRIMARY KEY CHECK (length(channel_id) = 66),
+			sandbox_id TEXT NOT NULL CHECK (length(trim(sandbox_id)) > 0),
+			lease_id TEXT NOT NULL CHECK (length(lease_id) = 36),
+			state TEXT NOT NULL CHECK (state IN ('open', 'closing', 'closed')),
+			voucher TEXT,
+			domain TEXT,
+			hold_window_ms INTEGER NOT NULL CHECK (hold_window_ms > 0),
+			accepted_at INTEGER,
+			held_at INTEGER,
+			updated_at INTEGER NOT NULL,
+			CHECK ((voucher IS NULL) = (domain IS NULL)),
+			CHECK ((voucher IS NULL) = (accepted_at IS NULL))
+		) STRICT`,
+		`CREATE INDEX machine_payment_channel_sandbox ON machine_payment_channel (sandbox_id)`,
 	}
 }
 

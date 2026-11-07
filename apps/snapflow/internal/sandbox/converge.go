@@ -81,6 +81,9 @@ type Target struct {
 	Desired *machinev1alpha1.SandboxDesiredState
 	Record  *state.SandboxConvergence
 	Local   *LocalWorkload
+	// PaymentHeld keeps a sandbox the desired state wants started paused
+	// until its customer pays again.
+	PaymentHeld bool
 }
 
 type LocalWorkload struct {
@@ -121,6 +124,7 @@ type run struct {
 	desired    *machinev1alpha1.SandboxDesiredState
 	record     state.SandboxConvergence
 	local      *LocalWorkload
+	held       bool
 	assignment sandboxruntime.Assignment
 	startedAt  time.Time
 	timings    map[string]uint32
@@ -133,7 +137,7 @@ func (converger *Converger) newRun(target Target) *run {
 	}
 	record.SandboxID = target.Desired.GetSandboxId()
 	return &run{
-		converger: converger, desired: target.Desired, record: record, local: target.Local,
+		converger: converger, desired: target.Desired, record: record, local: target.Local, held: target.PaymentHeld,
 		assignment: sandboxruntime.Assignment{
 			SandboxID: target.Desired.GetSandboxId(), Generation: target.Desired.GetAssignmentGeneration(),
 		},
@@ -185,7 +189,10 @@ func (run *run) finish(err error) state.SandboxConvergence {
 	switch {
 	case err == nil:
 		record.SpecDigest = run.desired.GetSpecDigest()
+		record.PaymentHeld = run.held
 	case errors.As(err, &missing):
+		// A missing runtime has nothing left to hold or release.
+		record.PaymentHeld = run.held
 	default:
 		record.FailureReason = boundedReason(err.Error())
 	}

@@ -10,10 +10,10 @@
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import { BASIS_POINTS_SCALE } from '../../common/constants/money.constants';
 import { SandboxClass } from '../../sandbox/enums/sandbox-class.enum';
+import { ESCROW_MAXIMUM_FEE_BASIS_POINTS } from '../../settlement/constants/settlement.constants';
 import {
 	DrainingMode,
 	EDGE_TRUSTED_HTTP_PROXY_CIDRS_MAXIMUM,
-	ISO_WEEKDAY,
 } from '../constants/settings.constants';
 import type { SettingsSnapshot } from '../types/settings.types';
 
@@ -81,10 +81,65 @@ export class SettingsDto {
 
 	@ApiProperty({
 		description:
-			'Markup added to host prices, in basis points of the host price',
-		maximum: BASIS_POINTS_SCALE,
+			'Markup added to the host price of machines below the Verified tier, in basis points of the host price',
+		maximum: ESCROW_MAXIMUM_FEE_BASIS_POINTS,
 	})
-	platformMarkupBasisPoints: number;
+	standardMarkupBasisPoints: number;
+
+	@ApiProperty({
+		description:
+			'Markup added to the host price of Verified and Datacenter machines, in basis points of the host price',
+		maximum: ESCROW_MAXIMUM_FEE_BASIS_POINTS,
+	})
+	verifiedMarkupBasisPoints: number;
+
+	@ApiProperty({
+		description:
+			'Monthly fee per machine an organization keeps in its private pool, micro-USD, prorated by UTC day',
+	})
+	privatePoolMachineMonthlyMicroUsd: number;
+
+	@ApiProperty({
+		description: 'Lowest vCPU-hour price a host may set, micro-USD',
+	})
+	vcpuHourPriceMinimumMicroUsd: number;
+
+	@ApiProperty({
+		description: 'Highest vCPU-hour price a host may set, micro-USD',
+	})
+	vcpuHourPriceMaximumMicroUsd: number;
+
+	@ApiProperty({
+		description: 'Lowest memory price a host may set, micro-USD per GiB-hour',
+	})
+	memoryGibHourPriceMinimumMicroUsd: number;
+
+	@ApiProperty({
+		description: 'Highest memory price a host may set, micro-USD per GiB-hour',
+	})
+	memoryGibHourPriceMaximumMicroUsd: number;
+
+	@ApiProperty({
+		description: 'Lowest GPU-hour price a host may set, micro-USD',
+	})
+	gpuHourPriceMinimumMicroUsd: number;
+
+	@ApiProperty({
+		description: 'Highest GPU-hour price a host may set, micro-USD',
+	})
+	gpuHourPriceMaximumMicroUsd: number;
+
+	@ApiProperty({
+		description:
+			'Lowest running or stopped disk price a host may set, micro-USD per GiB-month',
+	})
+	diskGibMonthPriceMinimumMicroUsd: number;
+
+	@ApiProperty({
+		description:
+			'Highest running or stopped disk price a host may set, micro-USD per GiB-month',
+	})
+	diskGibMonthPriceMaximumMicroUsd: number;
 
 	@ApiProperty({
 		description:
@@ -200,64 +255,30 @@ export class SettingsDto {
 	})
 	spotCheckOrganizationId: string | null;
 
-	@ApiProperty({ description: 'Smallest top-up, cents' })
-	topUpMinimumCents: number;
-
-	@ApiProperty({ description: 'Largest top-up, cents' })
-	topUpMaximumCents: number;
-
-	@ApiProperty({ type: [Number], description: 'Suggested top-ups, cents' })
-	topUpPresetsCents: number[];
-
-	@ApiProperty({ description: 'Smallest automatic top-up, cents' })
-	autoTopUpMinimumCents: number;
-
-	@ApiProperty({ description: 'Minutes between automatic top-up attempts' })
-	autoTopUpMinimumIntervalMinutes: number;
-
-	@ApiProperty({ description: 'Top-up attempts per organization per hour' })
-	topUpAttemptsPerHour: number;
-
-	@ApiProperty({ description: 'Payment methods per organization per day' })
-	paymentMethodsPerDay: number;
-
-	@ApiProperty({ description: 'Organizations that may share one card' })
-	organizationsPerCardFingerprint: number;
-
-	@ApiProperty({ description: 'Smallest payout, cents' })
-	payoutMinimumCents: number;
+	@ApiProperty({
+		description:
+			'Blocks the settlement chain must build on an escrow event before Snapflow indexes it',
+	})
+	settlementConfirmations: number;
 
 	@ApiProperty({
-		description: 'ISO weekday payouts run on (1 is Monday)',
-		minimum: ISO_WEEKDAY.MONDAY,
-		maximum: ISO_WEEKDAY.SUNDAY,
+		description: 'Seconds between the escrow vouchers issued for each lease',
 	})
-	payoutWeekday: number;
-
-	@ApiProperty({ description: 'Earnings hold for Community machines, days' })
-	payoutHoldCommunityDays: number;
-
-	@ApiProperty({ description: 'Earnings hold for Verified machines, days' })
-	payoutHoldVerifiedDays: number;
-
-	@ApiProperty({ description: 'Earnings hold for Datacenter machines, days' })
-	payoutHoldDatacenterDays: number;
+	voucherIntervalSeconds: number;
 
 	@ApiProperty({
-		description: 'Days credit from a new card cannot fund payouts',
+		description:
+			'Voucher intervals a lease may go without a signed voucher before its sandbox counts as unfunded',
 	})
-	newFundingHoldDays: number;
+	voucherGraceIntervals: number;
+
+	@ApiProperty({ description: 'Hours an escrow voucher stays claimable' })
+	voucherLifetimeHours: number;
 
 	@ApiProperty({
-		description: 'Calculate sales tax on top-ups with Stripe Tax',
+		description: 'Minutes between the claims Snapflow relays for each lease',
 	})
-	stripeTaxEnabled: boolean;
-
-	@ApiProperty({
-		type: [String],
-		description: 'ISO 3166-1 alpha-2 countries hosts may be paid in',
-	})
-	payoutCountries: string[];
+	claimIntervalMinutes: number;
 
 	@ApiProperty({
 		type: [String],

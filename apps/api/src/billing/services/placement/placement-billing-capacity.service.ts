@@ -11,11 +11,14 @@ import { LockMode } from '@mikro-orm/core';
 import type { EntityManager } from '@mikro-orm/postgresql';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { MicroUsd } from '../../../common/values/micro-usd.value';
+import { TypedConfigService } from '../../../config/services/typed-config.service';
 import { databaseNow } from '../../../infra/database/utils/database-time.util';
 import type { Machine } from '../../../machine/entities/machine.entity';
 import { MachineAssessment } from '../../../machine/entities/machine-assessment.entity';
 import type { Settings } from '../../../settings/entities/settings.entity';
 import { SettingsService } from '../../../settings/services/settings.service';
+import { escrowFunding } from '../../../settlement/queries/escrow-funding.query';
+import { configuredEscrow } from '../../../settlement/utils/escrow-identity.util';
 import {
 	BillingAdmissionErrorCode,
 	HostExposureScope,
@@ -79,6 +82,8 @@ export interface CandidateAdmission {
 type CustomerCapacity = Pick<
 	BillingCapacityInput,
 	| 'creditBalanceMicroUsd'
+	| 'pendingWithdrawalMicroUsd'
+	| 'fundingWalletReady'
 	| 'unpostedChargesMicroUsd'
 	| 'reservedUsageMicroUsd'
 	| 'monthSpendMicroUsd'
@@ -118,7 +123,8 @@ function restrictionOf(
 export class PlacementBillingCapacityService {
 	constructor(
 		private readonly runway: BillingRunwayService,
-		private readonly settings: SettingsService
+		private readonly settings: SettingsService,
+		private readonly config: TypedConfigService
 	) {}
 
 	async runwayReservation(
@@ -340,7 +346,14 @@ export class PlacementBillingCapacityService {
 			customerOrganizationId,
 			utcBillingMonth(observedAt).start
 		);
+		const escrow = await escrowFunding(
+			manager,
+			configuredEscrow(this.config),
+			customerOrganizationId
+		);
 		return {
+			pendingWithdrawalMicroUsd: escrow.pendingWithdrawalMicroUsd,
+			fundingWalletReady: escrow.walletReady,
 			creditBalanceMicroUsd: await ledgerBalance(
 				manager,
 				customerCreditAccount(customerOrganizationId)

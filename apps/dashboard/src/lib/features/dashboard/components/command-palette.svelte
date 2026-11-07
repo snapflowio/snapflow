@@ -29,14 +29,19 @@ const SUB_PAGE_COMMANDS = [
 		permission: { listings: ['read'] },
 	},
 	{
-		label: 'Payouts',
+		label: 'Payout wallet',
 		path: Path.EARNINGS_PAYOUTS,
 		permission: { payouts: ['read'] },
 	},
 	{
-		label: 'Top up credit',
-		path: Path.BILLING_TOP_UP,
+		label: 'Fund escrow',
+		path: Path.BILLING_FUNDING,
 		permission: { billing: ['manage'] },
+	},
+	{
+		label: 'Payment channels',
+		path: Path.BILLING_PAYMENTS,
+		permission: { billing: ['read'] },
 	},
 	{
 		label: 'Statements',

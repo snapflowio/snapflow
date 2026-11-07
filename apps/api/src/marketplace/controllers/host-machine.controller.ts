@@ -61,12 +61,15 @@ import {
 import {
 	PriceAboveCeilingErrorDto,
 	PriceBelowFloorErrorDto,
+	PriceOutOfRangeErrorDto,
 } from '../dto/price-card-error.dto';
 import { PriceFloorDto } from '../dto/price-floor.dto';
+import { MachinePriceHintDto } from '../dto/price-hint.dto';
 import { HostMachineService } from '../services/host-machine.service';
 import { MachineListingService } from '../services/machine-listing.service';
 import { PriceCardService } from '../services/price-card.service';
 import { PriceFloorService } from '../services/price-floor.service';
+import { PriceHintService } from '../services/price-hint.service';
 
 const IF_MATCH_HEADER = 'if-match';
 const IDEMPOTENCY_REPLAYED = 'true';
@@ -82,6 +85,7 @@ export class HostMachineController {
 		private readonly listings: MachineListingService,
 		private readonly priceCards: PriceCardService,
 		private readonly floors: PriceFloorService,
+		private readonly priceHints: PriceHintService,
 		private readonly idempotency: ApiIdempotentRequestService
 	) {}
 
@@ -183,15 +187,20 @@ export class HostMachineController {
 		operationId: 'createMachinePriceCard',
 	})
 	@ApiResponse({ status: HttpStatus.CREATED, type: PriceCardDto })
-	@ApiExtraModels(PriceBelowFloorErrorDto, PriceAboveCeilingErrorDto)
+	@ApiExtraModels(
+		PriceBelowFloorErrorDto,
+		PriceAboveCeilingErrorDto,
+		PriceOutOfRangeErrorDto
+	)
 	@ApiResponse({
 		status: HttpStatus.UNPROCESSABLE_ENTITY,
 		description:
-			'The price card is below the market floor or its egress price is above the ceiling',
+			'A rate is outside its resource limits, the price card is below the market floor or its egress price is above the ceiling',
 		schema: {
 			oneOf: [
 				{ $ref: getSchemaPath(PriceBelowFloorErrorDto) },
 				{ $ref: getSchemaPath(PriceAboveCeilingErrorDto) },
+				{ $ref: getSchemaPath(PriceOutOfRangeErrorDto) },
 			],
 		},
 	})
@@ -261,5 +270,20 @@ export class HostMachineController {
 		@Param('machineId', ParseUUIDPipe) machineId: string
 	): Promise<PriceFloorDto> {
 		return this.floors.machineFloor(context.organizationId, machineId);
+	}
+
+	@Get(':machineId/price-hint')
+	@ApiOperation({
+		summary:
+			'Get what similar machines list for and what the current price would earn',
+		operationId: 'getMachinePriceHint',
+	})
+	@ApiResponse({ status: HttpStatus.OK, type: MachinePriceHintDto })
+	@RequiredOrganizationPermissions({ listings: ['read'] })
+	getMachinePriceHint(
+		@IsOrganizationAuthContext() context: OrganizationAuthContext,
+		@Param('machineId', ParseUUIDPipe) machineId: string
+	): Promise<MachinePriceHintDto> {
+		return this.priceHints.machineHint(context.organizationId, machineId);
 	}
 }

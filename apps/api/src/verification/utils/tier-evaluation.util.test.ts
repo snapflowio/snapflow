@@ -27,7 +27,7 @@ const policy: TierPolicy = {
 
 const datacenter: TierEvaluationInput = {
 	listingPublic: true,
-	kycComplete: true,
+	payoutWalletReady: true,
 	benchmarkPassed: true,
 	inventoryCurrent: true,
 	fingerprintConflict: false,
@@ -87,7 +87,7 @@ describe('evaluateMachineTier', () => {
 	it('keeps a machine private for any missing Community requirement', () => {
 		const cases: [Partial<TierEvaluationInput>, string][] = [
 			[{ listingPublic: false }, TIER_REASON.LISTING_NOT_PUBLIC],
-			[{ kycComplete: false }, TIER_REASON.KYC_INCOMPLETE],
+			[{ payoutWalletReady: false }, TIER_REASON.PAYOUT_WALLET_REQUIRED],
 			[{ benchmarkPassed: false }, TIER_REASON.BENCHMARK_MISSING],
 			[{ inventoryCurrent: false }, TIER_REASON.INVENTORY_CHANGED],
 			[{ fingerprintConflict: true }, TIER_REASON.FINGERPRINT_CONFLICT],
@@ -115,12 +115,15 @@ describe('evaluateMachineTier', () => {
 			evaluateMachineTier(
 				{
 					...datacenter,
-					kycComplete: false,
+					payoutWalletReady: false,
 					adminTierCap: MachineTier.VERIFIED,
 				},
 				policy
 			),
-			{ tier: MachineTier.PRIVATE, reasons: [TIER_REASON.KYC_INCOMPLETE] }
+			{
+				tier: MachineTier.PRIVATE,
+				reasons: [TIER_REASON.PAYOUT_WALLET_REQUIRED],
+			}
 		);
 	});
 });

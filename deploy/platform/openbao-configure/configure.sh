@@ -28,7 +28,7 @@ readonly keyring_key_bytes=32
 readonly generated_secret_length=40
 readonly service_token_ttl="1h"
 # The secrets the operator supplies in the OpenBao UI, under snapflow/.
-readonly operator_secret_paths="api alerts backups cloudflare-dns edges/*"
+readonly operator_secret_paths="api worker alerts backups cloudflare-dns edges/*"
 
 BAO_TOKEN="$(bao write -field=token "auth/kubernetes/login" role="${login_role}" jwt="$(cat "${token_file}")")"
 export BAO_TOKEN

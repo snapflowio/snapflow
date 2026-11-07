@@ -69,7 +69,7 @@ tasks:
       runFromWorkspaceRoot: true
 
   env-file:
-    description: "Lays out apps/api/.env with every variable development may set, in schema order"
+    description: "Lays out apps/api/.env with every variable development may set, in schema order, filling unset settlement variables from apps/contracts/deployments/31337.json"
     command: "node"
     args:
       - "dist/apps/api/cli.mjs"
@@ -95,25 +95,6 @@ tasks:
     preset: "server"
     options:
       runFromWorkspaceRoot: true
-
-  stripe-listen:
-    description: "Forwards Stripe test-mode thin events to the local platform and Connect webhook routes"
-    script: >-
-      STRIPE_API_KEY="$STRIPE_SECRET_KEY"
-      exec stripe listen --all-thin
-      --forward-to "http://localhost:$PORT/api/stripe/webhooks/platform"
-      --forward-connect-to "http://localhost:$PORT/api/stripe/webhooks/connect"
-    preset: "server"
-    options:
-      envFile: ".env"
-
-  stripe-listen-secret:
-    description: "Prints the signing secret stripe-listen uses; set both Stripe webhook secrets in apps/api/.env to it"
-    script: 'STRIPE_API_KEY="$STRIPE_SECRET_KEY" exec stripe listen --print-secret'
-    options:
-      envFile: ".env"
-      cache: false
-      runInCI: false
 
   serve-production:
     script: >-

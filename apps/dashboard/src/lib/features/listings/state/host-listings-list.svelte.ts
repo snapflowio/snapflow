@@ -25,7 +25,6 @@ import type {
 import type { ResourceRefreshInterval } from '#lib/components/resource/resource-refresh.ts';
 import type { ResourceRowAction } from '#lib/components/resource/resource-row-action.ts';
 import { toast } from '#lib/components/ui/toast/toasts.svelte.ts';
-import { PayoutOnboarding } from '#lib/features/billing/state/payout-onboarding.svelte.ts';
 import {
 	hostListingRowActions,
 	type ListingToggle,
@@ -41,6 +40,7 @@ import {
 	hostListingSchema,
 	isHostListingSortColumn,
 } from '#lib/features/listings/lib/host-listing-params.ts';
+import { HostPayoutReadiness } from '#lib/features/listings/state/host-payout-readiness.svelte.ts';
 import { getOrganizationPermission } from '#lib/features/organizations/state/organization-permission.svelte.ts';
 import { SearchParams } from '#lib/routing/search-params.svelte.ts';
 import { pluralize } from '#lib/utils/text.ts';
@@ -63,7 +63,7 @@ export class HostListingsList {
 	#bulkPending = $state(false);
 
 	readonly search = this.#params.text('search');
-	readonly onboarding = new PayoutOnboarding();
+	readonly payout = new HostPayoutReadiness();
 
 	refreshInterval = $state<ResourceRefreshInterval>(false);
 	addOpen = $state(false);
@@ -83,11 +83,6 @@ export class HostListingsList {
 		refetchInterval: this.refreshInterval,
 	}));
 	readonly params: HostListingParams = $derived(this.#params.current);
-	readonly payoutReady: boolean | undefined = $derived(
-		this.onboarding.canRead && this.onboarding.resolved
-			? this.onboarding.ready
-			: undefined
-	);
 	readonly #allMachines: readonly HostMachine[] = $derived.by(
 		() => this.machinesQuery.data ?? []
 	);
@@ -143,7 +138,7 @@ export class HostListingsList {
 		this.#selectedMachines.filter(
 			(machine) =>
 				machine.listing.state !== ListingState.Listed &&
-				!listingToggle(machine, this.payoutReady).disabled
+				!listingToggle(machine, this.payout.ready).disabled
 		)
 	);
 	readonly bulkActions: ResourceBulkAction[] = $derived.by(() =>
@@ -209,7 +204,7 @@ export class HostListingsList {
 
 	rowActions = (machine: HostMachine): ResourceRowAction[] =>
 		hostListingRowActions(machine, {
-			payoutReady: this.payoutReady,
+			payoutReady: this.payout.ready,
 			busy: this.#busy || this.#requestBenchmark.isPending,
 			onOpen: this.openListing,
 			onEditListing: this.canWrite
@@ -271,7 +266,7 @@ export class HostListingsList {
 			targets.map((machine) =>
 				this.#bulkUpdateListing.mutateAsync({
 					machine,
-					listing: listingToggle(machine, this.payoutReady).listing,
+					listing: listingToggle(machine, this.payout.ready).listing,
 				})
 			)
 		);

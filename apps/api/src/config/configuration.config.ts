@@ -7,12 +7,14 @@
  * SPDX-License-Identifier: AGPL-3.0
  */
 
+import { PROCESS_ROLE_TRAITS } from './constants/process-role.constants';
 import type { ProcessRole } from './enums/process-role.enum';
 import { ENVIRONMENT_NAMESPACES } from './environment/registry.environment';
 import { readEnvironment } from './environment/utils/read-environment.util';
 import { createApplicationConfig } from './factories/application-config.factory';
 import { createInfrastructureConfig } from './factories/infrastructure-config.factory';
 import { createRuntimeConfig } from './factories/runtime-config.factory';
+import type { ConfigurationInput } from './types/configuration-input.types';
 
 export function requireProcessRole({
 	values,
@@ -28,9 +30,26 @@ export function requireProcessRole({
 	return role;
 }
 
+// Only the worker relays claims, so only processes that run scheduled jobs
+// hold the gas wallet's key.
+function requireJobSecrets(
+	processRole: ProcessRole,
+	values: Pick<ConfigurationInput['values'], 'SETTLEMENT_RELAYER_PRIVATE_KEY'>
+): void {
+	if (
+		PROCESS_ROLE_TRAITS[processRole].runsScheduledJobs &&
+		values.SETTLEMENT_RELAYER_PRIVATE_KEY === undefined
+	) {
+		throw new Error(
+			`SETTLEMENT_RELAYER_PRIVATE_KEY is required where scheduled jobs run (SNAPFLOW_PROCESS_ROLE=${processRole})`
+		);
+	}
+}
+
 export function loadConfiguration(source: NodeJS.ProcessEnv = process.env) {
 	const input = readEnvironment(source, ENVIRONMENT_NAMESPACES);
 	const processRole = requireProcessRole(input);
+	requireJobSecrets(processRole, input.values);
 	return {
 		processRole,
 		...createApplicationConfig(input),

@@ -43,8 +43,10 @@ export class MachineBenchmarkDto {
 
 @ApiSchema({ name: 'MachineVerificationChecklist' })
 export class MachineVerificationChecklistDto {
-	@ApiProperty({ description: 'Payout account is active and onboarded' })
-	kyc: boolean;
+	@ApiProperty({
+		description: 'A verified payout wallet that is not sanctioned is linked',
+	})
+	payoutWallet: boolean;
 	@ApiProperty({
 		description: 'The latest benchmark passed for the current inventory',
 	})

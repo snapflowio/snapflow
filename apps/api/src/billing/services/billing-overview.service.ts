@@ -11,7 +11,10 @@ import { IsolationLevel } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import type { MicroUsd } from '../../common/values/micro-usd.value';
+import { TypedConfigService } from '../../config/services/typed-config.service';
 import { databaseNow } from '../../infra/database/utils/database-time.util';
+import { escrowFunding } from '../../settlement/queries/escrow-funding.query';
+import { configuredEscrow } from '../../settlement/utils/escrow-identity.util';
 import type { BillingOverviewDto } from '../dto/billing.dto';
 import { BillingBudget } from '../entities/billing-budget.entity';
 import {
@@ -36,7 +39,8 @@ import { BillingRunwayService } from './billing-runway.service';
 export class BillingOverviewService {
 	constructor(
 		private readonly entityManager: EntityManager,
-		private readonly runway: BillingRunwayService
+		private readonly runway: BillingRunwayService,
+		private readonly config: TypedConfigService
 	) {}
 
 	overview(organizationId: string): Promise<BillingOverviewDto> {
@@ -67,6 +71,11 @@ export class BillingOverviewService {
 			creditBalance: await ledgerBalance(
 				manager,
 				customerCreditAccount(organizationId)
+			),
+			escrow: await escrowFunding(
+				manager,
+				configuredEscrow(this.config),
+				organizationId
 			),
 			spend: await monthSpend(manager, organizationId, month.start),
 			unposted: await unpostedCharges(manager, organizationId),

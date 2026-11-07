@@ -39,51 +39,27 @@ export const EDGE_TRUSTED_HTTP_PROXY_CIDRS_MAXIMUM = 64;
 
 export const SETTINGS_POSITIVE_MINIMUM = 1;
 
-export const ISO_WEEKDAY = {
-	MONDAY: 1,
-	SUNDAY: 7,
+// Hosts keep their whole price; the markup is added on top for the customer,
+// higher on Verified machines, whose checks cost more to run. A private pool
+// pays a flat monthly fee per machine instead.
+const DEFAULT_FEE_SETTINGS = {
+	standardMarkupBasisPoints: 2_000,
+	verifiedMarkupBasisPoints: 3_000,
+	privatePoolMachineMonthlyMicroUsd: 5_000_000,
 } as const;
 
-const DEFAULT_TOP_UP_PRESETS_CENTS: number[] = [
-	1_000, 2_500, 5_000, 10_000, 25_000, 50_000, 100_000,
-];
-
-const DEFAULT_PAYOUT_COUNTRIES: string[] = [
-	'US',
-	'GB',
-	'CA',
-	'CH',
-	'AT',
-	'BE',
-	'BG',
-	'HR',
-	'CY',
-	'CZ',
-	'DK',
-	'EE',
-	'FI',
-	'FR',
-	'DE',
-	'GR',
-	'HU',
-	'IS',
-	'IE',
-	'IT',
-	'LV',
-	'LI',
-	'LT',
-	'LU',
-	'MT',
-	'NL',
-	'NO',
-	'PL',
-	'PT',
-	'RO',
-	'SK',
-	'SI',
-	'ES',
-	'SE',
-];
+// Sanity limits on what a host may charge per resource, micro-USD; the disk
+// limits apply to running and stopped disk alike.
+const DEFAULT_PRICE_LIMIT_SETTINGS = {
+	vcpuHourPriceMinimumMicroUsd: 1_000,
+	vcpuHourPriceMaximumMicroUsd: 500_000,
+	memoryGibHourPriceMinimumMicroUsd: 500,
+	memoryGibHourPriceMaximumMicroUsd: 100_000,
+	gpuHourPriceMinimumMicroUsd: 50_000,
+	gpuHourPriceMaximumMicroUsd: 20_000_000,
+	diskGibMonthPriceMinimumMicroUsd: 10_000,
+	diskGibMonthPriceMaximumMicroUsd: 1_000_000,
+} as const;
 
 const DEFAULT_MARKETPLACE_SETTINGS = {
 	priceFloorBasisPoints: 2_500,
@@ -115,23 +91,14 @@ const DEFAULT_VERIFICATION_SETTINGS = {
 	spotCheckOrganizationId: null,
 } as const;
 
-const DEFAULT_PAYMENT_SETTINGS = {
-	topUpMinimumCents: 1_000,
-	topUpMaximumCents: 100_000,
-	topUpPresetsCents: DEFAULT_TOP_UP_PRESETS_CENTS,
-	autoTopUpMinimumCents: 2_500,
-	autoTopUpMinimumIntervalMinutes: 60,
-	topUpAttemptsPerHour: 5,
-	paymentMethodsPerDay: 3,
-	organizationsPerCardFingerprint: 2,
-	payoutMinimumCents: 5_000,
-	payoutWeekday: ISO_WEEKDAY.MONDAY,
-	payoutHoldCommunityDays: 14,
-	payoutHoldVerifiedDays: 7,
-	payoutHoldDatacenterDays: 3,
-	newFundingHoldDays: 30,
-	stripeTaxEnabled: false,
-	payoutCountries: DEFAULT_PAYOUT_COUNTRIES,
+// A voucher a minute keeps a host at most two minutes of usage away from a
+// signed payment; a day-long voucher survives a long API outage, and claiming
+// hourly keeps gas low while vouchers stay far from expiry.
+const DEFAULT_VOUCHER_SETTINGS = {
+	voucherIntervalSeconds: 60,
+	voucherGraceIntervals: 2,
+	voucherLifetimeHours: 24,
+	claimIntervalMinutes: 60,
 } as const;
 
 export const SETTINGS_FIRST_RUN_ACTOR_ID = 'settings-first-run';
@@ -157,10 +124,15 @@ export const SETTINGS_DEFAULTS = {
 	machineDesktopEnabled: false,
 	machineSerialConsoleEnabled: false,
 	publicIngressEnabled: false,
-	platformMarkupBasisPoints: 2_500,
+	...DEFAULT_FEE_SETTINGS,
+	...DEFAULT_PRICE_LIMIT_SETTINGS,
 	...DEFAULT_MARKETPLACE_SETTINGS,
 	...DEFAULT_VERIFICATION_SETTINGS,
-	...DEFAULT_PAYMENT_SETTINGS,
+	// About three minutes of 2-second Base blocks, in line with how long
+	// Circle waits before it recognizes Base USDC transfers; deep enough that
+	// the indexer never credits a deposit the sequencer later reorgs away.
+	settlementConfirmations: 90,
+	...DEFAULT_VOUCHER_SETTINGS,
 	maintenanceMode: false,
 	drainingMode: DrainingMode.MIGRATE,
 	drainingForce: false,

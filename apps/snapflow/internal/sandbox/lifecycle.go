@@ -79,12 +79,12 @@ func (run *run) materialize(ctx context.Context) error {
 	}
 	defer release()
 	lifecycle := run.desired.GetLifecycle()
+	start := lifecycle != machinev1alpha1.SandboxLifecycle_SANDBOX_LIFECYCLE_STOPPED && !run.held
 	var started sandboxruntime.StartResult
 	if err := run.step(operationMaterialize, func() error {
 		var materializeErr error
 		started, materializeErr = run.converger.runtime.Materialize(ctx, sandboxruntime.MaterializeRequest{
-			Assignment: run.assignment, Spec: run.desired.GetSpec(), Secrets: secrets,
-			Start: lifecycle != machinev1alpha1.SandboxLifecycle_SANDBOX_LIFECYCLE_STOPPED,
+			Assignment: run.assignment, Spec: run.desired.GetSpec(), Secrets: secrets, Start: start,
 		})
 		return materializeErr
 	}); err != nil {
@@ -95,7 +95,7 @@ func (run *run) materialize(ctx context.Context) error {
 	if started.DaemonVersion != "" {
 		run.record.DaemonVersion = started.DaemonVersion
 	}
-	if lifecycle == machinev1alpha1.SandboxLifecycle_SANDBOX_LIFECYCLE_PAUSED {
+	if start && lifecycle == machinev1alpha1.SandboxLifecycle_SANDBOX_LIFECYCLE_PAUSED {
 		if err := run.step(operationPause, func() error { return run.converger.runtime.Pause(ctx, run.assignment) }); err != nil {
 			return err
 		}
@@ -144,8 +144,27 @@ func (run *run) reconcile(ctx context.Context, info microvmtypes.RuntimeInfo) er
 	case machinev1alpha1.SandboxLifecycle_SANDBOX_LIFECYCLE_PAUSED:
 		return run.pause(ctx, current)
 	default:
+		if run.held {
+			return run.hold(ctx, current, pending)
+		}
 		return run.start(ctx, current, pending)
 	}
+}
+
+// hold pauses a sandbox the desired state wants started while its customer
+// is not paying. A runtime that is already stopped or paused is left as it
+// is; only the spec changes a non-running runtime accepts are applied.
+func (run *run) hold(ctx context.Context, current microvmtypes.RuntimeState, pending pendingSpec) error {
+	if current == microvmtypes.RuntimeStateStarted {
+		if err := run.pause(ctx, current); err != nil {
+			return err
+		}
+		current = microvmtypes.RuntimeStatePaused
+	}
+	if suspended(current) {
+		pending.resize = false
+	}
+	return run.applySpec(ctx, pending)
 }
 
 func resourcesDiffer(info microvmtypes.RuntimeInfo, resources *machinev1alpha1.SandboxResources) bool {

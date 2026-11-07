@@ -45,6 +45,8 @@ const (
 	DevelopmentResetConfirmation   = "remove-development-runtime"
 
 	developmentDashboardURL = "http://127.0.0.1:3000/dashboard/machines"
+	developmentPayoutURL    = "http://127.0.0.1:3000/dashboard/earnings/payouts"
+	productionPayoutURL     = "https://snapflow.io/dashboard/earnings/payouts"
 
 	developmentAPIURL = "http://127.0.0.1:3001/api"
 	apiBasePath       = "/api"
@@ -135,6 +137,7 @@ type Profile struct {
 	RepositoryTransport         tuf.TransportPolicy
 	GuestRegistryOrigin         string
 	DashboardURL                string
+	PayoutURL                   string
 	APIURL                      string
 	TrustedObjectStorageOrigins []string
 	ProductionSecurity          bool
@@ -159,6 +162,7 @@ func RuntimeProfile(name ProfileName) (Profile, error) {
 			RepositoryTransport:         tuf.LoopbackHTTPTransport,
 			GuestRegistryOrigin:         developmentGuestRegistryOrigin,
 			DashboardURL:                developmentDashboardURL,
+			PayoutURL:                   developmentPayoutURL,
 			APIURL:                      developmentAPIURL,
 			TrustedObjectStorageOrigins: []string{developmentObjectStorageOrigin},
 		}, nil
@@ -174,6 +178,7 @@ func RuntimeProfile(name ProfileName) (Profile, error) {
 			RepositoryTransport: tuf.HTTPSOnlyTransport,
 			GuestRegistryOrigin: productionGuestRegistryOrigin,
 			DashboardURL:        productionDashboardURL,
+			PayoutURL:           productionPayoutURL,
 			APIURL:              ProductionAPIOrigin + apiBasePath,
 			ProductionSecurity:  true,
 		}, nil

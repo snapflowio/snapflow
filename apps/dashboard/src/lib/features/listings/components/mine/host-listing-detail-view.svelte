@@ -34,7 +34,11 @@ import { Path } from '#lib/routing/paths.ts';
 import { formatHourlyPrice } from '#lib/utils/usd.ts';
 import { resolve } from '$app/paths';
 
-let { machineId }: { machineId: string } = $props();
+interface HostListingDetailViewProps {
+	machineId: string;
+}
+
+let { machineId }: HostListingDetailViewProps = $props();
 
 const detail = new HostListingDetail(() => machineId);
 const machine = $derived(detail.machine);
@@ -120,18 +124,21 @@ const visibility = $derived(detail.visibility);
 				{/snippet}
 			</Notice>
 		{:else if detail.blockers.needsPayout}
-			<Notice tone="warning">
+			{#snippet linkWalletAction()}
+				<Chip variant="primary" href={resolve(Path.EARNINGS_PAYOUTS)}>
+					Link payout wallet
+				</Chip>
+			{/snippet}
+			<Notice
+				tone="warning"
+				action={detail.payout.canManage ? linkWalletAction : undefined}
+			>
 				{#snippet title()}
-					Set up payouts first
+					Link a payout wallet first
 				{/snippet}
 				{#snippet description()}
-					Public listings earn money, so they need a verified Stripe payout
-					account.
-				{/snippet}
-				{#snippet action()}
-					<Chip variant="primary" href={resolve(Path.EARNINGS_ACCOUNT)}>
-						Set up payouts
-					</Chip>
+					Public listings earn money, so they need a linked payout wallet that
+					passed sanctions screening.
 				{/snippet}
 			</Notice>
 		{/if}
@@ -173,5 +180,5 @@ const visibility = $derived(detail.visibility);
 
 <HostListingModals
 	bind:pricing={detail.pricing}
-	payoutReady={detail.payoutReady}
+	payoutReady={detail.payout.ready}
 />

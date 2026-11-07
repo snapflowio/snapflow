@@ -47,6 +47,7 @@
 		"@aws-sdk/lib-storage": "^3.798.0",
 		"@iarna/toml": "^2.2.5",
 		"@snapflow/api-client": "workspace:*",
+		"@snapflow/contracts": "workspace:*",
 		"@snapflow/toolbox-api-client": "workspace:*",
 		"busboy": "^1.0.0",
 		"fast-glob": "^3.3.0",
@@ -56,12 +57,17 @@
 		"tar": "^7.5.11",
 		"ws": "^8.18.3"
 	},
+	"peerDependencies": {
+		"viem": "catalog:"
+	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "catalog:",
 		"@types/busboy": "^1.0.0",
 		"@types/node": "catalog:",
 		"@types/ws": "^8.18.1",
+		"prool": "catalog:",
 		"typescript": "catalog:",
+		"viem": "catalog:",
 		"vitest": "catalog:"
 	}
 }

@@ -27,11 +27,12 @@ func (manager *Manager) synchronize(ctx context.Context, item work) outcome {
 	if manager.activity.isSuppressed(item.sandboxID, item.revision) {
 		return outcomeSettled
 	}
+	held := manager.holds.Held(item.sandboxID)
 	record, found := manager.records.get(item.sandboxID)
-	if found && !pending(record, item.desired) {
+	if found && !pending(record, item.desired) && record.PaymentHeld == held {
 		return outcomeSettled
 	}
-	target := Target{Desired: item.desired}
+	target := Target{Desired: item.desired, PaymentHeld: held}
 	if found {
 		target.Record = &record
 	}

@@ -8,14 +8,14 @@
  */
 
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
-import { PayoutReadiness } from '../../payments/enums/payout-readiness.enum';
+import { PayoutReadiness } from '../../settlement/enums/payout-readiness.enum';
 import { MachineFullDto } from './machine-full.dto';
 
 @ApiSchema({ name: 'MachineIdentityStatus' })
 export class MachineIdentityStatusDto extends MachineFullDto {
 	@ApiProperty({
 		description:
-			'Whether the organization that owns the machine can receive payouts of its earnings',
+			'Whether the organization that owns the machine has a payout wallet that can receive its earnings',
 		enum: PayoutReadiness,
 		enumName: 'PayoutReadiness',
 		example: PayoutReadiness.READY,

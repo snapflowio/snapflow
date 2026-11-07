@@ -1,0 +1,39 @@
+{
+	"fuzzing": {
+		"workers": 4,
+		"callSequenceLength": 100,
+		"corpusDirectory": "medusa-corpus",
+		"coverageEnabled": true,
+		"coverageFormats": ["lcov"],
+		"targetContracts": ["EscrowProperties"],
+		"testing": {
+			"stopOnFailedTest": true,
+			"assertionTesting": {
+				"enabled": false
+			},
+			"propertyTesting": {
+				"enabled": true,
+				"testPrefixes": ["property_"]
+			},
+			"optimizationTesting": {
+				"enabled": false
+			}
+		},
+		"chainConfig": {
+			"cheatCodes": {
+				"cheatCodesEnabled": true,
+				"enableFFI": false
+			}
+		}
+	},
+	"compilation": {
+		"platform": "crytic-compile",
+		"platformConfig": {
+			"target": ".",
+			"args": ["--foundry-compile-all"]
+		}
+	},
+	"slither": {
+		"useSlither": false
+	}
+}

@@ -12,6 +12,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { Command, CommandRunner } from 'nest-commander';
 import { layoutEnvironmentFile } from '../../config/environment/utils/environment-file.util';
 import { writeLine } from '../cli-output.util';
+import { localSettlementEnvironment } from '../local-settlement-environment.util';
 
 const LOCAL_ENVIRONMENT_FILE = 'apps/api/.env';
 const PRIVATE_FILE_MODE = 0o600;
@@ -19,13 +20,16 @@ const PRIVATE_FILE_MODE = 0o600;
 @Command({
 	name: 'env-file',
 	description:
-		'Lay out apps/api/.env with every variable development may set, in schema order',
+		'Lay out apps/api/.env with every variable development may set, in schema order, pointing unset settlement variables at the dev chain',
 })
 export class EnvironmentFileCommand extends CommandRunner {
 	public async run(): Promise<void> {
 		const path = LOCAL_ENVIRONMENT_FILE;
 		const current = existsSync(path) ? await readFile(path, 'utf8') : '';
-		const { content, added, unregistered } = layoutEnvironmentFile(current);
+		const { content, added, unregistered } = layoutEnvironmentFile(
+			current,
+			await localSettlementEnvironment()
+		);
 		if (unregistered.length > 0) {
 			throw new Error(
 				`${path} sets unregistered variables: ${unregistered.join(', ')}`

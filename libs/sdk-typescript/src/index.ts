@@ -15,11 +15,14 @@
  */
 
 export type {
+	EscrowAccount,
 	Location,
 	MoveSandbox,
+	PaymentVoucher,
 	SandboxLease,
 	SandboxPlacementAlternative,
 	SandboxQuote,
+	VoucherDelegation,
 } from '@snapflow/api-client';
 export {
 	Continent,
@@ -35,6 +38,7 @@ export {
 	SandboxListSortField,
 	SandboxMode,
 	SandboxState,
+	VoucherSigningMode,
 	WhenMachineUnavailable,
 } from '@snapflow/api-client';
 export type {
@@ -66,6 +70,11 @@ export {
 	SnapflowMachineUnavailableError,
 	SnapflowPriceChangedError,
 } from './errors/sandbox-placement-error.js';
+export {
+	SnapflowEscrowError,
+	SnapflowVoucherRejectedError,
+	VoucherRejectionReason,
+} from './errors/settlement-error.js';
 export {
 	SnapflowAuthenticationError,
 	SnapflowAuthorizationError,
@@ -102,6 +111,37 @@ export type {
 	ListSandboxesQuery,
 	StartSandboxOptions,
 } from './sandbox.types.js';
+export type {
+	DepositOptions,
+	EscrowBalance,
+	EscrowClients,
+	EscrowOptions,
+	EscrowWithdrawal,
+	SessionKeyLimits,
+} from './settlement/escrow.js';
+export { Escrow } from './settlement/escrow.js';
+export { PERMIT_LIFETIME_SECONDS } from './settlement/escrow-permit.js';
+export type {
+	EscrowPublicClient,
+	EscrowWalletClient,
+} from './settlement/escrow-transaction.js';
+export type {
+	GeneratedSessionKey,
+	SessionKeySource,
+} from './settlement/session-key.js';
+export {
+	generateSessionKey,
+	toSessionKeyAccount,
+} from './settlement/session-key.js';
+export type { VoucherSpendPolicy } from './settlement/spend-policy.js';
+export { SPEND_RATE_TOLERANCE_MILLISECONDS } from './settlement/spend-policy.js';
+export type { VoucherSignerOptions } from './settlement/voucher-signer.js';
+export {
+	CHANNEL_RETENTION_MILLISECONDS,
+	DEFAULT_VOUCHER_POLL_INTERVAL_MILLISECONDS,
+	VoucherSigner,
+} from './settlement/voucher-signer.js';
+export { SettlementService } from './settlement.js';
 export { Snapflow } from './snapflow.js';
 export type {
 	CountryCode,

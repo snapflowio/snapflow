@@ -38,6 +38,7 @@ import { MachineCategory } from '../../marketplace/enums/machine-category.enum';
 import { MachineTier } from '../../marketplace/enums/machine-tier.enum';
 import { PlacementKind } from '../../marketplace/enums/placement-kind.enum';
 import { Organization } from '../../organization/entities/organization.entity';
+import { VoucherSigningMode } from '../../settlement/enums/voucher-signing-mode.enum';
 import { BuildInfo } from '../../snapshot/entities/build-info.entity';
 import { BackupState } from '../../volume/enums/backup-state.enum';
 import {
@@ -209,6 +210,10 @@ import { SandboxLastActivity } from './sandbox-last-activity.entity';
 	expression:
 		'"maxEgressMicroUsdPerGiB" is null or "maxEgressMicroUsdPerGiB" >= 0',
 })
+@Check({
+	name: 'CHK_sandbox_voucher_signing',
+	expression: `"voucherSigning" in (${sqlValueList(VoucherSigningMode)})`,
+})
 export class Sandbox {
 	@PrimaryKey({
 		type: 'string',
@@ -333,6 +338,14 @@ export class Sandbox {
 		nullable: true,
 	})
 	maxEgressMicroUsdPerGiB: string | null = null;
+
+	@Property({
+		type: 'string',
+		columnType: 'varchar',
+		fieldName: 'voucherSigning',
+		default: VoucherSigningMode.DELEGATED,
+	})
+	voucherSigning: VoucherSigningMode = VoucherSigningMode.DELEGATED;
 
 	@Property({
 		type: 'datetime',

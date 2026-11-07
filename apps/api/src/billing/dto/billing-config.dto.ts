@@ -8,48 +8,38 @@
  */
 
 import { ApiProperty, ApiSchema } from '@nestjs/swagger';
-import { BASIS_POINTS_SCALE } from '../../common/constants/money.constants';
 import type { SettingsSnapshot } from '../../settings/types/settings.types';
+import { ESCROW_MAXIMUM_FEE_BASIS_POINTS } from '../../settlement/constants/settlement.constants';
 
 @ApiSchema({ name: 'BillingConfig' })
 export class BillingConfigDto {
-	@ApiProperty({ type: [Number], description: 'Suggested top-ups, cents' })
-	topUpPresetsCents: number[];
-
-	@ApiProperty({ description: 'Smallest top-up, cents' })
-	topUpMinimumCents: number;
-
-	@ApiProperty({ description: 'Largest top-up, cents' })
-	topUpMaximumCents: number;
-
-	@ApiProperty({ description: 'Smallest automatic top-up, cents' })
-	autoTopUpMinimumCents: number;
-
-	@ApiProperty({ description: 'Minutes between automatic top-up attempts' })
-	autoTopUpMinimumIntervalMinutes: number;
-
 	@ApiProperty({
-		type: [String],
-		description: 'ISO 3166-1 alpha-2 countries hosts may be paid in',
+		description:
+			'Markup added to the host price of machines below the Verified tier, in basis points of the host price',
+		maximum: ESCROW_MAXIMUM_FEE_BASIS_POINTS,
 	})
-	payoutCountries: string[];
+	standardMarkupBasisPoints: number;
 
 	@ApiProperty({
 		description:
-			'Markup added to host prices, in basis points of the host price',
-		maximum: BASIS_POINTS_SCALE,
+			'Markup added to the host price of Verified and Datacenter machines, in basis points of the host price',
+		maximum: ESCROW_MAXIMUM_FEE_BASIS_POINTS,
 	})
-	platformMarkupBasisPoints: number;
+	verifiedMarkupBasisPoints: number;
+
+	@ApiProperty({
+		description:
+			"Monthly fee per machine kept in the private pool, micro-USD, prorated by UTC day; the organization's own machines carry no markup",
+	})
+	privatePoolMachineMonthlyMicroUsd: string;
 
 	static from(settings: SettingsSnapshot): BillingConfigDto {
 		return {
-			topUpPresetsCents: [...settings.topUpPresetsCents],
-			topUpMinimumCents: settings.topUpMinimumCents,
-			topUpMaximumCents: settings.topUpMaximumCents,
-			autoTopUpMinimumCents: settings.autoTopUpMinimumCents,
-			autoTopUpMinimumIntervalMinutes: settings.autoTopUpMinimumIntervalMinutes,
-			payoutCountries: [...settings.payoutCountries],
-			platformMarkupBasisPoints: settings.platformMarkupBasisPoints,
+			standardMarkupBasisPoints: settings.standardMarkupBasisPoints,
+			verifiedMarkupBasisPoints: settings.verifiedMarkupBasisPoints,
+			privatePoolMachineMonthlyMicroUsd: String(
+				settings.privatePoolMachineMonthlyMicroUsd
+			),
 		};
 	}
 }

@@ -18,6 +18,8 @@ import {
 
 const base = {
 	creditBalanceMicroUsd: MicroUsd.of(900n),
+	pendingWithdrawalMicroUsd: MicroUsd.ZERO,
+	fundingWalletReady: true,
 	unpostedChargesMicroUsd: MicroUsd.of(200n),
 	reservedUsageMicroUsd: MicroUsd.of(300n),
 	requestedMicroUsd: MicroUsd.of(100n),
@@ -72,6 +74,34 @@ describe('evaluateBillingCapacity', () => {
 		assert.equal(decision.fundingAllowed, true);
 		assert.equal(decision.hostExposureAllowed, false);
 		assert.equal(decision.allowed, false);
+	});
+
+	it('keeps a pending escrow withdrawal out of available funds', () => {
+		const decision = evaluateBillingCapacity({
+			...base,
+			pendingWithdrawalMicroUsd: MicroUsd.of(350n),
+		});
+		assert.deepEqual(decision.availableMicroUsd, MicroUsd.of(50n));
+		assert.equal(decision.fundingAllowed, false);
+	});
+
+	it('admits nothing without a usable funding wallet', () => {
+		const decision = evaluateBillingCapacity({
+			...base,
+			fundingWalletReady: false,
+		});
+		assert.deepEqual(decision.availableMicroUsd, MicroUsd.of(400n));
+		assert.equal(decision.fundingAllowed, false);
+		assert.equal(decision.allowed, false);
+	});
+
+	it('treats owed credit as no capacity instead of failing', () => {
+		const decision = evaluateBillingCapacity({
+			...base,
+			creditBalanceMicroUsd: MicroUsd.of(-100n),
+		});
+		assert.deepEqual(decision.availableMicroUsd, MicroUsd.ZERO);
+		assert.equal(decision.fundingAllowed, false);
 	});
 
 	it('never reports negative available funds', () => {

@@ -18,6 +18,9 @@ export const MARKETPLACE_INITIAL_VERSION = 1;
 
 export const SELF_USE_MARKUP_BASIS_POINTS = 0;
 
+export const MARKUP_BASIS_POINTS_DESCRIPTION =
+	"Markup added to the host price, in basis points: the verified rate on Verified and Datacenter machines, the standard rate on other tiers and none on the organization's own machines";
+
 export const POSITIVE_MICRO_USD_PATTERN = /^[1-9]\d*$/;
 
 export const GPU_PRICE_CLASS_PREFIX = 'gpu_';

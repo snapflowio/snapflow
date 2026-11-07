@@ -20,10 +20,10 @@ import { NetworkingModule } from '../networking/networking.module';
 import { NetworkingSchedulerModule } from '../networking/scheduler/scheduler.module';
 import { NotificationSchedulerModule } from '../notification/scheduler/scheduler.module';
 import { OrganizationSchedulerModule } from '../organization/scheduler/scheduler.module';
-import { PaymentsSchedulerModule } from '../payments/scheduler/scheduler.module';
 import { SandboxSchedulerModule } from '../sandbox/scheduler/scheduler.module';
 import { SettingsSchedulerModule } from '../settings/scheduler/scheduler.module';
 import { SettingsModule } from '../settings/settings.module';
+import { SettlementSchedulerModule } from '../settlement/scheduler/scheduler.module';
 import { UsageSchedulerModule } from '../usage/scheduler/scheduler.module';
 import { VerificationSchedulerModule } from '../verification/scheduler/scheduler.module';
 import { SchedulerStartupService } from './services/scheduler-startup.service';
@@ -41,9 +41,9 @@ import { SchedulerStartupService } from './services/scheduler-startup.service';
 		NetworkingSchedulerModule,
 		NotificationSchedulerModule,
 		OrganizationSchedulerModule,
-		PaymentsSchedulerModule,
 		SandboxSchedulerModule,
 		SettingsSchedulerModule,
+		SettlementSchedulerModule,
 		UsageSchedulerModule,
 		VerificationSchedulerModule,
 		NetworkingModule,

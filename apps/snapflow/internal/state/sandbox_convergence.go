@@ -28,6 +28,10 @@ type SandboxConvergence struct {
 	FailureReason          string
 	DaemonVersion          string
 	Result                 *machinev1alpha1.ConvergenceResult
+	// PaymentHeld records whether the last successful convergence applied a
+	// payment hold, so a hold or release that has not taken effect yet makes
+	// the sandbox pending again.
+	PaymentHeld bool
 }
 
 func (record SandboxConvergence) validate() error {
@@ -56,8 +60,8 @@ func (database *Database) SaveSandboxConvergence(ctx context.Context, record San
 		ctx, `
 		INSERT INTO machine_sandbox_convergence (
 			sandbox_id, assignment_generation, materialized, observed_spec_generation,
-			spec_digest, failure_reason, daemon_version, result, updated_at
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+			spec_digest, failure_reason, daemon_version, result, payment_held, updated_at
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		ON CONFLICT(sandbox_id) DO UPDATE SET
 			assignment_generation = excluded.assignment_generation,
 			materialized = excluded.materialized,
@@ -66,11 +70,12 @@ func (database *Database) SaveSandboxConvergence(ctx context.Context, record San
 			failure_reason = excluded.failure_reason,
 			daemon_version = excluded.daemon_version,
 			result = excluded.result,
+			payment_held = excluded.payment_held,
 			updated_at = excluded.updated_at
 	`,
 		record.SandboxID, int64(record.AssignmentGeneration), record.Materialized,
 		int64(record.ObservedSpecGeneration), record.SpecDigest, record.FailureReason,
-		record.DaemonVersion, result, time.Now().UTC().Format(time.RFC3339Nano),
+		record.DaemonVersion, result, record.PaymentHeld, time.Now().UTC().Format(time.RFC3339Nano),
 	); err != nil {
 		return fmt.Errorf("save sandbox %s convergence record: %w", record.SandboxID, err)
 	}
@@ -87,7 +92,7 @@ func (database *Database) DeleteSandboxConvergence(ctx context.Context, sandboxI
 func (database *Database) LoadSandboxConvergences(ctx context.Context) ([]SandboxConvergence, error) {
 	return queryAll(ctx, database, "sandbox convergence records", `
 		SELECT sandbox_id, assignment_generation, materialized, observed_spec_generation,
-			spec_digest, failure_reason, daemon_version, result
+			spec_digest, failure_reason, daemon_version, result, payment_held
 		FROM machine_sandbox_convergence ORDER BY sandbox_id
 	`, scanSandboxConvergence)
 }
@@ -101,7 +106,7 @@ func scanSandboxConvergence(rows *sql.Rows) (SandboxConvergence, error) {
 	)
 	if err := rows.Scan(
 		&record.SandboxID, &assignmentGeneration, &record.Materialized, &observedSpecGeneration,
-		&record.SpecDigest, &record.FailureReason, &record.DaemonVersion, &result,
+		&record.SpecDigest, &record.FailureReason, &record.DaemonVersion, &result, &record.PaymentHeld,
 	); err != nil {
 		return SandboxConvergence{}, fmt.Errorf("read sandbox convergence record: %w", err)
 	}

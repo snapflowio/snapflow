@@ -9,14 +9,9 @@
 
 import { type FilterQuery, QueryOrder } from '@mikro-orm/core';
 import type { EntityManager } from '@mikro-orm/postgresql';
-import { millisecondsBetween } from '../../common/utils/time.util';
 import { MicroUsd } from '../../common/values/micro-usd.value';
-import { priceUsage } from '../../marketplace/utils/pricing.util';
 import { SandboxUsagePeriod } from '../../usage/entities/sandbox-usage-period.entity';
-import {
-	allocationUnits,
-	intendedQuantities,
-} from '../../usage/utils/usage-quantities.util';
+import { usagePeriodCharge } from '../utils/usage-period-charge.util';
 import { pricedLeases } from './lease-price.query';
 
 const USAGE_PERIOD_STREAM_CHUNK_SIZE = 100;
@@ -53,21 +48,10 @@ export async function liveAccrualByPlacement(
 		if (!leaseTerms) {
 			throw new Error(`Usage period lease ${period.leaseId} is missing`);
 		}
-		const elapsed = BigInt(
-			Math.max(0, millisecondsBetween(period.startAt, observedAt))
-		);
-		const charge = priceUsage(
+		const charge = usagePeriodCharge(
 			leaseTerms,
-			intendedQuantities(
-				{
-					cpu: allocationUnits(period.cpu, 'CPU'),
-					memoryGiB: allocationUnits(period.mem, 'memory'),
-					diskGiB: allocationUnits(period.disk, 'disk'),
-					gpu: allocationUnits(period.gpu, 'GPU'),
-				},
-				period.mode,
-				elapsed
-			)
+			period,
+			observedAt
 		).grossMicroUsd;
 		byPlacement.set(
 			period.placementId,

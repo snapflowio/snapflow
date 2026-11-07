@@ -16,11 +16,14 @@ type BillingTabPath =
 	| typeof Path.BILLING
 	| typeof Path.BILLING_USAGE
 	| typeof Path.BILLING_NETWORK
+	| typeof Path.BILLING_PAYMENTS
+	| typeof Path.BILLING_ACTIVITY
 	| typeof Path.BILLING_STATEMENTS
 	| typeof Path.EARNINGS
+	| typeof Path.EARNINGS_CHANNELS
+	| typeof Path.EARNINGS_CLAIMS
 	| typeof Path.EARNINGS_NETWORK
-	| typeof Path.EARNINGS_PAYOUTS
-	| typeof Path.EARNINGS_ACCOUNT;
+	| typeof Path.EARNINGS_PAYOUTS;
 
 interface BillingTabDefinition {
 	label: string;
@@ -32,19 +35,18 @@ const BILLING_TABS: readonly BillingTabDefinition[] = [
 	{ label: 'Overview', to: Path.BILLING, exact: true },
 	{ label: 'Usage', to: Path.BILLING_USAGE },
 	{ label: 'Network transfer', to: Path.BILLING_NETWORK },
+	{ label: 'Payments', to: Path.BILLING_PAYMENTS },
+	{ label: 'Activity', to: Path.BILLING_ACTIVITY },
 	{ label: 'Statements', to: Path.BILLING_STATEMENTS },
 ];
 
 const EARNINGS_TABS: readonly BillingTabDefinition[] = [
 	{ label: 'Overview', to: Path.EARNINGS, exact: true },
+	{ label: 'Channels', to: Path.EARNINGS_CHANNELS },
+	{ label: 'Claims', to: Path.EARNINGS_CLAIMS },
 	{ label: 'Network transfer', to: Path.EARNINGS_NETWORK },
-	{ label: 'Payouts', to: Path.EARNINGS_PAYOUTS },
+	{ label: 'Payout wallet', to: Path.EARNINGS_PAYOUTS },
 ];
-
-const PAYOUT_ACCOUNT_TAB: BillingTabDefinition = {
-	label: 'Payout account',
-	to: Path.EARNINGS_ACCOUNT,
-};
 
 function routeTabs(
 	tabs: readonly BillingTabDefinition[],
@@ -64,12 +66,6 @@ export function billingTabs(pathname: string): ResourceTab[] {
 	return routeTabs(BILLING_TABS, pathname);
 }
 
-export function earningsTabs(
-	pathname: string,
-	canManagePayouts: boolean
-): ResourceTab[] {
-	return routeTabs(
-		canManagePayouts ? [...EARNINGS_TABS, PAYOUT_ACCOUNT_TAB] : EARNINGS_TABS,
-		pathname
-	);
+export function earningsTabs(pathname: string): ResourceTab[] {
+	return routeTabs(EARNINGS_TABS, pathname);
 }

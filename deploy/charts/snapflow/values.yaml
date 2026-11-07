@@ -30,6 +30,13 @@ email:
   from: ""
   replyTo: ""
 
+settlement:
+  chainId: ""
+  escrowAddress: ""
+  escrowDeploymentBlock: ""
+  usdcAddress: ""
+  reownProjectId: ""
+
 directHttpsPort: 9443
 
 secretStore: openbao
