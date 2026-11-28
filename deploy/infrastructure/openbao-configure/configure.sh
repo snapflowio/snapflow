@@ -99,6 +99,10 @@ if ! secret_exists snapflow/platform/snapshot-manager; then
 	bao kv put -mount="${kv_mount}" -cas=0 snapflow/platform/snapshot-manager \
 		http-secret="$(random_secret)" >/dev/null
 fi
+if ! secret_exists snapflow/platform/github-webhook; then
+	bao kv put -mount="${kv_mount}" -cas=0 snapflow/platform/github-webhook \
+		token="$(random_secret)" >/dev/null
+fi
 
 bao read -field=certificate "${pki_mount}/cert/ca" |
 	bao kv put -mount="${kv_mount}" snapflow/edge/tunnel-client-ca certificate=- >/dev/null

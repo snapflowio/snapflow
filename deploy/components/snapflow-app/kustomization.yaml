@@ -30,6 +30,8 @@ patches:
       kind: ImageRepository
       metadata:
         name: _
+        labels:
+          app.kubernetes.io/part-of: snapflow
       spec:
         interval: 5m
   - target:
