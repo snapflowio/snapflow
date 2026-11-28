@@ -18,6 +18,7 @@ import { coinFrameloop } from '@/components/landing/visuals/usdc-coin/usdc-coin'
 import { useInView } from '@/hooks/use-in-view';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
 import { loadGateState } from '@/lib/load-gate';
+import { subscribeNothing, supportsWebgl } from './webgl/webgl-support';
 
 const PadlockScene = lazy(() =>
 	import('./padlock/padlock-scene').then((module) => ({
@@ -25,16 +26,12 @@ const PadlockScene = lazy(() =>
 	}))
 );
 
-function subscribeNothing() {
-	return () => undefined;
-}
-
 export function CloudLock() {
 	const { ref, visible } = useInView<HTMLDivElement>();
-	const isClient = useSyncExternalStore(
+	const webgl = useSyncExternalStore<boolean | null>(
 		subscribeNothing,
-		() => true,
-		() => false
+		supportsWebgl,
+		() => null
 	);
 	const reducedMotion = usePrefersReducedMotion();
 	const [ready, setReady] = useState(false);
@@ -44,10 +41,10 @@ export function CloudLock() {
 			ref={ref}
 			className="relative size-full"
 			aria-hidden="true"
-			data-load-gate={loadGateState(ready)}
+			data-load-gate={loadGateState(ready || webgl === false)}
 		>
 			<div className={`absolute inset-0 ${ready ? '' : 'invisible'}`}>
-				{isClient && (
+				{webgl && (
 					<Suspense fallback={null}>
 						<PadlockScene
 							frameloop={coinFrameloop(ready, visible, reducedMotion)}

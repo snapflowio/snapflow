@@ -27,6 +27,11 @@ const normalizedCanonicalPath = canonicalPath.endsWith('/')
 	: `${canonicalPath}/`;
 const canonical = new URL(normalizedCanonicalPath, Astro.site);
 const socialImage = new URL(SOCIAL_IMAGE.PATH, Astro.site);
+const PAGE_LOADING_ATTRIBUTE = 'data-page-loading';
+const PAGE_LOADING_FAIL_OPEN_MS = 25_000;
+const PAGE_LOADING_SCRIPT = `const root = document.documentElement;
+root.setAttribute('${PAGE_LOADING_ATTRIBUTE}', '');
+setTimeout(() => root.removeAttribute('${PAGE_LOADING_ATTRIBUTE}'), ${PAGE_LOADING_FAIL_OPEN_MS});`;
 ---
 
 <!doctype html>
@@ -91,11 +96,7 @@ const socialImage = new URL(SOCIAL_IMAGE.PATH, Astro.site);
 			/>
 		)}
 		<title>{title}</title>
-		{pageLoader && (
-			<script is:inline>
-				document.documentElement.setAttribute('data-page-loading', '');
-			</script>
-		)}
+		{pageLoader && <script is:inline set:html={PAGE_LOADING_SCRIPT} />}
 	</head>
 	<body>
 		{pageLoader && <PageLoader />}

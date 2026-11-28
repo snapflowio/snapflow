@@ -99,9 +99,21 @@ function nextPaint() {
 	});
 }
 
-function reveal(loader: HTMLElement) {
+function makeContentInert(loader: HTMLElement) {
+	const content = Array.from(document.body.children).filter(
+		(element): element is HTMLElement =>
+			element instanceof HTMLElement && element !== loader && !element.inert
+	);
+	for (const element of content) element.inert = true;
+	return () => {
+		for (const element of content) element.inert = false;
+	};
+}
+
+function reveal(loader: HTMLElement, restoreContent: () => void) {
 	const finish = () => {
 		document.documentElement.removeAttribute(LOADING_ATTRIBUTE);
+		restoreContent();
 		loader.remove();
 	};
 	loader.dataset.state = DONE_STATE;
@@ -117,6 +129,7 @@ function reveal(loader: HTMLElement) {
 
 const loader = document.querySelector<HTMLElement>('[data-page-loader]');
 if (loader) {
+	const restoreContent = makeContentInert(loader);
 	const pageReady = Promise.all([
 		windowLoaded(),
 		fontsLoaded(),
@@ -124,6 +137,6 @@ if (loader) {
 	]);
 	Promise.race([pageReady, timeout(MAX_WAIT_MS)])
 		.then(nextPaint)
-		.then(() => reveal(loader));
+		.then(() => reveal(loader, restoreContent));
 }
 </script>
