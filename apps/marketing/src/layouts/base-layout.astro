@@ -1,4 +1,5 @@
 ---
+import PageLoader from '@/components/layout/page-loader.astro';
 import { SITE_CONFIG, SOCIAL_IMAGE } from '@/config/site';
 import '@/styles/global.css';
 
@@ -9,6 +10,7 @@ interface Props {
 	noIndex?: boolean;
 	ogType?: 'website' | 'article';
 	structuredData?: Record<string, unknown>;
+	pageLoader?: boolean;
 }
 
 const {
@@ -18,6 +20,7 @@ const {
 	noIndex = false,
 	ogType = 'website',
 	structuredData,
+	pageLoader = false,
 } = Astro.props;
 const normalizedCanonicalPath = canonicalPath.endsWith('/')
 	? canonicalPath
@@ -88,8 +91,14 @@ const socialImage = new URL(SOCIAL_IMAGE.PATH, Astro.site);
 			/>
 		)}
 		<title>{title}</title>
+		{pageLoader && (
+			<script is:inline>
+				document.documentElement.setAttribute('data-page-loading', '');
+			</script>
+		)}
 	</head>
 	<body>
+		{pageLoader && <PageLoader />}
 		<slot />
 		<svg width="0" height="0" aria-hidden="true" class="absolute hidden">
 			<filter id="grainy" x="0" y="0" width="100%" height="100%">

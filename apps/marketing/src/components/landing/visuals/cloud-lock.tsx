@@ -17,6 +17,7 @@ import {
 import { coinFrameloop } from '@/components/landing/visuals/usdc-coin/usdc-coin';
 import { useInView } from '@/hooks/use-in-view';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
+import { loadGateState } from '@/lib/load-gate';
 
 const PadlockScene = lazy(() =>
 	import('./padlock/padlock-scene').then((module) => ({
@@ -39,10 +40,13 @@ export function CloudLock() {
 	const [ready, setReady] = useState(false);
 	const markReady = useCallback(() => setReady(true), []);
 	return (
-		<div ref={ref} className="relative size-full" aria-hidden="true">
-			<div
-				className={`absolute inset-0 transition-opacity duration-700 motion-reduce:transition-none ${ready ? 'opacity-100' : 'opacity-0'}`}
-			>
+		<div
+			ref={ref}
+			className="relative size-full"
+			aria-hidden="true"
+			data-load-gate={loadGateState(ready)}
+		>
+			<div className={`absolute inset-0 ${ready ? '' : 'invisible'}`}>
 				{isClient && (
 					<Suspense fallback={null}>
 						<PadlockScene

@@ -8,7 +8,6 @@
  */
 
 import type { AnchorHTMLAttributes, PropsWithChildren, ReactNode } from 'react';
-import { useInView } from '@/hooks/use-in-view';
 import { MONO_FONT, SECTION_LEAD, SECTION_TITLE } from '@/lib/marketing-styles';
 
 const badgeIcons = {
@@ -82,13 +81,8 @@ export function AnimatedSection({
 	className?: string;
 	id?: string;
 }) {
-	const { ref, visible } = useInView<HTMLElement>();
 	return (
-		<section
-			ref={ref}
-			id={id}
-			className={`${className} ${visible ? 'is-visible' : ''}`}
-		>
+		<section id={id} className={className}>
 			{children}
 		</section>
 	);

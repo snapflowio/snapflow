@@ -9,6 +9,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
+import { loadGateState } from '@/lib/load-gate';
 import { DITHER_STYLE } from '../dither-style';
 import { startShaderScene } from '../webgl/shader-scene';
 import { createRippleField, type Projection } from './ripple-field';
@@ -43,6 +44,7 @@ export function RiverBackground({
 }: RiverBackgroundProps) {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [webglUnavailable, setWebglUnavailable] = useState(false);
+	const [drawn, setDrawn] = useState(false);
 	const reducedMotion = usePrefersReducedMotion();
 
 	useEffect(() => {
@@ -70,6 +72,7 @@ export function RiverBackground({
 				program.uniform1f('u_horizon', projection.horizon);
 				program.uniform4fv('u_ripples', ripples.data);
 			},
+			onFirstFrame: () => setDrawn(true),
 			onFrame: (seconds, program) => {
 				if (
 					!reducedMotion &&
@@ -111,6 +114,7 @@ export function RiverBackground({
 		<div
 			className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-snapflow-ink"
 			aria-hidden="true"
+			data-load-gate={loadGateState(drawn || webglUnavailable)}
 		>
 			{webglUnavailable ? null : (
 				<canvas

@@ -15,6 +15,7 @@ import {
 	useSyncExternalStore,
 } from 'react';
 import { useInView } from '@/hooks/use-in-view';
+import { loadGateState } from '@/lib/load-gate';
 import type { CoinFrameloop } from './usdc-coin-scene';
 
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
@@ -64,10 +65,9 @@ export function UsdcCoin() {
 			ref={ref}
 			className="pointer-events-none absolute inset-0 overflow-hidden"
 			aria-hidden="true"
+			data-load-gate={loadGateState(ready)}
 		>
-			<div
-				className={`absolute inset-0 transition-opacity duration-700 motion-reduce:transition-none ${ready ? 'opacity-100' : 'opacity-0'}`}
-			>
+			<div className={`absolute inset-0 ${ready ? '' : 'invisible'}`}>
 				{isClient && (
 					<Suspense fallback={null}>
 						<UsdcCoinScene

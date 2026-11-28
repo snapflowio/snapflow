@@ -25,6 +25,7 @@ import {
 	type CoinFrameloop,
 	cellPixelRatio,
 	Warmup,
+	WebglUnavailable,
 } from '@/components/landing/visuals/usdc-coin/usdc-coin-scene';
 import {
 	CAMERA,
@@ -141,7 +142,7 @@ export function PadlockScene({
 			frameloop={frameloop}
 			dpr={cellPixelRatio(DITHER_STYLE.cellSize)}
 			className="[image-rendering:pixelated]"
-			fallback={null}
+			fallback={<WebglUnavailable onReady={onReady} />}
 			gl={{
 				alpha: true,
 				antialias: false,

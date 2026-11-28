@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from 'react';
 import { DITHER_STYLE } from '@/components/landing/visuals/dither-style';
 import { GLOBE_LAND_MASK } from '@/data/globe-land-mask';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
+import { loadGateState } from '@/lib/load-gate';
 import {
 	createFullscreenProgram,
 	readCssColor,
@@ -70,7 +71,8 @@ function uploadLandMask(gl: WebGLRenderingContext) {
 function startGlobe(
 	frame: HTMLDivElement,
 	canvas: HTMLCanvasElement,
-	reducedMotion: boolean
+	reducedMotion: boolean,
+	onFirstFrame: () => void
 ) {
 	const gl = canvas.getContext('webgl', { antialias: false, alpha: false });
 	if (!gl) return null;
@@ -95,6 +97,7 @@ function startGlobe(
 
 	let elapsed = PLANET.stillFrameSeconds;
 	let hasSize = false;
+	let drawn = false;
 	const draw = () => {
 		program.uniform1f('u_time', elapsed);
 		program.uniform1f(
@@ -102,6 +105,9 @@ function startGlobe(
 			START_ROTATION + elapsed * PLANET.rotationSpeed
 		);
 		program.draw();
+		if (drawn) return;
+		drawn = true;
+		onFirstFrame();
 	};
 
 	const measure = () => {
@@ -171,13 +177,16 @@ export function GlobeHorizon() {
 	const frameRef = useRef<HTMLDivElement>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [webglUnavailable, setWebglUnavailable] = useState(false);
+	const [drawn, setDrawn] = useState(false);
 	const reducedMotion = usePrefersReducedMotion();
 
 	useEffect(() => {
 		const frame = frameRef.current;
 		const canvas = canvasRef.current;
 		if (!(frame && canvas)) return;
-		const dispose = startGlobe(frame, canvas, reducedMotion);
+		const dispose = startGlobe(frame, canvas, reducedMotion, () =>
+			setDrawn(true)
+		);
 		if (!dispose) {
 			setWebglUnavailable(true);
 			return;
@@ -190,6 +199,7 @@ export function GlobeHorizon() {
 			ref={frameRef}
 			className="pointer-events-none absolute inset-0 overflow-hidden bg-snapflow-ink"
 			aria-hidden="true"
+			data-load-gate={loadGateState(drawn || webglUnavailable)}
 		>
 			{webglUnavailable ? null : (
 				<canvas

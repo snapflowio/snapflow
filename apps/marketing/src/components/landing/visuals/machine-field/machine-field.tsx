@@ -10,6 +10,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { DITHER_STYLE } from '@/components/landing/visuals/dither-style';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
+import { loadGateState } from '@/lib/load-gate';
 import { startShaderScene } from '../webgl/shader-scene';
 import {
 	CLEAR_ZONE,
@@ -39,6 +40,7 @@ function measureClearZone(canvas: HTMLCanvasElement) {
 export function MachineField() {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [webglUnavailable, setWebglUnavailable] = useState(false);
+	const [drawn, setDrawn] = useState(false);
 	const reducedMotion = usePrefersReducedMotion();
 
 	useEffect(() => {
@@ -51,6 +53,7 @@ export function MachineField() {
 			palette: MACHINE_FIELD_PALETTE,
 			onResize: (_size, program) =>
 				program.uniform4fv('u_clear', measureClearZone(canvas)),
+			onFirstFrame: () => setDrawn(true),
 			cellSize: DITHER_STYLE.cellSize,
 			stillFrameSeconds: reducedMotion ? STILL_FRAME_SECONDS : null,
 		});
@@ -65,6 +68,7 @@ export function MachineField() {
 		<div
 			className="pointer-events-none absolute inset-0 overflow-hidden bg-snapflow-ink"
 			aria-hidden="true"
+			data-load-gate={loadGateState(drawn || webglUnavailable)}
 		>
 			{webglUnavailable ? null : (
 				<canvas

@@ -61,6 +61,11 @@ export function Warmup({ onReady }: { onReady: () => void }) {
 	return null;
 }
 
+export function WebglUnavailable({ onReady }: { onReady: () => void }) {
+	useEffect(onReady, [onReady]);
+	return null;
+}
+
 function FittedCamera() {
 	const size = useThree((state) => state.size);
 	const zoom =
@@ -177,7 +182,7 @@ export function UsdcCoinScene({
 			frameloop={frameloop}
 			dpr={cellPixelRatio(DITHER_STYLE.cellSize)}
 			className="[image-rendering:pixelated]"
-			fallback={null}
+			fallback={<WebglUnavailable onReady={onReady} />}
 			gl={{
 				alpha: true,
 				antialias: false,

@@ -109,6 +109,11 @@ html {
 	touch-action: pan-y;
 }
 
+html[data-page-loading] {
+	overflow-y: hidden;
+	scrollbar-gutter: stable;
+}
+
 body {
 	min-height: 100%;
 	margin: 0;
@@ -180,6 +185,25 @@ body {
 	45% {
 		transform: translate(-0.5px, 0);
 		text-shadow: none;
+	}
+}
+
+@keyframes snapflow-orbit-trail {
+	0% {
+		background-color: var(--snapflow-dither-5);
+	}
+	8.333% {
+		background-color: var(--snapflow-dither-4);
+	}
+	16.667% {
+		background-color: var(--snapflow-dither-3);
+	}
+	25% {
+		background-color: var(--snapflow-dither-2);
+	}
+	33.333%,
+	100% {
+		background-color: var(--snapflow-dither-1);
 	}
 }
 

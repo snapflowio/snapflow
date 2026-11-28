@@ -44,6 +44,7 @@ export type ShaderSceneOptions<
 		seconds: number,
 		program: FullscreenProgram<Name | PaletteName | SceneUniform>
 	) => void;
+	onFirstFrame?: () => void;
 };
 
 export function startShaderScene<
@@ -58,6 +59,7 @@ export function startShaderScene<
 	stillFrameSeconds,
 	onResize,
 	onFrame,
+	onFirstFrame,
 }: ShaderSceneOptions<Name, PaletteName>) {
 	const colors = palette.map(
 		([uniform, customProperty]) =>
@@ -84,10 +86,14 @@ export function startShaderScene<
 		if (rgb) program.uniform3fv(uniform, rgb);
 	}
 
+	let drawn = false;
 	const draw = (seconds: number) => {
 		onFrame?.(seconds, program);
 		program.uniform1f('u_time', seconds);
 		program.draw();
+		if (drawn) return;
+		drawn = true;
+		onFirstFrame?.();
 	};
 
 	const canvasSize = observeCanvasSize(canvas, cellSize, (size) => {
@@ -101,7 +107,9 @@ export function startShaderScene<
 	let frame = 0;
 	if (stillFrameSeconds === null) {
 		const loop = (timestamp: number) => {
-			if (visibility.current()) draw(timestamp / MILLISECONDS_PER_SECOND);
+			if (canvasSize.current() && (!drawn || visibility.current())) {
+				draw(timestamp / MILLISECONDS_PER_SECOND);
+			}
 			frame = requestAnimationFrame(loop);
 		};
 		frame = requestAnimationFrame(loop);
