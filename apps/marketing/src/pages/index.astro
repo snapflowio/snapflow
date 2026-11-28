@@ -15,7 +15,7 @@ import BaseLayout from '@/layouts/base-layout.astro';
 import { landingStructuredData } from '@/lib/structured-data';
 ---
 
-<BaseLayout structuredData={landingStructuredData()}>
+<BaseLayout structuredData={landingStructuredData()} pageLoader>
 	<div
 		class="min-h-screen overflow-x-clip bg-snapflow-ink text-snapflow-paper selection:bg-snapflow-purple selection:text-snapflow-paper"
 	>
@@ -31,13 +31,13 @@ import { landingStructuredData } from '@/lib/structured-data';
 			class="relative bg-snapflow-ink bg-[radial-gradient(ellipse_70%_100%_at_50%_0%,color-mix(in_srgb,var(--snapflow-purple)_16%,transparent),transparent_70%)] bg-size-[100%_40rem] bg-no-repeat"
 		>
 			<ProblemSection client:load />
-			<NetworkIntroSection client:visible={{ rootMargin: '200px' }} />
-			<CapabilitiesSection client:visible={{ rootMargin: '200px' }} />
-			<ApproachSection client:visible={{ rootMargin: '200px' }} />
-			<TerminalSection client:visible={{ rootMargin: '200px' }} />
-			<MachineOwnersSection client:visible={{ rootMargin: '200px' }} />
-			<HostsSection client:visible={{ rootMargin: '200px' }} />
-			<ClosingSection client:visible={{ rootMargin: '200px' }} />
+			<NetworkIntroSection client:load />
+			<CapabilitiesSection client:load />
+			<ApproachSection client:load />
+			<TerminalSection client:load />
+			<MachineOwnersSection client:load />
+			<HostsSection client:load />
+			<ClosingSection client:load />
 		</main>
 	</div>
 </BaseLayout>

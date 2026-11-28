@@ -15,6 +15,8 @@ import {
 	useSyncExternalStore,
 } from 'react';
 import { useInView } from '@/hooks/use-in-view';
+import { loadGateState } from '@/lib/load-gate';
+import { subscribeNothing, supportsWebgl } from '../webgl/webgl-support';
 import type { CoinFrameloop } from './usdc-coin-scene';
 
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
@@ -31,10 +33,6 @@ function subscribeReducedMotion(onChange: () => void) {
 	return () => media.removeEventListener('change', onChange);
 }
 
-function subscribeNothing() {
-	return () => undefined;
-}
-
 export function coinFrameloop(
 	ready: boolean,
 	visible: boolean,
@@ -47,10 +45,10 @@ export function coinFrameloop(
 
 export function UsdcCoin() {
 	const { ref, visible } = useInView<HTMLDivElement>();
-	const isClient = useSyncExternalStore(
+	const webgl = useSyncExternalStore<boolean | null>(
 		subscribeNothing,
-		() => true,
-		() => false
+		supportsWebgl,
+		() => null
 	);
 	const reducedMotion = useSyncExternalStore(
 		subscribeReducedMotion,
@@ -64,11 +62,10 @@ export function UsdcCoin() {
 			ref={ref}
 			className="pointer-events-none absolute inset-0 overflow-hidden"
 			aria-hidden="true"
+			data-load-gate={loadGateState(ready || webgl === false)}
 		>
-			<div
-				className={`absolute inset-0 transition-opacity duration-700 motion-reduce:transition-none ${ready ? 'opacity-100' : 'opacity-0'}`}
-			>
-				{isClient && (
+			<div className={`absolute inset-0 ${ready ? '' : 'invisible'}`}>
+				{webgl && (
 					<Suspense fallback={null}>
 						<UsdcCoinScene
 							frameloop={coinFrameloop(ready, visible, reducedMotion)}

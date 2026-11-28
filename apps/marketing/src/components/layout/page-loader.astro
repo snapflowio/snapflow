@@ -1,0 +1,142 @@
+---
+const GRID_CELLS = 16;
+const RING_ORDER = [0, 1, 2, 3, 7, 11, 15, 14, 13, 12, 8, 4];
+const STEP_MS = 100;
+
+const cells = Array.from({ length: GRID_CELLS }, (_, index) => {
+	const position = RING_ORDER.indexOf(index);
+	return position < 0
+		? null
+		: `animation-delay: ${(position - RING_ORDER.length) * STEP_MS}ms`;
+});
+---
+
+<div
+	data-page-loader
+	role="status"
+	class="fixed inset-0 z-10001 hidden items-center justify-center bg-snapflow-ink transition-opacity duration-500 ease-[cubic-bezier(.25,1,.5,1)] in-data-page-loading:flex data-[state=done]:pointer-events-none data-[state=done]:opacity-0 motion-reduce:transition-none"
+>
+	<span class="sr-only">Loading</span>
+	<div
+		class="grid auto-rows-[10px] grid-cols-[repeat(4,10px)] gap-0.5"
+		aria-hidden="true"
+	>
+		{cells.map((delay) =>
+			delay === null ? (
+				<span />
+			) : (
+				<span
+					class="animate-[snapflow-orbit-trail_1.2s_step-end_infinite] bg-[var(--snapflow-dither-2)] motion-reduce:animate-none"
+					style={delay}
+				/>
+			)
+		)}
+	</div>
+</div>
+
+<script>
+import { LOAD_GATE_ATTRIBUTE, LOAD_GATE_READY } from '@/lib/load-gate';
+
+const LOADING_ATTRIBUTE = 'data-page-loading';
+const ISLAND_SSR_ATTRIBUTE = 'ssr';
+const HYDRATING_ISLAND_SELECTOR = `astro-island[${ISLAND_SSR_ATTRIBUTE}]`;
+const GATE_SELECTOR = `[${LOAD_GATE_ATTRIBUTE}]`;
+const DONE_STATE = 'done';
+const MAX_WAIT_MS = 20_000;
+const FADE_FALLBACK_MS = 1000;
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+
+function windowLoaded() {
+	if (document.readyState === 'complete') return Promise.resolve();
+	return new Promise<void>((resolve) => {
+		window.addEventListener('load', () => resolve(), { once: true });
+	});
+}
+
+function fontsLoaded() {
+	const loads: Promise<unknown>[] = [];
+	document.fonts.forEach((font) => {
+		loads.push(font.load().catch(() => undefined));
+	});
+	return Promise.all(loads);
+}
+
+function componentsPending() {
+	if (document.querySelector(HYDRATING_ISLAND_SELECTOR)) return true;
+	for (const gate of document.querySelectorAll(GATE_SELECTOR)) {
+		const ready = gate.getAttribute(LOAD_GATE_ATTRIBUTE) === LOAD_GATE_READY;
+		if (!ready && gate.getClientRects().length > 0) return true;
+	}
+	return false;
+}
+
+function componentsReady() {
+	return new Promise<void>((resolve) => {
+		const observer = new MutationObserver(check);
+		function check() {
+			if (componentsPending()) return;
+			observer.disconnect();
+			resolve();
+		}
+		observer.observe(document.body, {
+			subtree: true,
+			attributes: true,
+			attributeFilter: [ISLAND_SSR_ATTRIBUTE, LOAD_GATE_ATTRIBUTE],
+		});
+		check();
+	});
+}
+
+function timeout(milliseconds: number) {
+	return new Promise<void>((resolve) => {
+		setTimeout(resolve, milliseconds);
+	});
+}
+
+function nextPaint() {
+	return new Promise<void>((resolve) => {
+		requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+	});
+}
+
+function makeContentInert(loader: HTMLElement) {
+	const content = Array.from(document.body.children).filter(
+		(element): element is HTMLElement =>
+			element instanceof HTMLElement && element !== loader && !element.inert
+	);
+	for (const element of content) element.inert = true;
+	return () => {
+		for (const element of content) element.inert = false;
+	};
+}
+
+function reveal(loader: HTMLElement, restoreContent: () => void) {
+	const finish = () => {
+		document.documentElement.removeAttribute(LOADING_ATTRIBUTE);
+		restoreContent();
+		loader.remove();
+	};
+	loader.dataset.state = DONE_STATE;
+	if (window.matchMedia(REDUCED_MOTION_QUERY).matches) {
+		finish();
+		return;
+	}
+	loader.addEventListener('transitionend', (event) => {
+		if (event.target === loader) finish();
+	});
+	setTimeout(finish, FADE_FALLBACK_MS);
+}
+
+const loader = document.querySelector<HTMLElement>('[data-page-loader]');
+if (loader) {
+	const restoreContent = makeContentInert(loader);
+	const pageReady = Promise.all([
+		windowLoaded(),
+		fontsLoaded(),
+		componentsReady(),
+	]);
+	Promise.race([pageReady, timeout(MAX_WAIT_MS)])
+		.then(nextPaint)
+		.then(() => reveal(loader, restoreContent));
+}
+</script>

@@ -10,6 +10,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { DITHER_STYLE } from '@/components/landing/visuals/dither-style';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
+import { loadGateState } from '@/lib/load-gate';
 import { startShaderScene } from '../webgl/shader-scene';
 import {
 	EASING,
@@ -67,6 +68,7 @@ export function NightShift({ step }: NightShiftProps) {
 	const stepStartRef = useRef<number | null>(null);
 	const redrawRef = useRef<(() => void) | null>(null);
 	const [webglUnavailable, setWebglUnavailable] = useState(false);
+	const [drawn, setDrawn] = useState(false);
 	const reducedMotion = usePrefersReducedMotion();
 
 	useEffect(() => {
@@ -115,6 +117,7 @@ export function NightShift({ step }: NightShiftProps) {
 			stillFrameSeconds: reducedMotion ? STILL_FRAME_SECONDS : null,
 			onResize: (_size, program) =>
 				program.uniform4fv('u_frame', measureFrame(canvas)),
+			onFirstFrame: () => setDrawn(true),
 			onFrame: (seconds, program) => {
 				advance(seconds);
 				program.uniform1f('u_power', state.power);
@@ -139,6 +142,7 @@ export function NightShift({ step }: NightShiftProps) {
 		<div
 			className="pointer-events-none absolute inset-0 overflow-hidden bg-snapflow-ink"
 			aria-hidden="true"
+			data-load-gate={loadGateState(drawn || webglUnavailable)}
 		>
 			{webglUnavailable ? null : (
 				<canvas
