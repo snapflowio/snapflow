@@ -1,0 +1,64 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: github-webhook-token
+  namespace: flux-system
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: openbao
+  target:
+    name: github-webhook-token
+    creationPolicy: Owner
+  data:
+    - secretKey: token
+      remoteRef:
+        key: snapflow/platform/github-webhook
+        property: token
+---
+apiVersion: notification.toolkit.fluxcd.io/v1
+kind: Receiver
+metadata:
+  name: github
+  namespace: flux-system
+spec:
+  type: github
+  events:
+    - ping
+    - push
+    - package
+  secretRef:
+    name: github-webhook-token
+  resources:
+    - apiVersion: source.toolkit.fluxcd.io/v1
+      kind: GitRepository
+      name: flux-system
+    - apiVersion: image.toolkit.fluxcd.io/v1
+      kind: ImageRepository
+      name: "*"
+      matchLabels:
+        app.kubernetes.io/part-of: snapflow
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: webhook-receiver
+  namespace: flux-system
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: cloudflare,origin
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.options: snapflow-cloudflare-origin-pull@kubernetescrd
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: ${PUBLIC_DOMAIN}
+      http:
+        paths:
+          - path: /hook/
+            pathType: Prefix
+            backend:
+              service:
+                name: webhook-receiver
+                port:
+                  number: 80
