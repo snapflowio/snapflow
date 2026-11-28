@@ -1,0 +1,5 @@
+{
+	"filter_paths": "dependencies|test|script",
+	"detectors_to_exclude": "timestamp",
+	"fail_on": "low"
+}

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: snapflow
+description: Snapflow workloads; each HelmRelease deploys the one component its values name
+type: application
+version: 2.0.0
+kubeVersion: ">=1.33.0-0"

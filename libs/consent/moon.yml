@@ -1,0 +1,19 @@
+layer: "library"
+stack: "frontend"
+tags: ["scope-frontend", "consent"]
+
+tasks:
+  typecheck:
+    command: "tsc"
+    args: ["-p", "tsconfig.json"]
+    inputs: ["src/**/*", "package.json", "tsconfig.json"]
+
+  lint:
+    command: "biome"
+    args: ["ci", ".", "--error-on-warnings"]
+
+  format:
+    command: "biome"
+    args: ["check", ".", "--write"]
+    options:
+      cache: false

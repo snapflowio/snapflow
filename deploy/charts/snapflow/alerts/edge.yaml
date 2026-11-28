@@ -1,0 +1,12 @@
+groups:
+  - name: snapflow.edge
+    rules:
+      - alert: SnapflowEdgeDown
+        expr: |
+          probe_success{job="snapflow-edge"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Edge {{ $labels.edge }} is down"
+          description: "The health check of {{ $labels.instance }} has failed for 5 minutes. Hosts cannot serve sandboxes through this edge while it is down."

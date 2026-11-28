@@ -1,0 +1,4 @@
+{{- $components := list "public-ingress" "marketing" "docs" "dashboard" "api" "snapshot-manager" "edge" "origin" -}}
+{{- if not (has .Values.component $components) -}}
+{{- fail (printf "component must be one of %s, got %q" (join ", " $components) .Values.component) -}}
+{{- end -}}

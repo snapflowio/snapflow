@@ -1,0 +1,29 @@
+{{- if eq .Values.component "snapshot-manager" }}
+{{- $root := . -}}
+{{- $tlsSecret := "snapflow-registry-tls" -}}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: snapflow-registry
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "snapshot-manager") | nindent 4 }}
+spec:
+  secretName: {{ $tlsSecret }}
+  dnsNames:
+    - {{ required "domains.registry is required" .Values.domains.registry }}
+  issuerRef:
+    kind: ClusterIssuer
+    name: {{ .Values.clusterIssuer }}
+---
+{{ include "snapflow.publicIngress" (dict "root" $root "component" "snapshot-manager" "domain" "registry" "tlsSecret" $tlsSecret "path" "/" "port" 5000) }}
+---
+{{ include "snapflow.ingressNetworkPolicy" (dict "root" $root "component" "snapshot-manager" "port" 5000) }}
+---
+{{ include "snapflow.probe" (dict "root" $root "component" "snapshot-manager" "name" "snapflow-registry" "job" "snapflow-registry" "module" .Values.probes.modules.registry "url" (printf "%s/v2/" (include "snapflow.https" (dict "root" $root "key" "registry"))) "labels" (dict "service" "registry")) }}
+---
+{{ include "snapflow.alertRules" (dict "root" $root "component" "snapshot-manager") }}
+{{- with (include "snapflow.podDisruptionBudget" (dict "root" $root "component" "snapshot-manager" "replicas" .Values.snapshotManager.replicas)) }}
+---
+{{ . }}
+{{- end }}
+{{- end }}

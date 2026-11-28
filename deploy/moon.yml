@@ -1,0 +1,186 @@
+layer: "configuration"
+stack: "infrastructure"
+tags:
+  - "scope-deployment"
+
+fileGroups:
+  manifests:
+    - "**/*"
+    - "!tofu/**/.terraform/**"
+    - "!ansible/.collections/**"
+    - "!ansible/.venv/**"
+  tofu:
+    - "tofu/**/*.tf"
+    - "tofu/**/.terraform.lock.hcl"
+    - "clusters/production/cluster-settings.env"
+    - "clusters/production/flux-system/*.yaml"
+    - "ansible/inventory.yml"
+  ansible:
+    - "ansible/**/*"
+    - "!ansible/.collections/**"
+    - "!ansible/.venv/**"
+
+tasks:
+  validate:
+    description: "Lints the Helm chart and validates every Flux kustomization against the Kubernetes and CRD schemas"
+    command: "bash"
+    args: ["deploy/scripts/validate.sh"]
+    deps:
+      - "tofu-check"
+      - "ansible-lint"
+    inputs:
+      - "@group(manifests)"
+      - "/apps/contracts/deployments/*.json"
+    options:
+      runFromWorkspaceRoot: true
+
+  tofu-check:
+    description: "Checks the formatting of the OpenTofu configurations and validates each of them"
+    script: "tofu fmt -check -recursive tofu && for root in tofu/*/; do tofu -chdir=\"${root}\" init -backend=false -input=false && tofu -chdir=\"${root}\" validate || exit 1; done"
+    inputs:
+      - "@group(tofu)"
+
+  ansible-collections:
+    description: "Installs the pinned Ansible collections deploy/ansible uses"
+    script: "uv run --project ansible --locked ansible-galaxy collection install --requirements-file ansible/requirements.yml </dev/null"
+    env:
+      ANSIBLE_CONFIG: "ansible/ansible.cfg"
+    inputs:
+      - "ansible/requirements.yml"
+      - "ansible/uv.lock"
+    outputs:
+      - "ansible/.collections"
+
+  ansible-lint:
+    description: "Lints the host and recovery kit playbooks and their roles"
+    script: "uv run --project ansible --locked ansible-lint --project-dir ansible --offline ansible/site.yml ansible/recovery-kit.yml </dev/null"
+    env:
+      ANSIBLE_CONFIG: "ansible/ansible.cfg"
+    deps:
+      - "ansible-collections"
+    inputs:
+      - "@group(ansible)"
+
+  hosts:
+    description: "Hardens every host in deploy/ansible/inventory.yml and installs or upgrades k3s on it; pass -- --check --diff to preview"
+    command: "uv"
+    args: ["run", "--project", "ansible", "--locked", "ansible-playbook", "ansible/site.yml", "--ask-become-pass"]
+    env:
+      ANSIBLE_CONFIG: "ansible/ansible.cfg"
+    deps:
+      - "ansible-collections"
+    options:
+      cache: false
+      interactive: true
+      runInCI: false
+
+  cloudflare:
+    description: "Plans and applies the R2 buckets, zone settings, rules, mail records, standalone edge DNS records and the custom hostname fallback origin in deploy/tofu/cloudflare"
+    script: "tofu -chdir=tofu/cloudflare init -input=false && tofu -chdir=tofu/cloudflare apply"
+    options:
+      cache: false
+      interactive: true
+      runInCI: false
+
+  github:
+    description: "Plans and applies the repository settings, rulesets, environments and Actions settings in deploy/tofu/github; needs GITHUB_TOKEN, for example from gh auth token"
+    script: "tofu -chdir=tofu/github init -input=false && tofu -chdir=tofu/github apply"
+    options:
+      cache: false
+      interactive: true
+      runInCI: false
+
+  bootstrap:
+    description: "Installs the Flux Operator and FluxInstance on the cluster in KUBECONFIG with deploy/tofu/cluster"
+    script: "tofu -chdir=tofu/cluster init -input=false && tofu -chdir=tofu/cluster apply"
+    deps:
+      - "validate"
+    options:
+      cache: false
+      interactive: true
+      runInCI: false
+
+  settlement-values:
+    description: "Writes the production escrow address, deployment block and USDC address from apps/contracts/deployments/<chainId>.json"
+    command: "bash"
+    args: ["deploy/scripts/settlement-values.sh"]
+    options:
+      cache: false
+      runInCI: false
+      runFromWorkspaceRoot: true
+
+  openbao:
+    description: "Opens the cluster's OpenBao UI at http://127.0.0.1:18200/ui; sign in with a token from deploy:openbao-token"
+    command: "kubectl"
+    args: ["--namespace", "openbao", "port-forward", "service/openbao", "18200:8200"]
+    options:
+      cache: false
+      interactive: true
+      runInCI: false
+
+  openbao-token:
+    description: "Prints a one-hour OpenBao token that manages the operator secrets under secret/snapflow/"
+    script: "kubectl --namespace openbao exec statefulset/openbao --container openbao -- bao write -address=http://127.0.0.1:8200 -field=token auth/kubernetes/login role=snapflow-operator jwt=\"$(kubectl --namespace openbao create token snapflow-openbao-operator --audience openbao --duration 10m)\""
+    options:
+      cache: false
+      runInCI: false
+
+  sync-secrets:
+    description: "Makes External Secrets copy changed OpenBao secrets into the cluster now instead of within the hour"
+    script: "kubectl annotate externalsecrets.external-secrets.io --all --all-namespaces \"force-sync=$(date +%s)\" --overwrite"
+    options:
+      cache: false
+      runInCI: false
+
+  grafana:
+    description: "Opens the cluster's Grafana at http://127.0.0.1:13000; its admin login is under snapflow/platform/grafana in OpenBao"
+    command: "kubectl"
+    args: ["--namespace", "monitoring", "port-forward", "service/kube-prometheus-stack-grafana", "13000:80"]
+    options:
+      cache: false
+      interactive: true
+      runInCI: false
+
+  postgres-restore-drill:
+    description: "Runs the monthly Postgres restore drill now and follows its log; set RECOVERY_TARGET_TIME (RFC 3339) to rehearse a point-in-time restore and KEEP_DRILL_CLUSTER=true to keep the scratch cluster"
+    script: |
+      set -euo pipefail
+      job="postgres-restore-drill-$(date +%s)"
+      kubectl --namespace snapflow create job "${job}" --from=cronjob/postgres-restore-drill --dry-run=client --output yaml |
+        RECOVERY_TARGET_TIME="${RECOVERY_TARGET_TIME:-}" KEEP_DRILL_CLUSTER="${KEEP_DRILL_CLUSTER:-false}" yq '(.spec.template.spec.containers[] | select(.name == "drill") | .env) += [{"name": "RECOVERY_TARGET_TIME", "value": strenv(RECOVERY_TARGET_TIME)}, {"name": "KEEP_DRILL_CLUSTER", "value": strenv(KEEP_DRILL_CLUSTER)}]' |
+        kubectl apply --filename -
+      kubectl --namespace snapflow logs --follow --pod-running-timeout=5m "job/${job}"
+      kubectl --namespace snapflow wait --for=condition=Complete --timeout=1m "job/${job}"
+    options:
+      cache: false
+      interactive: true
+      runInCI: false
+
+  recovery-kit:
+    description: "Exports the k3s token, encryption config, OpenBao seal key and R2 credentials into one encrypted file to keep offline"
+    command: "uv"
+    args: ["run", "--project", "ansible", "--locked", "ansible-playbook", "ansible/recovery-kit.yml", "--ask-become-pass"]
+    env:
+      ANSIBLE_CONFIG: "ansible/ansible.cfg"
+    deps:
+      - "ansible-collections"
+    options:
+      cache: false
+      interactive: true
+      runInCI: false
+
+  reconcile:
+    description: "Makes Flux pull main and apply every stage now"
+    command: "flux"
+    args: ["reconcile", "kustomization", "flux-system", "--with-source"]
+    options:
+      cache: false
+      runInCI: false
+
+  status:
+    description: "Shows the state of every Flux stage, Helm release and image policy"
+    command: "flux"
+    args: ["get", "all", "--all-namespaces"]
+    options:
+      cache: false
+      runInCI: false

@@ -1,0 +1,21 @@
+{
+	"name": "@snapflow/consent",
+	"version": "0.0.0-dev",
+	"description": "Snapflow cookie consent banner and consent-gated analytics",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/snapflowio/snapflow.git"
+	},
+	"license": "Apache-2.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": "./src/index.js"
+	},
+	"dependencies": {
+		"posthog-js": "catalog:"
+	},
+	"devDependencies": {
+		"typescript": "catalog:"
+	}
+}

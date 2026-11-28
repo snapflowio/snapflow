@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: snapflow-release-timestamp
+  namespace: monitoring
+spec:
+  jobName: snapflow-release-timestamp
+  interval: 5m
+  module: http_2xx
+  prober:
+    url: blackbox-exporter.monitoring.svc:9115
+  targets:
+    staticConfig:
+      static:
+        - https://releases.snapflow.io/metadata/timestamp.json
+      labels:
+        service: releases

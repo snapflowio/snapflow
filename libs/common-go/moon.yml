@@ -1,0 +1,12 @@
+layer: "library"
+stack: "systems"
+tags: ["scope-runtime", "language-go"]
+
+fileGroups:
+  production: ["**/*", "!**/*_test.go"]
+
+tasks:
+  build:
+    command: "go"
+    args: ["build", "./..."]
+    inputs: ["@group(production)"]

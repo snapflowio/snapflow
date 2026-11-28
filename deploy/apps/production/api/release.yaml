@@ -1,0 +1,42 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: api
+  namespace: snapflow
+spec:
+  values:
+    component: api
+    domains:
+      public: ${PUBLIC_DOMAIN}
+      registry: ${REGISTRY_DOMAIN}
+      platform: ${PLATFORM_DOMAIN}
+    objectStorage:
+      endpoint: ${OBJECT_STORAGE_ENDPOINT}
+      bucket: ${OBJECT_STORAGE_BUCKET}
+      snapshotBucket: ${OBJECT_STORAGE_SNAPSHOT_BUCKET}
+    email:
+      from: Snapflow <noreply@${EMAIL_DOMAIN}>
+      replyTo: support@${PUBLIC_DOMAIN}
+    analytics:
+      posthog:
+        projectKey: "phc_zxix3uAdohTEgncke4FZUY78T6mXTQ5nXaDZ4dLvmonb"
+        host: "https://us.i.posthog.com"
+    humanVerification:
+      turnstileSiteKey: "0x4AAAAAABl92nReFTA2vZuQ"
+    receipts:
+      issuer:
+        name: "Snapflow LLC"
+        address: "1500 N Grant St #4486, Denver, CO 80203, United States"
+        email: "support@${PUBLIC_DOMAIN}"
+    settlement:
+      chainId: 84532
+      escrowAddress: "0xb4B6AAe61349D8384E1B8D197DDA7F61A25c2489"
+      escrowDeploymentBlock: "63605062"
+      usdcAddress: "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+      relayerAddress: "0x06E50F0eb8F203E33C35e9A74c466087267b384c"
+      feeReceiverAddress: "0x1592d3eE1a13DD85187091D4D53280f848CdCF27"
+      ethUsdFeedAddress: "0x4aDC67696bA383F43DD60A9e78F2C97Fbbfc7cb1"
+      walletConnectProjectId: f1562a9dacc1b66ae14f4120c7435185
+    image:
+      tag: "build-1839b358bf1bec34cc61a645138edfc855bc826a-1795821500" # {"$imagepolicy": "flux-system:snapflow-api:tag"}
+      digest: "sha256:b0083bac476712392479552daeb0e7119690bc59f6cd550a256c7d7b44450eb5" # {"$imagepolicy": "flux-system:snapflow-api:digest"}

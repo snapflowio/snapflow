@@ -1,0 +1,190 @@
+component: ""
+
+imageNamespace: ""
+
+image:
+  tag: ""
+  digest: ""
+
+domains:
+  public: ""
+  registry: ""
+  platform: ""
+
+analytics:
+  posthog:
+    projectKey: ""
+    host: ""
+
+humanVerification:
+  turnstileSiteKey: ""
+
+receipts:
+  issuer:
+    name: ""
+    address: ""
+    email: ""
+    taxId: ""
+
+clusterIssuer: letsencrypt
+
+email:
+  from: ""
+  replyTo: ""
+
+settlement:
+  chainId: ""
+  escrowAddress: ""
+  escrowDeploymentBlock: ""
+  logBlockRange: ""
+  indexerRangesPerRun: ""
+  usdcAddress: ""
+  relayerAddress: ""
+  feeReceiverAddress: ""
+  ethUsdFeedAddress: ""
+  walletConnectProjectId: ""
+
+secretStore: openbao
+
+alertmanager:
+  url: http://kube-prometheus-stack-alertmanager.monitoring.svc:9093
+
+clusterPodCidr: 10.42.0.0/16
+
+cloudflareProxyCidrs:
+  - 173.245.48.0/20
+  - 103.21.244.0/22
+  - 103.22.200.0/22
+  - 103.31.4.0/22
+  - 141.101.64.0/18
+  - 108.162.192.0/18
+  - 190.93.240.0/20
+  - 188.114.96.0/20
+  - 197.234.240.0/22
+  - 198.41.128.0/17
+  - 162.158.0.0/15
+  - 104.16.0.0/13
+  - 104.24.0.0/14
+  - 172.64.0.0/13
+  - 131.0.72.0/22
+  - 2400:cb00::/32
+  - 2606:4700::/32
+  - 2803:f800::/32
+  - 2405:b500::/32
+  - 2405:8100::/32
+  - 2a06:98c0::/29
+  - 2c0f:f248::/32
+
+openbao:
+  address: http://openbao.openbao.svc:8200
+  image: quay.io/openbao/openbao:2.7.2@sha256:5046911075e137e154ce49ab051502f4ec7cf367d484ae4a4dce665d9b90561f
+  authRole: snapflow-api
+  tokenAudience: openbao
+  userId: 100
+  groupId: 1000
+
+database:
+  cluster: snapflow-postgres
+  poolMax: 10
+  poolIdleTimeoutMs: 30000
+  connectionTimeoutMs: 30000
+
+redis:
+  service: snapflow-redis
+  secret: snapflow-redis
+
+objectStorage:
+  endpoint: ""
+  region: auto
+  bucket: ""
+  snapshotBucket: ""
+  apiSecret: snapflow-object-storage-api
+  registrySecret: snapflow-object-storage-registry
+
+networkPolicy:
+  ingressController:
+    namespace: kube-system
+    podLabels:
+      app.kubernetes.io/name: traefik
+
+metrics:
+  port: 9464
+  path: /metrics
+  interval: 30s
+
+probes:
+  proberUrl: blackbox-exporter.monitoring.svc:9115
+  interval: 1m
+  modules:
+    http: http_2xx
+    registry: http_registry
+
+web:
+  path: /
+  stripPathPrefix: false
+  replicas: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 128Mi
+
+api:
+  replicas: 1
+  logLevel: info
+  sqlLogLevel: warn
+  geoIpDatabasePath: /opt/snapflow/geoip/dbip-city-lite.mmdb
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      memory: 1Gi
+
+worker:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      memory: 1Gi
+
+snapshotManager:
+  replicas: 1
+  garbageCollection:
+    interval: 24h
+    gracePeriod: 2h
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
+
+edge:
+  stateDirectory: /var/lib/snapflow/edge
+  healthPath: /.well-known/snapflow-edge/health
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      memory: 1Gi
+
+edges: []
+
+origin:
+  site: ""
+  edges: ""
+  hosts: ""
+  upstream: traefik.kube-system.svc.cluster.local:8445
+  replicas: 2
+  healthPort: 8080
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      memory: 256Mi

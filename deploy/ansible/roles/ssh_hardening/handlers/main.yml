@@ -1,0 +1,5 @@
+- name: Reload sshd
+  ansible.builtin.systemd_service:
+    name: ssh.service
+    state: reloaded
+  when: ansible_facts['services']['ssh.service']['state'] | default('') == 'running'

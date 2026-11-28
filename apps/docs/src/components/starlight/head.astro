@@ -1,0 +1,30 @@
+---
+import Default from '@astrojs/starlight/components/Head.astro';
+import chivoMonoFont from '@/assets/fonts/ChivoMono-latin.woff2?url';
+import chaletFont from '@/assets/fonts/chalet_londonnineteensixty.woff2?url';
+import instrumentSansFont from '@/assets/fonts/InstrumentSans-latin.woff2?url';
+import { SITE } from '@/config/site';
+
+const PRELOADED_FONTS = [instrumentSansFont, chaletFont, chivoMonoFont];
+const socialImage = new URL(SITE.SOCIAL_IMAGE, Astro.site);
+---
+
+<Default />
+<meta name="theme-color" content={SITE.THEME_COLOR}>
+<meta property="og:image" content={socialImage}>
+<meta name="twitter:image" content={socialImage}>
+{PRELOADED_FONTS.map((href) => (
+	<link
+		rel="preload"
+		href={href}
+		as="font"
+		type="font/woff2"
+		crossorigin="anonymous"
+	>
+))}
+<script>
+import { mountConsent } from '@snapflow/consent';
+import { ANALYTICS } from '@/config/analytics';
+
+mountConsent({ analytics: ANALYTICS });
+</script>

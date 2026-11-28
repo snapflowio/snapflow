@@ -1,0 +1,152 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: postgres-restore-drill
+  namespace: snapflow
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: postgres-restore-drill
+  namespace: snapflow
+rules:
+  - apiGroups: ["postgresql.cnpg.io"]
+    resources: ["clusters"]
+    verbs: ["create"]
+  - apiGroups: ["postgresql.cnpg.io"]
+    resources: ["clusters"]
+    resourceNames: ["snapflow-postgres"]
+    verbs: ["get"]
+  - apiGroups: ["postgresql.cnpg.io"]
+    resources: ["clusters"]
+    resourceNames: ["snapflow-postgres-drill"]
+    verbs: ["get", "list", "watch", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["snapflow-postgres-drill-app", "snapflow-postgres-drill-ca"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: postgres-restore-drill
+  namespace: snapflow
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: postgres-restore-drill
+subjects:
+  - kind: ServiceAccount
+    name: postgres-restore-drill
+    namespace: snapflow
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-restore-drill
+  namespace: snapflow
+spec:
+  schedule: "0 5 1 * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 7200
+      template:
+        spec:
+          restartPolicy: Never
+          serviceAccountName: postgres-restore-drill
+          automountServiceAccountToken: true
+          enableServiceLinks: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 26
+            runAsGroup: 26
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+            - name: kubectl
+              image: ghcr.io/fluxcd/flux-cli:v2.10.0@sha256:1a5178b1770052d6e88ab1c7c8434c5ac9bca8a8ab984dcaf6b9df31814ce9f2
+              command: ["cp", "/usr/local/bin/kubectl", "/tools/kubectl"]
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 16Mi
+                limits:
+                  memory: 64Mi
+              volumeMounts:
+                - name: tools
+                  mountPath: /tools
+          containers:
+            - name: drill
+              image: ghcr.io/cloudnative-pg/postgresql:17.12-standard-trixie@sha256:2a2fe731f3b421d1a1c1f84e70e95ef0658bf198b6c8dbbfe53d51f24c3275b8
+              command: ["bash", "/etc/snapflow/drill/postgres-restore-drill.sh"]
+              env:
+                - name: HOME
+                  value: /tmp
+                - name: TMPDIR
+                  value: /tmp
+                - name: DRILL_NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.namespace
+                - name: SOURCE_CA_FILE
+                  value: /etc/snapflow/postgres-ca/ca.crt
+                - name: SOURCE_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: snapflow-postgres-readonly
+                      key: username
+                - name: SOURCE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: snapflow-postgres-readonly
+                      key: password
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 64Mi
+                limits:
+                  memory: 256Mi
+              volumeMounts:
+                - name: tools
+                  mountPath: /usr/local/bin/kubectl
+                  subPath: kubectl
+                  readOnly: true
+                - name: script
+                  mountPath: /etc/snapflow/drill
+                  readOnly: true
+                - name: postgres-ca
+                  mountPath: /etc/snapflow/postgres-ca
+                  readOnly: true
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: tools
+              emptyDir: {}
+            - name: tmp
+              emptyDir: {}
+            - name: script
+              configMap:
+                name: postgres-restore-drill
+            - name: postgres-ca
+              secret:
+                secretName: snapflow-postgres-ca
+                items:
+                  - key: ca.crt
+                    path: ca.crt

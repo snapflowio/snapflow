@@ -1,0 +1,35 @@
+---
+import { SiteFooter } from '@/components/layout/site-footer';
+import SiteHeader from '@/components/layout/site-header.astro';
+import { Path } from '@/constants/paths';
+import BaseLayout from '@/layouts/base-layout.astro';
+import { CHAMFER_CLIP, DISPLAY_FONT } from '@/lib/marketing-styles';
+---
+
+<BaseLayout title="Page not found | Snapflow" canonicalPath="/404" noIndex>
+	<div class="flex min-h-screen flex-col bg-snapflow-ink text-snapflow-paper">
+		<SiteHeader variant="default" />
+		<main
+			class="flex flex-1 items-center justify-center px-6 py-16 text-center min-[769px]:py-32"
+		>
+			<div>
+				<p
+					class="font-pixel text-xs uppercase tracking-widest text-snapflow-purple"
+				>
+					404 // Signal lost
+				</p>
+				<h1
+					class={`${DISPLAY_FONT} mt-6 text-[clamp(4rem,12vw,9rem)] leading-[.85]`}
+				>
+					Page not found.
+				</h1>
+				<a
+					href={Path.HOME}
+					class={`${CHAMFER_CLIP} mt-10 inline-flex bg-snapflow-purple px-8 py-4 font-mono text-sm font-bold text-snapflow-ink transition-colors hover:bg-snapflow-purple-hero focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-snapflow-purple`}
+					>Return home</a
+				>
+			</div>
+		</main>
+		<SiteFooter />
+	</div>
+</BaseLayout>

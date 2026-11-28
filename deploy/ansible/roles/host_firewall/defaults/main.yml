@@ -1,0 +1,15 @@
+host_firewall_admin_cidr: "{{ ansible_facts['default_ipv4']['network'] }}/{{ ansible_facts['default_ipv4']['prefix'] }}"
+host_firewall_ssh_port: 22
+host_firewall_kubernetes_api_port: 6443
+host_firewall_public_tcp_ports:
+  - 80
+  - 443
+  - 8443
+  - 9444
+host_firewall_public_udp_ports:
+  - 8443
+host_firewall_cluster_cidrs:
+  - 10.42.0.0/16
+  - 10.43.0.0/16
+host_firewall_exposure_tcp_ranges: []
+host_firewall_exposure_udp_ranges: []

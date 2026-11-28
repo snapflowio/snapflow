@@ -1,0 +1,62 @@
+/*
+ * Copyright (c) 2026 Snapflow. All rights reserved.
+ *
+ * Snapflow is licensed under the GNU Affero General Public License v3.0.
+ * You may obtain a copy of the license at https://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * SPDX-License-Identifier: AGPL-3.0
+ */
+
+export enum AuditAction {
+	CREATE = 'create',
+	UPDATE = 'update',
+	DELETE = 'delete',
+	EXPORT = 'export',
+	UPDATE_QUOTA = 'update_quota',
+	CREATE_ORGANIZATION_QUOTA = 'create_organization_quota',
+	UPDATE_ORGANIZATION_QUOTA = 'update_organization_quota',
+	DELETE_ORGANIZATION_QUOTA = 'delete_organization_quota',
+	UPDATE_SCHEDULING = 'update_scheduling',
+	UPDATE_DRAINING = 'update_draining',
+	START = 'start',
+	STOP = 'stop',
+	RESIZE = 'resize',
+	REPLACE_LABELS = 'replace_labels',
+	CREATE_BACKUP = 'create_backup',
+	SET_AUTO_STOP_INTERVAL = 'set_auto_stop_interval',
+	SET_AUTO_ARCHIVE_INTERVAL = 'set_auto_archive_interval',
+	SET_AUTO_DELETE_INTERVAL = 'set_auto_delete_interval',
+	ARCHIVE = 'archive',
+	SNAPSHOT = 'snapshot',
+	FORK = 'fork',
+	PAUSE = 'pause',
+	SET_GENERAL_STATUS = 'set_general_status',
+	ACTIVATE = 'activate',
+	DEACTIVATE = 'deactivate',
+	UPDATE_NETWORK_SETTINGS = 'update_network_settings',
+	CREATE_SSH_ACCESS = 'create_ssh_access',
+	REVOKE_SSH_ACCESS = 'revoke_ssh_access',
+	RECOVER = 'recover',
+	REVOKE_MACHINE_IDENTITY = 'revoke_machine_identity',
+	SET_MAINTENANCE_MODE = 'set_maintenance_mode',
+	SET_DRAINING_POLICY = 'set_draining_policy',
+	IMPERSONATE = 'impersonate',
+	STOP_IMPERSONATING = 'stop_impersonating',
+	REGISTER = 'register',
+	SUSPEND = 'suspend',
+	UNSUSPEND = 'unsuspend',
+	RESOLVE_ABUSE_CASE = 'resolve_abuse_case',
+	APPLY_ABUSE_ACTION = 'apply_abuse_action',
+	DECIDE_ABUSE_REPORT = 'decide_abuse_report',
+	RECORD_ABUSE_COURT_ACTION = 'record_abuse_court_action',
+	RECORD_ABUSE_COUNTER_NOTICE_FORWARDED = 'record_abuse_counter_notice_forwarded',
+	SET_RESTRICTED_EVIDENCE_ACCESS = 'set_restricted_evidence_access',
+	ROTATE_SECRET = 'rotate_secret',
+	SEND_TEST = 'send_test',
+	RESEND = 'resend',
+	UPDATE_QUOTA_TIER = 'update_quota_tier',
+	REQUEST_QUOTA_INCREASE = 'request_quota_increase',
+	APPROVE_QUOTA_INCREASE = 'approve_quota_increase',
+	DENY_QUOTA_INCREASE = 'deny_quota_increase',
+	RECORD_REFUND = 'record_refund',
+}

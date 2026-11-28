@@ -1,0 +1,169 @@
+{
+  "version": "2",
+  "chainId": 84532,
+  "verifyingContract": "0x5aAdFB43eF8dAF45DD80F4676345b7676f1D70e3",
+  "domainName": "SnapflowEscrow",
+  "domainVersion": "3",
+  "signer": "0xe05fcC23807536bEe418f142D19fa0d21BB0cfF7",
+  "signerKey": "0x00000000000000000000000000000000000000000000000000000000000a11ce",
+  "host": "0x0376AAc07Ad725E01357B1725B5ceC61aE10473c",
+  "hostKey": "0x0000000000000000000000000000000000000000000000000000000000000b0b",
+  "typeHashes": {
+    "voucher": "0x576ece5d20821739439cc0ee7c4b576e98b22fbbafbc6b6a204c6bbbf216b37d",
+    "payoutAddress": "0xa26f2cf2437741de0bf97a8b5130920c415da4f4bca1d957078f6e7ae0ccdb37",
+    "hostWithdrawal": "0x4e1b8dde7968668f3c150a460ddae727cd8b60dc16f0c525909877b0ca1538a2",
+    "depositAuthorizationTag": "0x991cdfaaf85e96d5538860ced60c32f71cca31f08d68d4ceaba6faf5f132a968"
+  },
+  "vouchers": [
+    {
+      "name": "standard fee",
+      "customer": "0x000000000000000000000000000000000000c057",
+      "host": "0x0376AAc07Ad725E01357B1725B5ceC61aE10473c",
+      "feeReceiver": "0x000000000000000000000000000000000000FEE0",
+      "feeBps": "2000",
+      "salt": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "cumulativeAmount": "1000000",
+      "timestamp": "1900000000",
+      "metadata": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "channelId": "0xf6fdc2c3f6fcc42fd467670bf4172fc37a080d2bf29c5b7ba054092500015584",
+      "digest": "0x0e41ac676d070d5d157dfd0fec56ce3b11ad185b1e75f2617ad6af7244fd2386",
+      "signature": "0xe856b5c2f782aea8dbc935ac20ee198e206961c7899e653ce759fc559cb738f86997a06f2f6ca996e92322607bca00bce95b6f64abc942d59429f7aa3770dafa1c"
+    },
+    {
+      "name": "no fee with salt and metadata",
+      "customer": "0x000000000000000000000000000000000000c057",
+      "host": "0x0376AAc07Ad725E01357B1725B5ceC61aE10473c",
+      "feeReceiver": "0x0000000000000000000000000000000000000000",
+      "feeBps": "0",
+      "salt": "0x0d8400c5c6a5f7ac5295709ca5f0d478bd90b2e94a86618cd979dbfd7783e507",
+      "cumulativeAmount": "123456789",
+      "timestamp": "1900000060",
+      "metadata": "0xeb8812f12e27484bb5060506d3ed841369eb1f70f8d9db1b2b1f4b0cf3080664",
+      "channelId": "0x2ccf9ca3ee3b84b676d70e0149e48d35fc708fe5ec1859d4b4ecd0192e276441",
+      "digest": "0x59ef0aeae230fc8652fd2bd22201277d052e387ad73ef22b9baf6d85c9263a94",
+      "signature": "0x5671800ccf45551ed880ddbc3b39c4d3f59ab5179b714e4ac46c4c64d343ec26012fec2c036cadcd0a1258da1a4b61f4490035bd0dcb01f7d457d3a37307af141c"
+    },
+    {
+      "name": "largest values",
+      "customer": "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF",
+      "host": "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF",
+      "feeReceiver": "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF",
+      "feeBps": "65535",
+      "salt": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "cumulativeAmount": "340282366920938463463374607431768211455",
+      "timestamp": "18446744073709551615",
+      "metadata": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "channelId": "0xe89baaaea83bb99a7ee72038fcb3e813361b7e7d1c5bbe28aaae14b9885de58c",
+      "digest": "0x445c4bdbd1933267685f6351aa0cd396a576619588df4581e48aafd4cb0e0739",
+      "signature": "0xc70204de69e2a83cabd4ec1712aeea5e72100e687b60fe75411d9196bdad5cb933c70f541dac7a2e479f0d64fa20b294cf84c3f9a993d7b6d3f138717d80eb751c"
+    }
+  ],
+  "signerProofs": [
+    {
+      "name": "customer with deadline",
+      "customer": "0x000000000000000000000000000000000000c057",
+      "deadline": "1900003600",
+      "digest": "0x3aff60c03e54281c35c51605d5aea9fa079c74ebb1db14f221bf56c2ab3066b7",
+      "signature": "0x852619c0d8604a76f798a5d77f486d870dc91b96fc2e7462444f817e85a06f895477c542ed54149d0352c0085dab6820c0d1bb4c85133b9128900119b1d149261c"
+    },
+    {
+      "name": "largest deadline",
+      "customer": "0x000000000000000000000000000000000000Ba7e",
+      "deadline": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+      "digest": "0x89c6cd231b47b533b471d6df04274113a455146da1f8f057305329e8efa8a7e1",
+      "signature": "0xb9d5e1ad484bb6e47e355f615d85ec1d32cf37fad09af750c48dc7467ac46aa26c1eb0d36df0ec4b61c854b12a9332634e1d3980f6b85297fd4c7d902b68a7fe1c"
+    }
+  ],
+  "hostWithdrawals": [
+    {
+      "name": "first withdrawal with relay fee",
+      "host": "0x0376AAc07Ad725E01357B1725B5ceC61aE10473c",
+      "payout": "0x000000000000000000000000000000000000fA11",
+      "relayer": "0x0000000000000000000000000000000000000AE7",
+      "relayFee": "100000",
+      "nonce": "0",
+      "deadline": "1900003600",
+      "digest": "0x3c520950f0f0bbed21e7606db8bcf2e6d13e1f2485fd8cf3408fa0c8ab2a3dd0",
+      "signature": "0xee5000a9d9bf79a361011ff9fb921249108fcefabb1bff0b5f29e4e36e61db3241da74ade3aa1eec67be6f127987e102fb8998fb4e8682b33b4e56563c4cfc1c1c"
+    },
+    {
+      "name": "largest values",
+      "host": "0x0376AAc07Ad725E01357B1725B5ceC61aE10473c",
+      "payout": "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF",
+      "relayer": "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF",
+      "relayFee": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+      "nonce": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+      "deadline": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+      "digest": "0xca6d2a78b1b2a5d0af9ae83d17ccbb97a6c334e7e4057640074cdf48394bf4db",
+      "signature": "0xa004e49e710f4cc94c72566af5e7b0cebf2133960fd7ffb99e83fd533b9e5f05106e6bd5dd6e0d193b36a466916653cb16d6d13b7389cc69cae557bc2b919b811b"
+    }
+  ],
+  "payoutAddresses": [
+    {
+      "name": "first change",
+      "host": "0x0376AAc07Ad725E01357B1725B5ceC61aE10473c",
+      "payout": "0x000000000000000000000000000000000000fA11",
+      "nonce": "0",
+      "deadline": "1900003600",
+      "digest": "0x577ca22502969df660c5ba456dcead9cd19a24a5b463da40e260e9f587071bca",
+      "signature": "0x75eafe342ad21928b77a99d098b06dfecfa49ad04bd7383a1bb2dd05a067406d5d17b5fc8c387df450d17d4143d7a5543a7be9c46c54c95b8e91625013688d3d1c"
+    },
+    {
+      "name": "largest nonce and deadline",
+      "host": "0x0376AAc07Ad725E01357B1725B5ceC61aE10473c",
+      "payout": "0x000000000000000000000000000000000000c057",
+      "nonce": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+      "deadline": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+      "digest": "0xbaff54924f7d6acc4f3cf4f2cf9336d64421fa922b1fbf06658655391d528094",
+      "signature": "0x0ad6b1a9c46f5bd38b0db7d72bbdd950b81a87404ad30abad9c4492d28a64a6c79608329909c4d297e7c24bb2221cbbb62d2aea0f054057a3ba0d4e1f88f21f51b"
+    }
+  ],
+  "depositNonces": [
+    {
+      "name": "self-funded without relay fee",
+      "payer": "0x000000000000000000000000000000000000c057",
+      "customer": "0x000000000000000000000000000000000000c057",
+      "relayer": "0x000000000000000000000000000000000000c057",
+      "amount": "25000000",
+      "relayFee": "0",
+      "validAfter": "0",
+      "validBefore": "1900003600",
+      "salt": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "nonce": "0x280c034c9c2a54a0322671d23e07ca3f27cc6a4e63f2d2a2dfa0d1c7fe568e0b"
+    },
+    {
+      "name": "relayed at the largest values",
+      "payer": "0x000000000000000000000000000000000000Ba7e",
+      "customer": "0x000000000000000000000000000000000000c057",
+      "relayer": "0x0000000000000000000000000000000000000AE7",
+      "amount": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+      "relayFee": "100000",
+      "validAfter": "1900000000",
+      "validBefore": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+      "salt": "0xb10108f9c0bd5dc3c13b863fe34cf4360ac9053f0ea76b9a7378ac52d27f2593",
+      "nonce": "0xe40be3e2ddc6cbfb3eabeffd4c8562e6749102cf4d8be348f87f8855fee178e5"
+    }
+  ],
+  "invalidVoucherSignatures": [
+    {
+      "name": "s in the upper half of the curve order",
+      "voucher": "0",
+      "signature": "0xe856b5c2f782aea8dbc935ac20ee198e206961c7899e653ce759fc559cb738f896685f90d093566916dcdd9f8435ff41d1536d82037f5d662ba866e298c566471b"
+    },
+    {
+      "name": "recovery id 0 or 1",
+      "voucher": "0",
+      "signature": "0xe856b5c2f782aea8dbc935ac20ee198e206961c7899e653ce759fc559cb738f86997a06f2f6ca996e92322607bca00bce95b6f64abc942d59429f7aa3770dafa01"
+    },
+    {
+      "name": "64-byte compact signature",
+      "voucher": "0",
+      "signature": "0xe856b5c2f782aea8dbc935ac20ee198e206961c7899e653ce759fc559cb738f8e997a06f2f6ca996e92322607bca00bce95b6f64abc942d59429f7aa3770dafa"
+    },
+    {
+      "name": "signed for another chain",
+      "voucher": "0",
+      "signature": "0x45be6c33534534b1fe78f14b41f1ab4d19d14c5961b94d9439c8abf865f5cd57304fe5a720d1af34d656ba59d9ddd80363769640c5ac23aba22d5c8df62c925d1c"
+    }
+  ]
+}

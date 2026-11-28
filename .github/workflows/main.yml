@@ -1,0 +1,73 @@
+name: Main
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "deploy/apps/production/**"
+
+permissions: {}
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+      pull-requests: read
+
+  images:
+    name: Images
+    needs: ci
+    uses: ./.github/workflows/images.yml
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+  release-please:
+    name: Release PR
+    needs: ci
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    concurrency:
+      group: release-please
+      cancel-in-progress: false
+    environment: automation
+    permissions:
+      contents: read
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag: ${{ steps.release.outputs.tag_name }}
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      - id: token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.SNAPFLOW_AUTOMATION_CLIENT_ID }}
+          private-key: ${{ secrets.SNAPFLOW_AUTOMATION_PRIVATE_KEY }}
+          permission-contents: write
+          permission-issues: write
+          permission-pull-requests: write
+      - id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          token: ${{ steps.token.outputs.token }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  release:
+    name: Release
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    uses: ./.github/workflows/release.yml
+    secrets: inherit # zizmor: ignore[secrets-inherit]
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+      attestations: write
+    with:
+      tag: ${{ needs.release-please.outputs.tag }}
+      version: ${{ needs.release-please.outputs.version }}

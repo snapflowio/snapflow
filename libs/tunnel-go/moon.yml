@@ -1,0 +1,18 @@
+layer: "library"
+stack: "systems"
+tags:
+  - "scope-data-plane"
+
+fileGroups:
+  production:
+    - "**/*"
+    - "!**/*_test.go"
+
+tasks:
+  build:
+    command: "go"
+    args:
+      - "build"
+      - "./..."
+    inputs:
+      - "@group(production)"

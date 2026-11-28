@@ -1,0 +1,132 @@
+---
+import {
+	MENU_ITEM,
+	MENU_SURFACE,
+	SECONDARY_BUTTON,
+	SECONDARY_ICON_BUTTON,
+} from '@/lib/styles';
+
+interface Props {
+	markdownHref: string;
+}
+
+const { markdownHref } = Astro.props;
+
+const ASSISTANTS = [
+	{ label: 'Open in ChatGPT', url: 'https://chatgpt.com/', query: 'q' },
+	{ label: 'Open in Claude', url: 'https://claude.ai/new', query: 'q' },
+] as const;
+
+function assistantHref(
+	assistant: (typeof ASSISTANTS)[number],
+	pageUrl: string
+): string {
+	const url = new URL(assistant.url);
+	url.searchParams.set(
+		assistant.query,
+		`Read ${pageUrl} so I can ask questions about it.`
+	);
+	return url.href;
+}
+
+const markdownUrl = new URL(markdownHref, Astro.site).href;
+const menuId = 'snapflow-page-actions';
+---
+
+<div class="not-content flex shrink-0 items-center gap-1 print:hidden">
+	<snapflow-copy-page
+		data-source={markdownHref}
+		data-idle-label="Copy page"
+		data-copied-label="Copied"
+		data-failed-label="Copy failed"
+		class="contents"
+	>
+		<button type="button" aria-live="polite" class={SECONDARY_BUTTON}>
+			Copy page
+		</button>
+	</snapflow-copy-page>
+	<button
+		type="button"
+		popovertarget={menuId}
+		aria-label="More page actions"
+		class:list={[
+			SECONDARY_ICON_BUTTON,
+			'[anchor-name:--snapflow-page-actions]',
+		]}
+	>
+		<svg
+			viewBox="0 0 16 16"
+			class="size-3.5 text-(--text-icon)"
+			aria-hidden="true"
+		>
+			<path
+				d="M4 6l4 4 4-4"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1.5"
+			/>
+		</svg>
+	</button>
+	<div
+		id={menuId}
+		popover
+		class:list={[
+			MENU_SURFACE,
+			'm-0 mt-1 min-w-48 [position-anchor:--snapflow-page-actions] [position-area:bottom_span-left]',
+		]}
+	>
+		<a href={markdownHref} class={MENU_ITEM}> View as Markdown </a>
+		{ASSISTANTS.map((assistant) => (
+			<a
+				href={assistantHref(assistant, markdownUrl)}
+				target="_blank"
+				rel="noopener noreferrer"
+				class={MENU_ITEM}
+			>
+				{assistant.label}
+			</a>
+		))}
+	</div>
+</div>
+
+<script>
+const FEEDBACK_DURATION_MILLISECONDS = 2000;
+
+async function copyMarkdown(source: string): Promise<void> {
+	const response = await fetch(source);
+	if (!response.ok) {
+		throw new Error(`Fetching ${source} failed with status ${response.status}`);
+	}
+	await navigator.clipboard.writeText(await response.text());
+}
+
+class SnapflowCopyPage extends HTMLElement {
+	connectedCallback() {
+		const button = this.querySelector('button');
+		const { source, idleLabel, copiedLabel, failedLabel } = this.dataset;
+		if (!button || !source || !idleLabel || !copiedLabel || !failedLabel) {
+			return;
+		}
+		const showFeedback = (label: string, detail?: string) => {
+			button.textContent = label;
+			button.title = detail ?? '';
+			setTimeout(() => {
+				button.textContent = idleLabel;
+				button.title = '';
+			}, FEEDBACK_DURATION_MILLISECONDS);
+		};
+		button.addEventListener('click', () => {
+			copyMarkdown(source).then(
+				() => showFeedback(copiedLabel),
+				(error: unknown) =>
+					showFeedback(
+						failedLabel,
+						error instanceof Error ? error.message : String(error)
+					)
+			);
+		});
+	}
+}
+
+customElements.define('snapflow-copy-page', SnapflowCopyPage);
+</script>

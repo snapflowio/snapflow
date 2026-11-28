@@ -1,0 +1,8 @@
+- name: Write the container AppArmor profile
+  ansible.builtin.template:
+    src: profile.j2
+    dest: "{{ container_apparmor_file }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Load the container AppArmor profile

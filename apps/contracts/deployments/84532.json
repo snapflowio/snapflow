@@ -1,0 +1,30 @@
+{
+  "chainId": 84532,
+  "createX": "0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed",
+  "escrow": {
+    "address": "0xb4B6AAe61349D8384E1B8D197DDA7F61A25c2489",
+    "blockNumber": 63605062,
+    "constructorArgs": {
+      "depositCaps": {
+        "perAccount": 500000000,
+        "total": 10000000000
+      },
+      "roles": {
+        "admin": "0xA861870B22F099e3aaE741184a64E9FFA44B8caA",
+        "claimsFreezer": "0xA861870B22F099e3aaE741184a64E9FFA44B8caA",
+        "compliance": "0xA861870B22F099e3aaE741184a64E9FFA44B8caA",
+        "guardian": "0x06E50F0eb8F203E33C35e9A74c466087267b384c",
+        "pauser": "0xA861870B22F099e3aaE741184a64E9FFA44B8caA"
+      },
+      "token": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      "windows": {
+        "claimWindow": 86400,
+        "signerThawPeriod": 86400,
+        "withdrawalDelay": 86400
+      }
+    },
+    "deployer": "0xF33BC33aFAfE5F2ca2a2Cee88147Ae0227ed0369",
+    "feeReceiver": "0x1592d3eE1a13DD85187091D4D53280f848CdCF27",
+    "salt": "0xf33bc33afafe5f2ca2a2cee88147ae0227ed036900657363726f772e76360000"
+  }
+}

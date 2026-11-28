@@ -1,0 +1,23 @@
+inheritedBy:
+  toolchain: "go"
+
+tasks:
+  typecheck:
+    command: "go"
+    args: ["vet", "./..."]
+
+  lint:
+    command: "golangci-lint"
+    args: ["run", "./..."]
+
+  format:
+    command: "gofumpt"
+    args: ["-extra", "-w", "."]
+    options:
+      cache: false
+
+  tidy:
+    command: "go"
+    args: ["mod", "tidy"]
+    options:
+      cache: false

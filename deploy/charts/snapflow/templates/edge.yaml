@@ -1,0 +1,133 @@
+{{- if eq .Values.component "edge" }}
+{{- $root := . -}}
+{{- if .Values.edges }}
+{{- range $edge := .Values.edges }}
+{{- $name := printf "snapflow-edge-%s" (required "edges[].name is required" $edge.name) }}
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "edge") | nindent 4 }}
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: {{ $root.Values.secretStore }}
+  target:
+    name: {{ $name }}
+    creationPolicy: Owner
+  data:
+    - secretKey: id
+      remoteRef:
+        key: {{ printf "snapflow/edges/%s" $edge.name }}
+        property: id
+    - secretKey: enrollment-secret
+      remoteRef:
+        key: {{ printf "snapflow/edges/%s" $edge.name }}
+        property: enrollment-secret
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "edge") | nindent 4 }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "snapflow.selectorLabels" (dict "root" $root "component" $name) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "snapflow.selectorLabels" (dict "root" $root "component" $name) | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      terminationGracePeriodSeconds: 45
+      nodeSelector:
+        kubernetes.io/hostname: {{ required "edges[].node is required" $edge.node }}
+      tolerations:
+        - key: snapflow.io/edge
+          operator: Exists
+          effect: NoSchedule
+      securityContext:
+        {{- include "snapflow.podSecurityContext" $root | nindent 8 }}
+        runAsUser: 65532
+        runAsGroup: 65532
+      containers:
+        - name: edge
+          image: {{ include "snapflow.image" (dict "root" $root "name" "edge") }}
+          env:
+            - name: SNAPFLOW_EDGE_API_URL
+              value: {{ printf "%s/api" (include "snapflow.https" (dict "root" $root "key" "public")) | quote }}
+            - name: SNAPFLOW_EDGE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $name }}
+                  key: id
+            - name: SNAPFLOW_EDGE_ENROLLMENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $name }}
+                  key: enrollment-secret
+            {{- with $root.Values.origin.site }}
+            - name: SNAPFLOW_EDGE_ORIGIN_SITE
+              value: {{ . | quote }}
+            - name: SNAPFLOW_EDGE_ORIGIN_HOSTS
+              value: {{ required "origin.hosts is required with origin.site" $root.Values.origin.hosts | quote }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+            - name: tunnel
+              containerPort: 8443
+              protocol: TCP
+            - name: tunnel-quic
+              containerPort: 8443
+              protocol: UDP
+          startupProbe:
+            tcpSocket:
+              port: https
+            periodSeconds: 2
+            failureThreshold: 60
+          readinessProbe:
+            exec:
+              command: ["/usr/local/bin/snapflow-edge", "--check-health"]
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: https
+            periodSeconds: 20
+            failureThreshold: 3
+          securityContext:
+            {{- include "snapflow.containerSecurityContext" $root | nindent 12 }}
+          resources:
+            {{- toYaml $root.Values.edge.resources | nindent 12 }}
+          volumeMounts:
+            - name: state
+              mountPath: /var/lib/snapflow-edge
+      volumes:
+        - name: state
+          hostPath:
+            path: {{ $root.Values.edge.stateDirectory }}
+            type: Directory
+---
+{{ include "snapflow.probe" (dict "root" $root "component" "edge" "name" $name "job" "snapflow-edge" "module" $root.Values.probes.modules.http "url" (printf "https://%s%s" (required "edges[].publicHost is required" $edge.publicHost) $root.Values.edge.healthPath) "labels" (dict "edge" $edge.name)) }}
+{{- end }}
+---
+{{ include "snapflow.alertRules" (dict "root" $root "component" "edge") }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,28 @@
+layer: "library"
+stack: "systems"
+tags: ["scope-sdk", "client-api", "language-go"]
+
+fileGroups:
+  production: ["**/*", "!**/*_test.go"]
+
+tasks:
+  generate-api-client:
+    command: "go"
+    args:
+      - "tool"
+      - "oapi-codegen"
+      - "-config"
+      - "oapi-codegen.yaml"
+      - "../../dist/apps/api/openapi.json"
+    deps:
+      - "api:openapi"
+    inputs:
+      - "/dist/apps/api/openapi.json"
+      - "oapi-codegen.yaml"
+    outputs:
+      - "client.gen.go"
+
+  build:
+    command: "go"
+    args: ["build", "./..."]
+    inputs: ["@group(production)"]

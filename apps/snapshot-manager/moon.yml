@@ -1,0 +1,22 @@
+layer: "application"
+stack: "systems"
+tags: ["scope-runtime", "app-snapshot-manager", "deployable"]
+
+dependsOn:
+  - "common-go"
+
+fileGroups:
+  production: ["**/*", "!**/*_test.go"]
+
+tasks:
+  build:
+    script: "mkdir -p ../../dist/apps && CGO_ENABLED=0 go build -ldflags \"-X main.version=${VERSION:-dev}\" -o ../../dist/apps/snapshot-manager ./cmd/snapshot-manager"
+    inputs: ["@group(production)"]
+    outputs: ["/dist/apps/snapshot-manager"]
+
+  serve:
+    command: "gow"
+    args: ["run", "./cmd/snapshot-manager", "--profile", "development"]
+    preset: "server"
+    options:
+      envFile: ".env"

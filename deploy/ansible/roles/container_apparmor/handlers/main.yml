@@ -1,0 +1,3 @@
+- name: Load the container AppArmor profile
+  ansible.builtin.command: apparmor_parser --replace {{ container_apparmor_file }}
+  changed_when: true

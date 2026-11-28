@@ -1,0 +1,241 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.6.7/schema.json",
+	"extends": "//",
+	"linter": {
+		"rules": {
+			"complexity": {
+				"useLiteralKeys": "off"
+			},
+			"performance": {
+				"noBarrelFile": "error",
+				"noReExportAll": "error"
+			},
+			"style": {
+				"noRestrictedImports": {
+					"level": "error",
+					"options": {
+						"paths": {
+							"@snapflow/api-client/svelte-query": {
+								"message": "Only lib/api talks to the backend: add a query or mutation options function to lib/api/<domain>.ts and import that."
+							},
+							"#lib/api/auth/client.ts": {
+								"message": "Only lib/api talks to the backend: call an auth function from lib/api/auth/ instead of the raw auth client."
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["src/lib/config/zod-config.ts"],
+			"linter": {
+				"rules": {
+					"performance": { "noBarrelFile": "off", "noReExportAll": "off" }
+				}
+			}
+		},
+		{
+			"includes": ["src/lib/api/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": ["#lib/components/**", "#lib/features/**"],
+										"message": "API files hold server access only: return API data and let components, routes or features own UI concerns. Toasts go through MutationCache meta in api/client/query-client.ts."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"src/lib/api/client/query-client.ts",
+				"src/lib/api/errors/show-api-error.ts"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": [
+											"#lib/components/**",
+											"!#lib/components/ui/toast/toasts.svelte.ts"
+										],
+										"message": "The MutationCache bridge may only use the toast store from lib/components."
+									},
+									{
+										"group": ["#lib/features/**"],
+										"message": "API files must not import lib/features."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/lib/features/auth/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"@snapflow/api-client/svelte-query": {
+										"message": "Only lib/api talks to the backend: add a query or mutation options function to lib/api/<domain>.ts and import that."
+									},
+									"#lib/api/auth/client.ts": {
+										"message": "Only lib/api talks to the backend: call an auth function from lib/api/auth/ instead of the raw auth client."
+									}
+								},
+								"patterns": [
+									{
+										"group": ["#lib/features/organizations/**"],
+										"message": "Organizations depend on auth, never the reverse: move shared code to lib/api, lib/components or lib/utils."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/lib/components/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"@snapflow/api-client/svelte-query": {
+										"message": "Only lib/api talks to the backend: add a query or mutation options function to lib/api/<domain>.ts and import that."
+									}
+								},
+								"patterns": [
+									{
+										"group": ["#lib/features/**"],
+										"message": "Generic components must not depend on domain features: pass data and snippets in as props."
+									},
+									{
+										"group": [
+											"#lib/api/**",
+											"!#lib/api/errors/**",
+											"!#lib/api/public-config.ts"
+										],
+										"message": "Generic components must not call resource APIs: pass data in as props."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/lib/integrations/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"@snapflow/api-client/svelte-query": {
+										"message": "Only lib/api talks to the backend: add a query or mutation options function to lib/api/<domain>.ts and import that."
+									},
+									"#lib/api/auth/client.ts": {
+										"message": "Only lib/api talks to the backend: call an auth function from lib/api/auth/ instead of the raw auth client."
+									}
+								},
+								"patterns": [
+									{
+										"group": ["#lib/features/**", "#lib/components/**"],
+										"message": "Integrations stay domain-free and UI-free: expose handlers and let features or routes react to events."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"src/lib/utils/**",
+				"src/lib/config/**",
+				"src/lib/routing/**"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"@snapflow/api-client/svelte-query": {
+										"message": "Only lib/api talks to the backend: add a query or mutation options function to lib/api/<domain>.ts and import that."
+									}
+								},
+								"patterns": [
+									{
+										"group": [
+											"#lib/api/**",
+											"#lib/components/**",
+											"#lib/features/**"
+										],
+										"message": "Utilities, config and routing sit at the bottom of the dependency graph."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/routes/**"],
+			"linter": {
+				"rules": {
+					"style": {
+						"useFilenamingConvention": "off",
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"@snapflow/api-client/svelte-query": {
+										"message": "Only lib/api talks to the backend: add a query or mutation options function to lib/api/<domain>.ts and import that."
+									},
+									"#lib/api/auth/client.ts": {
+										"message": "Only lib/api talks to the backend: call an auth function from lib/api/auth/ instead of the raw auth client."
+									}
+								},
+								"patterns": [
+									{
+										"group": ["./*", "../**", "!./$types", "!./$types.js"],
+										"message": "Routes hold only SvelteKit + files: put components, state and logic in lib/features/<domain>/ and import them via #lib."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		}
+	]
+}

@@ -1,0 +1,9 @@
+component: origin
+imageNamespace: snapflowio/snapflow
+image:
+  tag: build-0123456789abcdef0123456789abcdef01234567-1760000000
+  digest: sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+origin:
+  site: titan
+  edges: edge-1.snapflow.run:8443,edge-2.snapflow.run:8443
+  hosts: snapflow.io,registry.snapflow.io

@@ -1,0 +1,17 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.6.7/schema.json",
+	"extends": "//",
+	"linter": {
+		"rules": {
+			"style": { "useNodejsImportProtocol": "off" }
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["src/utils/runtime.ts"],
+			"linter": {
+				"rules": { "style": { "noProcessEnv": "off" } }
+			}
+		}
+	]
+}

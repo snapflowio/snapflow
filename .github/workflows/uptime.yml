@@ -1,0 +1,98 @@
+name: Uptime
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: snapflow-uptime
+  cancel-in-progress: true
+
+env:
+  PUSHOVER_MESSAGES_URL: https://api.pushover.net/1/messages.json
+  PUSHOVER_EMERGENCY_PRIORITY: "2"
+  PUSHOVER_NORMAL_PRIORITY: "0"
+  PUSHOVER_RETRY_SECONDS: "60"
+  PUSHOVER_EXPIRE_SECONDS: "3600"
+  PROBE_STEP_NAME: Probe
+  PROBE_FAILED: failure
+  RECENT_RUN_LIMIT: "20"
+
+jobs:
+  probe:
+    name: Probe ${{ matrix.name }}
+    if: github.repository == 'snapflowio/snapflow'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: site
+            url: https://snapflow.io/api/health
+            accept: "200"
+          - name: registry
+            url: https://registry.snapflow.io/v2/
+            accept: "200 401"
+    steps:
+      - name: Read the previous probe result
+        id: previous
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          WORKFLOW_NAME: ${{ github.workflow }}
+          JOB_NAME: Probe ${{ matrix.name }}
+        run: |
+          if run_id="$(gh run list --repo "$REPOSITORY" --workflow "$WORKFLOW_NAME" --status completed \
+            --limit "$RECENT_RUN_LIMIT" --json databaseId,conclusion \
+            --jq '[.[] | select(.conclusion == "success" or .conclusion == "failure")][0].databaseId // empty')" &&
+            conclusion="$(gh run view "$run_id" --repo "$REPOSITORY" --json jobs \
+              --jq '.jobs[] | select(.name == env.JOB_NAME) | .steps[] | select(.name == env.PROBE_STEP_NAME) | .conclusion')"; then
+            echo "conclusion=$conclusion" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::Could not read the previous probe result; alerting on any failure."
+          fi
+      - name: ${{ env.PROBE_STEP_NAME }}
+        id: probe
+        env:
+          PROBE_URL: ${{ matrix.url }}
+          ACCEPTED_STATUSES: ${{ matrix.accept }}
+        run: |
+          status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' \
+            --connect-timeout 10 --max-time 20 --retry 3 --retry-delay 10 --retry-all-errors \
+            "$PROBE_URL" || true)"
+          for accepted in $ACCEPTED_STATUSES; do
+            if [ "$status" = "$accepted" ]; then
+              echo "$PROBE_URL answered $status"
+              exit 0
+            fi
+          done
+          echo "::error::$PROBE_URL answered ${status:-nothing}"
+          exit 1
+      - name: Send a Pushover alert when the result changes
+        if: ${{ !cancelled() && (steps.probe.outcome == env.PROBE_FAILED) != (steps.previous.outputs.conclusion == env.PROBE_FAILED) }}
+        env:
+          PUSHOVER_TOKEN: ${{ secrets.SNAPFLOW_PUSHOVER_TOKEN }}
+          PUSHOVER_USER_KEY: ${{ secrets.SNAPFLOW_PUSHOVER_USER_KEY }}
+          PUSHOVER_PRIORITY: ${{ steps.probe.outcome == env.PROBE_FAILED && env.PUSHOVER_EMERGENCY_PRIORITY || env.PUSHOVER_NORMAL_PRIORITY }}
+          PROBE_STATE: ${{ steps.probe.outcome == env.PROBE_FAILED && 'is down' || 'recovered' }}
+          PROBE_NAME: ${{ matrix.name }}
+          PROBE_URL: ${{ matrix.url }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          curl --silent --show-error --fail --output /dev/null \
+            --connect-timeout 10 --max-time 20 --retry 3 --retry-all-errors \
+            --form-string "token=$PUSHOVER_TOKEN" \
+            --form-string "user=$PUSHOVER_USER_KEY" \
+            --form-string "priority=$PUSHOVER_PRIORITY" \
+            --form-string "retry=$PUSHOVER_RETRY_SECONDS" \
+            --form-string "expire=$PUSHOVER_EXPIRE_SECONDS" \
+            --form-string "title=Snapflow $PROBE_NAME $PROBE_STATE" \
+            --form-string "message=$PROBE_URL $PROBE_STATE according to the external uptime probe." \
+            --form-string "url=$RUN_URL" \
+            "$PUSHOVER_MESSAGES_URL"

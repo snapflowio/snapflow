@@ -1,0 +1,8 @@
+edge_host_sysctl_file: /etc/sysctl.d/90-snapflow-edge.conf
+edge_host_udp_buffer_bytes: 7340032
+edge_host_sysctls:
+  net.core.rmem_max: "{{ edge_host_udp_buffer_bytes }}"
+  net.core.wmem_max: "{{ edge_host_udp_buffer_bytes }}"
+  net.ipv4.ip_unprivileged_port_start: 0
+edge_host_state_directory: /var/lib/snapflow/edge
+edge_host_user_id: 65532

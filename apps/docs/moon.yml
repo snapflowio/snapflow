@@ -1,0 +1,68 @@
+layer: "application"
+stack: "frontend"
+tags:
+  - "scope-frontend"
+  - "app-docs"
+  - "deployable"
+
+dependsOn:
+  - "sdk-typescript"
+
+fileGroups:
+  sources:
+    - "src/**/*"
+    - "public/**/*"
+    - "astro.config.mjs"
+    - "package.json"
+    - "tsconfig.json"
+  references:
+    - "/libs/sdk-typescript/src/**/*"
+    - "/libs/sdk-typescript/tsconfig.json"
+
+tasks:
+  serve:
+    command: "astro"
+    args: ["dev"]
+    preset: "server"
+    options:
+      envFile: ".env"
+
+  preview:
+    command: "astro"
+    args: ["preview"]
+    deps:
+      - "build"
+    preset: "server"
+    options:
+      envFile: ".env"
+
+  build:
+    command: "astro"
+    args: ["build"]
+    inputs:
+      - "@group(sources)"
+      - "@group(references)"
+      - "$PUBLIC_SITE_URL"
+    outputs:
+      - "/dist/apps/docs"
+    options:
+      envFile: ".env"
+
+  typecheck:
+    command: "astro"
+    args: ["check"]
+    inputs:
+      - "@group(sources)"
+      - "@group(references)"
+    options:
+      envFile: ".env"
+
+  lint:
+    command: "biome"
+    args: ["ci", ".", "--error-on-warnings"]
+
+  format:
+    command: "biome"
+    args: ["check", ".", "--write"]
+    options:
+      cache: false

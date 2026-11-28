@@ -1,0 +1,21 @@
+services:
+  anvil:
+    image: ghcr.io/foundry-rs/foundry:v1.9.0@sha256:3a392c18f9b16e665e932de159fb6fa9ed972c4b4352f2f76a1a8c7ca9b57d39
+    mem_limit: 1g
+    stop_grace_period: 2m
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        exec anvil --host 0.0.0.0 --port 8545 --chain-id 31337 --hardfork osaka --block-time 1
+        --state /home/foundry/state.json --state-interval 60
+    volumes:
+      - anvil-state:/home/foundry
+    healthcheck:
+      test: ["CMD", "cast", "chain-id", "--rpc-url", "http://127.0.0.1:8545"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  anvil-state:

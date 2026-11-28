@@ -1,0 +1,17 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: snapshot-manager
+  namespace: snapflow
+spec:
+  values:
+    component: snapshot-manager
+    domains:
+      registry: ${REGISTRY_DOMAIN}
+    objectStorage:
+      endpoint: ${OBJECT_STORAGE_ENDPOINT}
+      bucket: ${OBJECT_STORAGE_BUCKET}
+      snapshotBucket: ${OBJECT_STORAGE_SNAPSHOT_BUCKET}
+    image:
+      tag: "build-448c3adb664234cb0c87b8e05fc31471072f576b-1795800483" # {"$imagepolicy": "flux-system:snapflow-snapshot-manager:tag"}
+      digest: "sha256:7d7155ea6733dddf99b892cdbe167a2d1f322c2054ba159886e30743acbee840" # {"$imagepolicy": "flux-system:snapflow-snapshot-manager:digest"}

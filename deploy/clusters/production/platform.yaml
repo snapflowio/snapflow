@@ -1,0 +1,15 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: platform
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: infrastructure-configs
+  interval: 1h
+  timeout: 15m
+  path: ./deploy/platform/data
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings

@@ -1,0 +1,24 @@
+---
+import logo from '@/assets/snapflow-logo.svg';
+import { SITE } from '@/config/site';
+
+const { siteTitleHref } = Astro.locals.starlightRoute;
+---
+
+<a
+	href={siteTitleHref}
+	class="flex min-w-0 shrink-0 items-center gap-2 no-underline transition-opacity hover:opacity-80"
+>
+	<img
+		src={logo.src}
+		width={logo.width}
+		height={logo.height}
+		alt=""
+		class="size-6"
+	>
+	<span class="font-heading text-lg text-(--text-primary)" translate="no">
+		{SITE.NAME}
+	</span>
+	<span aria-hidden="true" class="px-1 text-(--text-muted)">/</span>
+	<span class="text-small text-(--text-body)">Docs</span>
+</a>

@@ -1,0 +1,15 @@
+---
+import Default from '@astrojs/starlight/components/MobileMenuFooter.astro';
+import SectionLinks from '@/components/section-links.astro';
+import { Path } from '@/config/site';
+import { PRIMARY_BUTTON } from '@/lib/styles';
+---
+
+<nav
+	aria-label="Documentation sections"
+	class="flex flex-col gap-3 border-t border-border pt-4"
+>
+	<SectionLinks stacked />
+	<a href={Path.DASHBOARD} class={PRIMARY_BUTTON}>Open app</a>
+</nav>
+<Default />

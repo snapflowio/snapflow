@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:17.12-alpine3.24@sha256:34261f594522cf41dfcb76aefd42b9d201098b0e6b23c9c68733f169e4218b6f
+    mem_limit: 768m
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ../dev/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    environment:
+      POSTGRES_USER: snapflow
+      POSTGRES_PASSWORD: snapflow
+      POSTGRES_DB: snapflow
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "PGPASSWORD=$$POSTGRES_PASSWORD psql --host=127.0.0.1 --username=$$POSTGRES_USER --dbname=$$POSTGRES_DB --command='select 1' --quiet --no-align --tuples-only >/dev/null",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  redis:
+    image: redis:8.10.3-alpine3.23@sha256:7958cfbb9d152f87dadfbc89f1b0b15938f0b81ff8982feb327476f4911935c3
+    mem_limit: 384m
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    tmpfs:
+      - /data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  postgres-data:

@@ -1,0 +1,2 @@
+container_apparmor_profile: cri-containerd.apparmor.d
+container_apparmor_file: "/etc/apparmor.d/{{ container_apparmor_profile }}"

@@ -1,0 +1,15 @@
+host_firewall_public_tcp_ports:
+  - 80
+  - 443
+  - 8443
+host_firewall_public_udp_ports:
+  - 8443
+host_firewall_cluster_cidrs: []
+host_firewall_exposure_tcp_ranges: "{{ undef(hint='Set host_firewall_exposure_tcp_ranges to the edge TCP port inventory, as first:last') }}"
+host_firewall_exposure_udp_ranges: "{{ undef(hint='Set host_firewall_exposure_udp_ranges to the edge UDP port inventory, as first:last') }}"
+
+standalone_edge_api_url: https://snapflow.io/api
+standalone_edge_origin_site: titan
+standalone_edge_origin_hosts:
+  - snapflow.io
+  - registry.snapflow.io

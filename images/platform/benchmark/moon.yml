@@ -1,0 +1,47 @@
+layer: "tool"
+stack: "systems"
+tags: ["scope-images", "image-platform-benchmark"]
+
+tasks:
+  tool:
+    description: "Builds the static benchmark tool the API uploads into spot-check sandboxes, one binary per guest platform"
+    script: |
+      set -eo pipefail
+      for goarch in amd64 arm64; do
+        CGO_ENABLED=0 GOOS=linux GOARCH="${goarch}" go build -C apps/snapflow -trimpath -ldflags "-s -w" \
+          -o "../../dist/apps/machine-benchmark/linux/${goarch}/machine-benchmark" ./cmd/machine-benchmark
+      done
+    inputs:
+      - "/apps/snapflow/**/*"
+      - "/libs/api-client-go/**/*"
+      - "/libs/common-go/**/*"
+      - "/libs/machine-proto/**/*"
+      - "/libs/microvm-go/**/*"
+      - "/libs/tunnel-go/**/*"
+    outputs:
+      - "/dist/apps/machine-benchmark/**/*"
+    options:
+      runFromWorkspaceRoot: true
+
+  oci-image:
+    script: >-
+      target_arch="${ARCH:-$(go env GOHOSTARCH)}";
+      buildctl build
+      --frontend dockerfile.v0
+      --local context=.
+      --local dockerfile=.
+      --opt filename=images/platform/benchmark/Dockerfile
+      --opt "platform=linux/${target_arch}"
+      --opt "build-arg:TARGETARCH=${target_arch}"
+      --output "type=image,name=${IMAGE_REFERENCE:-snapflowio/platform:benchmark-${VERSION:-0.0.0-dev}-${target_arch}},push=${PUSH:-false},oci-mediatypes=true,compression=zstd"
+    inputs:
+      - "**/*"
+      - "/apps/snapflow/**/*"
+      - "/libs/api-client-go/**/*"
+      - "/libs/common-go/**/*"
+      - "/libs/machine-proto/**/*"
+      - "/libs/microvm-go/**/*"
+      - "/libs/tunnel-go/**/*"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false

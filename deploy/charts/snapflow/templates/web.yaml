@@ -1,0 +1,86 @@
+{{- if has .Values.component (list "marketing" "docs" "dashboard") }}
+{{- $root := . -}}
+{{- $component := .Values.component -}}
+{{- $prefixMiddleware := printf "snapflow-%s-prefix" $component -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ printf "snapflow-%s" $component }}
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" $component) | nindent 4 }}
+spec:
+  replicas: {{ .Values.web.replicas }}
+  selector:
+    matchLabels:
+      {{- include "snapflow.selectorLabels" (dict "root" $root "component" $component) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "snapflow.selectorLabels" (dict "root" $root "component" $component) | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        {{- include "snapflow.podSecurityContext" $root | nindent 8 }}
+      containers:
+        - name: {{ $component }}
+          image: {{ include "snapflow.image" (dict "root" $root "name" $component) }}
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 20
+          securityContext:
+            {{- include "snapflow.containerSecurityContext" $root | nindent 12 }}
+          resources:
+            {{- toYaml .Values.web.resources | nindent 12 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ printf "snapflow-%s" $component }}
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" $component) | nindent 4 }}
+spec:
+  selector:
+    {{- include "snapflow.selectorLabels" (dict "root" $root "component" $component) | nindent 4 }}
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+{{- if .Values.web.stripPathPrefix }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ $prefixMiddleware }}
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" $component) | nindent 4 }}
+spec:
+  stripPrefix:
+    prefixes:
+      - {{ .Values.web.path }}
+{{- end }}
+---
+{{ include "snapflow.publicIngress" (dict "root" $root "component" $component "path" .Values.web.path "port" 8080 "middleware" (ternary $prefixMiddleware "" .Values.web.stripPathPrefix)) }}
+---
+{{ include "snapflow.ingressNetworkPolicy" (dict "root" $root "component" $component "port" 8080) }}
+{{- with (include "snapflow.podDisruptionBudget" (dict "root" $root "component" $component "replicas" .Values.web.replicas)) }}
+---
+{{ . }}
+{{- end }}
+{{- end }}

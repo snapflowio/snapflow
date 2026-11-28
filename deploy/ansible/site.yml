@@ -1,0 +1,31 @@
+- name: Harden the hosts
+  hosts: k3s_cluster:standalone_edge
+  become: true
+  pre_tasks:
+    - name: Read the SSH session of the admin user
+      become: false
+      ansible.builtin.setup:
+        gather_subset:
+          - "!all"
+          - "!min"
+          - env
+  roles:
+    - host_firewall
+    - ssh_hardening
+    - role: container_apparmor
+      when: "'k3s_cluster' in group_names"
+
+- name: Prepare the edge hosts
+  hosts: edge:standalone_edge
+  become: true
+  roles:
+    - edge_host
+
+- name: Install the standalone edges
+  hosts: standalone_edge
+  become: true
+  roles:
+    - standalone_edge
+
+- name: Install k3s
+  ansible.builtin.import_playbook: k3s.orchestration.site

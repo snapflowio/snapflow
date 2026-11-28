@@ -1,0 +1,190 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+  namespace: monitoring
+spec:
+  interval: 1h
+  timeout: 15m
+  chart:
+    spec:
+      chart: kube-prometheus-stack
+      version: 93.3.1
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+  values:
+    crds:
+      enabled: false
+    defaultRules:
+      rules:
+        etcd: false
+        kubeControllerManager: false
+        kubeProxy: false
+        kubeSchedulerAlerting: false
+        kubeSchedulerRecording: false
+        windows: false
+    windowsMonitoring:
+      enabled: false
+    kubeEtcd:
+      enabled: false
+    kubeControllerManager:
+      enabled: false
+    kubeScheduler:
+      enabled: false
+    kubeProxy:
+      enabled: false
+    alertmanager:
+      config:
+        global:
+          resolve_timeout: 5m
+        route:
+          receiver: pushover
+          group_by: ["namespace", "alertname"]
+          group_wait: 30s
+          group_interval: 5m
+          repeat_interval: 12h
+          routes:
+            - receiver: "null"
+              matchers:
+                - alertname = "Watchdog"
+            - receiver: "null"
+              matchers:
+                - severity = "info"
+            - receiver: pushover-emergency
+              matchers:
+                - severity = "critical"
+              repeat_interval: 1h
+        templates:
+          - /etc/alertmanager/config/*.tmpl
+        receivers:
+          - name: "null"
+          - name: pushover
+            pushover_configs:
+              - user_key_file: /etc/alertmanager/secrets/alertmanager-notifications/pushover-user-key
+                token_file: /etc/alertmanager/secrets/alertmanager-notifications/pushover-token
+                title: '{{ template "snapflow.pushover.title" . }}'
+                message: '{{ template "snapflow.pushover.message" . }}'
+                url: ""
+                priority: '{{ if eq .Status "firing" }}0{{ else }}-1{{ end }}'
+                send_resolved: true
+          - name: pushover-emergency
+            pushover_configs:
+              - user_key_file: /etc/alertmanager/secrets/alertmanager-notifications/pushover-user-key
+                token_file: /etc/alertmanager/secrets/alertmanager-notifications/pushover-token
+                title: '{{ template "snapflow.pushover.title" . }}'
+                message: '{{ template "snapflow.pushover.message" . }}'
+                url: ""
+                priority: '{{ if eq .Status "firing" }}2{{ else }}-1{{ end }}'
+                retry: 1m
+                expire: 1h
+                send_resolved: true
+      templateFiles:
+        pushover.tmpl: |-
+          {{ define "snapflow.pushover.title" -}}
+          {{ $alerts := .Alerts.Firing }}{{ if eq .Status "resolved" }}{{ $alerts = .Alerts.Resolved }}✅ Resolved: {{ end -}}
+          {{ if eq (len $alerts) 1 }}{{ with index $alerts 0 }}{{ or .Annotations.summary .Labels.alertname }}{{ end -}}
+          {{ else }}{{ .CommonLabels.alertname }}: {{ len $alerts }} alerts{{ end }}
+          {{- end }}
+          {{ define "snapflow.pushover.message" -}}
+          {{ $alerts := .Alerts.Firing }}{{ if eq .Status "resolved" }}{{ $alerts = .Alerts.Resolved }}{{ end -}}
+          {{ if eq (len $alerts) 1 }}{{ with index $alerts 0 }}{{ or .Annotations.description .Annotations.message .Annotations.summary .Labels.alertname }}{{ end -}}
+          {{ else }}{{ range $alerts }}- {{ or .Annotations.summary .Annotations.message .Labels.alertname }}
+          {{ end }}{{ with .CommonAnnotations.description }}
+          {{ . }}{{ end }}{{ end }}
+          {{- end }}
+      alertmanagerSpec:
+        secrets:
+          - alertmanager-notifications
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 256Mi
+    prometheus:
+      prometheusSpec:
+        retention: 15d
+        retentionSize: 8GB
+        ruleSelectorNilUsesHelmValues: false
+        serviceMonitorSelectorNilUsesHelmValues: false
+        podMonitorSelectorNilUsesHelmValues: false
+        probeSelectorNilUsesHelmValues: false
+        scrapeConfigSelectorNilUsesHelmValues: false
+        resources:
+          requests:
+            cpu: 200m
+            memory: 768Mi
+          limits:
+            memory: 2Gi
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 10Gi
+    kube-state-metrics:
+      rbac:
+        extraRules:
+          - apiGroups: ["k3s.cattle.io"]
+            resources: ["etcdsnapshotfiles"]
+            verbs: ["list", "watch"]
+      customResourceState:
+        enabled: true
+        config:
+          spec:
+            resources:
+              - groupVersionKind:
+                  group: k3s.cattle.io
+                  version: v1
+                  kind: ETCDSnapshotFile
+                metricNamePrefix: k3s_etcd_snapshot
+                labelsFromPath:
+                  snapshot: [metadata, name]
+                  node: [spec, nodeName]
+                  location: [spec, location]
+                metrics:
+                  - name: created_timestamp_seconds
+                    help: Unix time the k3s etcd snapshot was taken
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [status, creationTime]
+                  - name: ready
+                    help: Whether the k3s etcd snapshot is ready to use
+                    each:
+                      type: Gauge
+                      gauge:
+                        path: [status, readyToUse]
+                        nilIsZero: true
+    grafana:
+      additionalDataSources:
+        - name: Loki
+          type: loki
+          uid: loki
+          access: proxy
+          url: http://loki.monitoring.svc:3100
+      admin:
+        existingSecret: grafana-admin
+        userKey: admin-user
+        passwordKey: admin-password
+      persistence:
+        enabled: false
+      dashboardProviders:
+        dashboardproviders.yaml:
+          apiVersion: 1
+          providers:
+            - name: snapflow
+              orgId: 1
+              folder: Snapflow
+              type: file
+              disableDeletion: true
+              options:
+                path: /var/lib/grafana/dashboards/snapflow
+      dashboards:
+        snapflow:
+          cloudnative-pg:
+            gnetId: 20417
+            revision: 4
+            datasource: Prometheus

@@ -1,0 +1,21 @@
+{
+	"name": "@snapflow/organization-access",
+	"version": "0.0.0-dev",
+	"description": "Snapflow organization access control definitions",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/snapflowio/snapflow.git"
+	},
+	"license": "Apache-2.0",
+	"type": "module",
+	"exports": {
+		".": "./src/index.js"
+	},
+	"peerDependencies": {
+		"better-auth": "catalog:"
+	},
+	"devDependencies": {
+		"better-auth": "catalog:",
+		"typescript": "catalog:"
+	}
+}

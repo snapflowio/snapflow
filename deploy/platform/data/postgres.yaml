@@ -1,0 +1,37 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: snapflow-postgres
+  namespace: snapflow
+spec:
+  instances: 1
+  enablePDB: false
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.12-standard-trixie@sha256:2a2fe731f3b421d1a1c1f84e70e95ef0658bf198b6c8dbbfe53d51f24c3275b8
+  enableSuperuserAccess: false
+  bootstrap:
+    initdb:
+      database: snapflow
+      owner: snapflow
+  managed:
+    roles:
+      - name: snapflow_readonly
+        ensure: present
+        login: true
+        connectionLimit: 5
+        passwordSecret:
+          name: snapflow-postgres-readonly
+        inRoles:
+          - pg_read_all_data
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: snapflow-postgres-backups
+  storage:
+    size: 20Gi
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      memory: 2Gi

@@ -1,0 +1,109 @@
+- name: Refuse to firewall off the SSH session that runs this playbook
+  vars:
+    host_firewall_client: "{{ ansible_facts['env']['SSH_CLIENT'] | default('') | split | first | default('') }}"
+  ansible.builtin.assert:
+    that: host_firewall_client == '' or host_firewall_admin_cidr | ansible.utils.network_in_network(host_firewall_client)
+    fail_msg: >-
+      This session comes from {{ host_firewall_client }}, outside the admin network {{ host_firewall_admin_cidr }};
+      set host_firewall_admin_cidr to a network that contains it.
+    quiet: true
+
+- name: Install UFW
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+
+- name: Deny incoming traffic by default
+  community.general.ufw:
+    direction: incoming
+    policy: deny
+
+- name: Allow outgoing traffic by default
+  community.general.ufw:
+    direction: outgoing
+    policy: allow
+
+- name: Deny routed traffic by default
+  community.general.ufw:
+    direction: routed
+    policy: deny
+
+- name: Log blocked traffic at the low level
+  community.general.ufw:
+    logging: low
+
+- name: Rate-limit SSH from the admin network
+  community.general.ufw:
+    rule: limit
+    from_ip: "{{ host_firewall_admin_cidr }}"
+    to_port: "{{ host_firewall_ssh_port }}"
+    proto: tcp
+    comment: SSH
+
+- name: Allow the Kubernetes API from the admin network
+  community.general.ufw:
+    rule: allow
+    from_ip: "{{ host_firewall_admin_cidr }}"
+    to_port: "{{ host_firewall_kubernetes_api_port }}"
+    proto: tcp
+    comment: k3s API
+  when: "'server' in group_names"
+
+- name: Allow the public TCP ports
+  community.general.ufw:
+    rule: allow
+    to_port: "{{ item }}"
+    proto: tcp
+    comment: public
+  loop: "{{ host_firewall_public_tcp_ports }}"
+
+- name: Allow the public UDP ports
+  community.general.ufw:
+    rule: allow
+    to_port: "{{ item }}"
+    proto: udp
+    comment: public
+  loop: "{{ host_firewall_public_udp_ports }}"
+
+- name: Allow the TCP exposure ranges
+  community.general.ufw:
+    rule: allow
+    to_port: "{{ item }}"
+    proto: tcp
+    comment: exposures
+  loop: "{{ host_firewall_exposure_tcp_ranges }}"
+
+- name: Allow the UDP exposure ranges
+  community.general.ufw:
+    rule: allow
+    to_port: "{{ item }}"
+    proto: udp
+    comment: exposures
+  loop: "{{ host_firewall_exposure_udp_ranges }}"
+
+- name: Allow the pod and service networks
+  community.general.ufw:
+    rule: allow
+    from_ip: "{{ item }}"
+    comment: k3s
+  loop: "{{ host_firewall_cluster_cidrs }}"
+
+- name: Route traffic from the pod and service networks
+  community.general.ufw:
+    rule: allow
+    route: true
+    from_ip: "{{ item }}"
+    comment: k3s
+  loop: "{{ host_firewall_cluster_cidrs }}"
+
+- name: Route traffic to the pod and service networks
+  community.general.ufw:
+    rule: allow
+    route: true
+    to_ip: "{{ item }}"
+    comment: k3s
+  loop: "{{ host_firewall_cluster_cidrs }}"
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled

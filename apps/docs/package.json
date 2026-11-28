@@ -1,0 +1,24 @@
+{
+	"name": "@snapflow/docs",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"dependencies": {
+		"@astrojs/starlight": "catalog:",
+		"@astrojs/starlight-tailwind": "catalog:",
+		"@snapflow/consent": "workspace:*",
+		"astro": "catalog:",
+		"starlight-links-validator": "catalog:",
+		"starlight-llms-txt": "catalog:",
+		"starlight-typedoc": "catalog:",
+		"typedoc": "catalog:",
+		"typedoc-plugin-markdown": "catalog:"
+	},
+	"devDependencies": {
+		"@astrojs/check": "catalog:",
+		"@snapflow/sdk": "workspace:*",
+		"@tailwindcss/vite": "catalog:",
+		"tailwindcss": "catalog:",
+		"typescript": "catalog:"
+	}
+}

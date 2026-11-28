@@ -1,0 +1,25 @@
+k3s_server_settings:
+  cluster-init: true
+  node-ip: "{{ node_ip }}"
+  advertise-address: "{{ node_ip }}"
+  node-external-ip: "{{ public_ip }}"
+  tls-san:
+    - "{{ public_ip }}"
+  flannel-backend: wireguard-native
+  flannel-external-ip: true
+  secrets-encryption: true
+  write-kubeconfig-mode: "0600"
+  disable:
+    - metrics-server
+  node-label:
+    - svccontroller.k3s.cattle.io/enablelb=true
+  etcd-snapshot-schedule-cron: "0 */6 * * *"
+  etcd-snapshot-retention: 28
+  etcd-s3: true
+  etcd-s3-config-secret: k3s-etcd-snapshot-s3-config
+
+k3s_microvm_reservation: >-
+  {{ {'kubelet-arg': ['system-reserved=cpu=' ~ offered_vcpus ~ ',memory=' ~ offered_memory_gib ~ 'Gi']}
+     if offered_vcpus is defined and offered_memory_gib is defined else {} }}
+
+server_config_yaml: "{{ k3s_server_settings | combine(k3s_microvm_reservation) | to_nice_yaml }}"

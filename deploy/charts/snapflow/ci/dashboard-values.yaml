@@ -1,0 +1,11 @@
+component: dashboard
+imageNamespace: snapflowio/snapflow
+image:
+  tag: build-0123456789abcdef0123456789abcdef01234567-1760000000
+  digest: sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+domains:
+  public: snapflow.io
+web:
+  path: /dashboard
+  stripPathPrefix: true
+  replicas: 2

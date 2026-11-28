@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - repositories.yaml
+  - secrets.yaml
+  - kube-prometheus-stack.yaml
+  - blackbox-exporter.yaml
+  - loki.yaml
+  - alloy.yaml
+  - postgres.yaml
+  - rules.yaml
+components:
+  - ../components/helm-release-defaults

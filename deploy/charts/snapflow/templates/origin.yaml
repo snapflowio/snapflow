@@ -1,0 +1,81 @@
+{{- if eq .Values.component "origin" }}
+{{- $root := . }}
+{{- $edges := compact (splitList "," (toString (default "" .Values.origin.edges))) }}
+{{- if $edges }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: snapflow-origin
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "origin") | nindent 4 }}
+automountServiceAccountToken: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snapflow-origin
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "origin") | nindent 4 }}
+spec:
+  replicas: {{ .Values.origin.replicas }}
+  selector:
+    matchLabels:
+      {{- include "snapflow.selectorLabels" (dict "root" $root "component" "origin") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "snapflow.labels" (dict "root" $root "component" "origin") | nindent 8 }}
+    spec:
+      serviceAccountName: snapflow-origin
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        {{- include "snapflow.podSecurityContext" $root | nindent 8 }}
+      containers:
+        - name: origin
+          image: {{ include "snapflow.image" (dict "root" $root "name" "origin") }}
+          env:
+            - name: SNAPFLOW_ORIGIN_SITE
+              value: {{ required "origin.site is required" .Values.origin.site | quote }}
+            - name: SNAPFLOW_ORIGIN_EDGES
+              value: {{ join "," $edges | quote }}
+            - name: SNAPFLOW_ORIGIN_UPSTREAM
+              value: {{ required "origin.upstream is required" .Values.origin.upstream | quote }}
+            - name: SNAPFLOW_ORIGIN_OPENBAO_ADDR
+              value: {{ .Values.openbao.address | quote }}
+            - name: SNAPFLOW_ORIGIN_OPENBAO_AUTH
+              value: kubernetes
+            - name: SNAPFLOW_ORIGIN_OPENBAO_TOKEN_FILE
+              value: /var/run/secrets/openbao/token
+            - name: SNAPFLOW_ORIGIN_HEALTH_ADDRESS
+              value: {{ printf ":%d" (int .Values.origin.healthPort) | quote }}
+          ports:
+            - name: health
+              containerPort: {{ .Values.origin.healthPort }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: health
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: health
+          securityContext:
+            {{- include "snapflow.containerSecurityContext" $root | nindent 12 }}
+          resources:
+            {{- toYaml .Values.origin.resources | nindent 12 }}
+          volumeMounts:
+            - name: openbao-token
+              mountPath: /var/run/secrets/openbao
+              readOnly: true
+      volumes:
+        - name: openbao-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  path: token
+                  audience: {{ .Values.openbao.tokenAudience }}
+                  expirationSeconds: 3600
+{{- end }}
+{{- end }}

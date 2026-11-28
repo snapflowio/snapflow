@@ -1,0 +1,75 @@
+{
+	"name": "@snapflow/sdk",
+	"version": "0.0.0-dev",
+	"description": "Snapflow TypeScript SDK for sandbox management and code execution",
+	"type": "module",
+	"publishConfig": {
+		"directory": "../../dist/libs/sdk-typescript",
+		"linkDirectory": false
+	},
+	"exports": {
+		".": {
+			"types": "./index.d.ts",
+			"default": "./index.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"browser": {
+		"node:crypto": false,
+		"node:fs": false,
+		"node:os": false,
+		"tar": false,
+		"fast-glob": false,
+		"busboy": false,
+		"@aws-sdk/client-s3": false,
+		"@aws-sdk/lib-storage": false
+	},
+	"files": [
+		"**/*.js",
+		"**/*.js.map",
+		"**/*.d.ts"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/snapflowio/snapflow.git"
+	},
+	"author": "Snapflow Platforms Inc.",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/snapflowio/snapflow/issues"
+	},
+	"homepage": "https://www.snapflow.io/docs",
+	"keywords": [
+		"snapflow",
+		"sandbox",
+		"typescript",
+		"sdk"
+	],
+	"dependencies": {
+		"@aws-sdk/client-s3": "catalog:",
+		"@aws-sdk/lib-storage": "catalog:",
+		"@scure/bip39": "catalog:",
+		"@snapflow/api-client": "workspace:*",
+		"@snapflow/contracts": "workspace:*",
+		"@snapflow/toolbox-api-client": "workspace:*",
+		"busboy": "catalog:",
+		"fast-glob": "catalog:",
+		"isomorphic-ws": "catalog:",
+		"pathe": "catalog:",
+		"shell-quote": "catalog:",
+		"smol-toml": "catalog:",
+		"tar": "catalog:",
+		"ws": "catalog:"
+	},
+	"peerDependencies": {
+		"viem": "catalog:"
+	},
+	"devDependencies": {
+		"@arethetypeswrong/cli": "catalog:",
+		"@types/busboy": "catalog:",
+		"@types/node": "catalog:",
+		"@types/ws": "catalog:",
+		"typescript": "catalog:",
+		"viem": "catalog:"
+	}
+}

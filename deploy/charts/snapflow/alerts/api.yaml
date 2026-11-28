@@ -1,0 +1,134 @@
+groups:
+  - name: snapflow.api
+    rules:
+      - alert: SnapflowApiMetricsMissing
+        expr: |
+          absent(up{job="snapflow/snapflow-api"} == 1)
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Prometheus is not scraping any Snapflow api or worker process"
+          description: "No api or worker pod has answered a metrics scrape for 10 minutes, so the API alerts below cannot fire. Check the snapflow-api PodMonitor, METRICS_PORT and the api network policy."
+      - alert: SnapflowApiHighErrorRate
+        expr: |
+          sum(rate(http_server_request_duration_count{job="snapflow/snapflow-api", http_response_status_code=~"5.."}[5m]))
+            / sum(rate(http_server_request_duration_count{job="snapflow/snapflow-api"}[5m])) > 0.05
+          and sum(rate(http_server_request_duration_count{job="snapflow/snapflow-api"}[5m])) > 0.1
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Over 5% of API requests fail with a server error"
+          description: "{{ $value | humanizePercentage }} of API requests returned 5xx over the last 5 minutes. Check the api logs in Loki and the database, Redis and OpenBao alerts."
+      - alert: SnapflowApiSlowResponses
+        expr: |
+          histogram_quantile(0.95, sum by (le) (rate(http_server_request_duration_bucket{job="snapflow/snapflow-api"}[5m]))) > 2
+          and sum(rate(http_server_request_duration_count{job="snapflow/snapflow-api"}[5m])) > 0.1
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API p95 latency is above 2 seconds"
+          description: "The 95th percentile API response time has been {{ $value | humanizeDuration }} for 15 minutes."
+      - alert: SnapflowOutboxBacklog
+        expr: |
+          max(snapflow_realtime_outbox_oldest_pending_age{namespace="snapflow"}) > 300
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Realtime outbox events are waiting over 5 minutes"
+          description: "The oldest pending outbox event is {{ $value | humanizeDuration }} old. Notices, webhooks and realtime updates are delayed; check the worker and its dispatch-realtime-outbox job."
+      - alert: SnapflowOutboxFailedEvents
+        expr: |
+          max(snapflow_realtime_outbox_events{namespace="snapflow", outbox_status="failed"}) > 0
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Realtime outbox events gave up after every retry"
+          description: "{{ $value }} outbox events are in the failed state and will not be delivered. Inspect realtime_outbox_event rows with status failed."
+      - alert: SnapflowSettlementChainUnverified
+        expr: |
+          max(snapflow_settlement_chain_identity_unverified_age{namespace="snapflow"}) > 600
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Settlement chain identity unconfirmed for over 10 minutes"
+          description: "A pod has not confirmed SETTLEMENT_CHAIN_ID and the escrow bytecode for {{ $value | humanizeDuration }}. The escrow indexer, relayer, voucher issuer and reconciliation are stopped; check SETTLEMENT_RPC_URL and the settlement config."
+      - alert: SnapflowScheduledJobFailing
+        expr: |
+          sum by (job_name) (increase(snapflow_scheduled_job_runs_total{namespace="snapflow", outcome="failure"}[30m])) > 0
+          unless on (job_name) sum by (job_name) (increase(snapflow_scheduled_job_runs_total{namespace="snapflow", outcome="success"}[30m])) > 0
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Scheduled job {{ $labels.job_name }} fails on every run"
+          description: "{{ $labels.job_name }} has failed and not succeeded once in the last 30 minutes. Check the worker logs for that job."
+      - alert: SnapflowScheduledJobErrors
+        expr: |
+          sum by (job_name) (increase(snapflow_scheduled_job_runs_total{namespace="snapflow", outcome="failure"}[1h]))
+            / sum by (job_name) (increase(snapflow_scheduled_job_runs_total{namespace="snapflow"}[1h])) > 0.1
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Scheduled job {{ $labels.job_name }} fails often"
+          description: "{{ $value | humanizePercentage }} of {{ $labels.job_name }} runs failed in the last hour."
+      - alert: SnapflowEmailDeliveryFailing
+        expr: |
+          sum by (email_category) (increase(snapflow_email_sends_total{namespace="snapflow", outcome="failure"}[30m])) > 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.email_category }} email is failing to send"
+          description: "Resend rejected {{ $value }} {{ $labels.email_category }} emails in the last 30 minutes after retries. Sign-in codes and abuse notices depend on email; check RESEND_API_KEY, the sending domain in Resend and the api logs."
+      - alert: SnapflowUrgentAbuseReportOpen
+        expr: |
+          max by (abuse_category) (snapflow_abuse_reports_open{namespace="snapflow", abuse_category=~"csam|threat_to_life"}) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "An open {{ $labels.abuse_category }} abuse report needs action"
+          description: "{{ $value }} {{ $labels.abuse_category }} reports wait for a decision. The preview must be disabled within 1 hour and the report referred the same day. Open Admin, Abuse in the dashboard."
+      - alert: SnapflowAbuseReportOverdue
+        expr: |
+          max by (abuse_category) (snapflow_abuse_reports_overdue{namespace="snapflow"}) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "{{ $labels.abuse_category }} abuse reports are past their response target"
+          description: "{{ $value }} {{ $labels.abuse_category }} reports have passed their response target without a decision. Open Admin, Abuse in the dashboard and decide them."
+      - alert: SnapflowCounterNoticePastRestoreBy
+        expr: |
+          max(snapflow_abuse_counter_notices_past_restore_by{namespace="snapflow"}) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Counter-noticed material is past its restoration deadline"
+          description: "{{ $value }} counter-noticed copyright reports passed their restore-by time (14 business days after receipt, later when the complainant copy went out late) without being restored or stopped by a court action. Other reports or abuse controls may hold the case. Open Admin, Abuse in the dashboard and restore the material or record the court action."
+      - alert: SnapflowCounterNoticeNotForwarded
+        expr: |
+          max(snapflow_abuse_counter_notices_forward_overdue{namespace="snapflow"}) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "A DMCA counter-notice has not been forwarded to the complainant"
+          description: "{{ $value }} counter-notices were not sent to the complainant within 1 business day of receipt. 17 USC 512(g)(2)(B) requires a prompt copy, and restoration cannot be scheduled until it is sent. Check the abuse.counter-notice.forward outbox and the email logs, or send the copy by hand and record it in Admin, Abuse."
+      - alert: SnapflowPublicSiteDown
+        expr: |
+          probe_success{job="snapflow-public"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Snapflow API is down: {{ $labels.instance }} fails through Cloudflare"
+          description: "The public readiness check has failed for 5 minutes. Check Cloudflare, the router port forward, Traefik and the api pods."

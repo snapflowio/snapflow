@@ -1,0 +1,15 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: origin
+  namespace: snapflow
+spec:
+  values:
+    component: origin
+    origin:
+      site: ${ORIGIN_SITE}
+      edges: ${ORIGIN_EDGE_TUNNELS}
+      hosts: ${ORIGIN_HOSTS}
+    image:
+      tag: "" # {"$imagepolicy": "flux-system:snapflow-origin:tag"}
+      digest: "" # {"$imagepolicy": "flux-system:snapflow-origin:digest"}

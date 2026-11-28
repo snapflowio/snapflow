@@ -1,0 +1,155 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.6.7/schema.json",
+	"extends": "//",
+	"files": {
+		"includes": [
+			"**",
+			"!src/migrations/*-migration.ts",
+			"!src/migrations/snapflow.json"
+		]
+	},
+	"javascript": {
+		"parser": { "unsafeParameterDecoratorsEnabled": true }
+	},
+	"linter": {
+		"rules": {
+			"complexity": {
+				"noStaticOnlyClass": "off"
+			},
+			"correctness": {
+				"noUnusedPrivateClassMembers": "off",
+				"useHookAtTopLevel": "off"
+			},
+			"style": {
+				"useExportType": "off",
+				"useImportType": "off",
+				"noRestrictedImports": {
+					"level": "error",
+					"options": {
+						"paths": {
+							"@nestjs/schedule": {
+								"importNames": ["Cron", "Interval", "Timeout"],
+								"message": "Use @ScheduledJob in a scheduler/jobs/*.job.ts trigger: raw @Cron, @Interval and @Timeout ignore the maintenance mode."
+							},
+							"@nestjs/common": {
+								"importNames": ["forwardRef"],
+								"message": "Module and provider cycles are not allowed: move the shared code into the module both depend on, or use domain events."
+							},
+							"@nestjs/config": {
+								"importNames": ["ConditionalModule"],
+								"message": "Process roots in app/ decide which modules load; do not gate modules at runtime."
+							}
+						},
+						"patterns": [
+							{
+								"group": ["**/common/decorators/scheduled-job.decorator"],
+								"message": "@ScheduledJob belongs on scheduler/jobs/*.job.ts triggers registered in the feature's scheduler/scheduler.module.ts."
+							}
+						]
+					}
+				}
+			}
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["src/*/scheduler/jobs/**/*.job.ts"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"@nestjs/schedule": {
+										"importNames": ["Cron", "Interval", "Timeout"],
+										"message": "Use @ScheduledJob in a scheduler/jobs/*.job.ts trigger: raw @Cron, @Interval and @Timeout ignore the maintenance mode."
+									},
+									"@nestjs/common": {
+										"importNames": ["forwardRef"],
+										"message": "Module and provider cycles are not allowed: move the shared code into the module both depend on, or use domain events."
+									},
+									"@nestjs/config": {
+										"importNames": ["ConditionalModule"],
+										"message": "Process roots in app/ decide which modules load; do not gate modules at runtime."
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/**/*.controller.ts"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"paths": {
+									"@nestjs/schedule": {
+										"importNames": ["Cron", "Interval", "Timeout"],
+										"message": "Use @ScheduledJob in a scheduler/jobs/*.job.ts trigger: raw @Cron, @Interval and @Timeout ignore the maintenance mode."
+									},
+									"@nestjs/common": {
+										"importNames": ["forwardRef"],
+										"message": "Module and provider cycles are not allowed: move the shared code into the module both depend on, or use domain events."
+									},
+									"@nestjs/config": {
+										"importNames": ["ConditionalModule"],
+										"message": "Process roots in app/ decide which modules load; do not gate modules at runtime."
+									}
+								},
+								"patterns": [
+									{
+										"group": ["**/*.controller", "**/*.controller.ts"],
+										"message": "Controllers delegate to services and actions; never import another controller."
+									},
+									{
+										"group": ["**/common/decorators/scheduled-job.decorator"],
+										"message": "@ScheduledJob belongs on scheduler/jobs/*.job.ts triggers registered in the feature's scheduler/scheduler.module.ts."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/common/decorators/scheduled-job.decorator.ts"],
+			"linter": {
+				"rules": { "style": { "noRestrictedImports": "off" } }
+			}
+		},
+		{
+			"includes": [
+				"src/migrations/**/data-source.ts",
+				"src/infra/email/templates/*.tsx"
+			],
+			"linter": {
+				"rules": { "style": { "noDefaultExport": "off" } }
+			}
+		},
+		{
+			"includes": [
+				"src/config/configuration.config.ts",
+				"src/config/utils/current-process.util.ts",
+				"src/migrations/**",
+				"src/cli/**",
+				"build-provenance.mts"
+			],
+			"linter": {
+				"rules": { "style": { "noProcessEnv": "off" } }
+			}
+		},
+		{
+			"includes": ["src/cli/**", "src/cli.ts", "src/generate-openapi.ts"],
+			"linter": {
+				"rules": { "suspicious": { "noConsole": "off" } }
+			}
+		}
+	]
+}

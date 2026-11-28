@@ -1,0 +1,25 @@
+/*
+ * Copyright (c) 2026 Snapflow. All rights reserved.
+ *
+ * Snapflow is licensed under the GNU Affero General Public License v3.0.
+ * You may obtain a copy of the license at https://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * SPDX-License-Identifier: AGPL-3.0
+ */
+
+import { authenticatedUserQueryOptions } from '#lib/api/account/terms.ts';
+import { requireSession } from '#lib/features/auth/lib/auth-redirects.ts';
+import { followOrganizationLink } from '#lib/features/organizations/lib/organization-link.ts';
+import type { LayoutLoad } from './$types';
+
+export const load: LayoutLoad = async ({ parent, untrack, url }) => {
+	const { queryClient, session } = await parent();
+	untrack(() => requireSession(session, url));
+	await Promise.all([
+		queryClient.query({
+			...authenticatedUserQueryOptions(),
+			staleTime: 'static',
+		}),
+		followOrganizationLink(queryClient, url),
+	]);
+};

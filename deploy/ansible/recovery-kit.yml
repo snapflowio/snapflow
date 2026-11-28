@@ -1,0 +1,145 @@
+- name: Export the recovery kit
+  hosts: server[0]
+  become: true
+  gather_facts: false
+  vars_prompt:
+    - name: recovery_kit_passphrase
+      prompt: Passphrase that encrypts the recovery kit
+      private: true
+      confirm: true
+  vars:
+    recovery_kit_directory: "{{ playbook_dir | dirname | dirname }}"
+    recovery_kit_server_files:
+      k3s-server-token: /var/lib/rancher/k3s/server/token
+      k3s-encryption-config.json: /var/lib/rancher/k3s/server/cred/encryption-config.json
+      k3s-config.yaml: /etc/rancher/k3s/config.yaml
+    recovery_kit_secret_fields:
+      - { namespace: openbao, secret: openbao-seal, key: key, file: openbao-seal-key }
+      - { namespace: snapflow, secret: snapflow-backups, key: access-key-id, file: r2-access-key-id }
+      - { namespace: snapflow, secret: snapflow-backups, key: secret-access-key, file: r2-secret-access-key }
+  pre_tasks:
+    - name: Refuse a passphrase shorter than 16 characters
+      ansible.builtin.assert:
+        that: recovery_kit_passphrase | length >= 16
+        fail_msg: Use a passphrase of at least 16 characters; it is the only thing protecting the kit.
+        quiet: true
+      no_log: true
+
+    - name: Name the kit after the current time
+      ansible.builtin.set_fact:
+        recovery_kit_file: "{{ recovery_kit_directory }}/snapflow-recovery-kit-{{ now(utc=true, fmt='%Y%m%dT%H%M%SZ') }}.tar.gpg"
+
+  tasks:
+    - name: Create a private working directory
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: snapflow-recovery-kit
+      delegate_to: localhost
+      become: false
+      register: recovery_kit_workdir
+
+    - name: Build the encrypted kit
+      block:
+        - name: Read the k3s token, encryption config and server config
+          ansible.builtin.slurp:
+            src: "{{ item.value }}"
+          loop: "{{ recovery_kit_server_files | dict2items }}"
+          loop_control:
+            label: "{{ item.key }}"
+          register: recovery_kit_server_contents
+          no_log: true
+
+        - name: Read the OpenBao seal key and the R2 backup credentials
+          ansible.builtin.command:
+            argv:
+              - k3s
+              - kubectl
+              - --namespace
+              - "{{ item.namespace }}"
+              - get
+              - secret
+              - "{{ item.secret }}"
+              - --output
+              - "jsonpath={.data.{{ item.key }}}"
+          loop: "{{ recovery_kit_secret_fields }}"
+          loop_control:
+            label: "{{ item.file }}"
+          register: recovery_kit_secret_contents
+          changed_when: false
+          no_log: true
+
+        - name: Write the server files into the working directory
+          ansible.builtin.copy:
+            content: "{{ item.content | b64decode }}"
+            dest: "{{ recovery_kit_workdir.path }}/{{ item.item.key }}"
+            mode: "0600"
+          loop: "{{ recovery_kit_server_contents.results }}"
+          loop_control:
+            label: "{{ item.item.key }}"
+          delegate_to: localhost
+          become: false
+          no_log: true
+
+        - name: Write the secrets into the working directory
+          ansible.builtin.copy:
+            content: "{{ item.stdout | b64decode }}"
+            dest: "{{ recovery_kit_workdir.path }}/{{ item.item.file }}"
+            mode: "0600"
+          loop: "{{ recovery_kit_secret_contents.results }}"
+          loop_control:
+            label: "{{ item.item.file }}"
+          delegate_to: localhost
+          become: false
+          no_log: true
+
+        - name: Archive the kit
+          community.general.archive:
+            path: "{{ recovery_kit_workdir.path }}/*"
+            dest: "{{ recovery_kit_workdir.path }}.tar"
+            format: tar
+            mode: "0600"
+          delegate_to: localhost
+          become: false
+
+        - name: Encrypt the archive with the passphrase
+          ansible.builtin.command:
+            argv:
+              - gpg
+              - --batch
+              - --yes
+              - --pinentry-mode
+              - loopback
+              - --passphrase-fd
+              - "0"
+              - --symmetric
+              - --cipher-algo
+              - AES256
+              - --output
+              - "{{ recovery_kit_file }}"
+              - "{{ recovery_kit_workdir.path }}.tar"
+            stdin: "{{ recovery_kit_passphrase }}"
+            creates: "{{ recovery_kit_file }}"
+          delegate_to: localhost
+          become: false
+          no_log: true
+
+      always:
+        - name: Remove the unencrypted files
+          ansible.builtin.file:
+            path: "{{ item }}"
+            state: absent
+          loop:
+            - "{{ recovery_kit_workdir.path }}"
+            - "{{ recovery_kit_workdir.path }}.tar"
+          delegate_to: localhost
+          become: false
+
+    - name: Explain where the kit is and how to keep it
+      ansible.builtin.debug:
+        msg:
+          - "Wrote {{ recovery_kit_file }}, encrypted with the passphrase you entered."
+          - Keep it off this network, one copy in your password manager and one offline.
+          - It holds the k3s token, its secrets-encryption config, the OpenBao seal key and the R2 backup credentials.
+          - None of these can be recovered from the R2 backups.
+          - Make a new kit after rotating any of them.
+          - "Open it with: gpg --decrypt {{ recovery_kit_file | basename }} | tar --extract --directory <empty directory>"

@@ -1,0 +1,41 @@
+{{- if eq .Values.component "public-ingress" }}
+{{- $root := . -}}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: snapflow-public
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "ingress") | nindent 4 }}
+spec:
+  secretName: {{ include "snapflow.publicTlsSecret" $root }}
+  dnsNames:
+    - {{ required "domains.public is required" .Values.domains.public }}
+  issuerRef:
+    kind: ClusterIssuer
+    name: {{ .Values.clusterIssuer }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: snapflow-cloudflare-origin-pull-ca
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "ingress") | nindent 4 }}
+type: Opaque
+stringData:
+  ca.crt: |
+    {{- include "snapflow.cloudflareOriginPullCa" $root | nindent 4 }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: TLSOption
+metadata:
+  name: {{ include "snapflow.cloudflareTlsOption" $root }}
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "ingress") | nindent 4 }}
+spec:
+  minVersion: VersionTLS12
+  sniStrict: true
+  clientAuth:
+    secretNames:
+      - snapflow-cloudflare-origin-pull-ca
+    clientAuthType: RequireAndVerifyClientCert
+{{- end }}

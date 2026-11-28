@@ -1,0 +1,20 @@
+apiVersion: policy.sigstore.dev/v1beta1
+kind: ClusterImagePolicy
+metadata:
+  name: snapflow-github-provenance
+spec:
+  images:
+    - glob: "ghcr.io/snapflowio/snapflow/**"
+  authorities:
+    - name: github-actions
+      keyless:
+        url: https://fulcio.sigstore.dev
+        identities:
+          - issuer: https://token.actions.githubusercontent.com
+            subjectRegExp: '^https://github\.com/snapflowio/snapflow/\.github/workflows/images\.yml@refs/heads/main$'
+      ctlog:
+        url: https://rekor.sigstore.dev
+      signatureFormat: bundle
+      attestations:
+        - name: slsa-provenance
+          predicateType: https://slsa.dev/provenance/v1

@@ -1,0 +1,29 @@
+{
+  "name": "@snapflow/api-client",
+  "version": "0.0.0-dev",
+  "description": "Snapflow API client",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/snapflowio/snapflow.git"
+  },
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./client": "./src/client/index.js",
+    "./client.gen": "./src/client.gen.js",
+    "./svelte-query": "./src/@tanstack/svelte-query.gen.js"
+  },
+  "peerDependencies": {
+    "@tanstack/svelte-query": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "@tanstack/svelte-query": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@tanstack/svelte-query": "catalog:",
+    "typescript": "catalog:"
+  }
+}

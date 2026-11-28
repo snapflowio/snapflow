@@ -1,0 +1,23 @@
+layer: "library"
+stack: "backend"
+tags: ["scope-api", "access-control"]
+
+tasks:
+  build:
+    script: "rm -rf ../../dist/libs/organization-access && pnpm exec tsc -p tsconfig.lib.json --outDir ../../dist/libs/organization-access && cp package.json ../../dist/libs/organization-access/package.json"
+    inputs: ["src/**/*", "package.json", "tsconfig*.json"]
+    outputs: ["/dist/libs/organization-access"]
+
+  typecheck:
+    command: "tsc"
+    args: ["-p", "tsconfig.lib.json", "--noEmit"]
+
+  lint:
+    command: "biome"
+    args: ["ci", ".", "--error-on-warnings"]
+
+  format:
+    command: "biome"
+    args: ["check", ".", "--write"]
+    options:
+      cache: false

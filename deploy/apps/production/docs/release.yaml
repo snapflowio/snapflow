@@ -1,0 +1,15 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: docs
+  namespace: snapflow
+spec:
+  values:
+    component: docs
+    domains:
+      public: ${PUBLIC_DOMAIN}
+    web:
+      path: /docs
+    image:
+      tag: "" # {"$imagepolicy": "flux-system:snapflow-docs:tag"}
+      digest: "" # {"$imagepolicy": "flux-system:snapflow-docs:digest"}

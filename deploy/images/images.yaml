@@ -1,0 +1,27 @@
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageUpdateAutomation
+metadata:
+  name: snapflow
+  namespace: flux-system
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        name: snapflow-flux
+        email: flux@snapflow.io
+      messageTemplate: |
+        chore(deploy): pin images built from main
+
+        {{ range .Changed.Changes }}{{ print .OldValue }} -> {{ println .NewValue }}{{ end }}
+    push:
+      branch: main
+  update:
+    path: ./deploy/apps/production
+    strategy: Setters

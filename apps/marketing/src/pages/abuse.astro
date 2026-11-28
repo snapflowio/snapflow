@@ -1,0 +1,13 @@
+---
+import { AbusePage } from '@/components/abuse/abuse-page';
+import { Path } from '@/constants/paths';
+import LegalLayout from '@/layouts/legal-layout.astro';
+---
+
+<LegalLayout
+	title="Report Abuse | Snapflow"
+	description="Report phishing, malware, copyright infringement, or other abuse served from Snapflow sandboxes."
+	canonicalPath={Path.ABUSE}
+>
+	<AbusePage client:load />
+</LegalLayout>

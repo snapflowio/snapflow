@@ -1,0 +1,51 @@
+{
+	"name": "snapflow",
+	"version": "0.0.0-dev",
+	"license": "AGPL-3.0",
+	"private": true,
+	"packageManager": "pnpm@11.28.9",
+	"engines": {
+		"node": ">=26.13.0 <27",
+		"pnpm": "11.28.9"
+	},
+	"scripts": {
+		"prepare": "husky || true",
+		"cleanup": "moon run workspace:clean",
+		"format": "biome check . --write",
+		"lint": "biome ci . --error-on-warnings",
+		"typecheck": "moon run :typecheck --concurrency=4",
+		"build": "moon run :build --concurrency=8",
+		"build:production": "moon run :build api:build-production --concurrency=8",
+		"oci:production": "moon run :oci-image --concurrency=4",
+		"serve": "moon run :serve --concurrency=8",
+		"dev:api": "moon run api:serve",
+		"dev:dashboard": "moon run dashboard:serve",
+		"dev:edge": "moon run edge:serve",
+		"dev:snapflow": "moon run snapflow:serve",
+		"dev:snapshot-manager": "moon run snapshot-manager:serve",
+		"generate:api-client": "moon run :generate-api-client --concurrency=4",
+		"migration:generate:init": "moon run api:migration-generate-init",
+		"migration:run:init": "moon run api:migrate-init",
+		"migration:revert": "moon run api:migrate-revert",
+		"dev:t3-code": "moon run workspace:t3-code",
+		"dev:t3-code:pair": "moon run workspace:t3-code-pair",
+		"dev:database:reset": "moon run workspace:reset-local-database && moon run api:migrate-init"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "catalog:",
+		"@bufbuild/protoc-gen-es": "catalog:",
+		"@commitlint/cli": "catalog:",
+		"@commitlint/config-conventional": "catalog:",
+		"@hey-api/openapi-ts": "catalog:",
+		"@moonrepo/cli": "catalog:",
+		"@types/node": "catalog:",
+		"husky": "catalog:",
+		"lint-staged": "catalog:",
+		"t3": "catalog:",
+		"typescript": "catalog:"
+	},
+	"lint-staged": {
+		"!(*.gen|*.pb).go": "gofumpt -extra -w",
+		"*.{js,jsx,mjs,cjs,ts,tsx,mts,cts,json,jsonc,css,html,astro,svelte}": "biome check --write --no-errors-on-unmatched --error-on-warnings"
+	}
+}

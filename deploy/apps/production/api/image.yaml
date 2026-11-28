@@ -1,0 +1,16 @@
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: snapflow-api
+  namespace: flux-system
+spec:
+  image: ghcr.io/snapflowio/snapflow/api
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: snapflow-api
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: snapflow-api

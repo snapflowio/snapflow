@@ -1,0 +1,56 @@
+[Unit]
+Description=Snapflow Service
+Documentation=https://github.com/snapflowio/snapflow
+After=network-online.target docker.service k3s.service
+Wants=network-online.target
+
+[Service]
+Type=notify
+WatchdogSec=60s
+TimeoutStartSec=5min
+WorkingDirectory=/var/lib/snapflow/workloads
+StateDirectory=snapflow/machine snapflow/workloads
+StateDirectoryMode=0700
+RuntimeDirectory=snapflow
+RuntimeDirectoryMode=0750
+RuntimeDirectoryPreserve=yes
+UMask=0077
+
+Environment=SNAPFLOW_LOG_LEVEL=info
+ExecStart=/opt/snapflow/current/bin/snapflowd --profile production
+
+TimeoutStopSec=150s
+
+Restart=on-failure
+RestartSec=5s
+RestartSteps=4
+RestartMaxDelaySec=2min
+
+OOMScoreAdjust=-500
+OOMPolicy=continue
+
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+SystemCallArchitectures=native
+LockPersonality=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictNamespaces=net mnt pid ipc uts
+SystemCallFilter=~@obsolete @reboot @swap @cpu-emulation @debug
+RemoveIPC=yes
+SystemCallErrorNumber=EPERM
+CapabilityBoundingSet=~CAP_SYS_BOOT CAP_SYS_TIME CAP_AUDIT_CONTROL CAP_AUDIT_READ CAP_MAC_ADMIN CAP_MAC_OVERRIDE CAP_SYSLOG CAP_WAKE_ALARM CAP_BLOCK_SUSPEND CAP_LINUX_IMMUTABLE CAP_SYS_PACCT CAP_SYS_TTY_CONFIG CAP_LEASE
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=snapflow
+
+[Install]
+WantedBy=multi-user.target

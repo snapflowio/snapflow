@@ -1,0 +1,1 @@
+ansible_ssh_common_args: "-o UserKnownHostsFile={{ inventory_dir }}/known_hosts -o StrictHostKeyChecking=yes"

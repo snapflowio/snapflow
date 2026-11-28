@@ -1,0 +1,23 @@
+vulnerabilities: []
+
+misconfigurations:
+  - id: DS-0002
+    paths:
+      - ".devcontainer/Dockerfile"
+    statement: "The dev container boots systemd as PID 1 and runs dockerd, which require root."
+  - id: DS-0002
+    paths:
+      - "images/erofs-utils/Dockerfile"
+    statement: "Build-only image whose scratch stage exports mkfs.erofs; it never runs as a container."
+  - id: DS-0002
+    paths:
+      - "images/platform/benchmark/Dockerfile"
+      - "images/platform/core/Dockerfile"
+      - "images/platform/desktop-extension/Dockerfile"
+    statement: "Platform layers run inside the sandbox microVM, where the guest init needs root; the VM boundary isolates them."
+
+secrets:
+  - id: gcp-service-account
+    paths:
+      - "apps/dashboard/src/lib/features/registries/components/create-registry-modal.svelte"
+    statement: "Form placeholder showing the JSON key shape; it holds no key material."

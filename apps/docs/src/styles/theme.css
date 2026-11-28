@@ -1,0 +1,53 @@
+/*
+ * Copyright (c) 2026 Snapflow. All rights reserved.
+ *
+ * Snapflow is licensed under the GNU Affero General Public License v3.0.
+ * You may obtain a copy of the license at https://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * SPDX-License-Identifier: AGPL-3.0
+ */
+
+@layer base, starlight, theme, components, utilities;
+
+@import "@astrojs/starlight-tailwind";
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "./tokens.css";
+@import "./chrome.css";
+@import "./content.css";
+@source "../";
+
+@layer utilities {
+	.border {
+		border-width: var(--border-width);
+	}
+
+	.border-t {
+		border-top-width: var(--border-width);
+	}
+}
+
+@utility chamfer {
+	clip-path: var(--chamfer-clip);
+}
+
+@utility chamfer-outline {
+	position: relative;
+	isolation: isolate;
+	clip-path: var(--chamfer-clip);
+	background-color: var(--border);
+
+	&::before {
+		content: "";
+		position: absolute;
+		inset: var(--border-width);
+		z-index: -1;
+		clip-path: var(--chamfer-clip);
+		background-color: var(--chamfer-fill, var(--surface-1));
+		transition: background-color 150ms;
+	}
+
+	&:hover::before {
+		background-color: var(--surface-hover);
+	}
+}

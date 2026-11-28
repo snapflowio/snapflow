@@ -1,0 +1,16 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "dependencies, caches and build output (gitignored, never committed)"
+paths = [
+  '''(^|/)node_modules/''',
+  '''(^|/)\.pnpm-store/''',
+  '''(^|/)\.git/''',
+  '''(^|/)\.tmp/''',
+  '''(^|/)\.moon/cache/''',
+  '''(^|/)\.svelte-kit/''',
+  '''(^|/)\.astro/''',
+  '''(^|/)dist/''',
+]
+

@@ -1,0 +1,58 @@
+layer: "application"
+stack: "frontend"
+tags:
+  - "scope-frontend"
+  - "app-marketing"
+  - "deployable"
+
+tasks:
+  serve:
+    command: "astro"
+    args: ["dev"]
+    preset: "server"
+    inputs:
+      - "$PUBLIC_SITE_URL"
+    options:
+      envFile: ".env"
+
+  preview:
+    command: "astro"
+    args: ["preview"]
+    deps:
+      - "build"
+    preset: "server"
+    options:
+      envFile: ".env"
+
+  build:
+    command: "astro"
+    args: ["build"]
+    inputs:
+      - "src/**/*"
+      - "public/**/*"
+      - "astro.config.mjs"
+      - "package.json"
+      - "tsconfig.json"
+      - "$PUBLIC_SITE_URL"
+    outputs:
+      - "/dist/apps/marketing"
+    options:
+      envFile: ".env"
+
+  typecheck:
+    command: "astro"
+    args: ["check"]
+    inputs:
+      - "src/**/*"
+      - "astro.config.mjs"
+      - "tsconfig.json"
+
+  lint:
+    command: "biome"
+    args: ["ci", ".", "--error-on-warnings"]
+
+  format:
+    command: "biome"
+    args: ["check", ".", "--write"]
+    options:
+      cache: false

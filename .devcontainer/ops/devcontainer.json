@@ -1,0 +1,31 @@
+{
+	"$schema": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json",
+	"name": "Snapflow Ops",
+	"build": {
+		"context": "..",
+		"dockerfile": "../Dockerfile"
+	},
+	"workspaceFolder": "/workspaces/snapflow",
+	"workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/snapflow,type=bind",
+	"remoteUser": "vscode",
+	"updateRemoteUserUID": true,
+	"overrideCommand": true,
+	"mounts": [
+		"source=${localEnv:HOME}/.kube,target=/home/vscode/.kube,type=bind,readonly"
+	],
+	"remoteEnv": {
+		"ANSIBLE_REMOTE_USER": "${localEnv:USER}",
+		"KUBECONFIG": "/home/vscode/.kube/config"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"moonrepo.moon-console",
+				"redhat.vscode-yaml",
+				"redhat.ansible",
+				"OpenTofu.vscode-opentofu",
+				"timonwong.shellcheck"
+			]
+		}
+	}
+}

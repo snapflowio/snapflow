@@ -1,0 +1,87 @@
+layer: "tool"
+stack: "infrastructure"
+tags:
+  - "scope-workspace"
+
+toolchains:
+  go: false
+
+tasks:
+  contracts-bindings:
+    deps:
+      - "contracts:vectors"
+      - "contracts-ts:generate"
+      - "contracts-go:generate"
+
+  clean:
+    description: "Lists local dependencies, build outputs, caches and OS junk, then deletes them after confirmation"
+    script: |
+      set -euo pipefail
+      mapfile -d '' entries < <(
+        find . \( -path ./.git -o -path ./reference -o -path ./references -o -path ./.pnpm-store -o -path ./.moon/cache \) -prune -o \
+          -type d \( -name node_modules -o -name .vite -o -name dist -o -name .tmp -o -name __pycache__ \) -print0 -prune -o \
+          -type f \( -name '*.tsbuildinfo' -o -name 'vite.config.*.timestamp*' \
+            -o -name '*.test' -o -name .DS_Store -o -name Thumbs.db -o -name '._*' \) -print0
+      )
+      for path in ./bin ./tmp ./core ./.pnpm-store ./.moon/cache; do
+        if [[ -e "$path" ]]; then entries+=("$path"); fi
+      done
+      if ((${#entries[@]} == 0)); then
+        echo "Nothing to clean."
+        exit 0
+      fi
+      printf '%s\n' "${entries[@]}" | sort
+      read -r -p "Delete these ${#entries[@]} entries? (y/N) " reply
+      if [[ "$reply" != [yY] ]]; then
+        echo "Nothing was deleted."
+        exit 0
+      fi
+      rm -rf -- "${entries[@]}"
+    preset: "utility"
+
+  reset-local-database:
+    command: "node"
+    args:
+      - "--env-file-if-exists=apps/api/.env"
+      - "dist/apps/api/cli.mjs"
+      - "reset-local-database"
+    deps:
+      - "api:build-production"
+    preset: "utility"
+    options:
+      cache: false
+
+  t3-code:
+    command: "pnpm"
+    args:
+      - "exec"
+      - "t3"
+      - "serve"
+      - "--mode"
+      - "web"
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "3773"
+      - "--base-dir"
+      - "/home/vscode/.t3"
+      - "--no-browser"
+      - "--auto-bootstrap-project-from-cwd"
+      - "/workspaces/snapflow"
+    preset: "server"
+
+  t3-code-pair:
+    command: "pnpm"
+    args:
+      - "exec"
+      - "t3"
+      - "auth"
+      - "pairing"
+      - "create"
+      - "--base-dir"
+      - "/home/vscode/.t3"
+      - "--base-url"
+      - "http://0.0.0.0:3774"
+      - "--label"
+      - "Snapflow"
+    preset: "utility"

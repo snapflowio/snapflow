@@ -1,0 +1,24 @@
+---
+import PageActions from '@/components/page-actions.astro';
+import { markdownPath } from '@/lib/markdown/page-markdown';
+
+const PAGE_TITLE_ID = '_top';
+
+const { entry } = Astro.locals.starlightRoute;
+const markdownHref = entry.filePath ? markdownPath(entry.id) : undefined;
+---
+
+<div class="mt-2 flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
+	<h1
+		id={PAGE_TITLE_ID}
+		class="m-0 font-heading text-(length:--sl-text-h1) leading-(--display-leading) font-normal tracking-(--display-tracking) text-balance text-(--text-primary)"
+	>
+		{entry.data.title}
+	</h1>
+	{markdownHref && <PageActions markdownHref={markdownHref} />}
+</div>
+{entry.data.description && (
+	<p class="mt-3 mb-0 text-base leading-relaxed text-(--text-body)">
+		{entry.data.description}
+	</p>
+)}

@@ -1,0 +1,15 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: public-ingress
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: infrastructure-configs
+  interval: 10m
+  timeout: 15m
+  path: ./deploy/apps/production/public-ingress
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings

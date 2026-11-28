@@ -1,0 +1,21 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: edge
+  namespace: snapflow
+spec:
+  values:
+    component: edge
+    domains:
+      public: ${PUBLIC_DOMAIN}
+      platform: ${PLATFORM_DOMAIN}
+    edges:
+      - name: titan
+        node: server-titan
+        publicHost: edge.snapflow.run
+    origin:
+      site: ${ORIGIN_SITE}
+      hosts: ${ORIGIN_HOSTS}
+    image:
+      tag: "build-d37f670f18bb9240295c6ef8109c7cf113d77ab9-1795828836" # {"$imagepolicy": "flux-system:snapflow-edge:tag"}
+      digest: "sha256:b13256e6e55b90e78a1a8b0e2ce4977366b20fe6e3cb5107a86f0237d2b88ed6" # {"$imagepolicy": "flux-system:snapflow-edge:digest"}

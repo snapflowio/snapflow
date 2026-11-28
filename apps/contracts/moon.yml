@@ -1,0 +1,111 @@
+layer: "application"
+stack: "backend"
+tags: ["contracts", "payments"]
+
+fileGroups:
+  sources:
+    - "src/**/*.sol"
+    - "foundry.toml"
+    - "soldeer.lock"
+    - "remappings.txt"
+  tests:
+    - "test/**/*"
+    - "script/**/*.sol"
+
+tasks:
+  install:
+    command: "forge"
+    args: ["soldeer", "install"]
+    inputs: ["foundry.toml", "soldeer.lock"]
+    outputs: ["dependencies"]
+
+  build:
+    command: "forge"
+    args: ["build", "--sizes", "src"]
+    deps: ["~:install"]
+    inputs: ["@group(sources)"]
+    outputs: ["out"]
+
+  test:
+    command: "forge"
+    args: ["test"]
+    deps: ["~:install"]
+    inputs: ["@group(sources)", "@group(tests)"]
+
+  lint:
+    script: "forge fmt --check && forge lint src"
+    deps: ["~:install"]
+    inputs: ["@group(sources)", "@group(tests)"]
+
+  format:
+    command: "forge"
+    args: ["fmt"]
+    options:
+      cache: false
+
+  vectors:
+    command: "forge"
+    args: ["script", "test/vectors/GenerateVoucherVectors.s.sol"]
+    deps: ["~:install"]
+    inputs: ["@group(sources)", "test/vectors/*.sol"]
+    outputs: ["test/vectors/vouchers.json"]
+
+  deploy-local:
+    description: "Deploys CreateX, the mock USDC and the escrow at the current salt when they are missing, funding every dev account and recording the escrow in deployments/31337.json, and the Safe passkey wallet contracts at their canonical addresses when SafeL2 is missing; LOCAL_GUARDIAN names the automatic pauser and LOCAL_FEE_RECEIVER the account platform fees go to, both the first dev account by default"
+    script: |
+      set -euo pipefail
+      mapfile -t accounts < <(cast rpc eth_accounts --rpc-url "${DEV_CHAIN_RPC_URL}" | jq -r '.[]')
+      LOCAL_FUNDED_ACCOUNTS="$(IFS=,; echo "${accounts[*]}")" forge script script/DeployLocal.s.sol \
+        --rpc-url "${DEV_CHAIN_RPC_URL}" --broadcast --unlocked --sender "${accounts[0]}"
+      safe="$(jq -r '.address' script/safe/safe-l2.json)"
+      if [[ "$(cast code "${safe}" --rpc-url "${DEV_CHAIN_RPC_URL}")" != "0x" ]]; then
+        echo "SafeL2 is already deployed at ${safe}"
+      else
+        forge script script/DeployLocalSafe.s.sol \
+          --rpc-url "${DEV_CHAIN_RPC_URL}" --broadcast --unlocked --sender "${accounts[0]}"
+      fi
+    deps: ["~:build"]
+    env:
+      DEV_CHAIN_RPC_URL: "http://anvil:8545"
+      ESCROW_WITHDRAWAL_DELAY_SECONDS: "3600"
+      ESCROW_CLAIM_WINDOW_SECONDS: "3600"
+      ESCROW_SIGNER_THAW_SECONDS: "3600"
+      ESCROW_DEPOSIT_CAP_TOTAL: "1000000000000"
+      ESCROW_DEPOSIT_CAP_PER_ACCOUNT: "50000000000"
+      LOCAL_FUNDING_AMOUNT: "1000000000000"
+    options:
+      cache: false
+      runInCI: false
+
+  predict-escrow:
+    description: "Prints the escrow address ESCROW_DEPLOYER gets on every chain"
+    script: 'forge script script/DeployEscrow.s.sol --sig "predict()" --sender "${ESCROW_DEPLOYER:?set ESCROW_DEPLOYER to the deployer address}"'
+    deps: ["~:build"]
+    options:
+      cache: false
+      runInCI: false
+
+  deploy-base-sepolia:
+    description: "Deploys the escrow on Base Sepolia with ESCROW_SAFE holding every role, ESCROW_FEE_RECEIVER (the treasury Safe) receiving platform fees, both checked against their _OWNERS and _THRESHOLD on chain, and ESCROW_GUARDIAN (the relayer) as the automatic pauser; verifies it on Basescan and records it in deployments/84532.json"
+    script: >-
+      : "${ETHERSCAN_API_KEY:?set ETHERSCAN_API_KEY}" &&
+      forge script script/DeployEscrow.s.sol --rpc-url base_sepolia --broadcast --slow --verify
+      --account "${ETH_KEYSTORE_ACCOUNT:?set ETH_KEYSTORE_ACCOUNT}"
+    deps: ["~:build"]
+    options:
+      cache: false
+      interactive: true
+      runInCI: false
+
+  deploy-base:
+    description: "Deploys the escrow on Base with ESCROW_SAFE holding every role, ESCROW_FEE_RECEIVER (the treasury Safe) receiving platform fees, both checked against their _OWNERS and _THRESHOLD on chain, and ESCROW_GUARDIAN (the relayer) as the automatic pauser; verifies it on Basescan, records it in deployments/8453.json and writes the production settlement values"
+    script: >-
+      : "${ETHERSCAN_API_KEY:?set ETHERSCAN_API_KEY}" &&
+      forge script script/DeployEscrow.s.sol --rpc-url base --broadcast --slow --verify
+      --account "${ETH_KEYSTORE_ACCOUNT:?set ETH_KEYSTORE_ACCOUNT}" &&
+      cd ../.. && bash deploy/scripts/settlement-values.sh
+    deps: ["~:build"]
+    options:
+      cache: false
+      interactive: true
+      runInCI: false

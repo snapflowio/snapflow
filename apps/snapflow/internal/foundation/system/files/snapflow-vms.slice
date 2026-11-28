@@ -1,0 +1,6 @@
+[Unit]
+Description=Snapflow microVMs
+Documentation=https://github.com/snapflowio/snapflow
+Before=slices.target
+
+[Slice]

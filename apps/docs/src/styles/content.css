@@ -1,0 +1,148 @@
+/*
+ * Copyright (c) 2026 Snapflow. All rights reserved.
+ *
+ * Snapflow is licensed under the GNU Affero General Public License v3.0.
+ * You may obtain a copy of the license at https://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * SPDX-License-Identifier: AGPL-3.0
+ */
+
+.content-panel + .content-panel {
+	border-top-width: var(--border-width);
+}
+
+.sl-markdown-content :is(h1, h2, h3, h4, h5) {
+	font-family: var(--font-heading);
+	font-weight: 400;
+	letter-spacing: var(--heading-tracking);
+	color: var(--text-primary);
+}
+
+.sl-markdown-content a:not(:where(.not-content *)) {
+	color: var(--brand-accent-hover);
+	text-decoration: none;
+}
+
+.sl-markdown-content a:not(:where(.not-content *)):hover {
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+}
+
+.sl-markdown-content :not(pre) > code {
+	border: var(--border-width) solid var(--border);
+	border-radius: var(--frame-radius);
+	padding: 0.0625em 0.375em;
+	font-size: 0.8125em;
+	color: var(--text-primary);
+}
+
+.sl-markdown-content blockquote {
+	border-inline-start: var(--border-width) solid var(--border);
+}
+
+.sl-markdown-content hr {
+	border-top: var(--border-width) solid var(--border);
+}
+
+.sl-markdown-content table {
+	display: table;
+	width: 100%;
+	border-collapse: separate;
+	border-spacing: 0;
+	border: var(--border-width) solid var(--border);
+	border-radius: var(--frame-radius);
+	font-size: var(--text-small);
+}
+
+.sl-markdown-content :is(th, td) {
+	border-width: 0;
+	border-bottom: var(--border-width) solid var(--border);
+	padding: 0.5rem 0.75rem;
+}
+
+.sl-markdown-content tr:last-child td {
+	border-bottom: 0;
+}
+
+.sl-markdown-content th {
+	background: var(--surface-1);
+	font-size: var(--text-caption);
+	font-weight: 400;
+	color: var(--text-muted);
+}
+
+.starlight-aside {
+	border: var(--border-width) solid var(--border);
+	border-radius: var(--frame-radius);
+	background: var(--surface-1);
+}
+
+.starlight-aside__title {
+	font-size: var(--text-small);
+	font-weight: 500;
+}
+
+.card,
+.sl-link-card {
+	border: var(--border-width) solid var(--border);
+	border-radius: var(--frame-radius);
+	background: var(--surface-1);
+	box-shadow: none;
+	transition: background-color var(--hover-duration) ease;
+}
+
+.sl-link-card:hover {
+	border-color: var(--border);
+	background: var(--surface-hover);
+}
+
+.card .title,
+.sl-link-card .title {
+	font-family: var(--font-heading);
+	font-weight: 400;
+	letter-spacing: var(--heading-tracking);
+	color: var(--text-primary);
+}
+
+.sl-link-card .description {
+	font-size: var(--text-small);
+	color: var(--text-muted);
+}
+
+.sl-link-card .icon {
+	color: var(--brand-accent);
+}
+
+.sl-badge {
+	border: var(--border-width) solid var(--border);
+	border-radius: var(--frame-radius);
+}
+
+.sl-link-button {
+	border-radius: var(--frame-radius);
+}
+
+.sl-steps > li::before {
+	border-radius: var(--frame-radius);
+}
+
+.pagination-links a {
+	border: var(--border-width) solid var(--border);
+	border-radius: var(--frame-radius);
+	background: var(--surface-1);
+	box-shadow: none;
+	color: var(--text-muted);
+	transition: background-color var(--hover-duration) ease;
+}
+
+.pagination-links a:hover {
+	border-color: var(--border);
+	background: var(--surface-hover);
+}
+
+.pagination-links .link-title {
+	font-family: var(--font-heading);
+	font-size: var(--text-md);
+	letter-spacing: var(--heading-tracking);
+	color: var(--text-primary);
+}

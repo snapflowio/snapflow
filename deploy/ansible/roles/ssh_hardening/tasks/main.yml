@@ -1,0 +1,42 @@
+- name: Read the state of sshd
+  ansible.builtin.service_facts:
+
+- name: Read the admin user's authorized keys
+  ansible.builtin.slurp:
+    src: "~{{ ansible_facts['env']['USER'] }}/.ssh/authorized_keys"
+  register: ssh_hardening_authorized_keys
+
+- name: Refuse to disable passwords for an admin user without an SSH key
+  ansible.builtin.assert:
+    that: ssh_hardening_authorized_keys.content | b64decode is search('^[^#\s]', multiline=True)
+    fail_msg: "{{ ansible_facts['env']['USER'] }} has no key in ~/.ssh/authorized_keys"
+    quiet: true
+
+- name: Write the hardened sshd configuration
+  ansible.builtin.copy:
+    dest: "{{ ssh_hardening_drop_in }}"
+    content: |
+      {% for key, value in ssh_hardening_settings.items() %}
+      {{ key }} {{ value }}
+      {% endfor %}
+    owner: root
+    group: root
+    mode: "0644"
+    validate: /usr/sbin/sshd -t -f %s
+  notify: Reload sshd
+
+- name: Apply the hardened configuration now
+  ansible.builtin.meta: flush_handlers
+
+- name: Read the effective sshd configuration
+  ansible.builtin.command: /usr/sbin/sshd -T
+  register: ssh_hardening_effective
+  changed_when: false
+  check_mode: false
+
+- name: Refuse an earlier sshd file that overrides the hardening
+  ansible.builtin.assert:
+    that: (item.key | lower) ~ ' ' ~ item.value in ssh_hardening_effective.stdout_lines
+    fail_msg: "sshd -T does not report {{ item.key }} {{ item.value }}; an earlier file in /etc/ssh overrides it"
+    quiet: true
+  loop: "{{ ssh_hardening_settings | dict2items }}"

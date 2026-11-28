@@ -1,0 +1,34 @@
+component: api
+imageNamespace: snapflowio/snapflow
+image:
+  tag: build-0123456789abcdef0123456789abcdef01234567-1760000000
+  digest: sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+domains:
+  public: snapflow.io
+  registry: registry.snapflow.io
+  platform: snapflow.run
+email:
+  from: Snapflow <noreply@mail.snapflow.io>
+  replyTo: support@snapflow.io
+humanVerification:
+  turnstileSiteKey: 0x4AAAAAAA0123456789abcd
+receipts:
+  issuer:
+    name: Snapflow Example Inc.
+    address: 1 Example Street, Springfield, IL 62701, United States
+    email: billing@snapflow.io
+    taxId: ""
+settlement:
+  chainId: 8453
+  escrowAddress: "0x0123456789abcdef0123456789abcdef01234567"
+  escrowDeploymentBlock: 1760000000
+  usdcAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+  relayerAddress: "0x1111111111111111111111111111111111111111"
+  feeReceiverAddress: "0x2222222222222222222222222222222222222222"
+  ethUsdFeedAddress: "0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70"
+objectStorage:
+  endpoint: https://0123456789abcdef0123456789abcdef.r2.cloudflarestorage.com
+  bucket: snapflow-objects
+  snapshotBucket: snapflow-snapshots
+api:
+  replicas: 2

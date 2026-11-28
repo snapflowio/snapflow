@@ -1,0 +1,10 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: public-ingress
+  namespace: snapflow
+spec:
+  values:
+    component: public-ingress
+    domains:
+      public: ${PUBLIC_DOMAIN}

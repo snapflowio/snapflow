@@ -1,0 +1,13 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: marketing
+  namespace: snapflow
+spec:
+  values:
+    component: marketing
+    domains:
+      public: ${PUBLIC_DOMAIN}
+    image:
+      tag: "build-28a36d49c84dd5a7af4203350ac34b272f1a1557-1795820243" # {"$imagepolicy": "flux-system:snapflow-marketing:tag"}
+      digest: "sha256:3680ddfc5522e66d313edc8f67cfdba604ef440daa76e01b155a8717d7b5cdb1" # {"$imagepolicy": "flux-system:snapflow-marketing:digest"}

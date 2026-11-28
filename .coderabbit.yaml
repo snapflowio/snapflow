@@ -1,0 +1,206 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: en-US
+tone_instructions: >-
+  Be direct and concise. Lead with correctness, security and money-handling bugs. Skip praise and restating the diff.
+  Every suggestion must be a concrete change.
+early_access: false
+
+reviews:
+  profile: assertive
+  high_level_summary: true
+  high_level_summary_in_walkthrough: true
+  poem: false
+  in_progress_fortune: false
+  review_status: true
+  review_details: false
+  collapse_walkthrough: true
+  changed_files_summary: true
+  sequence_diagrams: true
+  estimate_code_review_effort: true
+  assess_linked_issues: true
+  related_issues: true
+  related_prs: true
+  suggested_labels: true
+  auto_apply_labels: false
+  suggested_reviewers: false
+  auto_assign_reviewers: false
+  commit_status: true
+  fail_commit_status: false
+  abort_on_close: true
+  auto_review:
+    enabled: true
+    drafts: false
+    auto_incremental_review: true
+    ignore_title_keywords:
+      - wip
+      - "chore(main): release"
+    ignore_usernames:
+      - snapflowio-automation[bot]
+  finishing_touches:
+    unit_tests:
+      enabled: false
+    simplify:
+      enabled: true
+    autofix:
+      enabled: true
+  pre_merge_checks:
+    title:
+      mode: warning
+      requirements: >-
+        Conventional Commits: type(optional-scope)!: imperative summary, lowercase, no trailing period.
+        Types: feat, fix, perf, refactor, chore, ci, build, docs, revert.
+    description:
+      mode: warning
+    issue_assessment:
+      mode: "off"
+    custom_checks:
+      - name: Secrets stay out of the repo
+        mode: error
+        instructions: >-
+          Fail if the PR adds credentials, tokens, private keys, seed phrases or production secret values anywhere,
+          including manifests, Helm values, scripts and examples. Production secrets come from OpenBao through
+          External Secrets; development secrets live only in untracked .env files.
+  path_filters:
+    - "!**/node_modules/**"
+    - "!pnpm-lock.yaml"
+    - "!go.work.sum"
+    - "!**/go.sum"
+    - "!apps/contracts/soldeer.lock"
+    - "!apps/contracts/out/**"
+    - "!apps/contracts/cache/**"
+    - "!apps/contracts/broadcast/**"
+    - "!apps/contracts/dependencies/**"
+    - "!libs/api-client/**"
+    - "!libs/toolbox-api-client/**"
+    - "!libs/api-client-go/client.gen.go"
+    - "!libs/machine-proto/gen/**"
+    - "!libs/contracts/src/generated/**"
+    - "!libs/contracts-go/escrow/*.gen.go"
+    - "!apps/guest/internal/toolbox/docs/**"
+    - "!apps/snapflow/internal/agent/localapi/docs/**"
+    - "!apps/api/src/migrations/snapflow.json"
+    - "!.tmp/**"
+  path_instructions:
+    - path: "**/*"
+      instructions: |
+        Repository-wide rules from the owner. Flag violations:
+        - No dead code, legacy behaviour, compatibility shims or dual code paths; prefer reworking a fragile system over patching it.
+        - No magic numbers or strings; use named constants.
+        - No hand-written types where generated or inferred types exist.
+        - No deprecated APIs; check the library's current docs and type definitions.
+        - Configuration comes from environment variables, not hardcoded values or config files; runtime settings live in the database.
+        - Secrets never appear in source or committed files.
+        - Keep files small, modular, low in cyclomatic complexity and free of circular imports.
+    - path: "**/*.go"
+      instructions: |
+        - Wrap and return errors with context; never swallow them.
+        - The blank identifier is fine for idiomatic discards (such as an unneeded multi-return value) but never for silencing an error or an unused value. Use unnamed parameters when an interface forces a signature.
+        - Check context propagation and cancellation, goroutine leaks, missing timeouts on network calls, and data races.
+        - Respect the depguard layering in .golangci.yml.
+    - path: "apps/snapflow/**"
+      instructions: |
+        Host daemon that runs untrusted guest workloads on volunteers' machines. Treat guest input, network data and files as hostile.
+        Layout: cmd/ plus internal/{agent,workloads,network,billing,supplychain,install,ui,foundation}. Flag new top-level internal packages or a pkg/ directory.
+        Prioritise sandbox escape, privilege, path traversal, symlink, resource exhaustion and update or supply-chain verification (TUF, signatures) issues.
+    - path: "apps/{guest,edge,snapshot-manager}/**"
+      instructions: |
+        Security-critical sandbox components. Treat all requests and guest data as untrusted; check authentication on every route, input bounds, path handling and resource limits.
+    - path: "apps/api/**"
+      instructions: |
+        NestJS API with MikroORM.
+        - Layout is per-domain folders with kind subfolders (controllers, services, entities, dto, utils, enums...). Flag flattening.
+        - Data access uses EntityManager and entity classes on the manager passed into fork().transactional(...). Aggregate SQL goes in *.query.ts functions. Custom repositories only for Sandbox and Snapshot. Flag any @InjectRepository or getRepository wrapper because they escape transactions.
+        - Check authorization and organization scoping on every endpoint, idempotency of money-moving operations, race conditions (locks, transactions) and DTO validation.
+        - Avoid Nest module cycles and forwardRef.
+    - path: "apps/api/src/migrations/**"
+      instructions: |
+        The project keeps a single init migration that is regenerated. Flag any new incremental or data migration file.
+    - path: "apps/api/src/{settlement,billing,usage,marketplace}/**"
+      instructions: |
+        Money handling for the USDC escrow. Check integer and decimal precision (6-decimal USDC base units), rounding direction, double charging, replay, idempotency keys, chain reorg handling and that every balance change is in a transaction.
+    - path: "apps/contracts/src/**"
+      instructions: |
+        Solidity escrow holding user USDC on Base. Review like an auditor: reentrancy and checks-effects-interactions, access control, SafeERC20 usage, EIP-3009/permit signature replay and domain separation, fee and rounding math, accounting invariants between recorded and actual balances, upgrade and pause paths, events for every state change.
+    - path: "apps/dashboard/**"
+      instructions: |
+        SvelteKit with Svelte 5 runes. Use idiomatic Svelte patterns and established libraries (runed, bits-ui), not React emulation.
+        - src/routes holds only SvelteKit + files. Domain code lives in src/lib/features/<domain>/{components,state,lib}.
+        - All server access goes through src/lib/api; features, routes and components never call SDK functions directly.
+        - Dialogs are <x>-modal.svelte using ChipModal; props use a local interface <Component>Props.
+        - Check accessibility, loading and error states.
+    - path: "apps/{marketing,docs}/**"
+      instructions: |
+        The owner writes documentation and marketing copy. Do not suggest new copy, sections or pages; review only correctness, accessibility, performance and broken links.
+    - path: "deploy/**"
+      instructions: |
+        k3s with Flux, one Helm chart (deploy/charts/snapflow) switched by values.component, OpenBao with External Secrets, cert-manager, Traefik and sigstore policy-controller.
+        Check least privilege (RBAC, securityContext, NetworkPolicy), images pinned by digest, no inline secrets, resource requests and limits, and that each Flux Kustomization declares only the dependsOn it needs.
+    - path: ".github/workflows/**"
+      instructions: |
+        Actions pinned to full commit SHAs, least-privilege permissions per job, no untrusted input interpolated into run scripts, no pull_request_target with checkout of PR code, and timeouts on every job.
+    - path: "**/Dockerfile*"
+      instructions: |
+        Pinned base images by digest, non-root user, minimal final stage, no secrets in layers.
+  tools:
+    biome:
+      enabled: true
+    eslint:
+      enabled: false
+    oxc:
+      enabled: false
+    golangci-lint:
+      enabled: true
+      config_file: .golangci.yml
+    shellcheck:
+      enabled: true
+    hadolint:
+      enabled: true
+    actionlint:
+      enabled: true
+    zizmor:
+      enabled: true
+    yamllint:
+      enabled: true
+    gitleaks:
+      enabled: true
+    trufflehog:
+      enabled: true
+    semgrep:
+      enabled: true
+    checkov:
+      enabled: true
+    trivy:
+      enabled: true
+    osvScanner:
+      enabled: true
+    squawk:
+      enabled: true
+    dotenvLint:
+      enabled: true
+    ast-grep:
+      essential_rules: true
+    github-checks:
+      enabled: true
+    markdownlint:
+      enabled: false
+    languagetool:
+      enabled: false
+    vale:
+      enabled: false
+
+chat:
+  auto_reply: true
+  art: false
+
+knowledge_base:
+  opt_out: false
+  web_search:
+    enabled: true
+  code_guidelines:
+    enabled: true
+  learnings:
+    scope: local
+  issues:
+    scope: local
+  pull_requests:
+    scope: local

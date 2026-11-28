@@ -1,0 +1,6 @@
+ssh_hardening_drop_in: /etc/ssh/sshd_config.d/10-hardening.conf
+ssh_hardening_settings:
+  PasswordAuthentication: "no"
+  KbdInteractiveAuthentication: "no"
+  PermitRootLogin: "no"
+  X11Forwarding: "no"

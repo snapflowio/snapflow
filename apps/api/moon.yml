@@ -1,0 +1,168 @@
+layer: "application"
+stack: "backend"
+tags:
+  - "scope-api"
+  - "app-api"
+  - "deployable"
+
+dependsOn:
+  - "organization-access"
+
+fileGroups:
+  production:
+    - "src/**/*"
+    - "rspack.config.mts"
+    - "build-provenance.mts"
+    - "nest-cli.json"
+    - "tsconfig*.json"
+
+tasks:
+  build:
+    script: "pnpm --filter @snapflow/api build"
+    deps:
+      - "organization-access:build"
+      - "platform-benchmark-image:tool"
+    inputs:
+      - "@group(production)"
+    outputs:
+      - "/dist/apps/api-development"
+    options:
+      runFromWorkspaceRoot: true
+
+  build-production:
+    script: "pnpm --filter @snapflow/api build:production"
+    deps:
+      - "organization-access:build"
+      - "platform-benchmark-image:tool"
+    inputs:
+      - "@group(production)"
+    outputs:
+      - "/dist/apps/api"
+    options:
+      runFromWorkspaceRoot: true
+
+  openapi:
+    command: "node"
+    args:
+      - "dist/apps/api/generate-openapi.mjs"
+    deps:
+      - "build-production"
+    env:
+      SNAPFLOW_ENVIRONMENT: "development"
+      SNAPFLOW_PROCESS_ROLE: "api"
+    inputs:
+      - "@group(production)"
+    outputs:
+      - "/dist/apps/api/openapi.json"
+    options:
+      runFromWorkspaceRoot: true
+
+  email-preview:
+    description: "Serves the React Email preview of every transactional email template on port 3002"
+    script: "pnpm --filter @snapflow/api exec email dev --dir src/infra/email/templates --port 3002"
+    preset: "server"
+    options:
+      runFromWorkspaceRoot: true
+
+  serve:
+    script: "exec env SNAPFLOW_PROCESS_ROLE=all pnpm --filter @snapflow/api dev"
+    deps:
+      - "migrate-init"
+    preset: "server"
+    options:
+      runFromWorkspaceRoot: true
+
+  serve-production:
+    script: >-
+      exec env SNAPFLOW_PROCESS_ROLE=all
+      node --env-file-if-exists=apps/api/.env dist/apps/api/main.mjs
+    deps:
+      - "build-production"
+    preset: "server"
+    options:
+      runFromWorkspaceRoot: true
+
+  create-admin:
+    command: "node"
+    args:
+      - "--env-file-if-exists=apps/api/.env"
+      - "dist/apps/api/cli.mjs"
+      - "create-admin"
+    env:
+      SNAPFLOW_PROCESS_ROLE: "api"
+    deps:
+      - "build-production"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false
+
+  create-edge:
+    command: "node"
+    args:
+      - "--env-file-if-exists=apps/api/.env"
+      - "dist/apps/api/cli.mjs"
+      - "create-edge"
+    env:
+      SNAPFLOW_PROCESS_ROLE: "api"
+    deps:
+      - "build-production"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false
+      runInCI: false
+
+  migrate-init:
+    script: "pnpm --filter @snapflow/api migration:run:init"
+    deps:
+      - "build-production"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false
+
+  migration-check:
+    script: >-
+      pnpm --filter @snapflow/api exec node --env-file-if-exists=.env
+      ../../node_modules/@mikro-orm/cli/cli.js migration:check
+      --config ../../dist/apps/api/migrations/data-source.mjs
+    deps:
+      - "build-production"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false
+
+  migrate-revert:
+    script: "pnpm --filter @snapflow/api migration:revert"
+    deps:
+      - "build-production"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false
+
+  migration-generate-init:
+    script: "pnpm --filter @snapflow/api migration:generate:init"
+    options:
+      runFromWorkspaceRoot: true
+      cache: false
+
+  typecheck:
+    script: "pnpm exec tsc -p apps/api/tsconfig.app.json --noEmit --pretty false && pnpm exec tsc -p apps/api/tsconfig.tools.json --pretty false"
+    deps:
+      - "organization-access:build"
+    inputs:
+      - "@group(production)"
+    options:
+      runFromWorkspaceRoot: true
+
+  lint:
+    script: "pnpm exec biome ci apps/api --error-on-warnings"
+    options:
+      runFromWorkspaceRoot: true
+
+  format:
+    command: "biome"
+    args:
+      - "check"
+      - "."
+      - "--write"
+    options:
+      cache: false

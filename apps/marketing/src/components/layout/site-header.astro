@@ -1,0 +1,170 @@
+---
+import { Path } from '@/constants/paths';
+import { BLOG_POSTS } from '@/data/blog-posts';
+import {
+	CONTENT_WIDTH,
+	MONO_FONT,
+	SECTION_INSET,
+	TAP_TARGET,
+} from '@/lib/marketing-styles';
+
+interface Props {
+	variant?: 'hero' | 'default';
+}
+
+const { variant = 'hero' } = Astro.props;
+const hero = variant === 'hero';
+const ctaClip =
+	'[clip-path:polygon(12px_0,100%_0,100%_calc(100%-12px),calc(100%-12px)_100%,0_100%,0_12px)]';
+const navLinks = [
+	{ href: Path.HOSTS, label: 'Hosts', visible: true },
+	{ href: Path.BLOG, label: 'Blog', visible: BLOG_POSTS.length > 0 },
+].filter((link) => link.visible);
+const currentPath = Astro.url.pathname.replace(/\/+$/, '') || Path.HOME;
+const focusRing = hero
+	? 'focus-visible:outline-snapflow-ink max-md:focus-visible:outline-snapflow-purple'
+	: 'focus-visible:outline-snapflow-purple';
+const toggleBar =
+	'h-0.5 w-6 bg-current transition group-aria-expanded:bg-snapflow-paper';
+---
+
+<header
+	class:list={[
+		'relative z-20 flex',
+		hero
+			? 'bg-snapflow-purple-hero text-snapflow-ink'
+			: 'border-snapflow-border border-b bg-snapflow-ink text-snapflow-paper',
+	]}
+>
+	<nav
+		class={`${CONTENT_WIDTH} ${hero ? '' : SECTION_INSET} relative flex items-center justify-between py-6 max-md:py-4`}
+		aria-label="Main navigation"
+	>
+		<a
+			href={Path.HOME}
+			class={`${TAP_TARGET} -m-1.5 flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2 ${focusRing}`}
+		>
+			<img
+				src="/assets/snapflow-logo.svg"
+				alt="Snapflow home"
+				class:list={['size-8', hero && 'brightness-0']}
+			>
+		</a>
+		<button
+			type="button"
+			class={`${TAP_TARGET} peer group relative z-10002 -my-1.5 -mr-2.5 hidden flex-col items-center justify-center gap-1.25 focus-visible:outline-2 focus-visible:outline-offset-2 ${focusRing} max-md:flex`}
+			aria-expanded="false"
+			aria-controls="site-nav-menu"
+			aria-label="Toggle navigation"
+			data-site-nav-toggle
+		>
+			<span
+				class={`${toggleBar} origin-center group-aria-expanded:translate-y-1.75 group-aria-expanded:rotate-45`}
+			></span>
+			<span class={`${toggleBar} group-aria-expanded:opacity-0`}></span>
+			<span
+				class={`${toggleBar} origin-center group-aria-expanded:-translate-y-1.75 group-aria-expanded:-rotate-45`}
+			></span>
+		</button>
+		<ul
+			id="site-nav-menu"
+			class="flex list-none items-center gap-8 p-0 transition-[opacity,visibility] duration-300 motion-reduce:transition-none max-md:invisible max-md:fixed max-md:inset-0 max-md:z-10001 max-md:flex-col max-md:justify-center max-md:gap-10 max-md:bg-snapflow-ink max-md:p-8 max-md:opacity-0 max-md:peer-aria-expanded:visible max-md:peer-aria-expanded:opacity-100"
+		>
+			{navLinks.map(({ href, label }) => (
+				<li>
+					<a
+						href={href}
+						aria-current={href === currentPath ? 'page' : undefined}
+						class={`${MONO_FONT} text-xs font-bold tracking-wider opacity-70 transition-opacity aria-[current=page]:underline aria-[current=page]:underline-offset-6 aria-[current=page]:opacity-100 hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 ${focusRing} max-md:inline-flex max-md:min-h-11 max-md:items-center max-md:px-4 max-md:text-xl max-md:text-snapflow-paper max-md:opacity-100`}
+					>
+						{label}
+					</a>
+				</li>
+			))}
+			<li>
+				<a
+					href={Path.DASHBOARD}
+					class:list={[
+						`${MONO_FONT} ${ctaClip} inline-flex h-5.5 items-center p-[1.2rem] text-xs font-bold tracking-wider focus-visible:outline-2 focus-visible:outline-offset-2 ${focusRing} max-md:h-auto max-md:min-h-11 max-md:px-8 max-md:text-xl max-md:text-snapflow-ink`,
+						hero
+							? 'bg-snapflow-ink text-snapflow-paper max-md:bg-snapflow-purple-hero'
+							: 'bg-snapflow-purple text-snapflow-ink',
+					]}
+				>
+					Open App
+				</a>
+			</li>
+		</ul>
+	</nav>
+</header>
+
+<script>
+const DESKTOP_MEDIA_QUERY = '(min-width: 48rem)';
+const ESCAPE_KEY = 'Escape';
+
+function setupSiteNav(toggle: HTMLButtonElement, menu: HTMLElement) {
+	const desktop = window.matchMedia(DESKTOP_MEDIA_QUERY);
+	let inertElements: HTMLElement[] = [];
+
+	const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
+
+	const collectBackground = () => {
+		const kept = new Set<Element>([toggle, menu]);
+		const background: HTMLElement[] = [];
+		let current: Element = toggle;
+		while (current.parentElement && current !== document.body) {
+			for (const sibling of current.parentElement.children) {
+				if (
+					sibling !== current &&
+					!kept.has(sibling) &&
+					sibling instanceof HTMLElement &&
+					!sibling.inert
+				) {
+					background.push(sibling);
+				}
+			}
+			current = current.parentElement;
+		}
+		return background;
+	};
+
+	const open = () => {
+		toggle.setAttribute('aria-expanded', 'true');
+		document.documentElement.style.overflowY = 'hidden';
+		inertElements = collectBackground();
+		for (const element of inertElements) element.inert = true;
+	};
+
+	const close = (restoreFocus: boolean) => {
+		if (!isOpen()) return;
+		toggle.setAttribute('aria-expanded', 'false');
+		document.documentElement.style.removeProperty('overflow-y');
+		for (const element of inertElements) element.inert = false;
+		inertElements = [];
+		if (restoreFocus) toggle.focus();
+	};
+
+	toggle.addEventListener('click', () => {
+		if (isOpen()) close(true);
+		else open();
+	});
+	menu.addEventListener('click', (event) => {
+		if (event.target instanceof Element && event.target.closest('a')) {
+			close(false);
+		}
+	});
+	document.addEventListener('keydown', (event) => {
+		if (event.key === ESCAPE_KEY && isOpen()) close(true);
+	});
+	desktop.addEventListener('change', (event) => {
+		if (event.matches) close(false);
+	});
+}
+
+const toggle = document.querySelector<HTMLButtonElement>(
+	'[data-site-nav-toggle]'
+);
+const menuId = toggle?.getAttribute('aria-controls');
+const menu = menuId ? document.getElementById(menuId) : null;
+if (toggle && menu) setupSiteNav(toggle, menu);
+</script>

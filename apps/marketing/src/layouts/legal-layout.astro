@@ -1,0 +1,20 @@
+---
+import type { ComponentProps } from 'astro/types';
+import SiteHeader from '@/components/layout/site-header.astro';
+import { LEGAL_CONTENT_ID } from '@/components/legal/legal-content-layout';
+import BaseLayout from '@/layouts/base-layout.astro';
+import { MONO_FONT } from '@/lib/marketing-styles';
+
+type Props = ComponentProps<typeof BaseLayout>;
+---
+
+<BaseLayout {...Astro.props}>
+	<a
+		href={`#${LEGAL_CONTENT_ID}`}
+		class={`${MONO_FONT} fixed top-3 left-3 z-60 inline-flex min-h-11 -translate-y-20 items-center bg-snapflow-purple px-4 text-xs font-bold text-snapflow-ink transition-transform focus:translate-y-0 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-snapflow-purple`}
+	>
+		Skip to content
+	</a>
+	<SiteHeader variant="default" />
+	<slot />
+</BaseLayout>

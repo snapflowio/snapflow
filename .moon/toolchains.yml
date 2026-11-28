@@ -1,0 +1,11 @@
+javascript:
+  packageManager: "pnpm"
+  installDependencies: false
+  inferTasksFromScripts: false
+
+node: {}
+
+pnpm: {}
+
+go:
+  installDependencies: false

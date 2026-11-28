@@ -1,0 +1,6 @@
+k3s_version: v1.37.2+k3s1
+node_ip: "{{ ansible_facts['default_ipv4']['address'] }}"
+api_endpoint: "{{ hostvars[groups['server'][0]]['node_ip'] }}"
+cluster_context: "{{ groups['server'][0] }}"
+manage_firewall: false
+user_kubectl: false

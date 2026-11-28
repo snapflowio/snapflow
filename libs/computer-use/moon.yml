@@ -1,0 +1,15 @@
+layer: "library"
+stack: "systems"
+tags: ["scope-runtime", "language-go"]
+
+dependsOn:
+  - "common-go"
+
+fileGroups:
+  production: ["**/*", "!**/*_test.go"]
+
+tasks:
+  build:
+    script: "mkdir -p ../../dist/libs && go build -o ../../dist/libs/computer-use ./main.go && CGO_ENABLED=0 go build -o ../../dist/libs/computer-use-launcher ./cmd/desktop-launcher"
+    inputs: ["@group(production)"]
+    outputs: ["/dist/libs/computer-use", "/dist/libs/computer-use-launcher"]

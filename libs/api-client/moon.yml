@@ -1,0 +1,22 @@
+layer: "library"
+stack: "backend"
+tags: ["scope-sdk", "client-api"]
+
+tasks:
+  generate-api-client:
+    command: "openapi-ts"
+    args: ["-i", "../../dist/apps/api/openapi.json", "-o", "src"]
+    deps: ["api:openapi"]
+    inputs:
+      - "/dist/apps/api/openapi.json"
+      - "openapi-ts.config.ts"
+    outputs: ["src"]
+
+  build:
+    script: "rm -rf ../../dist/libs/api-client && pnpm exec tsc -p tsconfig.lib.json --outDir ../../dist/libs/api-client && cp package.json ../../dist/libs/api-client/package.json"
+    inputs: ["src/**/*", "package.json", "tsconfig*.json"]
+    outputs: ["/dist/libs/api-client"]
+
+  typecheck:
+    command: "tsc"
+    args: ["-p", "tsconfig.lib.json", "--noEmit"]

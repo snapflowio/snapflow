@@ -1,0 +1,12 @@
+{{- if eq .Values.component "api" }}
+{{- $root := . -}}
+{{ include "snapflow.publicIngress" (dict "root" $root "component" "api" "path" "/api" "port" 3001) }}
+---
+{{ include "snapflow.ingressNetworkPolicy" (dict "root" $root "component" "api" "port" 3001) }}
+{{- range $role := list "api" "worker" }}
+{{- with (include "snapflow.podDisruptionBudget" (dict "root" $root "component" $role "replicas" (index $root.Values $role).replicas)) }}
+---
+{{ . }}
+{{- end }}
+{{- end }}
+{{- end }}

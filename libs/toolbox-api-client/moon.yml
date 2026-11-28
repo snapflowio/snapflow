@@ -1,0 +1,23 @@
+layer: "library"
+stack: "backend"
+tags: ["scope-sdk", "client-toolbox"]
+
+tasks:
+  generate-api-client:
+    command: "openapi-ts"
+    args: ["-i", "../../apps/guest/internal/toolbox/docs/swagger.json", "-o", "src"]
+    deps:
+      - "guest:openapi"
+    inputs:
+      - "/apps/guest/internal/toolbox/docs/swagger.json"
+      - "openapi-ts.config.ts"
+    outputs: ["src"]
+
+  build:
+    script: "rm -rf ../../dist/libs/toolbox-api-client && pnpm exec tsc -p tsconfig.lib.json --outDir ../../dist/libs/toolbox-api-client && cp package.json ../../dist/libs/toolbox-api-client/package.json"
+    inputs: ["src/**/*", "package.json", "tsconfig*.json"]
+    outputs: ["/dist/libs/toolbox-api-client"]
+
+  typecheck:
+    command: "tsc"
+    args: ["-p", "tsconfig.lib.json", "--noEmit"]

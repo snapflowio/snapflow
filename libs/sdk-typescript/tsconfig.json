@@ -1,0 +1,23 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"files": [],
+	"include": ["src/**/*.ts"],
+	"compilerOptions": {
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"strict": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noUncheckedIndexedAccess": true,
+		"lib": ["es2024", "dom"],
+		"esModuleInterop": true,
+		"types": ["node"],
+		"declaration": true,
+		"declarationMap": true,
+		"resolveJsonModule": true,
+		"experimentalDecorators": false,
+		"emitDecoratorMetadata": false
+	}
+}

@@ -1,0 +1,194 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: snapflow
+  namespace: monitoring
+spec:
+  groups:
+    - name: snapflow.workloads
+      rules:
+        - alert: SnapflowNodeDiskFilling
+          expr: |
+            node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs|ramfs"}
+              / node_filesystem_size_bytes{fstype!~"tmpfs|overlay|squashfs|ramfs"} < 0.15
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ $labels.instance }} {{ $labels.mountpoint }} has less than 15% free"
+            description: "Postgres, Redis and the monitoring stack share this disk. Free space or grow the disk before database writes and backups start failing."
+        - alert: SnapflowNodeDiskAlmostFull
+          expr: |
+            node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs|ramfs"}
+              / node_filesystem_size_bytes{fstype!~"tmpfs|overlay|squashfs|ramfs"} < 0.07
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.instance }} {{ $labels.mountpoint }} has less than 7% free"
+            description: "Postgres, Redis and the monitoring stack share this disk; writes fail when it fills. Free space now."
+        - alert: SnapflowWorkloadUnavailable
+          expr: |
+            kube_deployment_status_replicas_available{namespace="snapflow"}
+              < kube_deployment_spec_replicas{namespace="snapflow"}
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.deployment }} has fewer ready replicas than requested"
+            description: "{{ $labels.deployment }} in snapflow has had unavailable replicas for 5 minutes. API, dashboard and edge outages surface here; check its pods and readiness probe."
+        - alert: SnapflowStatefulSetUnavailable
+          expr: |
+            kube_statefulset_status_replicas_ready{namespace="snapflow"}
+              < kube_statefulset_replicas{namespace="snapflow"}
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.statefulset }} has fewer ready replicas than requested"
+            description: "{{ $labels.statefulset }} in snapflow (Redis) has had unready replicas for 5 minutes."
+        - alert: SnapflowBackupStale
+          expr: |
+            time() - max by (namespace, cronjob) (kube_cronjob_status_last_successful_time{cronjob=~".*backup.*"}) > 26 * 3600
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.cronjob }} has not succeeded for over 26 hours"
+            description: "The daily backup job {{ $labels.cronjob }} in {{ $labels.namespace }} has no successful run in the last 26 hours."
+        - alert: SnapflowBackupNeverSucceeded
+          expr: |
+            kube_cronjob_info{cronjob=~".*backup.*"}
+              unless on (namespace, cronjob) kube_cronjob_status_last_successful_time
+          for: 26h
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.cronjob }} has never succeeded"
+            description: "The backup job {{ $labels.cronjob }} in {{ $labels.namespace }} has existed for over 26 hours without a single successful run."
+        - alert: K3sEtcdSnapshotStale
+          expr: |
+            (
+              time() - max(
+                k3s_etcd_snapshot_created_timestamp_seconds{location=~"s3://.*"}
+                  and on (snapshot) (k3s_etcd_snapshot_ready == 1)
+              ) > 8 * 3600
+            )
+            or absent(k3s_etcd_snapshot_ready{location=~"s3://.*"} == 1)
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: "No ready k3s etcd snapshot in R2 from the last 8 hours"
+            description: "k3s takes an etcd snapshot every 6 hours and uploads it to R2. The newest ready S3 snapshot is older than 8 hours, or none exists. Check the k3s server logs and the k3s-etcd-snapshot-s3-config secret."
+    - name: snapflow.tls
+      rules:
+        - alert: SnapflowTlsCertificateExpiringSoon
+          expr: |
+            probe_ssl_earliest_cert_expiry - time() < 14 * 86400
+          for: 1h
+          labels:
+            severity: warning
+          annotations:
+            summary: "The certificate served at {{ $labels.instance }} expires within 14 days"
+            description: "cert-manager renews 30 days before expiry, so renewal is failing. Check the Certificate and its ACME challenges."
+        - alert: SnapflowTlsCertificateExpiring
+          expr: |
+            probe_ssl_earliest_cert_expiry - time() < 3 * 86400
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: "The certificate served at {{ $labels.instance }} expires within 3 days"
+            description: "Clients will reject {{ $labels.instance }} once it expires. Check the Certificate and its ACME challenges."
+    - name: snapflow.certificates
+      rules:
+        - alert: CertificateExpiringSoon
+          expr: |
+            certmanager_certificate_expiration_timestamp_seconds - time() < 14 * 86400
+          for: 1h
+          labels:
+            severity: warning
+          annotations:
+            summary: "Certificate {{ $labels.namespace }}/{{ $labels.name }} expires within 14 days"
+            description: "cert-manager renews 30 days before expiry, so renewal of {{ $labels.name }} is failing."
+        - alert: CertificateNotReady
+          expr: |
+            certmanager_certificate_ready_status{condition="False"} == 1
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Certificate {{ $labels.namespace }}/{{ $labels.name }} is not ready"
+            description: "cert-manager has reported {{ $labels.name }} as not ready for 30 minutes. Check its CertificateRequest and challenges."
+    - name: snapflow.postgres
+      rules:
+        - alert: PostgresDown
+          expr: |
+            absent(cnpg_collector_up{namespace="snapflow"} == 1)
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "The Snapflow Postgres instance is not reporting"
+            description: "No healthy CloudNativePG instance metrics for 5 minutes. The API cannot serve requests without its database."
+        - alert: PostgresWalArchivingFailing
+          expr: |
+            (cnpg_pg_stat_archiver_last_failed_time{namespace="snapflow"} - cnpg_pg_stat_archiver_last_archived_time{namespace="snapflow"}) > 1
+              and on (namespace, pod) cnpg_pg_replication_in_recovery == 0
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Postgres cannot archive WAL to R2"
+            description: "{{ $labels.pod }} has failed to archive WAL since its last success. Point-in-time recovery is degraded until it recovers."
+        - alert: PostgresBackupStale
+          expr: |
+            time() - max by (namespace) ({__name__=~"(cnpg_)?barman_cloud_cloudnative_pg_io_last_available_backup_timestamp", namespace="snapflow"}) > 26 * 3600
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: "The newest Postgres base backup is older than 26 hours"
+            description: "The daily ScheduledBackup has not produced a backup in R2 for over 26 hours."
+        - alert: PostgresBackupFailed
+          expr: |
+            max by (namespace) ({__name__=~"(cnpg_)?barman_cloud_cloudnative_pg_io_last_failed_backup_timestamp", namespace="snapflow"})
+              > max by (namespace) ({__name__=~"(cnpg_)?barman_cloud_cloudnative_pg_io_last_available_backup_timestamp", namespace="snapflow"})
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "The latest Postgres base backup failed"
+            description: "The last backup attempt failed after the last successful one. Check the ScheduledBackup and the Backup objects in snapflow."
+    - name: snapflow.openbao
+      rules:
+        - alert: OpenBaoDown
+          expr: |
+            absent(up{namespace="openbao"} == 1)
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "OpenBao is not answering metrics scrapes"
+            description: "OpenBao has been unreachable for 5 minutes. Secret sync and API sessions that read secrets will fail."
+        - alert: OpenBaoSealed
+          expr: |
+            vault_core_unsealed{namespace="openbao"} == 0
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "OpenBao is sealed"
+            description: "OpenBao reports itself sealed. Check that the openbao-seal secret is mounted and the static seal key is intact."
+    - name: snapflow.image-policy
+      rules:
+        - alert: ImagePolicyWebhookDown
+          expr: |
+            absent(up{namespace="policy-controller"} == 1)
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "The image signature webhook is not answering metrics scrapes"
+            description: "policy-controller has been unreachable for 5 minutes. Its webhook fails closed, so no pod in the snapflow namespace can be created or replaced until it is back; check the policy-controller pod."

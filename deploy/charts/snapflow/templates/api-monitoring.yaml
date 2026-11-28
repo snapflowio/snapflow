@@ -1,0 +1,25 @@
+{{- if eq .Values.component "api" }}
+{{- $root := . -}}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: snapflow-api
+  labels:
+    {{- include "snapflow.labels" (dict "root" $root "component" "api") | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ $root.Release.Name }}
+    matchExpressions:
+      - key: app.kubernetes.io/name
+        operator: In
+        values: ["api", "worker"]
+  podMetricsEndpoints:
+    - port: metrics
+      path: {{ .Values.metrics.path }}
+      interval: {{ .Values.metrics.interval }}
+---
+{{ include "snapflow.probe" (dict "root" $root "component" "api" "name" "snapflow-public" "job" "snapflow-public" "module" .Values.probes.modules.http "url" (printf "%s/api/health" (include "snapflow.https" (dict "root" $root "key" "public"))) "labels" (dict "service" "public")) }}
+---
+{{ include "snapflow.alertRules" (dict "root" $root "component" "api") }}
+{{- end }}

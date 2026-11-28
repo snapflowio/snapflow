@@ -1,0 +1,29 @@
+{
+	"name": "@snapflow/marketing",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"dependencies": {
+		"@astrojs/react": "catalog:",
+		"@astrojs/sitemap": "catalog:",
+		"@react-three/drei": "catalog:",
+		"@react-three/fiber": "catalog:",
+		"@snapflow/api-client": "workspace:*",
+		"@snapflow/consent": "workspace:*",
+		"astro": "catalog:",
+		"cookie": "catalog:",
+		"react": "catalog:",
+		"react-dom": "catalog:",
+		"three": "catalog:"
+	},
+	"devDependencies": {
+		"@astrojs/check": "catalog:",
+		"@tailwindcss/vite": "catalog:",
+		"@types/cloudflare-turnstile": "catalog:",
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"@types/three": "catalog:",
+		"tailwindcss": "catalog:",
+		"typescript": "catalog:"
+	}
+}

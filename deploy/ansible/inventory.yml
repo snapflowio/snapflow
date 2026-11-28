@@ -1,0 +1,18 @@
+k3s_cluster:
+  children:
+    server:
+      hosts:
+        server-titan:
+          ansible_host: 192.168.1.208
+          public_ip: 149.106.97.116
+    agent:
+      hosts: {}
+
+edge:
+  children:
+    agent:
+  hosts:
+    server-titan:
+
+standalone_edge:
+  hosts: {}

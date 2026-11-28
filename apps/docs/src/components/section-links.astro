@@ -1,0 +1,33 @@
+---
+import { DOCS_SECTIONS, sectionForPath } from '@/config/sections';
+import { NAV_ITEM, NAV_ITEM_ACTIVE, NAV_ITEM_INACTIVE } from '@/lib/styles';
+
+interface Props {
+	stacked?: boolean;
+}
+
+const { stacked = false } = Astro.props;
+const activeSection = sectionForPath(Astro.url.pathname);
+---
+
+<ul class:list={['m-0 flex list-none gap-px p-0', { 'flex-col': stacked }]}>
+	{DOCS_SECTIONS.map((section) => {
+		const current = section.id === activeSection.id;
+		return (
+			<li class="m-0">
+				<a
+					href={section.href}
+					aria-current={current ? 'page' : undefined}
+					class:list={[
+						NAV_ITEM,
+						'whitespace-nowrap',
+						{ 'w-full justify-start': stacked },
+						current ? NAV_ITEM_ACTIVE : NAV_ITEM_INACTIVE,
+					]}
+				>
+					{section.label}
+				</a>
+			</li>
+		);
+	})}
+</ul>

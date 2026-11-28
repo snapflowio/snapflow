@@ -1,0 +1,10 @@
+standalone_edge_installer_url: https://github.com/snapflowio/snapflow/releases/latest/download/install.sh
+standalone_edge_command: /usr/local/bin/snapflow
+standalone_edge_release_marker: /opt/snapflow-edge/release.json
+standalone_edge_channel: stable
+standalone_edge_id: "{{ undef(hint='Set standalone_edge_id on the host to the id the API gave the edge') }}"
+standalone_edge_enrollment_secret: >-
+  {{ lookup('ansible.builtin.env', 'SNAPFLOW_EDGE_ENROLLMENT_SECRET',
+     default=undef(hint='Set SNAPFLOW_EDGE_ENROLLMENT_SECRET and --limit the run to that one edge')) }}
+standalone_edge_origin_site: ""
+standalone_edge_origin_hosts: []

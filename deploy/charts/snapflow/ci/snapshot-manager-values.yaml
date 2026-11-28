@@ -1,0 +1,13 @@
+component: snapshot-manager
+imageNamespace: snapflowio/snapflow
+image:
+  tag: build-0123456789abcdef0123456789abcdef01234567-1760000000
+  digest: sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+domains:
+  registry: registry.snapflow.io
+objectStorage:
+  endpoint: https://0123456789abcdef0123456789abcdef.r2.cloudflarestorage.com
+  bucket: snapflow-objects
+  snapshotBucket: snapflow-snapshots
+snapshotManager:
+  replicas: 2

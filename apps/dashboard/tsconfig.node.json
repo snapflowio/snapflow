@@ -1,0 +1,9 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"customConditions": [],
+		"types": ["node"],
+		"tsBuildInfoFile": "./.tmp/tsc/tsconfig.node.tsbuildinfo"
+	},
+	"include": ["vite.config.ts", "scripts/**/*.ts"]
+}

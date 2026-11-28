@@ -1,0 +1,44 @@
+---
+import Default from '@astrojs/starlight/components/Footer.astro';
+import { ANALYTICS } from '@/config/analytics';
+import { Path, SITE } from '@/config/site';
+
+const LINKS = [
+	{ label: 'Discord', href: SITE.DISCORD_URL },
+	{ label: 'Support', href: `mailto:${SITE.SUPPORT_EMAIL}` },
+	{ label: 'Terms', href: Path.TERMS },
+	{ label: 'Privacy', href: Path.PRIVACY },
+] as const;
+
+const year = new Date().getFullYear();
+---
+
+<Default />
+<div
+	class="not-content mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5 pb-2 text-caption text-(--text-muted) print:hidden"
+>
+	<span>&copy; {year} {SITE.NAME}</span>
+	<ul class="m-0 flex list-none flex-wrap gap-4 p-0">
+		{LINKS.map(({ label, href }) => (
+			<li class="m-0">
+				<a
+					href={href}
+					class="text-(--text-muted) no-underline transition-colors hover:text-(--text-primary)"
+				>
+					{label}
+				</a>
+			</li>
+		))}
+		{ANALYTICS && (
+			<li class="m-0">
+				<button
+					type="button"
+					data-consent-settings
+					class="cursor-pointer border-0 bg-transparent p-0 text-caption text-(--text-muted) transition-colors hover:text-(--text-primary)"
+				>
+					Cookie settings
+				</button>
+			</li>
+		)}
+	</ul>
+</div>

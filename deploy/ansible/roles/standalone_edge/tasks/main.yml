@@ -1,0 +1,57 @@
+- name: Look for an installed edge release
+  ansible.builtin.stat:
+    path: "{{ standalone_edge_release_marker }}"
+  register: standalone_edge_release
+
+- name: Install the edge
+  when: not standalone_edge_release.stat.exists
+  block:
+    - name: Create a working directory for the installer
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: snapflow-edge
+      register: standalone_edge_workdir
+
+    - name: Download the installer
+      ansible.builtin.get_url:
+        url: "{{ standalone_edge_installer_url }}"
+        dest: "{{ standalone_edge_workdir.path }}/install.sh"
+        mode: "0700"
+
+    - name: Install the verified snapflow command
+      ansible.builtin.command:
+        argv:
+          - sh
+          - "{{ standalone_edge_workdir.path }}/install.sh"
+          - --cli-only
+          - --channel
+          - "{{ standalone_edge_channel }}"
+        creates: "{{ standalone_edge_command }}"
+
+    - name: Install and enroll the edge service
+      ansible.builtin.command:
+        argv:
+          - "{{ standalone_edge_command }}"
+          - edge
+          - install
+          - --channel
+          - "{{ standalone_edge_channel }}"
+          - --api-url
+          - "{{ standalone_edge_api_url }}"
+          - --edge-id
+          - "{{ standalone_edge_id }}"
+          - --origin-site
+          - "{{ standalone_edge_origin_site }}"
+          - --origin-hosts
+          - "{{ standalone_edge_origin_hosts | join(',') }}"
+        creates: "{{ standalone_edge_release_marker }}"
+      environment:
+        SNAPFLOW_EDGE_ENROLLMENT_SECRET: "{{ standalone_edge_enrollment_secret }}"
+      no_log: true
+
+  always:
+    - name: Remove the installer working directory
+      ansible.builtin.file:
+        path: "{{ standalone_edge_workdir.path }}"
+        state: absent
+      when: standalone_edge_workdir.path is defined

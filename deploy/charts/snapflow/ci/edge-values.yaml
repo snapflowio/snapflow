@@ -1,0 +1,15 @@
+component: edge
+imageNamespace: snapflowio/snapflow
+image:
+  tag: build-0123456789abcdef0123456789abcdef01234567-1760000000
+  digest: sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+domains:
+  public: snapflow.io
+  platform: snapflow.run
+edges:
+  - name: home
+    node: snapflow-home
+    publicHost: edge.snapflow.run
+origin:
+  site: titan
+  hosts: snapflow.io,registry.snapflow.io

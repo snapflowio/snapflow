@@ -1,0 +1,68 @@
+layer: "library"
+stack: "backend"
+tags:
+  - "scope-sdk"
+  - "sdk-typescript"
+
+dependsOn:
+  - "api-client"
+  - "contracts-ts"
+  - "toolbox-api-client"
+
+fileGroups:
+  production:
+    - "src/**/*"
+    - "package.json"
+    - "README.md"
+    - "LICENSE"
+    - "tsconfig*.json"
+
+tasks:
+  build:
+    script: |
+      set -eo pipefail
+      rm -rf ../../dist/libs/sdk-typescript
+      pnpm exec tsc -p tsconfig.build.json
+      cp package.json README.md LICENSE ../../dist/libs/sdk-typescript/
+      pnpm pack --out "$workspaceRoot/dist/packages/sdk-typescript.tgz"
+      pnpm exec attw --profile esm-only "$workspaceRoot/dist/packages/sdk-typescript.tgz"
+    deps:
+      - "api-client:build"
+      - "contracts-ts:build"
+      - "toolbox-api-client:build"
+    inputs:
+      - "@group(production)"
+      - "/pnpm-workspace.yaml"
+      - "/dist/libs/api-client/**/*"
+      - "/dist/libs/contracts/**/*"
+      - "/dist/libs/toolbox-api-client/**/*"
+    outputs:
+      - "/dist/libs/sdk-typescript"
+      - "/dist/packages/sdk-typescript.tgz"
+
+  typecheck:
+    command: "tsc"
+    args:
+      - "-p"
+      - "tsconfig.json"
+      - "--noEmit"
+    deps:
+      - "api-client:build"
+      - "contracts-ts:build"
+      - "toolbox-api-client:build"
+
+  lint:
+    command: "biome"
+    args:
+      - "ci"
+      - "."
+      - "--error-on-warnings"
+
+  format:
+    command: "biome"
+    args:
+      - "check"
+      - "."
+      - "--write"
+    options:
+      cache: false

@@ -1,0 +1,12 @@
+groups:
+  - name: snapflow.registry
+    rules:
+      - alert: SnapflowRegistryDown
+        expr: |
+          probe_success{job="snapflow-registry"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Snapflow registry is down: {{ $labels.instance }} fails"
+          description: "The registry check has failed for 5 minutes. Hosts cannot push or pull images until it is back; check the snapshot-manager pods, Traefik and Cloudflare."

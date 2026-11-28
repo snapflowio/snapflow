@@ -1,0 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - snapflow-namespace.yaml
+  - secret-store.yaml
+  - cluster-issuers.yaml
+  - notifications.yaml
+  - cloudflare-ddns.yaml
+  - image-policy.yaml

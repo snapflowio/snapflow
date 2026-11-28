@@ -1,0 +1,55 @@
+layer: "library"
+stack: "systems"
+tags:
+  - "scope-runtime"
+  - "app-guest"
+
+dependsOn:
+  - "common-go"
+  - "computer-use"
+
+fileGroups:
+  production:
+    - "**/*"
+    - "!**/*_test.go"
+
+tasks:
+  prepare:
+    command: "go"
+    args:
+      - "run"
+      - "./tools/terminal_assets.go"
+    inputs:
+      - "tools/terminal_assets.go"
+      - "/apps/dashboard/src/lib/assets/fonts/ChivoMono-latin.woff2"
+    outputs:
+      - "internal/terminal/static/**/*"
+
+  build:
+    script: "mkdir -p ../../dist/apps && go build -o ../../dist/apps/snapflow-guest ./cmd/snapflow-guest"
+    deps:
+      - "prepare"
+    inputs:
+      - "@group(production)"
+    outputs:
+      - "/dist/apps/snapflow-guest"
+
+  serve:
+    command: "gow"
+    args:
+      - "run"
+      - "-tags"
+      - "development"
+      - "./cmd/snapflow-guest"
+    env:
+      SNAPFLOW_GUEST_BIND_ADDRESS: "127.0.0.1"
+    preset: "server"
+
+  openapi:
+    script: |
+      set -eo pipefail
+      cd internal/toolbox
+      go tool swag fmt
+      go tool swag init --parseDependency --parseInternal --parseDepth 1 -o docs -g server.go
+    outputs:
+      - "internal/toolbox/docs/**/*"

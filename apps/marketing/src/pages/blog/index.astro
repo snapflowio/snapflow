@@ -1,0 +1,67 @@
+---
+import { SiteFooter } from '@/components/layout/site-footer';
+import SiteHeader from '@/components/layout/site-header.astro';
+import { BLOG_POSTS } from '@/data/blog-posts';
+import BaseLayout from '@/layouts/base-layout.astro';
+import { DISPLAY_FONT } from '@/lib/marketing-styles';
+---
+
+<BaseLayout
+	title="Blog | Snapflow"
+	description="Notes from the team building Snapflow."
+	canonicalPath="/blog"
+>
+	<div class="min-h-screen bg-snapflow-ink text-snapflow-paper">
+		<SiteHeader variant="default" />
+		<main class="px-4 py-16 sm:px-6 min-[769px]:py-32">
+			<div class="mx-auto max-w-175">
+				<h1
+					class={`${DISPLAY_FONT} mb-12 text-[clamp(2rem,5vw,3rem)] tracking-[-.02em]`}
+				>
+					Blog
+				</h1>
+				{BLOG_POSTS.length > 0 ? (
+					<ul class="m-0 list-none p-0">
+						{BLOG_POSTS.map((post) => (
+							<li class="border-snapflow-border border-t last:border-b">
+								<a
+									href={`/blog/${post.slug}`}
+									itemscope
+									itemtype="https://schema.org/BlogPosting"
+									class="flex items-baseline gap-10 py-6 text-snapflow-paper no-underline transition-colors hover:text-snapflow-purple focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-snapflow-purple max-sm:flex-col max-sm:gap-1"
+								>
+									<time
+										datetime={post.isoDate}
+										itemprop="datePublished"
+										class="w-30 shrink-0 font-pixel text-xs uppercase tracking-widest text-snapflow-paper-muted max-sm:w-auto"
+									>
+										{post.shortDate}
+									</time>
+									<div class="min-w-0 flex-1">
+										<h2
+											itemprop="headline"
+											class={`${DISPLAY_FONT} mb-[.35rem] text-2xl tracking-[-.01em]`}
+										>
+											{post.title}
+										</h2>
+										<p
+											itemprop="description"
+											class="text-[.9rem] leading-normal text-snapflow-paper-dim"
+										>
+											{post.description}
+										</p>
+									</div>
+								</a>
+							</li>
+						))}
+					</ul>
+				) : (
+					<p class="border-snapflow-border border-y py-8 font-mono text-sm text-snapflow-paper-muted">
+						No posts yet.
+					</p>
+				)}
+			</div>
+		</main>
+		<SiteFooter />
+	</div>
+</BaseLayout>

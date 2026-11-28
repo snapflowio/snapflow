@@ -1,0 +1,22 @@
+layer: "application"
+stack: "backend"
+tags:
+  - "scope-data-plane"
+  - "app-origin"
+  - "deployable"
+dependsOn:
+  - "common-go"
+  - "tunnel-go"
+
+fileGroups:
+  production:
+    - "**/*"
+    - "!**/*_test.go"
+
+tasks:
+  build:
+    script: "mkdir -p ../../dist/apps/origin && go build -o ../../dist/apps/origin/origin ./cmd/origin"
+    inputs:
+      - "@group(production)"
+    outputs:
+      - "/dist/apps/origin"

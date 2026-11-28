@@ -1,0 +1,12 @@
+[Unit]
+Description=Check for verified Snapflow edge updates
+Documentation=https://github.com/snapflowio/snapflow
+
+[Timer]
+OnCalendar=*-*-* *:00/15:00 UTC
+RandomizedDelaySec=5m
+Persistent=true
+Unit=snapflow-edge-update.service
+
+[Install]
+WantedBy=timers.target

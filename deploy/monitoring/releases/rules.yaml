@@ -1,0 +1,27 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: snapflow-releases
+  namespace: monitoring
+spec:
+  groups:
+    - name: snapflow.releases
+      rules:
+        - alert: SnapflowReleaseMetadataUnreachable
+          expr: |
+            probe_success{job="snapflow-release-timestamp"} == 0
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: "The TUF timestamp on releases.snapflow.io cannot be fetched"
+            description: "Hosts cannot check for updates while {{ $labels.instance }} is unreachable."
+        - alert: SnapflowReleaseTimestampStale
+          expr: |
+            time() - probe_http_last_modified_timestamp_seconds{job="snapflow-release-timestamp"} > 24 * 3600
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: "The TUF timestamp has not been re-signed for over 24 hours"
+            description: "The TUF refresh workflow re-signs timestamp.json every 6 hours and it is valid for 3 days. Once it expires every host refuses updates; check the TUF refresh workflow on GitHub."

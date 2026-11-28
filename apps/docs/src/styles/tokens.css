@@ -1,0 +1,229 @@
+/*
+ * Copyright (c) 2026 Snapflow. All rights reserved.
+ *
+ * Snapflow is licensed under the GNU Affero General Public License v3.0.
+ * You may obtain a copy of the license at https://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * SPDX-License-Identifier: AGPL-3.0
+ */
+
+@font-face {
+	font-family: Chalet;
+	src: url("../assets/fonts/chalet_londonnineteensixty.woff2") format("woff2");
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Instrument Sans";
+	src: url("../assets/fonts/InstrumentSans-latin.woff2") format("woff2");
+	font-display: swap;
+	font-style: normal;
+	font-weight: 400 700;
+}
+
+@font-face {
+	font-family: "Chivo Mono";
+	src: url("../assets/fonts/ChivoMono-latin.woff2") format("woff2");
+	font-display: swap;
+	font-style: normal;
+	font-weight: 400 800;
+}
+
+@theme inline {
+	--font-sans:
+		"Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+		"Helvetica Neue", Arial, "Noto Sans", sans-serif;
+	--font-heading:
+		"Chalet", "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+		sans-serif;
+	--font-mono:
+		"Chivo Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+		"Courier New", monospace;
+
+	--text-micro: 10px;
+	--text-caption: 12px;
+	--text-small: 13px;
+	--text-base: 15px;
+	--text-md: 16px;
+
+	--radius-frame: var(--frame-radius);
+
+	--color-bg: var(--bg);
+	--color-surface-1: var(--surface-1);
+	--color-surface-2: var(--surface-2);
+	--color-surface-3: var(--surface-3);
+	--color-surface-4: var(--surface-4);
+	--color-surface-5: var(--surface-5);
+	--color-surface-6: var(--surface-6);
+	--color-surface-7: var(--surface-7);
+	--color-surface-hover: var(--surface-hover);
+	--color-surface-active: var(--surface-active);
+	--color-border: var(--border);
+	--color-brand: var(--brand-accent);
+	--color-brand-hover: var(--brand-accent-hover);
+	--color-brand-secondary: var(--brand-secondary);
+	--color-destructive: var(--destructive);
+
+	--color-accent-200: var(--brand-secondary);
+	--color-accent-600: var(--brand-accent);
+	--color-accent-950: var(--surface-active);
+	--color-gray-200: var(--text-primary);
+	--color-gray-300: var(--text-secondary);
+	--color-gray-400: var(--text-muted);
+	--color-gray-600: var(--surface-7);
+	--color-gray-700: var(--surface-6);
+	--color-gray-800: var(--surface-5);
+	--color-gray-900: var(--bg);
+
+	--shadow-medium: var(--shadow-medium-value);
+}
+
+:root {
+	color-scheme: dark;
+
+	--bg: #0a0a0a;
+	--surface-1: #0d0d0d;
+	--surface-2: #0f0f0f;
+	--surface-3: #111111;
+	--surface-4: #161616;
+	--surface-5: #1f1f1e;
+	--surface-6: #2a2a29;
+	--surface-7: #363634;
+	--surface-hover: color-mix(in srgb, var(--text-primary) 4%, transparent);
+	--surface-active: color-mix(in srgb, var(--text-primary) 7%, transparent);
+
+	--border: #2a2a29;
+	--border-width: 1px;
+	--frame-radius: 0px;
+
+	--text-primary: #f0ede6;
+	--text-secondary: rgb(240 237 230 / 84%);
+	--text-tertiary: rgb(240 237 230 / 72%);
+	--text-body: rgb(240 237 230 / 79%);
+	--text-muted: rgb(240 237 230 / 51%);
+	--text-icon: rgb(240 237 230 / 59%);
+	--text-on-brand: #0a0a0a;
+
+	--brand-accent: #9b5de5;
+	--brand-accent-hover: #b385ef;
+	--brand-secondary: #e2c8ff;
+	--selection-muted: rgb(155 93 229 / 38%);
+
+	--destructive: #ff635c;
+	--text-error: #ffaaa4;
+	--badge-error-bg: rgb(255 99 92 / 14%);
+	--badge-error-text: #ff998d;
+	--badge-brand-bg: rgb(155 93 229 / 16%);
+	--badge-brand-text: #e2c8ff;
+
+	--shadow-medium-value: 0 4px 12px rgb(0 0 0 / 32%);
+	--backdrop-overlay: rgb(0 0 0 / 60%);
+	--grain-opacity: 0.08;
+	--z-grain: 10001;
+	--hover-duration: 150ms;
+
+	--heading-leading: 1.1;
+	--heading-tracking: -0.02em;
+	--display-leading: 1;
+	--display-tracking: -0.03em;
+	--cell-pad-x: 1.25rem;
+	--item-pad-x: 0.5rem;
+	--control-height: 1.875rem;
+	--chamfer-size: 10px;
+	--chamfer-clip: polygon(
+		var(--chamfer-size) 0,
+		100% 0,
+		100% calc(100% - var(--chamfer-size)),
+		calc(100% - var(--chamfer-size)) 100%,
+		0 100%,
+		0 var(--chamfer-size)
+	);
+
+	--sl-font: var(--font-sans);
+	--sl-font-system: var(--font-sans);
+	--sl-font-system-mono: var(--font-mono);
+	--sl-font-mono: var(--font-mono);
+	--sl-text-body: var(--text-base);
+	--sl-text-body-sm: var(--text-small);
+	--sl-text-code: 0.8125rem;
+	--sl-text-code-sm: 0.75rem;
+	--sl-line-height: 1.7;
+	--sl-line-height-headings: var(--heading-leading);
+	--sl-text-h1: 2rem;
+	--sl-text-h2: 1.5rem;
+	--sl-text-h3: 1.1875rem;
+	--sl-text-h4: 1rem;
+	--sl-text-h5: 0.9375rem;
+	--sl-sidebar-width: 18.75rem;
+	--sl-content-width: 46rem;
+	--sl-nav-pad-x: var(--cell-pad-x);
+	--sl-sidebar-pad-x: calc(var(--cell-pad-x) - var(--item-pad-x));
+	--sl-sidebar-item-padding-inline: var(--item-pad-x);
+	--sl-content-pad-x: var(--cell-pad-x);
+
+	--sl-color-white: var(--text-primary);
+	--sl-color-gray-1: var(--text-secondary);
+	--sl-color-gray-2: var(--text-body);
+	--sl-color-gray-3: var(--text-muted);
+	--sl-color-gray-4: var(--border);
+	--sl-color-gray-5: var(--border);
+	--sl-details-border-color: var(--border);
+	--sl-details-border-color--hover: var(--border);
+	--sl-color-gray-6: var(--surface-2);
+	--sl-color-black: var(--bg);
+	--sl-color-accent-low: var(--badge-brand-bg);
+	--sl-color-accent: var(--brand-accent);
+	--sl-color-accent-high: var(--badge-brand-text);
+	--sl-color-text: var(--text-body);
+	--sl-color-text-accent: var(--brand-accent-hover);
+	--sl-color-text-invert: var(--text-on-brand);
+	--sl-color-bg: var(--bg);
+	--sl-color-bg-nav: var(--bg);
+	--sl-color-bg-sidebar: var(--bg);
+	--sl-color-bg-inline-code: var(--surface-4);
+	--sl-color-bg-accent: var(--brand-accent);
+	--sl-color-hairline: var(--border);
+	--sl-color-hairline-light: var(--border);
+	--sl-color-hairline-shade: var(--border);
+	--sl-color-backdrop-overlay: var(--backdrop-overlay);
+	--sl-shadow-md: var(--shadow-medium-value);
+	--sl-shadow-lg: var(--shadow-medium-value);
+
+	--sl-color-green-low: var(--surface-1);
+	--sl-color-green: var(--brand-accent);
+	--sl-color-green-high: var(--brand-secondary);
+	--sl-color-orange-low: var(--surface-1);
+	--sl-color-orange: var(--destructive);
+	--sl-color-orange-high: var(--text-error);
+	--sl-color-blue-low: var(--surface-1);
+	--sl-color-blue: var(--brand-accent);
+	--sl-color-blue-high: var(--brand-secondary);
+	--sl-color-purple-low: var(--surface-1);
+	--sl-color-purple: var(--brand-accent);
+	--sl-color-purple-high: var(--brand-secondary);
+	--sl-color-red-low: var(--surface-1);
+	--sl-color-red: var(--destructive);
+	--sl-color-red-high: var(--text-error);
+}
+
+@media (min-width: 50rem) {
+	:root {
+		--cell-pad-x: 1.5rem;
+		--sl-text-h1: 2.5rem;
+		--sl-text-h2: 1.625rem;
+		--sl-text-h3: 1.25rem;
+		--sl-text-h4: 1.0625rem;
+	}
+}
+
+@media (min-width: 72rem) {
+	:root {
+		--cell-pad-x: 2rem;
+	}
+}
+
+@media (min-resolution: 2dppx) {
+	:root {
+		--border-width: 0.5px;
+	}
+}

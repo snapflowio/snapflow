@@ -1,0 +1,16 @@
+- name: Raise the UDP buffers and let the edge bind low ports
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    sysctl_file: "{{ edge_host_sysctl_file }}"
+    reload: true
+  loop: "{{ edge_host_sysctls | dict2items }}"
+
+- name: Create the edge state directory
+  ansible.builtin.file:
+    path: "{{ edge_host_state_directory }}"
+    state: directory
+    owner: "{{ edge_host_user_id }}"
+    group: "{{ edge_host_user_id }}"
+    mode: "0700"
+  when: "'k3s_cluster' in group_names"

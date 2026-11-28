@@ -1,0 +1,27 @@
+---
+import Search from '@astrojs/starlight/components/Search.astro';
+import SocialIcons from '@astrojs/starlight/components/SocialIcons.astro';
+import SectionLinks from '@/components/section-links.astro';
+import SiteTitle from '@/components/starlight/site-title.astro';
+import { Path } from '@/config/site';
+import { PRIMARY_BUTTON } from '@/lib/styles';
+---
+
+<div class="flex h-full items-center gap-6">
+	<SiteTitle />
+	<nav
+		aria-label="Documentation sections"
+		class="hidden min-[50rem]:block print:hidden"
+	>
+		<SectionLinks />
+	</nav>
+	<div class="flex flex-1 justify-end print:hidden">
+		<Search class="w-full max-w-64" />
+	</div>
+	<div class="hidden items-center gap-5 min-[50rem]:flex print:hidden">
+		<div class="flex items-center gap-4 text-(--text-icon)">
+			<SocialIcons />
+		</div>
+		<a href={Path.DASHBOARD} class={PRIMARY_BUTTON}>Open app</a>
+	</div>
+</div>
